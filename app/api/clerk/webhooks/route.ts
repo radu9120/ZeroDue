@@ -84,18 +84,38 @@ function extractEmail(body: any): string | undefined {
 }
 
 function extractPlanName(body: any): string | undefined {
+  // Prefer active subscription item when multiple exist
+  const items = safeGet<any[]>(body, ["data", "items"]);
+  if (Array.isArray(items) && items.length > 0) {
+    const byStatus = (s?: string) => (s || "").toLowerCase();
+    const active = items.find((it) => byStatus(it?.status) === "active");
+    let chosen = active;
+    if (!chosen) {
+      // fallback to most recently updated/created
+      chosen = [...items].sort((a: any, b: any) => {
+        const au = Number(a?.updated_at || 0);
+        const bu = Number(b?.updated_at || 0);
+        if (au !== bu) return bu - au;
+        const ac = Number(a?.created_at || 0);
+        const bc = Number(b?.created_at || 0);
+        return bc - ac;
+      })[0];
+    }
+    const fromChosen =
+      chosen?.plan?.name ||
+      chosen?.plan?.slug ||
+      chosen?.price?.product?.name ||
+      chosen?.price?.product?.slug ||
+      chosen?.product?.name ||
+      chosen?.product?.slug;
+    if (fromChosen) return fromChosen;
+  }
+
   return (
     // Common Clerk Billing payload shapes
     body?.data?.plan ||
     body?.data?.plan_name ||
     body?.data?.plan_slug ||
-    // Explicitly handle array of items (e.g., subscription.created)
-    safeGet(body, ["data", "items", 0 as any, "plan", "name"]) ||
-    safeGet(body, ["data", "items", 0 as any, "plan", "slug"]) ||
-    safeGet(body, ["data", "items", 0 as any, "price", "product", "name"]) ||
-    safeGet(body, ["data", "items", 0 as any, "price", "product", "slug"]) ||
-    safeGet(body, ["data", "items", 0 as any, "product", "name"]) ||
-    safeGet(body, ["data", "items", 0 as any, "product", "slug"]) ||
     safeGet(body, ["data", "subscription", "plan", "name"]) ||
     safeGet(body, ["data", "subscription", "plan", "slug"]) ||
     safeGet(body, ["data", "subscription", "price", "product", "name"]) ||
