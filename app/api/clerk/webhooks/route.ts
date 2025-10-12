@@ -161,7 +161,11 @@ export async function POST(req: NextRequest) {
   try {
     const decision = decidePlanUpdate(eventType, planName);
     if (!decision.update || !decision.plan) {
-      return NextResponse.json({ received: true, skipped: "no-change", userId });
+      return NextResponse.json({
+        received: true,
+        skipped: "no-change",
+        userId,
+      });
     }
     const client = await getClerkClient();
     await client.users.updateUser(userId, {
@@ -173,7 +177,7 @@ export async function POST(req: NextRequest) {
     revalidatePath("/dashboard/business");
     revalidatePath("/dashboard/invoices");
 
-  return NextResponse.json({ received: true, plan: decision.plan, userId });
+    return NextResponse.json({ received: true, plan: decision.plan, userId });
   } catch (e) {
     console.error("Clerk webhook handling failed", e);
     return new NextResponse("Internal Error", { status: 500 });
