@@ -59,6 +59,30 @@ function extractUserId(body: any): string | undefined {
   return undefined;
 }
 
+function extractEmail(body: any): string | undefined {
+  const candidates: Array<unknown> = [
+    body?.data?.email,
+    body?.data?.email_address,
+    safeGet(body, ["data", "user", "email_address"]),
+    safeGet(body, ["data", "user", "primary_email_address", "email_address"]),
+    // customer/payer shapes
+    safeGet(body, ["data", "customer", "email"]),
+    safeGet(body, ["data", "payer", "email"]),
+    // nested arrays of email addresses
+    safeGet(body, [
+      "data",
+      "user",
+      "email_addresses",
+      0 as any,
+      "email_address",
+    ]),
+  ];
+  for (const c of candidates) {
+    if (typeof c === "string" && c.includes("@")) return c;
+  }
+  return undefined;
+}
+
 function extractPlanName(body: any): string | undefined {
   return (
     // Common Clerk Billing payload shapes
@@ -148,6 +172,21 @@ export async function POST(req: NextRequest) {
       req.nextUrl.searchParams.get("userId") ||
       req.headers.get("x-user-id") ||
       undefined;
+  }
+  // Fallback: resolve by email if available and signature verified
+  if (!userId) {
+    try {
+      const email = extractEmail(body);
+      if (email) {
+        const client = await getClerkClient();
+        const users = await client.users.getUserList({ emailAddress: [email] });
+        if (Array.isArray(users) && users.length === 1) {
+          userId = users[0].id;
+        }
+      }
+    } catch (lookupErr) {
+      // best-effort fallback; continue gracefully
+    }
   }
   const planName = extractPlanName(body);
   if (!userId) {

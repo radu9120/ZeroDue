@@ -1,5 +1,5 @@
 "use server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { createSupabaseClient } from "@/lib/supabase";
 import { CreateBusiness } from "@/schemas/invoiceSchema";
 import { redirect } from "next/navigation";
@@ -9,6 +9,7 @@ import {
   DashboardBusinessStats,
 } from "@/types";
 import { createActivity } from "./userActivity.actions";
+import { normalizePlan, type AppPlan } from "@/lib/utils";
 
 // Simple module-level timestamp to throttle repeated network error logs for dashboard
 let lastDashboardNetworkLog: number | null = null;
@@ -24,6 +25,29 @@ export const createBusiness = async (
   if (!author) redirect("/sign-in");
 
   const supabase = createSupabaseClient();
+  // Enforce plan limits before creating a business
+  try {
+    const user = await currentUser();
+    const plan: AppPlan = normalizePlan((user?.publicMetadata as any)?.plan);
+    // Count existing businesses for this author
+    const { count: bizCount } = await supabase
+      .from("Businesses")
+      .select("id", { count: "exact", head: true })
+      .eq("author", author);
+    const limit =
+      plan === "free_user" ? 1 : plan === "professional" ? 3 : Infinity;
+    if ((bizCount || 0) >= limit) {
+      const msg =
+        plan === "free_user"
+          ? "Free plan limit reached: 1 business max."
+          : plan === "professional"
+          ? "Professional plan limit reached: 3 businesses max."
+          : "Business limit reached.";
+      return { ok: false, error: msg };
+    }
+  } catch (_) {
+    // If anything fails here, continue; better to allow than block due to a transient error
+  }
   // Retry the insert a couple of times in case of transient network errors
   let attemptError: any = null;
   let created: any = null;
