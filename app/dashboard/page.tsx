@@ -8,6 +8,10 @@ import BusinessGrid from "@/components/Dashboard/BusinessGrid";
 import BusinessAvailabilty from "@/components/Dashboard/BusinessAvailability";
 import { AppPlan, normalizePlan } from "@/lib/utils";
 import { getCurrentMonthInvoiceCountForUser } from "@/lib/actions/invoice.actions";
+import PlanWatcher from "../../components/PlanWatcher";
+
+// Always render this page dynamically to reflect plan changes immediately
+export const revalidate = 0;
 
 export default async function Page() {
   const { userId } = await auth();
@@ -47,6 +51,8 @@ export default async function Page() {
           monthlyInvoices={monthlyInvoices}
         />
       </Bounded>
+      {/* Watches plan changes via /api/plan and refreshes the page when it changes */}
+      <PlanWatcher initialPlan={userPlan} />
     </main>
   );
 }
