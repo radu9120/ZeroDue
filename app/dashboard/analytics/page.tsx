@@ -13,6 +13,11 @@ import {
 } from "lucide-react";
 import { SearchParams } from "@/types";
 import { redirect } from "next/navigation";
+import PlanWatcher from "../../../components/PlanWatcher";
+import { currentUser } from "@clerk/nextjs/server";
+import { normalizePlan, type AppPlan } from "@/lib/utils";
+
+export const revalidate = 0;
 
 export default async function AnalyticsPage({
   searchParams,
@@ -67,6 +72,10 @@ export default async function AnalyticsPage({
     currentAngle += angle;
     return slice;
   });
+
+  const user = await currentUser();
+  const metaPlanRaw = (user?.publicMetadata as any)?.plan;
+  const userPlan: AppPlan = normalizePlan(metaPlanRaw || "free_user");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white">
@@ -192,7 +201,7 @@ export default async function AnalyticsPage({
           </div>
         </div>
 
-        {/* Charts Row */}
+  {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Revenue Chart */}
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
@@ -535,6 +544,7 @@ export default async function AnalyticsPage({
             </div>
           </div>
         </div>
+        <PlanWatcher initialPlan={userPlan} />
       </div>
     </div>
   );

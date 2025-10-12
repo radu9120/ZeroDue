@@ -33,6 +33,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import getStatusBadge from "@/components/ui/getStatusBadge";
+import PlanWatcher from "../../../components/PlanWatcher";
+
+export const revalidate = 0;
 
 interface PageProps {
   searchParams: Promise<{
@@ -415,6 +418,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
           </div>
         )}
       </div>
+      <PlanWatcher initialPlan={plan} />
     </main>
   );
 }

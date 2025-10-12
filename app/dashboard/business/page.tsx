@@ -16,6 +16,9 @@ import RecentActivity from "@/components/Business/RecentActivity";
 import { getRecentBusinessActivity } from "@/lib/actions/userActivity.actions";
 import InvoiceAvailability from "@/components/Business/InvoiceAvailability";
 import { normalizePlan, type AppPlan } from "@/lib/utils";
+import PlanWatcher from "../../../components/PlanWatcher";
+
+export const revalidate = 0;
 
 export default async function Page({
   searchParams,
@@ -134,6 +137,7 @@ export default async function Page({
           <RecentActivity recentActivities={recentActivities} />
         )}
       </Bounded>
+      <PlanWatcher initialPlan={userPlan} />
     </main>
   );
 }
