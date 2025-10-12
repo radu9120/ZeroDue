@@ -60,7 +60,9 @@ export default async function NewInvoice({
               </div>
             )}
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-header-text">Create Invoice</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-header-text">
+                Create Invoice
+              </h1>
               <p className="text-secondary-text mt-1">
                 {business.name}
                 {business.email ? ` • ${business.email}` : ""}
