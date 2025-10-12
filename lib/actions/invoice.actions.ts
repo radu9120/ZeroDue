@@ -143,7 +143,8 @@ export const getInvoices = async (
       shipping,
       description,
       currency
-    `
+    `,
+      { count: "exact" }
     )
     .eq("business_id", business_id);
 
@@ -175,4 +176,50 @@ export const getInvoices = async (
     totalCount: count || 0,
     totalPages: Math.ceil((count || 0) / limit),
   };
+};
+
+// Count invoices created by the current user in the current calendar month
+export const getCurrentMonthInvoiceCountForUser = async () => {
+  const { userId: author } = await auth();
+  if (!author) return 0;
+  const supabase = createSupabaseClient();
+
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const firstDayISO = firstDay.toISOString();
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const nextMonthISO = nextMonth.toISOString();
+
+  const { count, error } = await supabase
+    .from("Invoices")
+    .select("id", { count: "exact", head: true })
+    .eq("author", author)
+    .gte("created_at", firstDayISO)
+    .lt("created_at", nextMonthISO);
+
+  if (error) return 0;
+  return count || 0;
+};
+
+// Count invoices for a specific business in the current month
+export const getCurrentMonthInvoiceCountForBusiness = async (
+  business_id: number
+) => {
+  const supabase = createSupabaseClient();
+
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const firstDayISO = firstDay.toISOString();
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const nextMonthISO = nextMonth.toISOString();
+
+  const { count, error } = await supabase
+    .from("Invoices")
+    .select("id", { count: "exact", head: true })
+    .eq("business_id", business_id)
+    .gte("created_at", firstDayISO)
+    .lt("created_at", nextMonthISO);
+
+  if (error) return 0;
+  return count || 0;
 };

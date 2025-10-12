@@ -30,10 +30,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ClerkProvider appearance={{ variables: { colorPrimary: "#3b82f6" } }}>
-          {" "}
+    <ClerkProvider appearance={{ variables: { colorPrimary: "#3b82f6" } }}>
+      <html lang="en">
+        <body className={inter.className}>
           <Analytics />
           <Suspense fallback={null}>
             <Navbar />
@@ -45,8 +44,8 @@ export default function RootLayout({
           <Footer />
           <CookieBanner />
           <SpeedInsights />
-        </ClerkProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -82,7 +82,7 @@ export default function Footer() {
             </h3>
             {[
               { name: "Features", href: "#features" },
-              { name: "Pricing", href: "#pricing" },
+              { name: "Pricing", href: "/upgrade" },
               { name: "Testimonials", href: "#testimonials" },
             ].map((item, i) => (
               <Link

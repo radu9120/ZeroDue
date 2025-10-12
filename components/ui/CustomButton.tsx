@@ -8,10 +8,7 @@ type ButtonProps = {
   target?: "_blank";
   href?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  variant:
-    | "primary"
-    | "secondary"
-    | "ghost"
+  variant: "primary" | "secondary" | "ghost";
   type?: "button" | "submit" | "reset";
   children?: React.ReactNode;
   disabled?: boolean;
@@ -32,76 +29,67 @@ const CustomButton: React.FC<ButtonProps> = ({
   isSubmitting,
 }) => {
   // Define styles for each button variation
-    const buttonStyles: Record<ButtonProps["variant"], string> = {
-        primary: `
+  const buttonStyles: Record<ButtonProps["variant"], string> = {
+    primary: `
             'text-white'
         `,
-        secondary: `
+    secondary: `
             ''
         `,
-        ghost: ""
-    };
+    ghost: "",
+  };
 
-    // Apply styles based on the variant prop
-    const styles = buttonStyles[variant];
+  // Apply styles based on the variant prop
+  const styles = buttonStyles[variant];
 
-    if (href) {
-        return (
-        <Button
-            variant={variant}
-        >
-            <Link
-                href={href}
-                target={target}
-                className={`flex flex-row items-center gap-2 ${styles}`}
-                passHref
-            >
-                {children}
-                {Icon && <Icon className="h-4 w-4" />}
-                <p className="text-sm ">{label}</p>
-            </Link>
-        </Button>
-        );
-    } else if (type) {
-        return (
-        <Button
-            variant={variant}
-            type={type}
-            className={`flex flex-row items-center gap-2 ${styles}`}
-            onClick={onClick}
-            disabled={disabled}
-        >
-
-            {isSubmitting && (
-                <Loader className="animate-spin h-5 w-5 mr-3" />
-            )}
-            {children}
-            {Icon && <Icon className="h-4 w-4" />}
-            {label && (
-                <p className="text-sm ">{label}</p>
-            )}
-            
-
-        </Button>
-        );
-    } 
+  if (href) {
     return (
-            <Button
-                variant={variant}
-                onClick={onClick}
-                className={`flex flex-row items-center gap-2 ${styles}`}
-                disabled={disabled}
-            >
-                {isSubmitting && (
-                <Loader className="animate-spin h-5 w-5 mr-3 " />
-                )}
-                {Icon && <Icon className="h-4 w-4" />}
-                {children}
-                {label && (
-                <p className="text-sm ">{label}</p>
-            )}
-            </Button>
+      <Button variant={variant} disabled={disabled}>
+        <Link
+          href={href}
+          target={target}
+          aria-disabled={disabled ? true : undefined}
+          tabIndex={disabled ? -1 : undefined}
+          className={`flex flex-row items-center gap-2 ${styles} ${
+            disabled ? "pointer-events-none" : ""
+          }`}
+          passHref
+        >
+          {children}
+          {Icon && <Icon className="h-4 w-4" />}
+          <p className="text-sm ">{label}</p>
+        </Link>
+      </Button>
     );
+  } else if (type) {
+    return (
+      <Button
+        variant={variant}
+        type={type}
+        className={`flex flex-row items-center gap-2 ${styles}`}
+        onClick={onClick}
+        disabled={disabled}
+      >
+        {isSubmitting && <Loader className="animate-spin h-5 w-5 mr-3" />}
+        {children}
+        {Icon && <Icon className="h-4 w-4" />}
+        {label && <p className="text-sm ">{label}</p>}
+      </Button>
+    );
+  }
+  return (
+    <Button
+      variant={variant}
+      onClick={onClick}
+      className={`flex flex-row items-center gap-2 ${styles}`}
+      disabled={disabled}
+    >
+      {isSubmitting && <Loader className="animate-spin h-5 w-5 mr-3 " />}
+      {Icon && <Icon className="h-4 w-4" />}
+      {children}
+      {label && <p className="text-sm ">{label}</p>}
+    </Button>
+  );
 };
 
 export default CustomButton;

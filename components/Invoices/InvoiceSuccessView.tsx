@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import {
   CheckCircle,
   Download,
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import CustomButton from "@/components/ui/CustomButton";
 import Link from "next/link";
-import jsPDF from "jspdf";
+import { downloadElementAsPDF } from "@/lib/pdf";
 import Image from "next/image";
 
 export default function InvoiceSuccessView({
@@ -21,6 +22,7 @@ export default function InvoiceSuccessView({
   invoice: any;
   company: any;
 }) {
+  const [showSuccess, setShowSuccess] = React.useState(true);
   // Parse items safely
   let items: any[] = [];
   try {
@@ -49,54 +51,49 @@ export default function InvoiceSuccessView({
     billTo = null;
   }
 
-  const downloadPDF = () => {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.width;
-    const pageHeight = doc.internal.pageSize.height;
-
-    // Company Header Section
-    doc.setFontSize(22);
-    doc.setTextColor(37, 99, 235);
-    doc.text(company.name || "Company Name", 20, 25);
-
-    doc.setFontSize(10);
-    doc.setTextColor(75, 85, 99);
-    doc.text(company.email || "No email provided", 20, 35);
-    doc.text(company.phone || "No phone provided", 20, 40);
-    doc.text(company.address || "No address provided", 20, 45);
-
-    // Invoice Title and Details Box
-    doc.setFontSize(32);
-    doc.setTextColor(31, 41, 55);
-    doc.text("INVOICE", pageWidth - 70, 30);
-
-    doc.setFillColor(249, 250, 251);
-    doc.rect(pageWidth - 85, 35, 75, 25, "F");
-    doc.setDrawColor(229, 231, 235);
-    doc.rect(pageWidth - 85, 35, 75, 25, "S");
-
-    doc.setFontSize(9);
-    doc.setTextColor(55, 65, 81);
-    doc.text(
-      `Invoice #: ${invoice.invoice_number || "N/A"}`,
-      pageWidth - 82,
-      42
-    );
-    doc.text(
-      `Issue Date: ${new Date(invoice.issue_date).toLocaleDateString()}`,
-      pageWidth - 82,
-      48
-    );
-    doc.text(
-      `Due Date: ${new Date(invoice.due_date).toLocaleDateString()}`,
-      pageWidth - 82,
-      54
-    );
-
-    // Rest of PDF generation...
-    // Save the PDF
-    doc.save(`Invoice-${invoice.invoice_number || "unnamed"}.pdf`);
+  const downloadPDF = async () => {
+    const container = document.querySelector(
+      "[data-invoice-preview]"
+    ) as HTMLElement | null;
+    if (!container) return;
+    await downloadElementAsPDF(container, {
+      filename: `Invoice-${invoice.invoice_number || "unnamed"}.pdf`,
+      margin: 12,
+      scale: 2,
+      format: "a4",
+    });
   };
+
+  // Auto-download when navigated with ?download=1
+  React.useEffect(() => {
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("download") === "1") {
+        // Give the preview a tick to render before capturing
+        setTimeout(() => {
+          downloadPDF();
+        }, 350);
+      }
+    } catch (e) {
+      // no-op
+    }
+  }, []);
+
+  // Show success banner only once per invoice id
+  React.useEffect(() => {
+    try {
+      const key = `invoice_${invoice?.id}_shown`;
+      const alreadyShown = localStorage.getItem(key);
+      if (alreadyShown) {
+        setShowSuccess(false);
+      } else {
+        setShowSuccess(true);
+        localStorage.setItem(key, "1");
+      }
+    } catch (_) {
+      // ignore storage errors
+    }
+  }, [invoice?.id]);
 
   return (
     <main className="relative w-full min-h-[100vh]">
@@ -104,25 +101,27 @@ export default function InvoiceSuccessView({
       <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-green-100/40 mix-blend-multiply blur-3xl"></div>
 
       <div className="relative z-10 max-w-6xl mx-auto p-6 space-y-8">
-        {/* Success Header */}
-        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-xl">
-          <CardContent className="p-8">
-            <div className="flex items-center gap-6">
-              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center">
-                <CheckCircle className="h-10 w-10 text-green-600" />
+        {/* Success Header - show only first time for this invoice */}
+        {showSuccess && (
+          <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-xl">
+            <CardContent className="p-8">
+              <div className="flex items-center gap-6">
+                <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center">
+                  <CheckCircle className="h-10 w-10 text-green-600" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-green-800 mb-2">
+                    Invoice Created Successfully!
+                  </h1>
+                  <p className="text-green-700 text-lg">
+                    Invoice #{invoice.invoice_number || "N/A"} has been saved
+                    and is ready to use.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-green-800 mb-2">
-                  Invoice Created Successfully!
-                </h1>
-                <p className="text-green-700 text-lg">
-                  Invoice #{invoice.invoice_number || "N/A"} has been saved and
-                  is ready to use.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Invoice Preview */}
         <Card className="shadow-2xl border-0">
@@ -151,7 +150,7 @@ export default function InvoiceSuccessView({
             </div>
           </CardHeader>
 
-          <CardContent className="p-8 bg-white">
+          <CardContent className="p-8 bg-white" data-invoice-preview>
             {/* Company & Client Information - Matching new InvoiceForm structure */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
               {/* From - Company Information */}

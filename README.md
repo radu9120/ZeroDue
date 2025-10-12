@@ -34,3 +34,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Environment variables
+
+Create a `.env.local` file at the project root (gitignored) and add the required secrets:
+
+```
+# Clerk Webhook secret for verifying Svix signatures
+CLERK_WEBHOOK_SECRET=your_webhook_secret_here
+# Optional: skip verification for local testing (do NOT enable in production)
+SKIP_WEBHOOK_VERIFY=true
+```
+
+Note: Do not commit real secrets. In production (e.g., Vercel), set the same variables in your project settings. The webhook endpoint at `POST /api/clerk/webhooks` verifies requests using `CLERK_WEBHOOK_SECRET`.

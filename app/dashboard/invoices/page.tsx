@@ -1,6 +1,12 @@
 import React from "react";
+import { cookies } from "next/headers";
+import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { getInvoices } from "@/lib/actions/invoice.actions";
+import { normalizePlan, type AppPlan } from "@/lib/utils";
+import {
+  getCurrentMonthInvoiceCountForBusiness,
+  getInvoices,
+} from "@/lib/actions/invoice.actions";
 import { getBusiness } from "@/lib/actions/business.actions";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,21 +56,39 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
     redirect("/dashboard");
   }
 
-  const [business, invoicesData] = await Promise.all([
-    getBusiness({ business_id: parseInt(businessId) }),
-    getInvoices(parseInt(businessId), {
-      search: searchQuery,
-      status: statusFilter,
-      page: currentPage,
-      limit: 12,
-    }),
-  ]);
+  const [business, invoicesData, allInvoicesCount, monthCount] =
+    await Promise.all([
+      getBusiness({ business_id: parseInt(businessId) }),
+      getInvoices(parseInt(businessId), {
+        search: searchQuery,
+        status: statusFilter,
+        page: currentPage,
+        limit: 12,
+      }),
+      // Lightweight count-only fetch ignoring filters to decide plan gating
+      getInvoices(parseInt(businessId), {
+        search: "",
+        status: "all",
+        page: 1,
+        limit: 1,
+      }),
+      getCurrentMonthInvoiceCountForBusiness(parseInt(businessId)),
+    ]);
 
   if (!business) {
     redirect("/dashboard");
   }
 
   const { invoices, totalCount, totalPages } = invoicesData;
+  const totalInvoicesAll = allInvoicesCount?.totalCount || 0;
+  const user = await currentUser();
+  const metaPlanRaw = (user?.publicMetadata as any)?.plan;
+  const plan: AppPlan = normalizePlan(metaPlanRaw || "free_user");
+  const isFreePlan = plan === "free_user";
+  const isProPlan = plan === "professional";
+  const proMonthlyInvoiceLimit = 10;
+  const reachedProMonthlyLimit =
+    isProPlan && (monthCount || 0) >= proMonthlyInvoiceLimit;
 
   // Calculate summary stats
   const stats = {
@@ -107,13 +131,15 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
               </p>
             </div>
           </div>
-          <Link href={`/dashboard/invoices/new?business_id=${businessId}`}>
-            <CustomButton
-              label="Create Invoice"
-              icon={Plus}
-              variant="primary"
-            />
-          </Link>
+          <CustomButton
+            label="Create Invoice"
+            icon={Plus}
+            variant="primary"
+            href={`/dashboard/invoices/new?business_id=${businessId}`}
+            disabled={
+              (isFreePlan && totalInvoicesAll >= 1) || reachedProMonthlyLimit
+            }
+          />
         </div>
 
         {/* Stats Cards */}
@@ -326,20 +352,18 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                           View
                         </Button>
                       </Link>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="hover:bg-gray-50"
+                      <Link
+                        href={`/dashboard/invoices/success?business_id=${businessId}&invoice_id=${invoice.id}&download=1`}
+                        aria-label="Download invoice PDF"
                       >
-                        <Download className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="hover:bg-gray-50"
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="hover:bg-gray-50"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>

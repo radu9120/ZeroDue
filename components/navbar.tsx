@@ -88,7 +88,7 @@ export default function Navbar() {
                 Features
               </Link>
               <Link
-                href="#pricing"
+                href="/upgrade"
                 className="text-primary-text hover:text-primary transition-colors font-medium"
               >
                 Pricing
@@ -114,31 +114,28 @@ export default function Navbar() {
               >
                 Dashboard
               </Link>
-              {businessId ? (
-                <>
-                  <Link
-                    href={`/dashboard/clients?business_id=${businessId}`}
-                    className="text-primary-text hover:text-primary transition-colors font-medium"
-                  >
-                    Clients
-                  </Link>
-                  <Link
-                    href={`/dashboard/invoices?business_id=${businessId}`}
-                    className="text-primary-text hover:text-primary transition-colors font-medium"
-                  >
-                    Invoices
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <span className="text-gray-400 font-medium cursor-not-allowed">
-                    Clients
-                  </span>
-                  <span className="text-gray-400 font-medium cursor-not-allowed">
-                    Invoices
-                  </span>
-                </>
-              )}
+              <>
+                <Link
+                  href={
+                    businessId
+                      ? `/dashboard/clients?business_id=${businessId}`
+                      : "/dashboard"
+                  }
+                  className="text-primary-text hover:text-primary transition-colors font-medium"
+                >
+                  Clients
+                </Link>
+                <Link
+                  href={
+                    businessId
+                      ? `/dashboard/invoices?business_id=${businessId}`
+                      : "/dashboard"
+                  }
+                  className="text-primary-text hover:text-primary transition-colors font-medium"
+                >
+                  Invoices
+                </Link>
+              </>
               <Link
                 href="/dashboard/settings"
                 className="text-primary-text hover:text-primary transition-colors font-medium"
@@ -239,7 +236,7 @@ export default function Navbar() {
                       Features
                     </Link>
                     <Link
-                      href="#pricing"
+                      href="/upgrade"
                       className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
@@ -269,33 +266,28 @@ export default function Navbar() {
                     >
                       Dashboard
                     </Link>
-                    {businessId ? (
-                      <>
-                        <Link
-                          href={`/dashboard/clients?business_id=${businessId}`}
-                          className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
-                          onClick={closeMenu}
-                        >
-                          Clients
-                        </Link>
-                        <Link
-                          href={`/dashboard/invoices?business_id=${businessId}`}
-                          className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
-                          onClick={closeMenu}
-                        >
-                          Invoices
-                        </Link>
-                      </>
-                    ) : (
-                      <>
-                        <span className="px-4 py-3 text-gray-400 font-medium cursor-not-allowed">
-                          Clients
-                        </span>
-                        <span className="px-4 py-3 text-gray-400 font-medium cursor-not-allowed">
-                          Invoices
-                        </span>
-                      </>
-                    )}
+                    <Link
+                      href={
+                        businessId
+                          ? `/dashboard/clients?business_id=${businessId}`
+                          : "/dashboard"
+                      }
+                      className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
+                      onClick={closeMenu}
+                    >
+                      Clients
+                    </Link>
+                    <Link
+                      href={
+                        businessId
+                          ? `/dashboard/invoices?business_id=${businessId}`
+                          : "/dashboard"
+                      }
+                      className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
+                      onClick={closeMenu}
+                    >
+                      Invoices
+                    </Link>
                     <Link
                       href="/dashboard/settings"
                       className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"

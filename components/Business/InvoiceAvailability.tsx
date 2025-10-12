@@ -5,7 +5,7 @@ import { Crown } from "lucide-react";
 import { useRouter } from "next/navigation"; // Import useRouter
 
 interface PlanLimitationsProps {
-  userPlan: "free" | "pro" | "enterprise";
+  userPlan: "free_user" | "professional" | "enterprise";
   invoicesLength: number;
   companiesLength: number; // Add companiesLength prop
 }
@@ -22,7 +22,7 @@ export default function InvoiceAvailability({
   const router = useRouter(); // Initialize router
 
   // This component is only for users on the "free" plan
-  if (userPlan !== "free") {
+  if (userPlan !== "free_user") {
     return null;
   }
 
@@ -30,7 +30,7 @@ export default function InvoiceAvailability({
   const hasReachedCompanyLimit = companiesLength >= FREE_PLAN_COMPANY_LIMIT;
 
   const handleUpgradeClick = () => {
-    router.push("/pricing"); // Navigate to your pricing page
+    router.push("/upgrade");
   };
 
   return (

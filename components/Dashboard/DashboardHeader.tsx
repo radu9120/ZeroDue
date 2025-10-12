@@ -7,32 +7,24 @@ export default function DashboardHeader({
   userPlan,
   totalBusinesses,
 }: {
-  userPlan: string;
+  userPlan: "free_user" | "professional" | "enterprise";
   totalBusinesses: number;
 }) {
-  const isFreePlan = userPlan === "free";
-  // Define paid plans based on your Clerk plan identifiers.
-  // For simplicity, assuming any plan not 'free' is a paid plan.
-  const isPaidPlan = !isFreePlan;
+  const isFreePlan = userPlan === "free_user";
+  const isProPlan = userPlan === "professional";
+  const isPaidPlan = !isFreePlan; // professional or enterprise
 
-  const freePlanCompanyLimit = 1; // Your defined limit for the free plan
+  // Company limits per plan
+  const companyLimit = isFreePlan ? 1 : isProPlan ? 3 : Infinity;
 
-  // True if on free plan and at or over the limit
-  const hasReachedFreeLimit =
-    isFreePlan && totalBusinesses >= freePlanCompanyLimit;
-  // True if on free plan and under the limit
-  const canCreateOnFreePlan =
-    isFreePlan && totalBusinesses < freePlanCompanyLimit;
+  const reachedCompanyLimit = totalBusinesses >= companyLimit;
+  const canCreateCompany = totalBusinesses < companyLimit;
 
-  // Determine if the "New Company" button should be shown in the header:
-  // - User is on a paid plan (implying they can create more)
-  // - OR User is on a free plan and hasn't reached their limit
-  // AND - There is at least one business already (BusinessGrid handles the "Create First" prompt)
-  const showNewCompanyButtonInHeader =
-    (isPaidPlan || canCreateOnFreePlan) && totalBusinesses > 0;
+  // Show "New Company" in header only when user still has capacity and there is at least one company shown
+  const showNewCompanyButtonInHeader = canCreateCompany && totalBusinesses > 0;
 
-  // Determine if the "Limit Reached" warning and "Upgrade" button should be shown
-  const showUpgradeElements = hasReachedFreeLimit;
+  // Show upgrade only when on free and at limit (pro has own limit but typically upgrade beyond pro isn't specified here)
+  const showUpgradeElements = isFreePlan && reachedCompanyLimit;
 
   const handleBusinessCreated = () => {
     // Refresh will be handled by the modal closing and re-rendering
@@ -40,7 +32,7 @@ export default function DashboardHeader({
   };
 
   const handleUpgradeClick = () => {
-    window.location.href = "/pricing";
+    window.location.href = "/upgrade";
   };
 
   return (
@@ -75,6 +67,17 @@ export default function DashboardHeader({
                 <span>Upgrade Plan</span>
               </button>
             </>
+          )}
+
+          {/* Manage Plan for paid users */}
+          {isPaidPlan && (
+            <button
+              onClick={() => (window.location.href = "/upgrade")}
+              className="flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-white px-4 py-2 rounded-lg hover:from-primary/90 hover:to-accent/90 transition-all whitespace-nowrap text-sm font-medium"
+            >
+              <Crown className="h-4 w-4" />
+              <span>Manage Plan</span>
+            </button>
           )}
 
           {/* Show "New Company" button if conditions are met and upgrade elements are not shown (upgrade takes precedence) */}

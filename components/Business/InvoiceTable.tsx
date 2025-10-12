@@ -570,7 +570,10 @@ export default function InvoiceTable({
         pageWidth - 100,
         70
       );
-      doc.text(`Status: ${invoice.status.toUpperCase()}`, pageWidth - 100, 80);
+      const statusLabel = invoice?.status
+        ? String(invoice.status).toUpperCase()
+        : "N/A";
+      doc.text(`Status: ${statusLabel}`, pageWidth - 100, 80);
 
       // Bill To section
       if (billTo) {
@@ -707,9 +710,20 @@ export default function InvoiceTable({
     );
   };
 
-  // Format date helper
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
+  // Safe date formatter that tolerates null/invalid inputs
+  const formatDate = (value: unknown) => {
+    if (!value) return "N/A";
+    let d: Date;
+    if (value instanceof Date) d = value;
+    else if (typeof value === "string" || typeof value === "number")
+      d = new Date(value);
+    else d = new Date(String(value));
+    if (isNaN(d.getTime())) return "N/A";
+    return d.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   };
 
   return (
@@ -767,7 +781,7 @@ export default function InvoiceTable({
                         {invoice.total}
                       </p>
                     </div>
-                    <div>{getStatusBadge(invoice.status)}</div>
+                    <div>{getStatusBadge(invoice?.status || "draft")}</div>
                     <div>
                       <p className="text-header-text">
                         {invoice.issue_date

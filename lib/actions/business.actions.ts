@@ -84,27 +84,15 @@ export const createBusiness = async (
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length) {
-            console.info(
-              "[createBusiness] REST fallback succeeded after supabase-js failure"
-            );
             created = data[0];
           } else {
-            console.warn(
-              "[createBusiness] REST fallback returned empty representation"
-            );
+            // empty representation
           }
         } else {
-          const txt = await res.text();
-          console.warn(
-            "[createBusiness] REST fallback failed",
-            JSON.stringify({ status: res.status, body: txt.slice(0, 400) })
-          );
+          // ignore non-OK
         }
       } catch (restErr: any) {
-        console.warn(
-          "[createBusiness] REST fallback error",
-          JSON.stringify({ message: String(restErr?.message || restErr) })
-        );
+        // ignore
       }
     }
     if (created) {
@@ -189,41 +177,6 @@ export const getUserBusinesses = async () => {
   }
 
   const supabase = createSupabaseClient();
-  // === TEMP DIAGNOSTICS START ===
-  try {
-    const { data: rawAll, error: rawErr } = await supabase
-      .from("Businesses")
-      .select("id, name, author, created_at")
-      .order("created_at", { ascending: false });
-    console.info(
-      "[diag:getUserBusinesses]",
-      JSON.stringify(
-        {
-          author,
-          url_host: (() => {
-            try {
-              return process.env.NEXT_PUBLIC_SUPABASE_URL
-                ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).host
-                : null;
-            } catch (_) {
-              return "invalid-url";
-            }
-          })(),
-          anon_len: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length || 0,
-          total_rows: rawAll?.length || 0,
-          matching_rows: (rawAll || []).filter((r: any) => r.author === author)
-            .length,
-          authors_present: Array.from(
-            new Set((rawAll || []).map((r: any) => r.author || null))
-          ).slice(0, 12),
-          raw_error: rawErr ? rawErr.message : null,
-        },
-        null,
-        2
-      )
-    );
-  } catch (_) {}
-  // === TEMP DIAGNOSTICS END ===
 
   const { data, error } = await supabase
     .from("Businesses")

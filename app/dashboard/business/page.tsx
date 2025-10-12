@@ -2,16 +2,20 @@ import BusinessDashboard from "@/components/Business/BusinessDashboard";
 import Bounded from "@/components/ui/bounded";
 import { getBusiness } from "@/lib/actions/business.actions";
 import { BusinessDashboardPageProps, UserActivityLog } from "@/types";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import { getBusinessStats } from "../../../lib/actions/business.actions";
-import { getInvoicesList } from "@/lib/actions/invoice.actions";
+import {
+  getCurrentMonthInvoiceCountForBusiness,
+  getInvoicesList,
+} from "@/lib/actions/invoice.actions";
 import BusinessStats from "@/components/Business/BusinessStats";
 import QuickActions from "@/components/Business/QuickActions";
 import InvoiceTable from "@/components/Business/InvoiceTable";
 import RecentActivity from "@/components/Business/RecentActivity";
 import { getRecentBusinessActivity } from "@/lib/actions/userActivity.actions";
 import InvoiceAvailability from "@/components/Business/InvoiceAvailability";
+import { normalizePlan, type AppPlan } from "@/lib/utils";
 
 export default async function Page({
   searchParams,
@@ -21,7 +25,9 @@ export default async function Page({
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
-  const userPlan = "free";
+  const user = await currentUser();
+  const metaPlanRaw = (user?.publicMetadata as any)?.plan;
+  const userPlan: AppPlan = normalizePlan(metaPlanRaw || "free_user");
   const searchVars = await searchParams;
   const {
     business_id,
@@ -74,6 +80,26 @@ export default async function Page({
     return notFound();
   }
 
+  // Fetch counts to enforce plan limits (free total and pro monthly)
+  let totalInvoicesAll = 0;
+  let monthCount = 0;
+  try {
+    const countOnly = await (
+      await import("@/lib/actions/invoice.actions")
+    ).getInvoices(Number(business_id), {
+      search: "",
+      status: "all",
+      page: 1,
+      limit: 1,
+    });
+    totalInvoicesAll = countOnly?.totalCount || 0;
+    monthCount = await getCurrentMonthInvoiceCountForBusiness(
+      Number(business_id)
+    );
+  } catch (e) {
+    totalInvoicesAll = Array.isArray(invoices) ? invoices.length : 0; // fallback
+  }
+
   let recentActivities: UserActivityLog[] = [];
 
   try {
@@ -88,12 +114,19 @@ export default async function Page({
   return (
     <main>
       <Bounded>
-        <BusinessDashboard business={business} userPlan={userPlan} />
+        <BusinessDashboard
+          business={business}
+          userPlan={userPlan}
+          createDisabled={
+            (userPlan === "free_user" && totalInvoicesAll >= 1) ||
+            (userPlan === "professional" && monthCount >= 10)
+          }
+        />
         <BusinessStats statistic={businessStats} />
         <QuickActions companyId={business_id} />
         <InvoiceAvailability
-          userPlan={"free"}
-          invoicesLength={Array.isArray(invoices) ? invoices.length : 0}
+          userPlan={userPlan}
+          invoicesLength={totalInvoicesAll}
           companiesLength={1}
         />
         <InvoiceTable invoices={invoices} business_id={business_id} />

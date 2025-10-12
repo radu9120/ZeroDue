@@ -37,13 +37,14 @@ export default function CustomModal({
     setIsModalOpen(false);
   };
 
-  // Clone children and pass closeModal prop
+  // Clone children and pass closeModal prop only to React components, not DOM elements
   const childrenWithProps = React.Children.map(children, (child) => {
-    if (React.isValidElement(child)) {
-      // @ts-ignore // Bypassing type check if child doesn't explicitly define closeModal
-      return React.cloneElement(child, { closeModal: closeModal });
-    }
-    return child;
+    if (!React.isValidElement(child)) return child;
+    const childType: any = child.type as any;
+    const isDOMElement = typeof childType === "string"; // e.g. 'div', 'section'
+    if (isDOMElement) return child; // don't inject unknown props into DOM
+    // @ts-ignore allow passing closeModal to custom components
+    return React.cloneElement(child, { closeModal });
   });
 
   return (
