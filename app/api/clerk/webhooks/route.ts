@@ -37,16 +37,26 @@ function safeGet<T = unknown>(obj: any, path: string[]): T | undefined {
 }
 
 function extractUserId(body: any): string | undefined {
-  return (
-    body?.data?.user_id ||
-    body?.data?.userId ||
-    body?.data?.user?.id ||
-    safeGet(body, ["data", "payer", "user_id"]) ||
-    body?.actor?.id ||
-    safeGet(body, ["data", "subscription", "user_id"]) ||
-    safeGet(body, ["data", "customer", "user_id"]) ||
-    undefined
-  );
+  const candidates: Array<unknown> = [
+    body?.data?.user_id,
+    body?.data?.userId,
+    body?.data?.user?.id,
+    body?.actor?.id,
+    safeGet(body, ["data", "subscription", "user_id"]),
+    safeGet(body, ["data", "customer", "user_id"]),
+    // Payer-based shapes
+    safeGet(body, ["data", "payer", "user_id"]),
+    safeGet(body, ["data", "payer_id"]),
+    safeGet(body, ["data", "payer", "id"]),
+    safeGet(body, ["data", "subscription", "payer_id"]),
+    safeGet(body, ["data", "subscription", "payer", "id"]),
+    safeGet(body, ["data", "customer", "id"]),
+  ];
+
+  for (const c of candidates) {
+    if (typeof c === "string" && c.startsWith("user_")) return c;
+  }
+  return undefined;
 }
 
 function extractPlanName(body: any): string | undefined {
