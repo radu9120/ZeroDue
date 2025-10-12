@@ -5,7 +5,8 @@ import { CreateInvoice } from "@/schemas/invoiceSchema";
 import { BusinessDashboardPageProps } from "@/types";
 import { createActivity } from "./userActivity.actions";
 import { redirect } from "next/navigation";
-import { normalizePlan, type AppPlan } from "@/lib/utils";
+import { type AppPlan } from "@/lib/utils";
+import { getCurrentPlan } from "@/lib/plan";
 
 export const createInvoice = async (formData: CreateInvoice) => {
   const { userId: author } = await auth();
@@ -15,8 +16,7 @@ export const createInvoice = async (formData: CreateInvoice) => {
 
   // Enforce plan limits before insert
   try {
-    const user = await currentUser();
-    const plan: AppPlan = normalizePlan((user?.publicMetadata as any)?.plan);
+    const plan: AppPlan = await getCurrentPlan();
     if (plan === "free_user") {
       // Total invoices created by this author, any time
       const { count } = await supabase
@@ -25,7 +25,7 @@ export const createInvoice = async (formData: CreateInvoice) => {
         .eq("author", author);
       if ((count || 0) >= 1) {
         throw new Error(
-          "Free plan limit: only 1 invoice allowed. Upgrade to create more."
+          "Free plan limit: only 2 invoice allowed. Upgrade to create more."
         );
       }
     } else if (plan === "professional") {

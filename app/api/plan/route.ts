@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
-import { normalizePlan } from "@/lib/utils";
+import { getCurrentPlan } from "@/lib/plan";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
     const user = await currentUser();
-    const raw = (user?.publicMetadata as any)?.plan || "free_user";
-    const plan = normalizePlan(raw);
+    const plan = await getCurrentPlan();
     return NextResponse.json({ plan, userId: user?.id || null });
   } catch (e) {
     return NextResponse.json(

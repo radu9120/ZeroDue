@@ -2,7 +2,7 @@ import BusinessDashboard from "@/components/Business/BusinessDashboard";
 import Bounded from "@/components/ui/bounded";
 import { getBusiness } from "@/lib/actions/business.actions";
 import { BusinessDashboardPageProps, UserActivityLog } from "@/types";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import { getBusinessStats } from "../../../lib/actions/business.actions";
 import {
@@ -15,8 +15,9 @@ import InvoiceTable from "@/components/Business/InvoiceTable";
 import RecentActivity from "@/components/Business/RecentActivity";
 import { getRecentBusinessActivity } from "@/lib/actions/userActivity.actions";
 import InvoiceAvailability from "@/components/Business/InvoiceAvailability";
-import { normalizePlan, type AppPlan } from "@/lib/utils";
+import { type AppPlan } from "@/lib/utils";
 import PlanWatcher from "../../../components/PlanWatcher";
+import { getCurrentPlan } from "@/lib/plan";
 
 export const revalidate = 0;
 
@@ -28,9 +29,7 @@ export default async function Page({
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
-  const user = await currentUser();
-  const metaPlanRaw = (user?.publicMetadata as any)?.plan;
-  const userPlan: AppPlan = normalizePlan(metaPlanRaw || "free_user");
+  const userPlan: AppPlan = await getCurrentPlan();
   const searchVars = await searchParams;
   const {
     business_id,

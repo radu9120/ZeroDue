@@ -1,6 +1,7 @@
 import React from "react";
 import { cookies } from "next/headers";
 import { currentUser } from "@clerk/nextjs/server";
+import { getCurrentPlan } from "@/lib/plan";
 import { redirect } from "next/navigation";
 import { normalizePlan, type AppPlan } from "@/lib/utils";
 import {
@@ -85,8 +86,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
   const { invoices, totalCount, totalPages } = invoicesData;
   const totalInvoicesAll = allInvoicesCount?.totalCount || 0;
   const user = await currentUser();
-  const metaPlanRaw = (user?.publicMetadata as any)?.plan;
-  const plan: AppPlan = normalizePlan(metaPlanRaw || "free_user");
+  const plan: AppPlan = await getCurrentPlan();
   const isFreePlan = plan === "free_user";
   const isProPlan = plan === "professional";
   const proMonthlyInvoiceLimit = 10;

@@ -1,4 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import { getDashboardStats } from "@/lib/actions/business.actions";
 import { DashboardBusinessStats } from "@/types";
@@ -6,9 +6,10 @@ import Bounded from "@/components/ui/bounded";
 import DashboardHeader from "@/components/Dashboard/DashboardHeader";
 import BusinessGrid from "@/components/Dashboard/BusinessGrid";
 import BusinessAvailabilty from "@/components/Dashboard/BusinessAvailability";
-import { AppPlan, normalizePlan } from "@/lib/utils";
+import { AppPlan } from "@/lib/utils";
 import { getCurrentMonthInvoiceCountForUser } from "@/lib/actions/invoice.actions";
 import PlanWatcher from "../../components/PlanWatcher";
+import { getCurrentPlan } from "@/lib/plan";
 
 // Always render this page dynamically to reflect plan changes immediately
 export const revalidate = 0;
@@ -26,10 +27,8 @@ export default async function Page() {
     return notFound();
   }
 
-  // Resolve plan from Clerk metadata only (single source of truth)
-  const user = await currentUser();
-  const metaPlanRaw = (user?.publicMetadata as any)?.plan;
-  const userPlan: AppPlan = normalizePlan(metaPlanRaw || "free_user");
+  // Resolve plan using Clerk has() with fallback
+  const userPlan: AppPlan = await getCurrentPlan();
 
   const monthlyInvoices = await getCurrentMonthInvoiceCountForUser();
 

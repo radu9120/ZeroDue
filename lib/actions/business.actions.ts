@@ -9,7 +9,8 @@ import {
   DashboardBusinessStats,
 } from "@/types";
 import { createActivity } from "./userActivity.actions";
-import { normalizePlan, type AppPlan } from "@/lib/utils";
+import { type AppPlan } from "@/lib/utils";
+import { getCurrentPlan } from "@/lib/plan";
 
 // Simple module-level timestamp to throttle repeated network error logs for dashboard
 let lastDashboardNetworkLog: number | null = null;
@@ -27,8 +28,7 @@ export const createBusiness = async (
   const supabase = createSupabaseClient();
   // Enforce plan limits before creating a business
   try {
-    const user = await currentUser();
-    const plan: AppPlan = normalizePlan((user?.publicMetadata as any)?.plan);
+    const plan: AppPlan = await getCurrentPlan();
     // Count existing businesses for this author
     const { count: bizCount } = await supabase
       .from("Businesses")

@@ -15,7 +15,8 @@ import { SearchParams } from "@/types";
 import { redirect } from "next/navigation";
 import PlanWatcher from "../../../components/PlanWatcher";
 import { currentUser } from "@clerk/nextjs/server";
-import { normalizePlan, type AppPlan } from "@/lib/utils";
+import { type AppPlan } from "@/lib/utils";
+import { getCurrentPlan } from "@/lib/plan";
 
 export const revalidate = 0;
 
@@ -70,9 +71,7 @@ export default async function AnalyticsPage({
     return slice;
   });
 
-  const user = await currentUser();
-  const metaPlanRaw = (user?.publicMetadata as any)?.plan;
-  const userPlan: AppPlan = normalizePlan(metaPlanRaw || "free_user");
+  const userPlan: AppPlan = await getCurrentPlan();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white">
