@@ -11,6 +11,9 @@ export async function GET() {
     const plan = normalizePlan(raw);
     return NextResponse.json({ plan, userId: user?.id || null });
   } catch (e) {
-    return NextResponse.json({ plan: "free_user", userId: null }, { status: 200 });
+    return NextResponse.json(
+      { plan: "free_user", userId: null },
+      { status: 200 }
+    );
   }
 }
