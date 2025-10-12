@@ -24,13 +24,10 @@ export default async function AnalyticsPage({
 }: {
   searchParams: Promise<SearchParams>; // Make searchParams a Promise it was failing deployment because it was not awaited
 }) {
-
   const searchVal = await searchParams;
-  const business_id = searchVal.business_id
+  const business_id = searchVal.business_id;
 
-  if (!business_id) redirect('/dashboard')
-  
-  
+  if (!business_id) redirect("/dashboard");
 
   // const [selectedPeriod, setSelectedPeriod] = useState("30");
 
@@ -201,7 +198,7 @@ export default async function AnalyticsPage({
           </div>
         </div>
 
-  {/* Charts Row */}
+        {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Revenue Chart */}
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">

@@ -9,8 +9,8 @@ export async function GET() {
     const user = await currentUser();
     const raw = (user?.publicMetadata as any)?.plan || "free_user";
     const plan = normalizePlan(raw);
-    return NextResponse.json({ plan });
+    return NextResponse.json({ plan, userId: user?.id || null });
   } catch (e) {
-    return NextResponse.json({ plan: "free_user" }, { status: 200 });
+    return NextResponse.json({ plan: "free_user", userId: null }, { status: 200 });
   }
 }
