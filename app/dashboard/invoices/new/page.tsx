@@ -5,6 +5,9 @@ import { getClient, getClients } from "@/lib/actions/client.actions";
 import { ClientType, NewInvoicePageProps } from "@/types";
 import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default async function NewInvoice({
   searchParams,
@@ -34,7 +37,38 @@ export default async function NewInvoice({
       <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/40 mix-blend-multiply blur-3xl"></div>
       <div className="absolute bottom-20 left-10 md:left-40 w-48 md:w-72 h-48 md:h-72 rounded-full bg-cyan-100/30 mix-blend-multiply blur-3xl"></div>
       <Bounded className="relative w-full z-10">
-        <h1 className="text-5xl text-center">Invoice Generator</h1>
+        <div className="mb-6">
+          <Link
+            href={`/dashboard/invoices?business_id=${businessId}`}
+            className="inline-flex items-center text-primary hover:text-primary-dark transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" /> Back to Invoices
+          </Link>
+        </div>
+
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-blue-100 shadow-xl p-6 mb-6">
+          <div className="flex items-center gap-5">
+            {business.logo && (
+              <div className="w-20 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 flex items-center justify-center">
+                <Image
+                  src={business.logo}
+                  alt={`${business.name} logo`}
+                  width={160}
+                  height={96}
+                  className="w-full h-full object-contain p-2"
+                />
+              </div>
+            )}
+            <div className="flex-1">
+              <h1 className="text-2xl md:text-3xl font-bold text-header-text">Create Invoice</h1>
+              <p className="text-secondary-text mt-1">
+                {business.name}
+                {business.email ? ` • ${business.email}` : ""}
+              </p>
+            </div>
+          </div>
+        </div>
+
         <article className="bg-white rounded-xl mx-auto shadow-2xl max-w-4xl w-full p-6">
           <InvoiceForm company_data={business} clients={clients} />
         </article>

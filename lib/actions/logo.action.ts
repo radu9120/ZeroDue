@@ -1,7 +1,7 @@
 "use server";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { createSupabaseClient } from "../supabase";
+import { createSupabaseAdminClient } from "../supabase";
 import { v4 as uuidv4 } from "uuid";
 
 export async function uploadFileAndGetUrl(file: File): Promise<string> {
@@ -10,16 +10,18 @@ export async function uploadFileAndGetUrl(file: File): Promise<string> {
     redirect("/sign-in");
   }
 
-  const supabase = createSupabaseClient();
+  const supabase = createSupabaseAdminClient();
 
   const fileExtension = file.name.split(".").pop();
   const uniqueFileName = `${Date.now()}-${uuidv4()}-${Date.now()}.${fileExtension}`;
+  // Store files within a per-user folder to align with common RLS policies
+  const objectKey = `${author}/${uniqueFileName}`;
 
-  console.log(`Attempting to upload file: ${uniqueFileName}`);
+  console.log(`Attempting to upload file: ${objectKey}`);
 
   const { data: uploadData, error: uploadError } = await supabase.storage
     .from("logos")
-    .upload(uniqueFileName, file, {
+    .upload(objectKey, file, {
       cacheControl: "3600",
       upsert: false,
       contentType: file.type,
@@ -32,7 +34,7 @@ export async function uploadFileAndGetUrl(file: File): Promise<string> {
 
   const { data: publicUrlData } = supabase.storage
     .from("logos")
-    .getPublicUrl(uniqueFileName);
+    .getPublicUrl(objectKey);
 
   if (!publicUrlData?.publicUrl) {
     throw new Error("Failed to retrieve public URL for the uploaded file.");
@@ -57,7 +59,7 @@ export async function updateFileInBucket(
     redirect("/sign-in");
   }
 
-  const supabase = createSupabaseClient();
+  const supabase = createSupabaseAdminClient();
 
   // Parse URL to extract filename - handle both possible URL formats
   let fileName: string;
@@ -123,7 +125,7 @@ export async function deleteFileFromBucket(publicUrl: string): Promise<void> {
     redirect("/sign-in");
   }
 
-  const supabase = createSupabaseClient();
+  const supabase = createSupabaseAdminClient();
 
   // Parse URL to extract filename - handle both possible URL formats
   let fileName: string;

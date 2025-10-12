@@ -20,6 +20,7 @@ import { createBusiness } from "@/lib/actions/business.actions";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import type { AppPlan } from "@/lib/utils";
 
 interface BusinessFormProps {
   form: UseFormReturn<z.infer<typeof companySchema>>;
@@ -41,7 +42,26 @@ export default function BusinessForm({
   onCancel,
 }: BusinessFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const userPlan = "free";
+  const [userPlan, setUserPlan] = useState<AppPlan>("free_user");
+
+  // Fetch current plan dynamically so the modal shows accurate limits
+  useEffect(() => {
+    let cancelled = false;
+    async function loadPlan() {
+      try {
+        const res = await fetch("/api/plan", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled && data?.plan) setUserPlan(data.plan as AppPlan);
+      } catch (_) {
+        // ignore errors; default remains free_user
+      }
+    }
+    loadPlan();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     // More robust validation
@@ -248,17 +268,14 @@ export default function BusinessForm({
         {/* Plan Information */}
         <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
           <h4 className="font-medium text-primary mb-2">
-            {userPlan === "free" ? "Free Plan Includes:" : "Pro Plan Includes:"}
+            {userPlan === "enterprise"
+              ? "Enterprise Plan Includes:"
+              : userPlan === "professional"
+              ? "Professional Plan Includes:"
+              : "Free Plan Includes:"}
           </h4>
           <ul className="text-sm text-secondary-text space-y-1">
-            {userPlan === "free" ? (
-              <>
-                <li>• 1 company</li>
-                <li>• Up to 1 invoices</li>
-                <li>• Basic client management</li>
-                <li>• Email support</li>
-              </>
-            ) : (
+            {userPlan === "enterprise" && (
               <>
                 <li>• Unlimited companies</li>
                 <li>• Unlimited invoices</li>
@@ -266,6 +283,22 @@ export default function BusinessForm({
                 <li>• Priority support</li>
                 <li>• Custom branding</li>
                 <li>• Advanced reporting</li>
+              </>
+            )}
+            {userPlan === "professional" && (
+              <>
+                <li>• Up to 3 companies</li>
+                <li>• Up to 10 invoices per month</li>
+                <li>• Advanced client management</li>
+                <li>• Priority email support</li>
+              </>
+            )}
+            {userPlan === "free_user" && (
+              <>
+                <li>• 1 company</li>
+                <li>• Up to 1 invoice</li>
+                <li>• Basic client management</li>
+                <li>• Email support</li>
               </>
             )}
           </ul>
