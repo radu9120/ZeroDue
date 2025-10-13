@@ -191,111 +191,278 @@ export default function InvoiceSuccessView({
         left: -10000,
         top: 0,
         width: "210mm",
+        minHeight: "297mm",
         pointerEvents: "none",
       }}
     >
       <div
         style={{
-          width: "190mm",
-          margin: "0 auto",
-          padding: "12mm",
+          width: "100%",
+          height: "297mm",
+          padding: "18mm 20mm",
           background: "#fff",
           color: "#000",
+          fontFamily: "Arial, sans-serif",
+          boxSizing: "border-box",
         }}
       >
+        {/* Professional Header */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 12,
+            alignItems: "flex-start",
+            marginBottom: 40,
+            paddingBottom: 20,
+            borderBottom: "2px solid #e5e7eb",
           }}
         >
-          <div>
-            <h1 style={{ margin: 0, fontSize: 22 }}>{company?.name}</h1>
+          <div style={{ flex: 1, maxWidth: "55%" }}>
+            {company?.logo && (
+              <div style={{ marginBottom: 18 }}>
+                <img
+                  src={company.logo}
+                  alt="Company Logo"
+                  style={{
+                    maxWidth: "200px",
+                    maxHeight: "90px",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
+            )}
+            <h2
+              style={{
+                fontSize: 22,
+                fontWeight: "bold",
+                margin: "0 0 14px 0",
+                color: "#111",
+              }}
+            >
+              {company?.name}
+            </h2>
             {company?.address && (
-              <div style={{ fontSize: 12, marginTop: 6 }}>
+              <div
+                style={{
+                  fontSize: 12,
+                  color: "#666",
+                  marginBottom: 6,
+                  whiteSpace: "pre-line",
+                  lineHeight: 1.5,
+                }}
+              >
                 {company.address}
               </div>
             )}
+            {company?.email && (
+              <div style={{ fontSize: 12, color: "#666" }}>{company.email}</div>
+            )}
+            {company?.phone && (
+              <div style={{ fontSize: 12, color: "#666" }}>{company.phone}</div>
+            )}
+            {company?.vat && (
+              <div style={{ fontSize: 12, color: "#666" }}>
+                VAT: {company.vat}
+              </div>
+            )}
+          </div>
+
+          <div style={{ textAlign: "right", minWidth: "250px" }}>
+            <h1
+              style={{
+                fontSize: 38,
+                fontWeight: "bold",
+                margin: "0 0 24px 0",
+                color: "#111",
+                letterSpacing: "1px",
+              }}
+            >
+              INVOICE
+            </h1>
+            <table style={{ fontSize: 12, marginLeft: "auto", width: "100%" }}>
+              <tbody>
+                <tr>
+                  <td
+                    style={{
+                      padding: "6px 16px 6px 0",
+                      fontWeight: 600,
+                      color: "#666",
+                      textAlign: "left",
+                    }}
+                  >
+                    Invoice #:
+                  </td>
+                  <td
+                    style={{
+                      padding: "6px 0",
+                      fontWeight: "bold",
+                      color: "#111",
+                      textAlign: "right",
+                    }}
+                  >
+                    {invoice.invoice_number || "N/A"}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style={{
+                      padding: "6px 16px 6px 0",
+                      fontWeight: 600,
+                      color: "#666",
+                      textAlign: "left",
+                    }}
+                  >
+                    Date:
+                  </td>
+                  <td
+                    style={{
+                      padding: "6px 0",
+                      color: "#111",
+                      textAlign: "right",
+                    }}
+                  >
+                    {new Date(invoice.issue_date).toLocaleDateString("en-GB")}
+                  </td>
+                  <td
+                    style={{
+                      padding: "6px 16px 6px 0",
+                      fontWeight: 600,
+                      color: "#666",
+                      textAlign: "left",
+                    }}
+                  >
+                    Due Date:
+                  </td>
+                  <td
+                    style={{
+                      padding: "6px 0",
+                      color: "#111",
+                      textAlign: "right",
+                    }}
+                  >
+                    {new Date(invoice.due_date).toLocaleDateString("en-GB")}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Bill To */}
+        <div
+          style={{
+            marginBottom: 30,
+            paddingBottom: 24,
+            borderBottom: "1px solid #e5e7eb",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: "#666",
+              textTransform: "uppercase",
+              letterSpacing: "0.8px",
+              marginBottom: 12,
+            }}
+          >
+            Bill To:
           </div>
           <div
             style={{
-              width: 220,
-              height: 80,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
+              fontSize: 15,
+              fontWeight: "bold",
+              color: "#111",
+              marginBottom: 8,
             }}
           >
-            {company?.logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={company.logo}
-                alt="logo"
-                className="company-logo"
-                style={{
-                  maxWidth: "220px",
-                  maxHeight: "80px",
-                  objectFit: "contain",
-                  background: "transparent",
-                }}
-              />
-            ) : null}
+            {billTo?.name || "Client"}
           </div>
+          {billTo?.address && (
+            <div
+              style={{
+                fontSize: 12,
+                color: "#666",
+                whiteSpace: "pre-line",
+                lineHeight: 1.6,
+              }}
+            >
+              {billTo.address}
+            </div>
+          )}
+          {billTo?.email && (
+            <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>
+              {billTo.email}
+            </div>
+          )}
         </div>
 
-        <div style={{ marginBottom: 12 }}>
-          <strong>Invoice</strong> #{invoice.invoice_number || "N/A"}
-        </div>
-
-        <div
-          style={{ borderTop: "1px solid #eee", paddingTop: 8, marginTop: 6 }}
-        >
-          <div style={{ marginBottom: 8 }}>
-            Bill To: {billTo?.name || "Client"}
-          </div>
-          <div style={{ marginBottom: 8 }}>
-            Date:{" "}
-            {invoice?.issue_date
-              ? new Date(invoice.issue_date).toLocaleDateString("en-GB")
-              : ""}
-          </div>
-        </div>
-
+        {/* Items Table */}
         <table
           style={{
             width: "100%",
             borderCollapse: "collapse",
-            marginTop: 12,
-            fontSize: 12,
+            marginBottom: 32,
+            border: "2px solid #1f2937",
           }}
         >
           <thead>
-            <tr>
+            <tr style={{ backgroundColor: "#1f2937", color: "#fff" }}>
               <th
                 style={{
+                  padding: "14px 18px",
                   textAlign: "left",
-                  borderBottom: "1px solid #ddd",
-                  padding: 6,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  letterSpacing: "0.5px",
                 }}
               >
                 Description
               </th>
               <th
                 style={{
+                  padding: "14px 18px",
                   textAlign: "center",
-                  borderBottom: "1px solid #ddd",
-                  padding: 6,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  width: "90px",
+                  letterSpacing: "0.5px",
                 }}
               >
                 Qty
               </th>
               <th
                 style={{
+                  padding: "14px 18px",
                   textAlign: "right",
-                  borderBottom: "1px solid #ddd",
-                  padding: 6,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  width: "120px",
+                  letterSpacing: "0.5px",
+                }}
+              >
+                Unit Price
+              </th>
+              <th
+                style={{
+                  padding: "14px 18px",
+                  textAlign: "center",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  width: "80px",
+                  letterSpacing: "0.5px",
+                }}
+              >
+                Tax
+              </th>
+              <th
+                style={{
+                  padding: "14px 18px",
+                  textAlign: "right",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  width: "130px",
+                  letterSpacing: "0.5px",
                 }}
               >
                 Amount
@@ -303,37 +470,254 @@ export default function InvoiceSuccessView({
             </tr>
           </thead>
           <tbody>
-            {items.map((it: any, idx: number) => (
-              <tr key={idx}>
-                <td style={{ padding: 8, verticalAlign: "top" }}>
-                  {it.description}
+            {items.map((item: any, idx: number) => (
+              <tr key={idx} style={{ borderBottom: "1px solid #e5e7eb" }}>
+                <td
+                  style={{ padding: "14px 18px", fontSize: 12, color: "#111" }}
+                >
+                  {item.description || "-"}
                 </td>
                 <td
                   style={{
-                    padding: 8,
+                    padding: "14px 18px",
                     textAlign: "center",
-                    verticalAlign: "top",
+                    fontSize: 12,
+                    color: "#111",
                   }}
                 >
-                  {it.quantity}
+                  {item.quantity || 0}
                 </td>
                 <td
                   style={{
-                    padding: 8,
+                    padding: "14px 18px",
                     textAlign: "right",
-                    verticalAlign: "top",
+                    fontSize: 12,
+                    color: "#111",
                   }}
                 >
-                  £{(it.amount || 0).toFixed(2)}
+                  £{Number(item.unit_price || 0).toFixed(2)}
+                </td>
+                <td
+                  style={{
+                    padding: "14px 18px",
+                    textAlign: "center",
+                    fontSize: 12,
+                    color: "#111",
+                  }}
+                >
+                  {item.tax || 0}%
+                </td>
+                <td
+                  style={{
+                    padding: "14px 18px",
+                    textAlign: "right",
+                    fontSize: 14,
+                    fontWeight: "bold",
+                    color: "#111",
+                  }}
+                >
+                  £{Number(item.amount || 0).toFixed(2)}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <div style={{ marginTop: 12, textAlign: "right" }}>
-          <div>Subtotal: £{(invoice.subtotal || 0).toFixed(2)}</div>
-          <div>Total: £{(invoice.total || 0).toFixed(2)}</div>
+        {/* Bottom Section: Bank Details + Summary */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.5fr 1fr",
+            gap: 32,
+            marginTop: 32,
+          }}
+        >
+          {/* Bank Details & Notes */}
+          <div>
+            <div style={{ marginBottom: 24 }}>
+              <h4
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: "#666",
+                  marginBottom: 12,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
+                }}
+              >
+                Bank Details
+              </h4>
+              <div
+                style={{
+                  backgroundColor: "#f9fafb",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "6px",
+                  padding: 16,
+                  fontSize: 12,
+                  color: "#374151",
+                  whiteSpace: "pre-line",
+                  lineHeight: 1.7,
+                }}
+              >
+                {invoice.bank_details || "No bank details provided"}
+              </div>
+            </div>
+            <div>
+              <h4
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: "#666",
+                  marginBottom: 12,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.5px",
+                }}
+              >
+                Notes & Terms
+              </h4>
+              <div
+                style={{
+                  backgroundColor: "#f9fafb",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "6px",
+                  padding: 16,
+                  fontSize: 12,
+                  color: "#374151",
+                  whiteSpace: "pre-line",
+                  lineHeight: 1.7,
+                }}
+              >
+                {invoice.notes || "No additional notes"}
+              </div>
+            </div>
+          </div>
+
+          {/* Invoice Summary */}
+          <div>
+            <div
+              style={{
+                backgroundColor: "#fff",
+                border: "2px solid #1f2937",
+                borderRadius: "8px",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ backgroundColor: "#1f2937", padding: "14px 20px" }}>
+                <h4
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "bold",
+                    color: "#fff",
+                    margin: 0,
+                    letterSpacing: "0.5px",
+                  }}
+                >
+                  Invoice Summary
+                </h4>
+              </div>
+              <div style={{ padding: "20px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    paddingBottom: 12,
+                    marginBottom: 12,
+                    borderBottom: "1px solid #e5e7eb",
+                  }}
+                >
+                  <span
+                    style={{ fontSize: 12, fontWeight: 600, color: "#374151" }}
+                  >
+                    Subtotal
+                  </span>
+                  <span
+                    style={{ fontSize: 14, fontWeight: 600, color: "#111" }}
+                  >
+                    £{Number(invoice.subtotal || 0).toFixed(2)}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    paddingBottom: 12,
+                    marginBottom: 12,
+                    borderBottom: "1px solid #e5e7eb",
+                  }}
+                >
+                  <span
+                    style={{ fontSize: 12, fontWeight: 600, color: "#374151" }}
+                  >
+                    Shipping
+                  </span>
+                  <span
+                    style={{ fontSize: 14, fontWeight: 600, color: "#111" }}
+                  >
+                    £{Number(invoice.shipping || 0).toFixed(2)}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    paddingBottom: 12,
+                    marginBottom: 12,
+                    borderBottom: "1px solid #e5e7eb",
+                  }}
+                >
+                  <span
+                    style={{ fontSize: 12, fontWeight: 600, color: "#374151" }}
+                  >
+                    Discount
+                  </span>
+                  <span
+                    style={{ fontSize: 14, fontWeight: 600, color: "#111" }}
+                  >
+                    {invoice.discount || 0}%
+                  </span>
+                </div>
+                <div
+                  style={{
+                    backgroundColor: "#1f2937",
+                    borderRadius: "8px",
+                    padding: "20px",
+                    marginTop: 16,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "12px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: "bold",
+                        color: "#fff",
+                        letterSpacing: "0.5px",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      TOTAL AMOUNT
+                    </span>
+                    <span
+                      style={{
+                        fontSize: 24,
+                        fontWeight: "bold",
+                        color: "#fff",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      £{Number(invoice.total || 0).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -396,288 +780,144 @@ export default function InvoiceSuccessView({
           </CardHeader>
 
           <CardContent
-            className="p-8 bg-white"
+            className="p-12 bg-white"
             data-invoice-preview
             style={{ height: "auto" }}
           >
-            <div id="invoice-capture">
-              {/* Company & Client Information - Matching new InvoiceForm structure */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
-                {/* From - Company Information */}
-                <div className="space-y-6">
-                  <div className="flex items-center space-x-3 mb-6">
-                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                      <Building2 className="h-5 w-5 text-blue-600" />
+            <div id="invoice-capture" className="max-w-5xl mx-auto">
+              {/* Professional Invoice Header */}
+              <div className="flex justify-between items-start mb-10">
+                <div className="flex-1">
+                  {company.logo && (
+                    <div className="mb-6">
+                      <Image
+                        src={company.logo}
+                        alt="Company Logo"
+                        width={180}
+                        height={80}
+                        className="object-contain"
+                      />
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        From
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        Your business information
+                  )}
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                      {company.name}
+                    </h2>
+                    {company.address && (
+                      <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line mb-2">
+                        {company.address}
                       </p>
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-2xl p-6 border border-blue-100/50">
-                    {/* Company Logo Display */}
-                    {company.logo && (
-                      <div className="mb-6 flex justify-start">
-                        <div className="w-32 h-24 rounded-xl overflow-hidden bg-white shadow-sm border border-gray-100">
-                          <Image
-                            src={company.logo}
-                            alt="Company Logo"
-                            width={196}
-                            height={196}
-                            className="w-full h-full object-contain p-2"
-                          />
-                        </div>
-                      </div>
                     )}
-
-                    {/* Company Details */}
-                    <div className="space-y-4">
-                      <div>
-                        <span className="block text-sm font-medium text-gray-600 mb-1">
-                          Company Name
-                        </span>
-                        <p className="text-gray-900 font-semibold text-lg">
-                          {company.name}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="block text-sm font-medium text-gray-600 mb-1">
-                          Email
-                        </span>
-                        <p className="text-gray-700">{company.email}</p>
-                      </div>
-                      {company.phone && (
-                        <div>
-                          <span className="block text-sm font-medium text-gray-600 mb-1">
-                            Phone
-                          </span>
-                          <p className="text-gray-700">{company.phone}</p>
-                        </div>
-                      )}
-                      {company.address && (
-                        <div>
-                          <span className="block text-sm font-medium text-gray-600 mb-1">
-                            Address
-                          </span>
-                          <p className="text-gray-700 leading-relaxed">
-                            {company.address}
-                          </p>
-                        </div>
-                      )}
-                      {company.vat && (
-                        <div>
-                          <span className="block text-sm font-medium text-gray-600 mb-1">
-                            VAT Number
-                          </span>
-                          <p className="text-gray-700 font-mono">
-                            {company.vat}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                    {company.email && (
+                      <p className="text-sm text-gray-600">{company.email}</p>
+                    )}
+                    {company.phone && (
+                      <p className="text-sm text-gray-600">{company.phone}</p>
+                    )}
+                    {company.vat && (
+                      <p className="text-sm text-gray-600">
+                        VAT: {company.vat}
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {/* To - Client Information */}
-                <div className="space-y-6">
-                  <div className="flex items-center space-x-3 mb-6">
-                    <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                      <User className="h-5 w-5 text-green-600" />
+                <div className="text-right min-w-[280px]">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-6">
+                    INVOICE
+                  </h1>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium text-gray-600">
+                        Invoice #:
+                      </span>
+                      <span className="text-sm font-bold text-gray-900">
+                        {invoice.invoice_number || "N/A"}
+                      </span>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        Bill To
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        Client information
-                      </p>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium text-gray-600">
+                        Date:
+                      </span>
+                      <span className="text-sm text-gray-900">
+                        {new Date(invoice.issue_date).toLocaleDateString(
+                          "en-GB"
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-medium text-gray-600">
+                        Due Date:
+                      </span>
+                      <span className="text-sm text-gray-900">
+                        {new Date(invoice.due_date).toLocaleDateString("en-GB")}
+                      </span>
                     </div>
                   </div>
-
-                  {billTo ? (
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 rounded-2xl p-6 border border-green-100/50">
-                      <div className="space-y-4">
-                        <div>
-                          <span className="block text-sm font-medium text-gray-600 mb-1">
-                            Client Name
-                          </span>
-                          <p className="text-gray-900 font-semibold text-lg">
-                            {billTo.name || "No name"}
-                          </p>
-                        </div>
-                        <div>
-                          <span className="block text-sm font-medium text-gray-600 mb-1">
-                            Email
-                          </span>
-                          <p className="text-gray-700">
-                            {billTo.email || "No email"}
-                          </p>
-                        </div>
-                        {billTo.phone && (
-                          <div>
-                            <span className="block text-sm font-medium text-gray-600 mb-1">
-                              Phone
-                            </span>
-                            <p className="text-gray-700">{billTo.phone}</p>
-                          </div>
-                        )}
-                        {billTo.address && (
-                          <div>
-                            <span className="block text-sm font-medium text-gray-600 mb-1">
-                              Address
-                            </span>
-                            <p className="text-gray-700 leading-relaxed">
-                              {billTo.address}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-gradient-to-br from-amber-50 to-yellow-50/50 border border-amber-200/50 rounded-2xl p-6">
-                      <div className="text-center">
-                        <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                          <User className="h-6 w-6 text-amber-600" />
-                        </div>
-                        <p className="text-amber-800 font-medium">
-                          No client information available
-                        </p>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
 
-              {/* Invoice Details Section */}
-              <div className="border-t border-gray-100 pt-12 mb-12">
-                <div className="flex items-center space-x-3 mb-8">
-                  <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                    <FileText className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Invoice Details
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Invoice number and dates
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                    <span className="block text-sm font-medium text-gray-700 mb-2">
-                      Invoice Number
-                    </span>
-                    <p className="text-lg font-semibold text-gray-900 font-mono">
-                      {invoice.invoice_number || "N/A"}
-                    </p>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                    <span className="block text-sm font-medium text-gray-700 mb-2">
-                      Issue Date
-                    </span>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {new Date(invoice.issue_date).toLocaleDateString(
-                        "en-GB",
-                        {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        }
-                      )}
-                    </p>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                    <span className="block text-sm font-medium text-gray-700 mb-2">
-                      Due Date
-                    </span>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {new Date(invoice.due_date).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                </div>
-
-                {invoice.description && (
-                  <div className="mt-6">
-                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                      <span className="block text-sm font-medium text-gray-700 mb-2">
-                        Description
-                      </span>
-                      <p className="text-gray-900">{invoice.description}</p>
-                    </div>
-                  </div>
+              {/* Bill To Section */}
+              <div className="mb-8 pb-6 border-b border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+                  Bill To:
+                </h3>
+                <p className="text-base font-bold text-gray-900 mb-1">
+                  {billTo?.name || "Client"}
+                </p>
+                {billTo?.address && (
+                  <p className="text-sm text-gray-600 whitespace-pre-line">
+                    {billTo.address}
+                  </p>
+                )}
+                {billTo?.email && (
+                  <p className="text-sm text-gray-600 mt-1">{billTo.email}</p>
                 )}
               </div>
 
-              {/* Items Section */}
-              <div className="border-t border-gray-100 pt-12 mb-12">
-                <div className="flex items-center space-x-3 mb-8">
-                  <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
-                    <FileText className="h-5 w-5 text-indigo-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Invoice Items
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Items, services, or products
-                    </p>
-                  </div>
-                </div>
-
-                <div className="overflow-hidden rounded-xl border border-gray-200">
+              {/* Professional Items Table */}
+              <div className="mb-8">
+                <div className="border border-gray-300 rounded-md overflow-hidden">
                   <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                    <thead>
+                      <tr className="bg-gray-800 text-white">
+                        <th className="px-6 py-4 text-left text-sm font-semibold">
                           Description
                         </th>
-                        <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+                        <th className="px-6 py-4 text-center text-sm font-semibold w-24">
                           Qty
                         </th>
-                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
+                        <th className="px-6 py-4 text-right text-sm font-semibold w-32">
                           Unit Price
                         </th>
-                        <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
+                        <th className="px-6 py-4 text-center text-sm font-semibold w-24">
                           Tax
                         </th>
-                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">
+                        <th className="px-6 py-4 text-right text-sm font-semibold w-36">
                           Amount
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="bg-white">
                       {items.length > 0 ? (
                         items.map((item: any, index: number) => (
                           <tr
                             key={index}
-                            className="hover:bg-gray-50 transition-colors"
+                            className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
                           >
-                            <td className="px-6 py-4 text-gray-900">
+                            <td className="px-6 py-4 text-sm text-gray-900">
                               {item.description || "No description"}
                             </td>
-                            <td className="px-6 py-4 text-center text-gray-900">
+                            <td className="px-6 py-4 text-center text-sm text-gray-900">
                               {item.quantity || 0}
                             </td>
-                            <td className="px-6 py-4 text-right text-gray-900">
+                            <td className="px-6 py-4 text-right text-sm text-gray-900">
                               £{(item.unit_price || 0).toFixed(2)}
                             </td>
-                            <td className="px-6 py-4 text-center text-gray-900">
+                            <td className="px-6 py-4 text-center text-sm text-gray-900">
                               {item.tax || 0}%
                             </td>
-                            <td className="px-6 py-4 text-right font-semibold text-gray-900">
+                            <td className="px-6 py-4 text-right text-base font-bold text-gray-900">
                               £{(item.amount || 0).toFixed(2)}
                             </td>
                           </tr>
@@ -686,12 +926,9 @@ export default function InvoiceSuccessView({
                         <tr>
                           <td
                             colSpan={5}
-                            className="px-6 py-8 text-center text-gray-500"
+                            className="px-6 py-8 text-center text-sm text-gray-500"
                           >
-                            <div className="flex flex-col items-center">
-                              <FileText className="h-8 w-8 text-gray-300 mb-2" />
-                              <p>No items found</p>
-                            </div>
+                            No items found
                           </td>
                         </tr>
                       )}
@@ -701,68 +938,75 @@ export default function InvoiceSuccessView({
               </div>
 
               {/* Additional Details & Summary */}
-              <div className="border-t border-gray-100 pt-12">
-                <div className="flex w-full gap-12">
-                  <div className="flex-1 space-y-8">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 mb-4 block">
-                        Bank Details
-                      </label>
-                      <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 min-h-32">
-                        <p className="text-gray-700 whitespace-pre-line">
-                          {invoice.bank_details || "No bank details provided"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 mb-4 block">
-                        Notes & Terms
-                      </label>
-                      <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 min-h-28">
-                        <p className="text-gray-700 whitespace-pre-line">
-                          {invoice.notes || "No additional notes"}
-                        </p>
-                      </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-8">
+                <div className="lg:col-span-2 space-y-6">
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                      Bank Details
+                    </h4>
+                    <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+                      <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                        {invoice.bank_details || "No bank details provided"}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="w-80">
-                    <div className="bg-gradient-to-br from-gray-50 to-slate-50 rounded-2xl p-6 border border-gray-100">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-6">
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                      Notes & Terms
+                    </h4>
+                    <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+                      <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                        {invoice.notes || "No additional notes"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="lg:col-span-1">
+                  <div className="bg-gray-50 rounded-lg border-2 border-gray-300 overflow-hidden">
+                    <div className="bg-gray-800 px-6 py-4">
+                      <h4 className="text-base font-bold text-white">
                         Invoice Summary
                       </h4>
+                    </div>
 
-                      <div className="space-y-6">
-                        <div className="bg-white rounded-xl p-4 border border-gray-200">
-                          <label className="text-sm font-medium text-gray-700 block mb-1">
-                            Shipping
-                          </label>
-                          <span className="text-lg font-semibold text-gray-900">
-                            £{(invoice.shipping || 0).toFixed(2)}
+                    <div className="p-6 space-y-5">
+                      <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                        <span className="text-sm font-medium text-gray-700">
+                          Subtotal
+                        </span>
+                        <span className="text-base font-semibold text-gray-900">
+                          £{(invoice.subtotal || 0).toFixed(2)}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                        <span className="text-sm font-medium text-gray-700">
+                          Shipping
+                        </span>
+                        <span className="text-base font-semibold text-gray-900">
+                          £{(invoice.shipping || 0).toFixed(2)}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                        <span className="text-sm font-medium text-gray-700">
+                          Discount
+                        </span>
+                        <span className="text-base font-semibold text-gray-900">
+                          {invoice.discount || 0}%
+                        </span>
+                      </div>
+
+                      <div className="bg-gray-800 rounded-lg p-5 mt-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-base font-bold text-white">
+                            TOTAL AMOUNT
                           </span>
-                        </div>
-
-                        <div className="bg-white rounded-xl p-4 border border-gray-200">
-                          <label className="text-sm font-medium text-gray-700 block mb-1">
-                            Discount
-                          </label>
-                          <span className="text-lg font-semibold text-gray-900">
-                            {invoice.discount || 0}%
+                          <span className="text-3xl font-bold text-white">
+                            £{(invoice.total || 0).toFixed(2)}
                           </span>
-                        </div>
-
-                        <div className="border-t border-gray-200 pt-6">
-                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
-                            <div className="text-center">
-                              <p className="text-sm font-medium text-gray-600 mb-2">
-                                Total Amount
-                              </p>
-                              <p className="text-4xl font-bold text-gray-900">
-                                £{(invoice.total || 0).toFixed(2)}
-                              </p>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
