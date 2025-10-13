@@ -4,10 +4,11 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = Number(params.id);
+    const { id: idParam } = await params;
+    const id = Number(idParam);
     if (!id) return new Response("Invalid id", { status: 400 });
 
     const supabase = createSupabaseClient();
