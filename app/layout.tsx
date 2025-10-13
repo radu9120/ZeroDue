@@ -16,6 +16,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import CookieBanner from "@/components/cookie-banner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -41,6 +42,7 @@ export default function RootLayout({
             <div id="root">{children}</div>
           </Suspense>
           <div id="modal-root"></div>
+          <Toaster richColors position="top-right" />
           <Footer />
           <CookieBanner />
           <SpeedInsights />

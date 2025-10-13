@@ -13,11 +13,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
+import React from "react";
 import { Textarea } from "../ui/textarea";
 import { AlertTriangle, Plus } from "lucide-react";
 import { billToSchema } from "@/schemas/invoiceSchema";
 import { createClient } from "@/lib/actions/client.actions";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface ClientFormProps {
   business_id: number;
@@ -32,6 +34,7 @@ interface ClientFormProps {
   onSubmit?: (values: z.infer<typeof billToSchema>) => Promise<void>;
   submitButtonText?: string;
   isSubmitting?: boolean;
+  closeModal?: () => void; // injected by CustomModal
 }
 
 export const ClientForm = ({
@@ -40,7 +43,10 @@ export const ClientForm = ({
   onSubmit,
   submitButtonText = "Save Client",
   isSubmitting = false,
+  closeModal,
 }: ClientFormProps) => {
+  const router = useRouter();
+  const [localSubmitting, setLocalSubmitting] = React.useState(false);
   const form = useForm<z.infer<typeof billToSchema>>({
     resolver: zodResolver(billToSchema),
     defaultValues: defaultValues || {
@@ -52,19 +58,33 @@ export const ClientForm = ({
     },
   });
 
+  const pending = isSubmitting || localSubmitting;
+
   const handleSubmit = async (values: z.infer<typeof billToSchema>) => {
-    if (onSubmit) {
-      // If onSubmit is provided, use it (for editing)
-      await onSubmit(values);
-    } else {
-      // Default behavior for creating new clients
+    try {
+      if (onSubmit) {
+        await onSubmit(values);
+        toast.success("Client updated successfully");
+        closeModal?.();
+        router.refresh();
+        return;
+      }
+
+      setLocalSubmitting(true);
       const client = await createClient(values);
       if (client) {
-        redirect(`/dashboard/clients?business_id=${business_id}`);
+        toast.success("Client added successfully");
+        form.reset();
+        closeModal?.();
+        router.refresh();
       } else {
-        console.log("Failed to create a client");
-        redirect(`/dashboard`);
+        toast.error("Failed to create client");
       }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      toast.error(`Error: ${message}`);
+    } finally {
+      setLocalSubmitting(false);
     }
   };
 
@@ -149,17 +169,18 @@ export const ClientForm = ({
               type="button"
               variant="secondary"
               className="flex-1 border-blue-200"
-              disabled={isSubmitting}
+              disabled={pending}
+              onClick={() => closeModal?.()}
             >
               Cancel
             </Button>
             <Button
               type="submit"
               className="flex-1 bg-gradient-to-r from-primary to-accent text-white"
-              disabled={!form.formState.isValid || isSubmitting}
+              disabled={!form.formState.isValid || pending}
             >
               <Plus className="h-4 w-4 mr-2" />
-              {isSubmitting ? "Saving..." : submitButtonText}
+              {pending ? "Saving..." : submitButtonText}
             </Button>
           </div>
         </div>
