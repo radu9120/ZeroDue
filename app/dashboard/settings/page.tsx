@@ -19,18 +19,18 @@ export default async function SettingsPage() {
     <main>
       <Bounded>
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-header-text">
+          <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
             Settings
           </h1>
-          <p className="text-secondary-text mt-2">
+          <p className="text-secondary-text dark:text-slate-400 mt-2">
             Manage your account, plan, and workspace.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <section className="border rounded-xl p-6 bg-white">
+          <section className="border rounded-xl p-6 bg-white dark:bg-slate-800">
             <h2 className="text-lg font-semibold mb-2">Plan</h2>
-            <p className="text-secondary-text mb-4">
+            <p className="text-secondary-text dark:text-slate-400 mb-4">
               Current plan: <span className="font-medium">{userPlan}</span>
             </p>
             <div className="flex gap-3">
@@ -42,9 +42,9 @@ export default async function SettingsPage() {
             </div>
           </section>
 
-          <section className="border rounded-xl p-6 bg-white">
+          <section className="border rounded-xl p-6 bg-white dark:bg-slate-800">
             <h2 className="text-lg font-semibold mb-2">Workspace</h2>
-            <p className="text-secondary-text mb-4">
+            <p className="text-secondary-text dark:text-slate-400 mb-4">
               Configure your businesses, clients, and invoices.
             </p>
             <div className="flex flex-wrap gap-3">

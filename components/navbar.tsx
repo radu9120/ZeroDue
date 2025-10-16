@@ -14,6 +14,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,12 +38,12 @@ export default function Navbar() {
     <motion.nav
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className={`sticky top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      transition={{ duration: 0.5 }}
+      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/95 backdrop-blur-md border-b border-neutral-200"
-          : "bg-gradient-to-br from-blue-50 via-white to-white border-b border-blue-100"
-      }`}
+          ? "backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 shadow-md"
+          : "bg-transparent"
+      } border-b border-gray-200/50 dark:border-slate-700/50`}
     >
       <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
         <div className="flex items-center justify-between">
@@ -66,7 +67,7 @@ export default function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-xl font-bold text-header-text"
+              className="text-xl font-bold text-header-text dark:text-slate-100"
             >
               InvoiceFlow
             </motion.span>
@@ -83,25 +84,25 @@ export default function Navbar() {
             <SignedOut>
               <Link
                 href="#features"
-                className="text-primary-text hover:text-primary transition-colors font-medium"
+                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
               >
                 Features
               </Link>
               <Link
                 href="/upgrade"
-                className="text-primary-text hover:text-primary transition-colors font-medium"
+                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
               >
                 Pricing
               </Link>
               <Link
                 href="#testimonials"
-                className="text-primary-text hover:text-primary transition-colors font-medium"
+                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
               >
                 Testimonials
               </Link>
               <Link
                 href="/contact"
-                className="text-primary-text hover:text-primary transition-colors font-medium"
+                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
               >
                 Contact
               </Link>
@@ -110,7 +111,7 @@ export default function Navbar() {
             <SignedIn>
               <Link
                 href="/dashboard"
-                className="text-primary-text hover:text-primary transition-colors font-medium"
+                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
               >
                 Dashboard
               </Link>
@@ -121,7 +122,7 @@ export default function Navbar() {
                       ? `/dashboard/clients?business_id=${businessId}`
                       : "/dashboard"
                   }
-                  className="text-primary-text hover:text-primary transition-colors font-medium"
+                  className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
                 >
                   Clients
                 </Link>
@@ -131,14 +132,14 @@ export default function Navbar() {
                       ? `/dashboard/invoices?business_id=${businessId}`
                       : "/dashboard"
                   }
-                  className="text-primary-text hover:text-primary transition-colors font-medium"
+                  className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
                 >
                   Invoices
                 </Link>
               </>
               <Link
                 href="/dashboard/settings"
-                className="text-primary-text hover:text-primary transition-colors font-medium"
+                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
               >
                 Settings
               </Link>
@@ -152,13 +153,16 @@ export default function Navbar() {
             transition={{ duration: 0.5, delay: 0.5 }}
             className="flex items-center space-x-3"
           >
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {/* Desktop Authentication */}
             <div className="hidden md:flex items-center space-x-3">
               <SignedOut>
                 <SignInButton>
                   <Button
                     variant="ghost"
-                    className="text-primary-text hover:text-primary hover:bg-blue-50"
+                    className="text-primary-text hover:text-primary hover:bg-blue-50 dark:text-slate-300 dark:hover:bg-slate-800"
                   >
                     Log in
                   </Button>
@@ -185,7 +189,7 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden p-2 hover:bg-blue-50"
+              className="md:hidden p-2 hover:bg-blue-50 dark:hover:bg-slate-800"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -216,7 +220,7 @@ export default function Navbar() {
                 height: { duration: 0.25 },
                 opacity: { duration: 0.2 },
               }}
-              className="md:hidden overflow-hidden bg-white/95 backdrop-blur-sm rounded-b-lg border-t border-blue-100"
+              className="md:hidden overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-b-lg border-t border-blue-100 dark:border-slate-700"
             >
               <motion.div
                 initial={{ y: -10, opacity: 0 }}
@@ -230,28 +234,28 @@ export default function Navbar() {
                   <SignedOut>
                     <Link
                       href="#features"
-                      className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Features
                     </Link>
                     <Link
                       href="/upgrade"
-                      className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Pricing
                     </Link>
                     <Link
                       href="#testimonials"
-                      className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Testimonials
                     </Link>
                     <Link
                       href="/contact"
-                      className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Contact
@@ -261,7 +265,7 @@ export default function Navbar() {
                   <SignedIn>
                     <Link
                       href="/dashboard"
-                      className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Dashboard
@@ -272,7 +276,7 @@ export default function Navbar() {
                           ? `/dashboard/clients?business_id=${businessId}`
                           : "/dashboard"
                       }
-                      className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Clients
@@ -283,14 +287,14 @@ export default function Navbar() {
                           ? `/dashboard/invoices?business_id=${businessId}`
                           : "/dashboard"
                       }
-                      className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Invoices
                     </Link>
                     <Link
                       href="/dashboard/settings"
-                      className="px-4 py-3 text-primary-text hover:text-primary hover:bg-blue-50 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Settings
@@ -299,11 +303,11 @@ export default function Navbar() {
 
                   {/* Mobile Authentication */}
                   <SignedOut>
-                    <div className="pt-3 mt-3 border-t border-blue-100 space-y-2">
+                    <div className="pt-3 mt-3 border-t border-blue-100 dark:border-slate-700 space-y-2">
                       <SignInButton>
                         <Button
                           variant="secondary"
-                          className="w-full py-3 text-base font-medium border-blue-200 text-primary hover:bg-blue-50 transition-all duration-200"
+                          className="w-full py-3 text-base font-medium border-blue-200 dark:border-slate-700 text-primary dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all duration-200"
                           onClick={closeMenu}
                         >
                           Sign In

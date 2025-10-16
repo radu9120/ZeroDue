@@ -64,7 +64,7 @@ export default async function AnalyticsPage({
   const userPlan: AppPlan = await getCurrentPlan();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white bg-white dark:bg-slate-800">
       <div className="container mx-auto px-4 md:px-6 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -79,10 +79,10 @@ export default async function AnalyticsPage({
               <TrendingUp className="h-6 w-6 text-green-600" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-header-text">
+              <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
                 Analytics & Reports
               </h1>
-              <p className="text-secondary-text mt-1">
+              <p className="text-secondary-text dark:text-slate-400 mt-1">
                 Track your business performance and insights.
               </p>
             </div>
@@ -92,8 +92,8 @@ export default async function AnalyticsPage({
         {/* Actions */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div className="flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-secondary-text" />
-            <span className="text-sm text-secondary-text">Last 30 days</span>
+            <Calendar className="h-5 w-5 text-secondary-text dark:text-slate-400" />
+            <span className="text-sm text-secondary-text dark:text-slate-400">Last 30 days</span>
           </div>
           <Button variant="secondary" className="border-blue-200">
             <Download className="h-4 w-4 mr-2" /> Export Report
@@ -102,13 +102,13 @@ export default async function AnalyticsPage({
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-secondary-text text-sm font-medium">
+                <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
                   Total Revenue
                 </p>
-                <p className="text-2xl font-bold text-header-text">
+                <p className="text-2xl font-bold text-header-text dark:text-slate-100">
                   £{overview.totalAmount.toFixed(2)}
                 </p>
               </div>
@@ -117,28 +117,28 @@ export default async function AnalyticsPage({
               </div>
             </div>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-secondary-text text-sm font-medium">
+                <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
                   Invoices Sent
                 </p>
-                <p className="text-2xl font-bold text-header-text">
+                <p className="text-2xl font-bold text-header-text dark:text-slate-100">
                   {overview.total}
                 </p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FileText className="h-6 w-6 text-primary" />
+                <FileText className="h-6 w-6 text-primary dark:text-blue-400" />
               </div>
             </div>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-secondary-text text-sm font-medium">
+                <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
                   Average Invoice
                 </p>
-                <p className="text-2xl font-bold text-header-text">
+                <p className="text-2xl font-bold text-header-text dark:text-slate-100">
                   £{avgInvoice.toFixed(2)}
                 </p>
               </div>
@@ -147,13 +147,13 @@ export default async function AnalyticsPage({
               </div>
             </div>
           </div>
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-secondary-text text-sm font-medium">
+                <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
                   Collection Rate
                 </p>
-                <p className="text-2xl font-bold text-header-text">
+                <p className="text-2xl font-bold text-header-text dark:text-slate-100">
                   {collectionRate}%
                 </p>
               </div>
@@ -167,12 +167,12 @@ export default async function AnalyticsPage({
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Revenue Chart */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-header-text">
+              <h2 className="text-xl font-semibold text-header-text dark:text-slate-100">
                 Revenue Trend
               </h2>
-              <BarChart3 className="h-5 w-5 text-secondary-text" />
+              <BarChart3 className="h-5 w-5 text-secondary-text dark:text-slate-400" />
             </div>
             <div className="h-64 p-4">
               <div className="h-full flex items-end justify-between gap-4">
@@ -187,7 +187,7 @@ export default async function AnalyticsPage({
                         minHeight: "20px",
                       }}
                     />
-                    <span className="text-sm text-secondary-text mt-2">
+                    <span className="text-sm text-secondary-text dark:text-slate-400 mt-2">
                       {d.month}
                     </span>
                   </div>
@@ -197,12 +197,12 @@ export default async function AnalyticsPage({
           </div>
 
           {/* Invoice Status Pie Chart */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-header-text">
+              <h2 className="text-xl font-semibold text-header-text dark:text-slate-100">
                 Invoice Status
               </h2>
-              <PieChart className="h-5 w-5 text-secondary-text" />
+              <PieChart className="h-5 w-5 text-secondary-text dark:text-slate-400" />
             </div>
             <div className="h-64 flex items-center justify-center">
               <div className="relative">
@@ -244,7 +244,7 @@ export default async function AnalyticsPage({
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: slice.color }}
                       />
-                      <span className="text-sm text-primary-text">
+                      <span className="text-sm text-primary-text dark:text-slate-300">
                         {slice.status}: {slice.percentage}% (
                         {invoiceStatusData[i].count})
                       </span>
@@ -257,8 +257,8 @@ export default async function AnalyticsPage({
         </div>
 
         {/* Summary Stats */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 mt-8">
-          <h2 className="text-xl font-semibold text-header-text mb-6">
+        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 mt-8">
+          <h2 className="text-xl font-semibold text-header-text dark:text-slate-100 mb-6">
             Quick Summary
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -278,10 +278,10 @@ export default async function AnalyticsPage({
                     {item.count}
                   </span>
                 </div>
-                <p className="text-sm font-medium text-secondary-text">
+                <p className="text-sm font-medium text-secondary-text dark:text-slate-400">
                   {item.status} Invoices
                 </p>
-                <p className="text-xs text-secondary-text mt-1">
+                <p className="text-xs text-secondary-text dark:text-slate-400 mt-1">
                   {((item.count / (totalInvoices || 1)) * 100).toFixed(1)}% of
                   total
                 </p>

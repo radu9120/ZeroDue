@@ -53,7 +53,7 @@ export default function CookiesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white">
+    <div className="min-h-screen pt-24 md:pt-28 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Header */}
         <div className="mb-8">
@@ -66,11 +66,11 @@ export default function CookiesPage() {
           </Link>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Cookie className="h-6 w-6 text-primary" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
+              <Cookie className="h-6 w-6 text-primary dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-header-text">
+              <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
                 Cookie Policy
               </h1>
               <p className="text-secondary-text mt-1">
@@ -83,7 +83,7 @@ export default function CookiesPage() {
 
         <div className="max-w-4xl">
           {/* Current Preferences */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 mb-8">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 mb-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold text-header-text mb-2">
@@ -93,7 +93,7 @@ export default function CookiesPage() {
                   <strong>Active cookies:</strong> {getCurrentPreferences()}
                 </p>
                 {cookieConsent && mounted && (
-                  <p className="text-sm text-secondary-text">
+                  <p className="text-sm text-secondary-text dark:text-slate-400">
                     Last updated: {getLastUpdatedDate()}
                   </p>
                 )}
@@ -109,7 +109,7 @@ export default function CookiesPage() {
           </div>
 
           {/* Introduction */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 mb-8">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 mb-8">
             <h2 className="text-xl font-semibold text-header-text mb-4">
               What are cookies?
             </h2>
@@ -128,19 +128,19 @@ export default function CookiesPage() {
 
           {/* Types of Cookies */}
           <div className="space-y-6 mb-8">
-            <h2 className="text-2xl font-bold text-header-text">
+            <h2 className="text-2xl font-bold text-header-text dark:text-slate-100">
               Types of cookies we use
             </h2>
 
             {/* Necessary Cookies */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Shield className="h-5 w-5 text-green-600" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-lg font-semibold text-header-text">
+                    <h3 className="text-lg font-semibold text-header-text dark:text-slate-100">
                       Necessary Cookies
                     </h3>
                     <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
@@ -152,7 +152,7 @@ export default function CookiesPage() {
                     properly. They enable core functionality such as security,
                     network management, and accessibility.
                   </p>
-                  <div className="text-sm text-secondary-text">
+                  <div className="text-sm text-secondary-text dark:text-slate-400">
                     <strong>Examples:</strong> Session cookies, authentication
                     tokens, security preferences
                   </div>
@@ -161,10 +161,10 @@ export default function CookiesPage() {
             </div>
 
             {/* Analytics Cookies */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Eye className="h-5 w-5 text-primary" />
+                <div className="w-10 h-10 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Eye className="h-5 w-5 text-primary dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-header-text mb-2">
@@ -175,7 +175,7 @@ export default function CookiesPage() {
                     our website by collecting and reporting information
                     anonymously. This helps us improve our website performance.
                   </p>
-                  <div className="text-sm text-secondary-text">
+                  <div className="text-sm text-secondary-text dark:text-slate-400">
                     <strong>Examples:</strong> Google Analytics, page views,
                     bounce rate, session duration
                   </div>
@@ -184,7 +184,7 @@ export default function CookiesPage() {
             </div>
 
             {/* Marketing Cookies */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Target className="h-5 w-5 text-purple-600" />
@@ -198,7 +198,7 @@ export default function CookiesPage() {
                     relevant advertisements and measure the effectiveness of
                     advertising campaigns.
                   </p>
-                  <div className="text-sm text-secondary-text">
+                  <div className="text-sm text-secondary-text dark:text-slate-400">
                     <strong>Examples:</strong> Facebook Pixel, Google Ads,
                     retargeting pixels
                   </div>
@@ -207,7 +207,7 @@ export default function CookiesPage() {
             </div>
 
             {/* Functional Cookies */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Settings className="h-5 w-5 text-orange-600" />
@@ -221,7 +221,7 @@ export default function CookiesPage() {
                     personalization, such as remembering your preferences and
                     settings.
                   </p>
-                  <div className="text-sm text-secondary-text">
+                  <div className="text-sm text-secondary-text dark:text-slate-400">
                     <strong>Examples:</strong> Language preferences, theme
                     settings, form data
                   </div>
@@ -231,7 +231,7 @@ export default function CookiesPage() {
           </div>
 
           {/* Managing Cookies */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 mb-8">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 mb-8">
             <h2 className="text-xl font-semibold text-header-text mb-4">
               Managing your cookie preferences
             </h2>
@@ -281,7 +281,7 @@ export default function CookiesPage() {
           </div>
 
           {/* Contact */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <h2 className="text-xl font-semibold text-header-text mb-4">
               Questions about cookies?
             </h2>

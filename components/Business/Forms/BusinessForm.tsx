@@ -117,7 +117,7 @@ export default function BusinessForm({
             name="name"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel className="block text-sm font-medium text-secondary-text">
+                <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   Company/Name *
                 </FormLabel>
                 <FormControl>
@@ -137,7 +137,7 @@ export default function BusinessForm({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="block text-sm font-medium text-secondary-text">
+                <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   Email *
                 </FormLabel>
                 <FormControl>
@@ -158,7 +158,7 @@ export default function BusinessForm({
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="block text-sm font-medium text-secondary-text">
+                <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   Phone
                 </FormLabel>
                 <FormControl>
@@ -179,7 +179,7 @@ export default function BusinessForm({
             name="vat"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="block text-sm font-medium text-secondary-text">
+                <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   VAT Number
                 </FormLabel>
                 <FormControl>
@@ -203,7 +203,7 @@ export default function BusinessForm({
           name="address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="block text-sm font-medium text-secondary-text">
+              <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                 Address *
               </FormLabel>
               <FormControl>
@@ -226,7 +226,7 @@ export default function BusinessForm({
             name="logo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="block text-sm font-medium text-secondary-text">
+                <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   Company Logo
                 </FormLabel>
                 <FormControl>
@@ -238,7 +238,7 @@ export default function BusinessForm({
                     className="cursor-pointer"
                   />
                 </FormControl>
-                <FormDescription className="text-xs text-secondary-text">
+                <FormDescription className="text-xs text-secondary-text dark:text-slate-400">
                   Upload a logo for your company (PNG, JPG, JPEG - Max 5MB)
                 </FormDescription>
                 <FormMessage />
@@ -249,10 +249,10 @@ export default function BusinessForm({
           {/* Logo Preview */}
           {previewUrl && (
             <div className="w-full">
-              <p className="text-sm font-medium text-secondary-text mb-2">
+              <p className="text-sm font-medium text-secondary-text dark:text-slate-400 mb-2">
                 Logo Preview:
               </p>
-              <div className="w-32 h-20 border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex items-center justify-center">
+              <div className="w-32 h-20 border border-gray-200 dark:border-slate-700 rounded-md overflow-hidden bg-gray-50 dark:bg-slate-800 flex items-center justify-center">
                 <Image
                   src={previewUrl}
                   alt="Logo Preview"
@@ -274,7 +274,7 @@ export default function BusinessForm({
               ? "Professional Plan Includes:"
               : "Free Plan Includes:"}
           </h4>
-          <ul className="text-sm text-secondary-text space-y-1">
+          <ul className="text-sm text-secondary-text dark:text-slate-400 space-y-1">
             {userPlan === "enterprise" && (
               <>
                 <li>• Unlimited companies</li>

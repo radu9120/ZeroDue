@@ -37,11 +37,11 @@ export default function BusinessDashboard({
           </div>
           <div className="space-y-2">
             <div className="">
-              <h1 className="text-3xl md:text-4xl font-bold text-header-text">
+              <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
                 {business.name}
               </h1>
             </div>
-            <p className="text-secondary-text">{business.email}</p>
+            <p className="text-secondary-text dark:text-slate-400">{business.email}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">

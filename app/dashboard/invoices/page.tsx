@@ -128,8 +128,10 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
               <FileText className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Invoices</h1>
-              <p className="text-gray-600">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">
+                Invoices
+              </h1>
+              <p className="text-gray-600 dark:text-slate-400">
                 Manage and track all your invoices for {business.name}
               </p>
             </div>
@@ -227,17 +229,17 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
               <div className="flex flex-col md:flex-row gap-4 flex-1">
                 <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 h-4 w-4" />
                   <Input
                     name="search"
                     placeholder="Search invoices..."
-                    className="pl-10 h-11 border-gray-200 rounded-xl"
+                    className="pl-10 h-11 border-gray-200 dark:border-slate-700 rounded-xl"
                     defaultValue={searchQuery}
                   />
                 </div>
 
                 <Select name="status" defaultValue={statusFilter}>
-                  <SelectTrigger className="w-48 h-11 border-gray-200 rounded-xl">
+                  <SelectTrigger className="w-48 h-11 border-gray-200 dark:border-slate-700 rounded-xl">
                     <Filter className="h-4 w-4 mr-2" />
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
@@ -266,7 +268,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                   <Button
                     type="button"
                     variant="ghost"
-                    className="h-11 px-4 border border-gray-200 rounded-xl"
+                    className="h-11 px-4 border border-gray-200 dark:border-slate-700 rounded-xl"
                   >
                     <ArrowUpDown className="h-4 w-4 mr-2" />
                     Sort by Date ({sortOrder === "desc" ? "Newest" : "Oldest"})
@@ -308,10 +310,10 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                           <FileText className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-lg text-gray-900">
+                          <h3 className="font-semibold text-lg text-gray-900 dark:text-slate-100">
                             {invoice.invoice_number}
                           </h3>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-gray-500 dark:text-slate-500">
                             {billTo?.name || "No client"}
                           </p>
                         </div>
@@ -321,22 +323,28 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Amount:</span>
-                      <span className="text-xl font-bold text-gray-900">
+                      <span className="text-sm text-gray-600 dark:text-slate-400">
+                        Amount:
+                      </span>
+                      <span className="text-xl font-bold text-gray-900 dark:text-slate-100">
                         £{(invoice.total || 0).toFixed(2)}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">Due Date:</span>
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm text-gray-600 dark:text-slate-400">
+                        Due Date:
+                      </span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-slate-100">
                         {formatDate(invoice.due_date)}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center pt-2">
-                      <span className="text-sm text-gray-600">Created:</span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-600 dark:text-slate-400">
+                        Created:
+                      </span>
+                      <span className="text-sm text-gray-500 dark:text-slate-500">
                         {formatDate(invoice.created_at)}
                       </span>
                     </div>
@@ -376,13 +384,13 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
         ) : (
           <Card className="shadow-lg border-0">
             <CardContent className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <FileText className="h-8 w-8 text-gray-400" />
+              <div className="w-16 h-16 bg-gray-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FileText className="h-8 w-8 text-gray-400 dark:text-slate-500" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-2">
                 No invoices found
               </h3>
-              <p className="text-gray-500 mb-6">
+              <p className="text-gray-500 dark:text-slate-400 mb-6">
                 {searchQuery || statusFilter !== "all"
                   ? "Try adjusting your search or filter criteria"
                   : "Create your first invoice to get started"}

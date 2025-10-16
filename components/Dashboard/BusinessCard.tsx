@@ -25,17 +25,17 @@ export default function BusinessCard({ company } : { company: DashboardBusinessS
                             </div>
                             <div>
                                 <div className="flex items-center gap-2">
-                                    <h3 className="font-semibold text-header-text text-lg">
+                                    <h3 className="font-semibold text-header-text dark:text-slate-100 text-lg">
                                         {company.name}
                                     </h3>
                                 </div>
                             </div>
                         </div>
                         <ArrowRight
-                            className='h-5 w-5 transition-colors text-secondary-text group-hover:text-primary'
+                            className='h-5 w-5 transition-colors text-secondary-text dark:text-slate-400 group-hover:text-primary'
             //                 isJustCreated
             //   ? "text-green-600"
-            //   : "text-secondary-text group-hover:text-primary"
+            //   : "text-secondary-text dark:text-slate-400 group-hover:text-primary"
                         />
                     </div>
                     <div className="grid grid-cols-3 gap-4 mb-6">
@@ -43,10 +43,10 @@ export default function BusinessCard({ company } : { company: DashboardBusinessS
                             <div className="flex items-center justify-center gap-1 mb-1">
                                 <FileText className="h-4 w-4 text-primary" />
                             </div>
-                            <span className="text-sm font-medium text-secondary-text">
+                            <span className="text-sm font-medium text-secondary-text dark:text-slate-400">
                                 Invoices
                             </span>
-                            <div className="text-lg font-bold text-header-text">
+                            <div className="text-lg font-bold text-header-text dark:text-slate-100">
                                 <p>{company.totalinvoices}</p>
                             </div>
                         </div>
@@ -55,10 +55,10 @@ export default function BusinessCard({ company } : { company: DashboardBusinessS
                             <div className="flex items-center justify-center gap-1 mb-1">
                                 <Users className="h-4 w-4 text-purple-600" />
                             </div>
-                            <span className="text-sm font-medium text-secondary-text">
+                            <span className="text-sm font-medium text-secondary-text dark:text-slate-400">
                                 Clients
                             </span>
-                            <div className="text-lg font-bold text-header-text">
+                            <div className="text-lg font-bold text-header-text dark:text-slate-100">
                                 <p>{company.totalclients}</p>
                             </div>
                         </div>
@@ -67,7 +67,7 @@ export default function BusinessCard({ company } : { company: DashboardBusinessS
                             <div className="flex items-center justify-center gap-1 mb-1">
                                 <DollarSign className="h-4 w-4 text-green-600" />
                             </div>
-                            <span className="text-sm font-medium text-secondary-text">
+                            <span className="text-sm font-medium text-secondary-text dark:text-slate-400">
                                 Revenue
                             </span>
                             <div className="text-lg font-bold text-green-600">
@@ -78,7 +78,7 @@ export default function BusinessCard({ company } : { company: DashboardBusinessS
                 </Link>
             </CardContent>
             <CardFooter className="flex items-center justify-between pt-4 border-t border-blue-100">
-                <span className="text-sm text-secondary-text">
+                <span className="text-sm text-secondary-text dark:text-slate-400">
                     Created on {" "}{timestamptzConvert(company.created_on)}
                 </span>
                 <div className="flex items-center gap-2">

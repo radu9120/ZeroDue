@@ -753,7 +753,7 @@ export default function InvoiceSuccessView({
 
         {/* Invoice Preview */}
         <Card className="shadow-2xl border-0">
-          <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200">
+          <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -780,7 +780,7 @@ export default function InvoiceSuccessView({
           </CardHeader>
 
           <CardContent
-            className="p-12 bg-white"
+            className="p-12 bg-white dark:bg-slate-800"
             data-invoice-preview
             style={{ height: "auto" }}
           >
@@ -800,11 +800,11 @@ export default function InvoiceSuccessView({
                     </div>
                   )}
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-3">
                       {company.name}
                     </h2>
                     {company.address && (
-                      <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line mb-2">
+                      <p className="text-sm text-gray-600 dark:text-slate-400 leading-relaxed whitespace-pre-line mb-2">
                         {company.address}
                       </p>
                     )}
@@ -823,7 +823,7 @@ export default function InvoiceSuccessView({
                 </div>
 
                 <div className="text-right min-w-[280px]">
-                  <h1 className="text-4xl font-bold text-gray-900 mb-6">
+                  <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100 mb-6">
                     INVOICE
                   </h1>
                   <div className="space-y-2">
@@ -858,26 +858,26 @@ export default function InvoiceSuccessView({
               </div>
 
               {/* Bill To Section */}
-              <div className="mb-8 pb-6 border-b border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+              <div className="mb-8 pb-6 border-b border-gray-200 dark:border-slate-700">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 uppercase tracking-wide mb-3">
                   Bill To:
                 </h3>
-                <p className="text-base font-bold text-gray-900 mb-1">
+                <p className="text-base font-bold text-gray-900 dark:text-slate-100 mb-1">
                   {billTo?.name || "Client"}
                 </p>
                 {billTo?.address && (
-                  <p className="text-sm text-gray-600 whitespace-pre-line">
+                  <p className="text-sm text-gray-600 dark:text-slate-400 whitespace-pre-line">
                     {billTo.address}
                   </p>
                 )}
                 {billTo?.email && (
-                  <p className="text-sm text-gray-600 mt-1">{billTo.email}</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">{billTo.email}</p>
                 )}
               </div>
 
               {/* Professional Items Table */}
               <div className="mb-8">
-                <div className="border border-gray-300 rounded-md overflow-hidden">
+                <div className="border border-gray-300 dark:border-slate-600 rounded-md overflow-hidden">
                   <table className="w-full">
                     <thead>
                       <tr className="bg-gray-800 text-white">
@@ -898,12 +898,12 @@ export default function InvoiceSuccessView({
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white">
+                    <tbody className="bg-white dark:bg-slate-800">
                       {items.length > 0 ? (
                         items.map((item: any, index: number) => (
                           <tr
                             key={index}
-                            className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
+                            className="border-b border-gray-200 dark:border-slate-700 last:border-b-0 hover:bg-gray-50 dark:bg-slate-900"
                           >
                             <td className="px-6 py-4 text-sm text-gray-900">
                               {item.description || "No description"}
@@ -941,22 +941,22 @@ export default function InvoiceSuccessView({
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-8">
                 <div className="lg:col-span-2 space-y-6">
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">
                       Bank Details
                     </h4>
-                    <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
-                      <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                    <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-5 border border-gray-200 dark:border-slate-700">
+                      <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
                         {invoice.bank_details || "No bank details provided"}
                       </p>
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">
+                    <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">
                       Notes & Terms
                     </h4>
-                    <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
-                      <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                    <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-5 border border-gray-200 dark:border-slate-700">
+                      <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
                         {invoice.notes || "No additional notes"}
                       </p>
                     </div>
@@ -964,7 +964,7 @@ export default function InvoiceSuccessView({
                 </div>
 
                 <div className="lg:col-span-1">
-                  <div className="bg-gray-50 rounded-lg border-2 border-gray-300 overflow-hidden">
+                  <div className="bg-gray-50 dark:bg-slate-900 rounded-lg border-2 border-gray-300 dark:border-slate-600 overflow-hidden">
                     <div className="bg-gray-800 px-6 py-4">
                       <h4 className="text-base font-bold text-white">
                         Invoice Summary
@@ -972,7 +972,7 @@ export default function InvoiceSuccessView({
                     </div>
 
                     <div className="p-6 space-y-5">
-                      <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                      <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-700">
                         <span className="text-sm font-medium text-gray-700">
                           Subtotal
                         </span>
@@ -981,7 +981,7 @@ export default function InvoiceSuccessView({
                         </span>
                       </div>
 
-                      <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                      <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-700">
                         <span className="text-sm font-medium text-gray-700">
                           Shipping
                         </span>
@@ -990,7 +990,7 @@ export default function InvoiceSuccessView({
                         </span>
                       </div>
 
-                      <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                      <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-700">
                         <span className="text-sm font-medium text-gray-700">
                           Discount
                         </span>

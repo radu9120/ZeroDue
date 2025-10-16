@@ -114,7 +114,7 @@ export default async function Page({
   }
 
   return (
-    <main>
+    <main className="min-h-screen bg-gray-50 dark:bg-slate-800 transition-colors">
       <Bounded>
         <BusinessDashboard
           business={business}

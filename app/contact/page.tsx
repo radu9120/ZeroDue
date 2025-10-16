@@ -42,7 +42,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white">
+    <div className="min-h-screen pt-24 md:pt-28 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Header */}
         <div className="mb-8">
@@ -55,11 +55,11 @@ export default function ContactPage() {
           </Link>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <MessageCircle className="h-6 w-6 text-primary" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
+              <MessageCircle className="h-6 w-6 text-primary dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-header-text">
+              <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
                 Contact Us
               </h1>
               <p className="text-secondary-text mt-1">
@@ -74,18 +74,18 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Contact Information */}
             <div className="space-y-8">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
                 <h2 className="text-xl font-semibold text-header-text mb-6">
                   Get in Touch
                 </h2>
 
                 <div className="space-y-6">
                   <div className="flex items-start group">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <Mail className="h-5 w-5 text-primary" />
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                      <Mail className="h-5 w-5 text-primary dark:text-blue-400" />
                     </div>
                     <div className="ml-4">
-                      <h3 className="font-semibold text-header-text">Email</h3>
+                      <h3 className="font-semibold text-header-text dark:text-slate-100">Email</h3>
                       <a
                         href="mailto:privacy@invoiceflow.com"
                         className="text-secondary-text hover:text-primary transition-colors"
@@ -103,10 +103,10 @@ export default function ContactPage() {
                       <MapPin className="h-5 w-5 text-green-600" />
                     </div>
                     <div className="ml-4">
-                      <h3 className="font-semibold text-header-text">
+                      <h3 className="font-semibold text-header-text dark:text-slate-100">
                         Address
                       </h3>
-                      <p className="text-secondary-text">
+                      <p className="text-secondary-text dark:text-slate-400">
                         123 Business Street, Suite 100
                         <br />
                         London, EC1A 1BB, United Kingdom
@@ -119,10 +119,10 @@ export default function ContactPage() {
                       <Clock className="h-5 w-5 text-purple-600" />
                     </div>
                     <div className="ml-4">
-                      <h3 className="font-semibold text-header-text">
+                      <h3 className="font-semibold text-header-text dark:text-slate-100">
                         Business Hours
                       </h3>
-                      <p className="text-secondary-text">
+                      <p className="text-secondary-text dark:text-slate-400">
                         Monday - Friday: 9:00 AM - 6:00 PM (GMT)
                         <br />
                         Weekend: Emergency support only
@@ -133,7 +133,7 @@ export default function ContactPage() {
               </div>
 
               {/* Quick Links */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
                 <h3 className="text-lg font-semibold text-header-text mb-4">
                   Quick Help
                 </h3>
@@ -165,7 +165,7 @@ export default function ContactPage() {
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
                 <h2 className="text-xl font-semibold text-header-text mb-6">
                   Send us a Message
                 </h2>
@@ -258,7 +258,7 @@ export default function ContactPage() {
                 </form>
 
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-primary">
+                  <p className="text-sm text-primary dark:text-blue-400">
                     <strong>💡 Tip:</strong> For faster support, include as much
                     detail as possible about your issue or question. We
                     typically respond within 24 hours during business days.

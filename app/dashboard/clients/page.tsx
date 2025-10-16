@@ -25,7 +25,7 @@ export default async function Page({
   const userPlan: AppPlan = await getCurrentPlan();
 
   return (
-    <main>
+    <main className="min-h-screen bg-gray-50 dark:bg-slate-800 transition-colors">
       <Bounded className="">
         <ClientManagement clients={clients} business_id={business_id} />
       </Bounded>

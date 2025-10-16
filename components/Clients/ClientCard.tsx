@@ -50,33 +50,33 @@ export default function ClientCard({ client }: { client: any }) {
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all">
+    <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
             <Users className="h-5 w-5 text-purple-600" />
           </div>
           <div>
-            <h3 className="font-semibold text-header-text">{client.name}</h3>
+            <h3 className="font-semibold text-header-text dark:text-slate-100">{client.name}</h3>
           </div>
         </div>
       </div>
 
       <div className="space-y-3 mb-6">
         <div className="flex items-center gap-2">
-          <Mail className="h-4 w-4 text-secondary-text" />
-          <span className="text-sm text-primary-text">{client.email}</span>
+          <Mail className="h-4 w-4 text-secondary-text dark:text-slate-400" />
+          <span className="text-sm text-primary-text dark:text-slate-300">{client.email}</span>
         </div>
         {client.phone && (
           <div className="flex items-center gap-2">
-            <Phone className="h-4 w-4 text-secondary-text" />
-            <span className="text-sm text-primary-text">{client.phone}</span>
+            <Phone className="h-4 w-4 text-secondary-text dark:text-slate-400" />
+            <span className="text-sm text-primary-text dark:text-slate-300">{client.phone}</span>
           </div>
         )}
         {client.address && (
           <div className="flex items-start gap-2">
-            <MapPin className="h-4 w-4 text-secondary-text mt-0.5" />
-            <span className="text-sm text-primary-text">{client.address}</span>
+            <MapPin className="h-4 w-4 text-secondary-text dark:text-slate-400 mt-0.5" />
+            <span className="text-sm text-primary-text dark:text-slate-300">{client.address}</span>
           </div>
         )}
       </div>
@@ -85,18 +85,18 @@ export default function ClientCard({ client }: { client: any }) {
         <div className="text-center p-3 bg-blue-50 rounded-lg">
           <div className="flex items-center justify-center gap-1 mb-1">
             <FileText className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-secondary-text">
+            <span className="text-sm font-medium text-secondary-text dark:text-slate-400">
               Invoices
             </span>
           </div>
-          <span className="text-lg font-bold text-header-text">
+          <span className="text-lg font-bold text-header-text dark:text-slate-100">
             {client.invoices || 0}
           </span>
         </div>
         <div className="text-center p-3 bg-green-50 rounded-lg">
           <div className="flex items-center justify-center gap-1 mb-1">
             <DollarSign className="h-4 w-4 text-green-600" />
-            <span className="text-sm font-medium text-secondary-text">
+            <span className="text-sm font-medium text-secondary-text dark:text-slate-400">
               Total
             </span>
           </div>

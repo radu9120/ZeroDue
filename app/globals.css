@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
-@theme {
-  --color-primary: #3b82f6;        /* blue-500 */
-  --color-primary-dark: #1d4ed8;   /* blue-700*/
-  --color-accent: #06b6d4;         /* cyan-500 */
-  --color-header-text: #1f2937;    /* neutral-800 */
-  --color-primary-text: #374151;   /* neutral-700 */
-  --color-secondary-text: #6b7280; /* neutral-500 */
-  --color-indigo: #4f46e5;           /* indigo-600 */
+@variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-primary: #3b82f6; /* blue-500 */
+  --color-primary-dark: #1d4ed8; /* blue-700*/
+  --color-accent: #06b6d4; /* cyan-500 */
+  --color-header-text: #1f2937; /* neutral-800 */
+  --color-primary-text: #374151; /* neutral-700 */
+  --color-secondary-text: #6b7280; /* neutral-500 */
+  --color-indigo: #4f46e5; /* indigo-600 */
 }
+
 :root {
   /* Base styles */
   --radius: 0.625rem;
@@ -55,42 +57,63 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0); */
 
-  --color-primary: #3b82f6;        /* primary */
-  --color-primary-dark: #1d4ed8;   /* primary-dark */
-  --color-accent : #06b6d4;         /* accent */
-  --color-header-text: #1f2937;    /* header-text */
-  --color-primary-text: #374151;   /* primary-text */
-  --color-secondary-text: #6b7280; /* secondary-text */
-  --color-indigo: #4f46e5;           /* indigo-600 */
+  --color-primary: #3b82f6;
+  --color-primary-dark: #1d4ed8;
+  --color-accent: #06b6d4;
+  --color-header-text: #1f2937;
+  --color-primary-text: #374151;
+  --color-secondary-text: #6b7280;
+  --color-indigo: #4f46e5;
+}
 
+/* Dark Blue Theme - Easy on the eyes */
+.dark {
+  --color-primary: #60a5fa;
+  --color-primary-dark: #3b82f6;
+  --color-accent: #22d3ee;
+  --color-header-text: #e0e7ff;
+  --color-primary-text: #c7d2fe;
+  --color-secondary-text: #a5b4fc;
+  --color-indigo: #818cf8;
 
- /* Custom animations */
-  @keyframes blob {
-    0% {
-      transform: translate(0px, 0px) scale(1);
-    }
-    33% {
-      transform: translate(30px, -50px) scale(1.1);
-    }
-    66% {
-      transform: translate(-20px, 20px) scale(0.9);
-    }
-    100% {
-      transform: translate(0px, 0px) scale(1);
-    }
-  }
+  /* Dark Blue Theme Colors - Softer on eyes */
+  --dark-bg-primary: #0f172a; /* Deep blue background */
+  --dark-bg-secondary: #1e293b; /* Slate blue secondary */
+  --dark-bg-tertiary: #334155; /* Lighter slate for cards */
+  --dark-border: #475569; /* Blue-gray borders */
+  --dark-text-primary: #e2e8f0; /* Very light blue-gray text */
+  --dark-text-secondary: #cbd5e1; /* Light blue-gray text */
+  --dark-text-muted: #94a3b8; /* Muted blue-gray text */
+  --dark-accent: #3b82f6; /* Blue accent */
+  --dark-accent-hover: #60a5fa; /* Lighter blue on hover */
+}
 
-  /* Custom utilities */
-  .text-balance {
-    text-wrap: balance;
+/* Custom animations */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
   }
-  .animation-delay-2000 {
-    animation-delay: 2s;
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
   }
-  .animation-delay-4000 {
-    animation-delay: 4s;
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
   }
-  .animate-blob {
-    animation: blob 7s infinite;
+  100% {
+    transform: translate(0px, 0px) scale(1);
   }
+}
+
+/* Custom utilities */
+.text-balance {
+  text-wrap: balance;
+}
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+.animate-blob {
+  animation: blob 7s infinite;
 }

@@ -16,8 +16,8 @@ export default function QuickActions({ companyId }: QuickActionsProps) {
                         <Users className="h-6 w-6 text-purple-600" />
                     </div>
                     <div>
-                        <h3 className="font-semibold text-header-text">Manage Clients</h3>
-                        <p className="text-sm text-secondary-text">
+                        <h3 className="font-semibold text-header-text dark:text-slate-100">Manage Clients</h3>
+                        <p className="text-sm text-secondary-text dark:text-slate-400">
                             View and edit client information
                         </p>
                     </div>
@@ -32,8 +32,8 @@ export default function QuickActions({ companyId }: QuickActionsProps) {
                             <TrendingUp className="h-6 w-6 text-green-600" />
                         </div>
                         <div>
-                            <h3 className="font-semibold text-header-text">View Analytics</h3>
-                            <p className="text-sm text-secondary-text">
+                            <h3 className="font-semibold text-header-text dark:text-slate-100">View Analytics</h3>
+                            <p className="text-sm text-secondary-text dark:text-slate-400">
                                 Track revenue and business insights
                             </p>
                         </div>

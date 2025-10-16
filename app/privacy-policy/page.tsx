@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white">
+    <div className="min-h-screen pt-24 md:pt-28 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Header */}
         <div className="mb-8">
@@ -26,11 +26,11 @@ export default function PrivacyPolicyPage() {
           </Link>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Shield className="h-6 w-6 text-primary" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
+              <Shield className="h-6 w-6 text-primary dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-header-text">
+              <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
                 Privacy Policy
               </h1>
               <p className="text-secondary-text mt-1">
@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
 
         <div className="max-w-4xl space-y-8">
           {/* Introduction */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <h2 className="text-xl font-semibold text-header-text mb-4">
               Introduction
             </h2>
@@ -64,7 +64,7 @@ export default function PrivacyPolicyPage() {
           </div>
 
           {/* Data Controller */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <h2 className="text-xl font-semibold text-header-text mb-4">
               Data Controller
             </h2>
@@ -86,7 +86,7 @@ export default function PrivacyPolicyPage() {
           </div>
 
           {/* Information We Collect */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <h2 className="text-xl font-semibold text-header-text mb-6">
               Information We Collect
             </h2>
@@ -94,8 +94,8 @@ export default function PrivacyPolicyPage() {
             <div className="space-y-6">
               {/* Personal Information */}
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Users className="h-5 w-5 text-primary" />
+                <div className="w-10 h-10 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Users className="h-5 w-5 text-primary dark:text-blue-400" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-header-text mb-2">
@@ -169,7 +169,7 @@ export default function PrivacyPolicyPage() {
           </div>
 
           {/* How We Use Your Information */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <h2 className="text-xl font-semibold text-header-text mb-6">
               How We Use Your Information
             </h2>
@@ -222,7 +222,7 @@ export default function PrivacyPolicyPage() {
           </div>
 
           {/* Data Sharing */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <h2 className="text-xl font-semibold text-header-text mb-4">
               Information Sharing and Disclosure
             </h2>
@@ -261,7 +261,7 @@ export default function PrivacyPolicyPage() {
           </div>
 
           {/* Data Security */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
                 <Lock className="h-5 w-5 text-red-600" />
@@ -288,7 +288,7 @@ export default function PrivacyPolicyPage() {
           </div>
 
           {/* Your Rights */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <h2 className="text-xl font-semibold text-header-text mb-6">
               Your Rights Under UK GDPR
             </h2>
@@ -372,7 +372,7 @@ export default function PrivacyPolicyPage() {
             </div>
 
             <div className="mt-4 p-4 bg-neutral-50 rounded-lg">
-              <p className="text-sm text-secondary-text">
+              <p className="text-sm text-secondary-text dark:text-slate-400">
                 To exercise any of these rights, please contact us at{" "}
                 <strong>privacy@invoiceflow.com</strong>. We will respond within
                 one month of receiving your request.
@@ -381,7 +381,7 @@ export default function PrivacyPolicyPage() {
           </div>
 
           {/* Data Retention */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <h2 className="text-xl font-semibold text-header-text mb-4">
               Data Retention
             </h2>
@@ -411,10 +411,10 @@ export default function PrivacyPolicyPage() {
           </div>
 
           {/* International Transfers */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Globe className="h-5 w-5 text-primary" />
+              <div className="w-10 h-10 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Globe className="h-5 w-5 text-primary dark:text-blue-400" />
               </div>
               <div className="flex-1">
                 <h2 className="text-xl font-semibold text-header-text mb-4">
@@ -438,7 +438,7 @@ export default function PrivacyPolicyPage() {
           </div>
 
           {/* Contact Information */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
                 <Mail className="h-5 w-5 text-green-600" />
@@ -483,7 +483,7 @@ export default function PrivacyPolicyPage() {
           </div>
 
           {/* Updates */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
             <h2 className="text-xl font-semibold text-header-text mb-4">
               Changes to This Policy
             </h2>

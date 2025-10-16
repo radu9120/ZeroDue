@@ -18,11 +18,11 @@ export default function Footer() {
   return (
     <footer
       id="contact"
-      className="relative bg-gradient-to-b from-white to-blue-50 pt-24 pb-12 overflow-hidden"
+      className="relative bg-gradient-to-b from-white to-blue-50 dark:from-slate-900 dark:to-slate-800 pt-24 pb-12 overflow-hidden"
     >
       {/* Decorative blurs - improved positioninggg */}
-      <div className="absolute -top-32 right-0 w-96 h-96 bg-blue-200 rounded-full opacity-20 blur-3xl"></div>
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-cyan-200 rounded-full opacity-20 blur-3xl"></div>
+      <div className="absolute -top-32 right-0 w-96 h-96 bg-blue-200 dark:bg-blue-900/20 rounded-full opacity-20 blur-3xl"></div>
+      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-cyan-200 dark:bg-cyan-900/20 rounded-full opacity-20 blur-3xl"></div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* Main footer content */}
@@ -48,11 +48,11 @@ export default function Footer() {
                   width={50}
                 ></Image>
               </motion.div>
-              <span className="text-2xl font-bold text-header-text">
+              <span className="text-2xl font-bold text-header-text dark:text-slate-100">
                 InvoiceFlow
               </span>
             </Link>
-            <p className="text-secondary-text mb-6">
+            <p className="text-secondary-text dark:text-slate-400 mb-6">
               Streamline your invoicing process with our powerful, intuitive
               platform designed for modern businesses.
             </p>
@@ -61,7 +61,7 @@ export default function Footer() {
                 <Link
                   key={i}
                   href="#"
-                  className="w-10 h-10 rounded-full bg-blue-50 hover:bg-blue-100 flex items-center justify-center text-primary transition-colors hover:-translate-y-1 transform duration-200"
+                  className="w-10 h-10 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 flex items-center justify-center text-primary dark:text-blue-400 transition-colors hover:-translate-y-1 transform duration-200"
                 >
                   <Icon className="h-5 w-5" />
                   <span className="sr-only">Social media</span>
@@ -77,7 +77,7 @@ export default function Footer() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="space-y-3"
           >
-            <h3 className="text-lg font-semibold text-header-text mb-5">
+            <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-5">
               Product
             </h3>
             {[
@@ -88,7 +88,7 @@ export default function Footer() {
               <Link
                 key={i}
                 href={item.href}
-                className="block text-secondary-text hover:text-primary transition-colors py-1"
+                className="block text-secondary-text dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 transition-colors py-1"
               >
                 {item.name}
               </Link>
@@ -102,7 +102,7 @@ export default function Footer() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="space-y-3"
           >
-            <h3 className="text-lg font-semibold text-header-text mb-5">
+            <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-5">
               Resources
             </h3>
             {[
@@ -115,7 +115,7 @@ export default function Footer() {
               <Link
                 key={i}
                 href={item.href}
-                className="block text-secondary-text hover:text-primary transition-colors py-1"
+                className="block text-secondary-text dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 transition-colors py-1"
               >
                 {item.name}
               </Link>
@@ -128,17 +128,19 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <h3 className="text-lg font-semibold text-header-text mb-5">
+            <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-5">
               Contact
             </h3>
             <div className="space-y-5">
               <div className="flex items-start group">
-                <Mail className="h-5 w-5 text-primary mr-3 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <Mail className="h-5 w-5 text-primary dark:text-blue-400 mr-3 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
                 <div>
-                  <p className="font-medium text-header-text">Email Us</p>
+                  <p className="font-medium text-header-text dark:text-slate-100">
+                    Email Us
+                  </p>
                   <a
                     href="mailto:privacy@invoiceflow.com"
-                    className="text-secondary-text hover:text-primary transition-colors"
+                    className="text-secondary-text dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 transition-colors"
                   >
                     privacy@invoiceflow.com
                   </a>
@@ -146,10 +148,12 @@ export default function Footer() {
               </div>
 
               <div className="flex items-start group">
-                <Globe className="h-5 w-5 text-primary mr-3 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <Globe className="h-5 w-5 text-primary dark:text-blue-400 mr-3 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
                 <div>
-                  <p className="font-medium text-header-text">Location</p>
-                  <p className="text-secondary-text">
+                  <p className="font-medium text-header-text dark:text-slate-100">
+                    Location
+                  </p>
+                  <p className="text-secondary-text dark:text-slate-400">
                     123 Business Street, Suite 100
                     <br />
                     London, EC1A 1BB, United Kingdom
@@ -170,19 +174,25 @@ export default function Footer() {
         >
           {[
             {
-              icon: <Clock className="h-6 w-6 text-primary" />,
+              icon: (
+                <Clock className="h-6 w-6 text-primary dark:text-blue-400" />
+              ),
               title: "24/7 Support",
               description:
                 "Our team is always available to help with any questions or issues.",
             },
             {
-              icon: <Shield className="h-6 w-6 text-primary" />,
+              icon: (
+                <Shield className="h-6 w-6 text-primary dark:text-blue-400" />
+              ),
               title: "Secure Payments",
               description:
                 "Bank-level security ensures your financial data is always protected.",
             },
             {
-              icon: <Globe className="h-6 w-6 text-primary" />,
+              icon: (
+                <Globe className="h-6 w-6 text-primary dark:text-blue-400" />
+              ),
               title: "Global Coverage",
               description:
                 "Support for multiple currencies and international payment methods.",
@@ -190,17 +200,17 @@ export default function Footer() {
           ].map((feature, i) => (
             <motion.div
               key={i}
-              className="flex items-start p-4 rounded-xl hover:bg-white/70 transition-colors"
+              className="flex items-start p-4 rounded-xl hover:bg-white/70 dark:hover:bg-slate-800/70 transition-colors"
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
-              <div className="mr-4 p-3 bg-blue-50 rounded-lg">
+              <div className="mr-4 p-3 bg-blue-50 dark:bg-slate-800 rounded-lg">
                 {feature.icon}
               </div>
               <div>
-                <h4 className="font-semibold text-header-text mb-1">
+                <h4 className="font-semibold text-header-text dark:text-slate-100 mb-1">
                   {feature.title}
                 </h4>
-                <p className="text-sm text-secondary-text">
+                <p className="text-sm text-secondary-text dark:text-slate-400">
                   {feature.description}
                 </p>
               </div>
@@ -210,7 +220,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="py-8 flex flex-col md:flex-row justify-center items-center">
-          <p className="text-secondary-text text-sm mb-4 md:mb-0">
+          <p className="text-secondary-text dark:text-slate-400 text-sm mb-4 md:mb-0">
             © {new Date().getFullYear()} InvoiceFlow. All rights reserved.
           </p>
         </div>

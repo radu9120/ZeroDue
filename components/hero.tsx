@@ -2,10 +2,9 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle, FileText } from "lucide-react";
 import Bounded from "./ui/bounded";
 import CompanyBanner from "./companies-banner";
-import { useState, useEffect } from "react";
 
 function FloatingPaths({ position }: { position: number }) {
   const paths = Array.from({ length: 18 }, (_, i) => ({
@@ -52,50 +51,16 @@ function FloatingPaths({ position }: { position: number }) {
 }
 
 export default function Hero() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkIsMobile();
-    window.addEventListener("resize", checkIsMobile);
-
-    return () => window.removeEventListener("resize", checkIsMobile);
-  }, []);
-
-  const invoices = [
-    {
-      id: "INV-2321",
-      client: "Acme Co",
-      amount: "$2,400",
-      status: "paid",
-    },
-    {
-      id: "INV-2320",
-      client: "Globex",
-      amount: "$1,800",
-      status: "sent",
-    },
-    {
-      id: "INV-2319",
-      client: "Initech",
-      amount: "$3,600",
-      status: "draft",
-    },
-  ];
-
   return (
-    <div className="relative w-full min-h-[100vh] overflow-hidden flex items-center">
+    <div className="relative w-full min-h-[100vh] overflow-hidden flex items-center pt-28 md:pt-32">
       {/* Background elements OUTSIDE of Bounded */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <FloatingPaths position={1} />
       </div>
 
       {/* Background blobs - adjusted ONLY for mobile */}
-      <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/40 mix-blend-multiply blur-3xl"></div>
-      <div className="absolute bottom-20 left-10 md:left-40 w-48 md:w-72 h-48 md:h-72 rounded-full bg-cyan-100/30 mix-blend-multiply blur-3xl"></div>
+      <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/40 dark:bg-blue-900/20 mix-blend-multiply dark:mix-blend-screen blur-3xl"></div>
+      <div className="absolute bottom-20 left-10 md:left-40 w-48 md:w-72 h-48 md:h-72 rounded-full bg-cyan-100/30 dark:bg-cyan-900/20 mix-blend-multiply dark:mix-blend-screen blur-3xl"></div>
 
       {/* Removed Bounded as it need to be a bit more wide */}
       <div className="relative z-10 w-full mx-auto px-4 md:px-6 lg:px-12 lg:py-24 xl:py-24 py-10 max-w-[1500px] space-y-8 md:space-y-16">
@@ -107,22 +72,16 @@ export default function Hero() {
             transition={{ duration: 0.5 }}
             className="md:w-5/12"
           >
-            <div className="inline-block mb-4 px-4 py-1.5 bg-blue-100 border border-blue-200 rounded-full shadow-sm">
-              <span className="text-primary-dark font-medium text-sm">
-                Invoicing made simple
-              </span>
-            </div>
-
             {/* Mobile: smaller text, desktop unchanged */}
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-8 text-header-text leading-tight">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-8 text-header-text dark:text-slate-100 leading-tight">
               Get paid
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-accent ml-2 md:ml-3">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-accent dark:from-[#569cd6] dark:to-[#4ec9b0] ml-2 md:ml-3">
                 faster
               </span>
             </h1>
 
             {/* Mobile: smaller text, desktop unchanged */}
-            <p className="text-base md:text-xl text-primary-text mb-6 md:mb-10 max-w-lg">
+            <p className="text-base md:text-xl text-primary-text dark:text-slate-300 mb-6 md:mb-10 max-w-lg">
               Create professional invoices in seconds and automate your payment
               process.
             </p>
@@ -132,11 +91,11 @@ export default function Hero() {
               {[
                 "Save 5+ hours weekly",
                 "Get paid 3x faster",
-                "1st invoice free",
+                "Professional invoices",
               ].map((feature, i) => (
                 <div key={i} className="flex items-center">
-                  <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-primary mr-2 shrink-0" />
-                  <span className="text-primary-text text-sm md:text-base font-medium">
+                  <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-primary dark:text-blue-400 mr-2 shrink-0" />
+                  <span className="text-primary-text dark:text-slate-300 text-sm md:text-base font-medium">
                     {feature}
                   </span>
                 </div>
@@ -150,17 +109,18 @@ export default function Hero() {
                   bg-gradient-to-r from-blue-600 to-accent hover:from-primary-dark hover:to-cyan-600
                   text-white shadow-md hover:shadow-lg hover:shadow-primary/20"
               >
-                Start free now
+                Get Started
                 <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
               </Button>
 
               <Button
                 variant="secondary"
                 className="rounded-xl px-6 md:px-8 py-4 md:py-7 text-base md:text-lg font-medium
-                  border border-neutral-200 hover:border-neutral-300 bg-white
-                  text-primary-text hover:bg-blue-50/50"
+                  border border-neutral-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 bg-white dark:bg-slate-800
+                  text-primary-text dark:text-slate-300 hover:bg-blue-50/50 dark:hover:bg-slate-700"
+                asChild
               >
-                Watch demo
+                <a href="#features">Learn More</a>
               </Button>
             </div>
           </motion.div>
@@ -173,15 +133,15 @@ export default function Hero() {
             className="md:w-7/12 flex justify-center md:justify-end relative"
           >
             {/* Browser mockup - mobile optimized sizing */}
-            <div className="relative w-full max-w-sm md:max-w-[550px] shadow-xl rounded-xl border border-neutral-200 overflow-hidden">
+            <div className="relative w-full max-w-sm md:max-w-[550px] shadow-xl rounded-xl border border-neutral-200 dark:border-slate-700 overflow-hidden">
               {/* Browser chrome - smaller on mobile */}
-              <div className="h-8 md:h-10 bg-white border-b border-neutral-100 flex items-center px-3 md:px-4">
+              <div className="h-8 md:h-10 bg-white dark:bg-slate-800 border-b border-neutral-100 dark:border-slate-700 flex items-center px-3 md:px-4">
                 <div className="flex items-center space-x-1.5 md:space-x-2 flex-shrink-0">
                   <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-400"></div>
                   <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-yellow-400"></div>
                   <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-green-400"></div>
                 </div>
-                <div className="mx-2 md:mx-4 flex-1 bg-neutral-50 rounded-md text-xs md:text-sm text-secondary-text px-2 md:px-4 py-0.5 md:py-1 text-center overflow-hidden">
+                <div className="mx-2 md:mx-4 flex-1 bg-neutral-50 dark:bg-slate-700 rounded-md text-xs md:text-sm text-secondary-text dark:text-slate-400 px-2 md:px-4 py-0.5 md:py-1 text-center overflow-hidden">
                   <span className="hidden sm:inline">
                     app.invoiceflow.com/dashboard
                   </span>
@@ -190,145 +150,103 @@ export default function Hero() {
               </div>
 
               {/* App interface - mobile optimized */}
-              <div className="bg-white">
-                {/* App header - smaller on mobile */}
-                <div className="bg-neutral-50 p-2.5 md:p-4 border-b border-neutral-100 flex justify-between items-center">
-                  <div className="text-sm md:text-base font-medium text-header-text">
-                    Dashboard
-                  </div>
-                  <div className="flex space-x-2 md:space-x-3">
-                    <div className="w-6 h-6 md:w-8 md:h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-xs md:text-sm text-blue-600">
-                        +
-                      </span>
-                    </div>
-                    <div className="w-6 h-6 md:w-8 md:h-8 bg-neutral-100 rounded-full flex items-center justify-center">
-                      <span className="text-xs md:text-sm text-neutral-600">
-                        ?
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Dashboard content - mobile optimized */}
-                <div className="p-2.5 md:p-4">
-                  {/* Stats row - smaller gaps on mobile */}
-                  <div className="grid grid-cols-3 gap-2 md:gap-4 mb-3 md:mb-4">
-                    {["Paid", "Due", "Overdue"].map((label, i) => (
+              <div className="bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800">
+                {/* Dashboard content - cleaner stats preview */}
+                <div className="p-4 md:p-6">
+                  {/* Stats cards */}
+                  <div className="grid grid-cols-3 gap-3 mb-5">
+                    {[
+                      { label: "Total Invoices", value: "124", icon: "📊" },
+                      { label: "Revenue", value: "$45.2K", icon: "💰" },
+                      { label: "Clients", value: "28", icon: "👥" },
+                    ].map((stat, i) => (
                       <div
                         key={i}
-                        className="bg-neutral-50 p-2 md:p-3 rounded-md"
+                        className="bg-white dark:bg-slate-800 rounded-lg p-3 shadow-md border border-gray-100 dark:border-slate-700 hover:shadow-lg transition-shadow"
                       >
-                        <div className="text-xs md:text-sm text-secondary-text">
-                          {label}
+                        <div className="text-lg mb-1">{stat.icon}</div>
+                        <div className="text-xs text-gray-500 dark:text-slate-400 mb-1">
+                          {stat.label}
                         </div>
+                        <div className="text-base md:text-lg font-bold text-blue-600 dark:text-blue-400">
+                          {stat.value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Revenue chart */}
+                  <div className="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-md border border-gray-100 dark:border-slate-700 mb-4">
+                    <div className="text-xs font-semibold text-gray-700 dark:text-slate-300 mb-3">
+                      Monthly Revenue
+                    </div>
+                    <div className="h-32 flex items-end justify-around gap-2">
+                      {[45, 65, 55, 75, 85, 70, 90, 95].map((height, i) => (
                         <div
-                          className={`text-sm md:text-base font-medium ${
-                            i === 0
-                              ? "text-green-600"
-                              : i === 1
-                              ? "text-blue-600"
-                              : "text-amber-600"
-                          }`}
-                        >
-                          ${i === 0 ? "8,240" : i === 1 ? "3,800" : "1,200"}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Recent invoices - show fewer on mobile using state */}
-                  <div>
-                    <div className="flex justify-between items-center mb-2 md:mb-3">
-                      <div className="text-xs md:text-sm font-medium text-primary-text">
-                        Recent Invoices
-                      </div>
-                      <div className="text-xs md:text-sm text-primary">
-                        View all
-                      </div>
+                          key={i}
+                          className="flex-1 bg-gradient-to-t from-blue-600 to-blue-400 dark:from-blue-500 dark:to-blue-300 rounded-t hover:from-blue-700 hover:to-blue-500 transition-all cursor-pointer"
+                          style={{ height: `${height}%` }}
+                        ></div>
+                      ))}
                     </div>
+                  </div>
 
-                    {invoices.slice(0, isMobile ? 2 : 3).map((inv, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between py-2 md:py-3 border-b border-neutral-100"
-                      >
-                        <div>
-                          <div className="text-xs md:text-sm font-medium text-header-text">
-                            {inv.id}
-                          </div>
-                          <div className="text-xs md:text-sm text-secondary-text">
-                            {inv.client}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs md:text-sm font-medium">
-                            {inv.amount}
-                          </div>
-                          <div
-                            className={`text-xs md:text-sm ${
-                              inv.status === "paid"
-                                ? "text-green-600"
-                                : inv.status === "sent"
-                                ? "text-blue-600"
-                                : "text-secondary-text"
-                            }`}
-                          >
-                            {inv.status.charAt(0).toUpperCase() +
-                              inv.status.slice(1)}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                  {/* Quick actions */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1">
+                      <span>+</span> New Invoice
+                    </button>
+                    <button className="bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-300 text-xs font-medium py-2 px-3 rounded-lg transition-colors">
+                      View All
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Floating notifications - hidden on mobile to reduce clutter */}
-            <div className="hidden md:block absolute -right-4 top-1/3 bg-white rounded-lg p-4 shadow-md border border-neutral-100 transform translate-x-1">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                  <svg
-                    className="h-5 w-5 text-blue-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                    />
-                  </svg>
+            {/* Floating success notification */}
+            <motion.div
+              initial={{ opacity: 0, x: 20, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+              className="hidden md:block absolute -right-6 top-1/4 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-2xl border border-gray-100 dark:border-slate-700"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="font-medium text-sm text-neutral-900">
-                    Invoice Sent
-                  </p>
-                  <p className="text-sm text-secondary-text">
-                    INV-2320 • Globex
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="hidden md:block absolute -right-4 bottom-1/4 bg-white rounded-lg p-4 shadow-md border border-neutral-100 transform translate-x-1/2">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm text-neutral-900">
+                  <p className="font-semibold text-sm text-gray-900 dark:text-slate-100">
                     Payment Received
                   </p>
-                  <p className="text-sm text-secondary-text">
-                    $2,400.00 • Acme Co
+                  <p className="text-xs text-gray-500 dark:text-slate-400">
+                    $2,400 • Acme Corp
                   </p>
                 </div>
               </div>
-            </div>
+            </motion.div>
+
+            {/* Floating invoice notification */}
+            <motion.div
+              initial={{ opacity: 0, x: 20, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ duration: 0.5, delay: 1 }}
+              className="hidden md:block absolute -right-6 bottom-1/4 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-2xl border border-gray-100 dark:border-slate-700"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900 dark:text-slate-100">
+                    Invoice Created
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">
+                    INV-2324 • Ready to send
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
         <div>

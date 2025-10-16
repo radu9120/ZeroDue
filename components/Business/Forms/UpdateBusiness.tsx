@@ -243,7 +243,7 @@ export const UpdateBusiness = ({
   if (showSuccessOverlay) {
     return (
       <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-sm flex items-center justify-center z-[60] p-4 transition-opacity duration-300 ease-in-out">
-        <div className="bg-white/80 backdrop-blur-md p-6 sm:p-10 rounded-xl shadow-2xl text-center transform transition-all duration-300 ease-in-out scale-100 opacity-100 flex flex-col items-center">
+        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-md p-6 sm:p-10 rounded-xl shadow-2xl text-center transform transition-all duration-300 ease-in-out scale-100 opacity-100 flex flex-col items-center">
           <CheckCircle className="w-16 h-16 sm:w-20 sm:h-20 text-green-600 mx-auto mb-5" />
           <p className="text-xl sm:text-2xl font-semibold text-slate-700">
             Updated Successfully!
@@ -257,7 +257,7 @@ export const UpdateBusiness = ({
     return (
       <div className="flex justify-center items-center p-8 min-h-[200px]">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        <span className="ml-3 text-secondary-text">
+        <span className="ml-3 text-secondary-text dark:text-slate-400">
           Loading business data...
         </span>
       </div>
@@ -281,7 +281,7 @@ export const UpdateBusiness = ({
 
   if (!business) {
     return (
-      <div className="text-center p-8 text-gray-500 min-h-[200px] flex items-center justify-center">
+      <div className="text-center p-8 text-gray-500 dark:text-slate-400 min-h-[200px] flex items-center justify-center">
         No business data available for update.
       </div>
     );

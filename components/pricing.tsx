@@ -5,7 +5,10 @@ import { PricingTable } from "@clerk/nextjs";
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="py-24  bg-white">
+    <section
+      id="pricing"
+      className="py-24 bg-white dark:bg-slate-900 transition-colors"
+    >
       <div className="container mx-auto px-4 md:px-6">
         <SectionTitle
           regularText="Simple, Transparent"

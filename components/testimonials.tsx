@@ -180,7 +180,7 @@ export default function Testimonials() {
       id="testimonials"
       className="relative py-16 md:py-24 overflow-hidden"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white">
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white dark:from-slate-800 dark:to-slate-900">
         <FloatingPaths position={1} />
         <FloatingPaths position={-1} />
       </div>
@@ -195,8 +195,8 @@ export default function Testimonials() {
         </div>
 
         <div className="relative max-w-6xl mx-auto">
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-200 rounded-full opacity-20 blur-3xl"></div>
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-cyan-200 rounded-full opacity-20 blur-3xl"></div>
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-200 dark:bg-blue-900/20 rounded-full opacity-20 blur-3xl"></div>
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-cyan-200 dark:bg-cyan-900/20 rounded-full opacity-20 blur-3xl"></div>
 
           {/* Testimonial carousel with swipe support */}
           <div
@@ -225,23 +225,23 @@ export default function Testimonials() {
                 <div className="hidden md:block">
                   <button
                     onClick={handlePrev}
-                    className="absolute cursor-pointer left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-white/90 shadow-lg border border-blue-100 hover:bg-blue-50 hover:border-blue-300 transition-colors flex items-center justify-center"
+                    className="absolute cursor-pointer left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-white/90 dark:bg-slate-800/90 shadow-lg border border-blue-100 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-slate-700 hover:border-blue-300 dark:hover:border-[#569cd6] transition-colors flex items-center justify-center"
                     aria-label="Previous testimonial"
                   >
-                    <ChevronLeft className="h-6 w-6 text-blue-600" />
+                    <ChevronLeft className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                   </button>
 
                   <button
                     onClick={handleNext}
-                    className="absolute right-0 cursor-pointer  top-1/2 -translate-y-1/2 translate-x-1/2 z-20 w-12 h-12 rounded-full bg-white/90 shadow-lg border border-blue-100 hover:bg-blue-50 hover:border-blue-300 transition-colors flex items-center justify-center"
+                    className="absolute right-0 cursor-pointer  top-1/2 -translate-y-1/2 translate-x-1/2 z-20 w-12 h-12 rounded-full bg-white/90 dark:bg-slate-800/90 shadow-lg border border-blue-100 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-slate-700 hover:border-blue-300 dark:hover:border-[#569cd6] transition-colors flex items-center justify-center"
                     aria-label="Next testimonial"
                   >
-                    <ChevronRight className="h-6 w-6 text-blue-600" />
+                    <ChevronRight className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                   </button>
                 </div>
 
                 {/* The actual card */}
-                <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 md:p-12 border border-blue-100 w-full">
+                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-xl p-6 md:p-12 border border-blue-100 dark:border-slate-700 w-full">
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
                     {/* Keep all your existing card content */}
                     <div className="md:col-span-4 flex flex-col items-center md:items-start">
@@ -259,10 +259,10 @@ export default function Testimonials() {
                         />
                       </div>
 
-                      <h3 className="text-lg md:text-xl font-bold text-neutral-900 mb-1 text-center md:text-left">
+                      <h3 className="text-lg md:text-xl font-bold text-neutral-900 dark:text-slate-100 mb-1 text-center md:text-left">
                         {testimonials[activeIndex].author}
                       </h3>
-                      <p className="text-sm md:text-base text-neutral-600 mb-3 text-center md:text-left">
+                      <p className="text-sm md:text-base text-neutral-600 dark:text-slate-400 mb-3 text-center md:text-left">
                         {testimonials[activeIndex].position}
                       </p>
 
@@ -284,21 +284,21 @@ export default function Testimonials() {
                     <div className="md:col-span-8 relative">
                       {/* Quote icon in its own container */}
                       <div className="hidden md:block absolute -top-4 -left-4">
-                        <div className="bg-blue-50 rounded-full p-2 border border-blue-100">
-                          <Quote className="h-8 w-8 text-blue-300" />
+                        <div className="bg-blue-50 dark:bg-blue-900/30 rounded-full p-2 border border-blue-100 dark:border-blue-800">
+                          <Quote className="h-8 w-8 text-blue-300 dark:text-blue-600" />
                         </div>
                       </div>
 
                       {/* Quote for mobile that won't overlap */}
                       <div className="flex md:hidden justify-center mb-3">
-                        <div className="bg-blue-50 rounded-full p-2 border border-blue-100">
-                          <Quote className="h-5 w-5 text-blue-300" />
+                        <div className="bg-blue-50 dark:bg-blue-900/30 rounded-full p-2 border border-blue-100 dark:border-blue-800">
+                          <Quote className="h-5 w-5 text-blue-300 dark:text-blue-600" />
                         </div>
                       </div>
 
                       {/* Text with proper padding */}
                       <div className="md:pt-6 md:pl-6">
-                        <p className="text-base md:text-xl text-primary-text italic leading-relaxed">
+                        <p className="text-base md:text-xl text-primary-text dark:text-slate-300 italic leading-relaxed">
                           "{testimonials[activeIndex].quote}"
                         </p>
                       </div>
@@ -337,13 +337,13 @@ export default function Testimonials() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white/80 backdrop-blur-sm rounded-xl p-4 md:p-6 shadow-lg border border-blue-100 text-center"
+                className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 md:p-6 shadow-lg border border-blue-100 dark:border-slate-700 text-center"
               >
-                <p className="text-xs md:text-sm text-neutral-600 mb-1 md:mb-2">
+                <p className="text-xs md:text-sm text-neutral-600 dark:text-slate-400 mb-1 md:mb-2">
                   {stat.label}
                 </p>
                 <div className="relative">
-                  <p className="text-2xl md:text-3xl font-bold text-blue-600">
+                  <p className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
                     {stat.value}
                   </p>
                 </div>

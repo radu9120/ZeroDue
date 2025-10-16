@@ -83,50 +83,60 @@ function InvoicePreview({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6 border-b">
         {/* Company Information */}
         <div>
-          <h3 className="text-lg font-semibold text-header-text mb-4">From</h3>
+          <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-4">
+            From
+          </h3>
           {companyDetails ? (
             <div className="space-y-2">
               <div>
-                <span className="block text-sm font-medium text-secondary-text">
+                <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   Company:
                 </span>
-                <p className="text-header-text font-medium">
+                <p className="text-header-text dark:text-slate-100 font-medium">
                   {companyDetails.name}
                 </p>
               </div>
               <div>
-                <span className="block text-sm font-medium text-secondary-text">
+                <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   Email:
                 </span>
-                <p className="text-header-text">{companyDetails.email}</p>
+                <p className="text-header-text dark:text-slate-100">
+                  {companyDetails.email}
+                </p>
               </div>
               {companyDetails.phone && (
                 <div>
-                  <span className="block text-sm font-medium text-secondary-text">
+                  <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                     Phone:
                   </span>
-                  <p className="text-header-text">{companyDetails.phone}</p>
+                  <p className="text-header-text dark:text-slate-100">
+                    {companyDetails.phone}
+                  </p>
                 </div>
               )}
               {companyDetails.address && (
                 <div>
-                  <span className="block text-sm font-medium text-secondary-text">
+                  <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                     Address:
                   </span>
-                  <p className="text-header-text">{companyDetails.address}</p>
+                  <p className="text-header-text dark:text-slate-100">
+                    {companyDetails.address}
+                  </p>
                 </div>
               )}
               {companyDetails.vat && (
                 <div>
-                  <span className="block text-sm font-medium text-secondary-text">
+                  <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                     VAT Number:
                   </span>
-                  <p className="text-header-text">{companyDetails.vat}</p>
+                  <p className="text-header-text dark:text-slate-100">
+                    {companyDetails.vat}
+                  </p>
                 </div>
               )}
             </div>
           ) : (
-            <div className="text-sm text-secondary-text bg-yellow-50 p-3 rounded-md">
+            <div className="text-sm text-secondary-text dark:text-slate-400 bg-yellow-50 p-3 rounded-md">
               <AlertCircle className="h-4 w-4 inline mr-2" />
               No company information available
             </div>
@@ -135,42 +145,50 @@ function InvoicePreview({
 
         {/* Client Information */}
         <div>
-          <h3 className="text-lg font-semibold text-header-text mb-4">
+          <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-4">
             Bill To
           </h3>
           {billTo ? (
             <div className="space-y-2">
               <div>
-                <span className="block text-sm font-medium text-secondary-text">
+                <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   Name:
                 </span>
-                <p className="text-header-text font-medium">{billTo.name}</p>
+                <p className="text-header-text dark:text-slate-100 font-medium">
+                  {billTo.name}
+                </p>
               </div>
               <div>
-                <span className="block text-sm font-medium text-secondary-text">
+                <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   Email:
                 </span>
-                <p className="text-header-text">{billTo.email}</p>
+                <p className="text-header-text dark:text-slate-100">
+                  {billTo.email}
+                </p>
               </div>
               {billTo.phone && (
                 <div>
-                  <span className="block text-sm font-medium text-secondary-text">
+                  <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                     Phone:
                   </span>
-                  <p className="text-header-text">{billTo.phone}</p>
+                  <p className="text-header-text dark:text-slate-100">
+                    {billTo.phone}
+                  </p>
                 </div>
               )}
               {billTo.address && (
                 <div>
-                  <span className="block text-sm font-medium text-secondary-text">
+                  <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                     Address:
                   </span>
-                  <p className="text-header-text">{billTo.address}</p>
+                  <p className="text-header-text dark:text-slate-100">
+                    {billTo.address}
+                  </p>
                 </div>
               )}
             </div>
           ) : (
-            <div className="text-sm text-secondary-text bg-yellow-50 p-3 rounded-md">
+            <div className="text-sm text-secondary-text dark:text-slate-400 bg-yellow-50 p-3 rounded-md">
               <AlertCircle className="h-4 w-4 inline mr-2" />
               No client information available
             </div>
@@ -181,91 +199,95 @@ function InvoicePreview({
       {/* Invoice Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4 border-b">
         <div>
-          <h3 className="text-lg font-semibold text-header-text mb-4">
+          <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-4">
             Invoice Details
           </h3>
           <div className="space-y-2">
             <div>
-              <span className="block text-sm font-medium text-secondary-text">
+              <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                 Invoice Number:
               </span>
-              <p className="text-header-text font-bold">
+              <p className="text-header-text dark:text-slate-100 font-bold">
                 {invoice.invoice_number}
               </p>
             </div>
             <div>
-              <span className="block text-sm font-medium text-secondary-text">
+              <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                 Description:
               </span>
-              <p className="text-header-text">
+              <p className="text-header-text dark:text-slate-100">
                 {invoice.description || "No description"}
               </p>
             </div>
             <div>
-              <span className="block text-sm font-medium text-secondary-text">
+              <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                 Issue Date:
               </span>
-              <p className="text-header-text">
+              <p className="text-header-text dark:text-slate-100">
                 {invoice.issue_date
                   ? new Date(invoice.issue_date).toLocaleDateString()
                   : "N/A"}
               </p>
             </div>
             <div>
-              <span className="block text-sm font-medium text-secondary-text">
+              <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                 Due Date:
               </span>
-              <p className="text-header-text">
+              <p className="text-header-text dark:text-slate-100">
                 {new Date(invoice.due_date).toLocaleDateString()}
               </p>
             </div>
           </div>
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-header-text mb-4">
+          <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-4">
             Payment Details
           </h3>
           <div className="space-y-2">
             <div>
-              <span className="block text-sm font-medium text-secondary-text">
+              <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                 Status:
               </span>
               <div className="mt-1">{getStatusBadge(invoice.status)}</div>
             </div>
             <div>
-              <span className="block text-sm font-medium text-secondary-text">
+              <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                 Currency:
               </span>
-              <p className="text-header-text">{invoice.currency || "GBP"}</p>
+              <p className="text-header-text dark:text-slate-100">
+                {invoice.currency || "GBP"}
+              </p>
             </div>
             <div>
-              <span className="block text-sm font-medium text-secondary-text">
+              <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                 Subtotal:
               </span>
-              <p className="text-header-text">
+              <p className="text-header-text dark:text-slate-100">
                 £{(invoice.subtotal || 0).toFixed(2)}
               </p>
             </div>
             {(invoice.discount ?? 0) > 0 && (
               <div>
-                <span className="block text-sm font-medium text-secondary-text">
+                <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   Discount:
                 </span>
-                <p className="text-header-text">{invoice.discount}%</p>
+                <p className="text-header-text dark:text-slate-100">
+                  {invoice.discount}%
+                </p>
               </div>
             )}
             {(invoice.shipping ?? 0) > 0 && (
               <div>
-                <span className="block text-sm font-medium text-secondary-text">
+                <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                   Shipping:
                 </span>
-                <p className="text-header-text">
+                <p className="text-header-text dark:text-slate-100">
                   £{(invoice.shipping ?? 0).toFixed(2)}
                 </p>
               </div>
             )}
             <div className="pt-2 border-t">
-              <span className="block text-sm font-medium text-secondary-text">
+              <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                 Total Amount:
               </span>
               <p className="text-xl font-bold text-primary">{invoice.total}</p>
@@ -276,24 +298,26 @@ function InvoicePreview({
 
       {/* Items Table */}
       <div>
-        <h3 className="text-lg font-semibold text-header-text mb-4">Items</h3>
+        <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-4">
+          Items
+        </h3>
         <div className="overflow-x-auto">
-          <table className="w-full border border-gray-300 rounded-lg">
+          <table className="w-full border border-gray-300 dark:border-slate-600 rounded-lg">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-3 text-left font-semibold">
+                <th className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-left font-semibold">
                   Description
                 </th>
-                <th className="border border-gray-300 px-4 py-3 text-center font-semibold">
+                <th className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-center font-semibold">
                   Qty
                 </th>
-                <th className="border border-gray-300 px-4 py-3 text-right font-semibold">
+                <th className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-right font-semibold">
                   Unit Price
                 </th>
-                <th className="border border-gray-300 px-4 py-3 text-center font-semibold">
+                <th className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-center font-semibold">
                   Tax %
                 </th>
-                <th className="border border-gray-300 px-4 py-3 text-right font-semibold">
+                <th className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-right font-semibold">
                   Amount
                 </th>
               </tr>
@@ -307,20 +331,23 @@ function InvoicePreview({
                   const amount = Number(item.amount) || 0;
 
                   return (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3">
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-50 dark:bg-slate-800"
+                    >
+                      <td className="border border-gray-300 dark:border-slate-600 px-4 py-3">
                         {item.description || "No description"}
                       </td>
-                      <td className="border border-gray-300 px-4 py-3 text-center">
+                      <td className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-center">
                         {quantity}
                       </td>
-                      <td className="border border-gray-300 px-4 py-3 text-right">
+                      <td className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-right">
                         £{unitPrice.toFixed(2)}
                       </td>
-                      <td className="border border-gray-300 px-4 py-3 text-center">
+                      <td className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-center">
                         {tax}%
                       </td>
-                      <td className="border border-gray-300 px-4 py-3 text-right font-medium">
+                      <td className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-right font-medium">
                         £{amount.toFixed(2)}
                       </td>
                     </tr>
@@ -330,7 +357,7 @@ function InvoicePreview({
                 <tr>
                   <td
                     colSpan={5}
-                    className="border border-gray-300 px-4 py-8 text-center text-secondary-text"
+                    className="border border-gray-300 dark:border-slate-600 px-4 py-8 text-center text-secondary-text dark:text-slate-400"
                   >
                     No items found
                   </td>
@@ -346,20 +373,20 @@ function InvoicePreview({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4 border-t">
           {invoice.notes && (
             <div>
-              <h4 className="text-md font-semibold text-header-text mb-2">
+              <h4 className="text-md font-semibold text-header-text dark:text-slate-100 mb-2">
                 Notes
               </h4>
-              <p className="text-sm text-secondary-text bg-gray-50 p-3 rounded-md">
+              <p className="text-sm text-secondary-text dark:text-slate-400 bg-gray-50 dark:bg-slate-800 p-3 rounded-md">
                 {invoice.notes}
               </p>
             </div>
           )}
           {invoice.bank_details && (
             <div>
-              <h4 className="text-md font-semibold text-header-text mb-2">
+              <h4 className="text-md font-semibold text-header-text dark:text-slate-100 mb-2">
                 Bank Details
               </h4>
-              <p className="text-sm text-secondary-text bg-gray-50 p-3 rounded-md whitespace-pre-line">
+              <p className="text-sm text-secondary-text dark:text-slate-400 bg-gray-50 dark:bg-slate-800 p-3 rounded-md whitespace-pre-line">
                 {invoice.bank_details}
               </p>
             </div>
@@ -408,7 +435,7 @@ function SearchAndFilter({
     <div className="space-y-4">
       <form onSubmit={handleSearchSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-header-text mb-2">
+          <label className="block text-sm font-medium text-header-text dark:text-slate-100 mb-2">
             Search Invoices
           </label>
           <div className="flex gap-2">
@@ -417,7 +444,7 @@ function SearchAndFilter({
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search by invoice number..."
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <Button type="submit" variant="secondary">
               Search
@@ -426,13 +453,13 @@ function SearchAndFilter({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-header-text mb-2">
+          <label className="block text-sm font-medium text-header-text dark:text-slate-100 mb-2">
             Filter by Status
           </label>
           <select
             value={currentFilter}
             onChange={(e) => onFilterChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="">All Statuses</option>
             <option value="draft">Draft</option>
@@ -729,7 +756,9 @@ export default function InvoiceTable({
   return (
     <Card>
       <CardHeader className="flex justify-between">
-        <h2 className="text-xl font-bold text-header-text">All Invoices</h2>
+        <h2 className="text-xl font-bold text-header-text dark:text-slate-100">
+          All Invoices
+        </h2>
         <div className="flex items-center gap-3">
           <CustomModal
             heading="Search & Filter Invoices"
@@ -751,12 +780,22 @@ export default function InvoiceTable({
         <div className="overflow-x-auto lg:w-full w-[1200px]">
           <div className="w-full">
             <div className="border-b w-full py-3 px-4 border-blue-100 grid grid-cols-6 gap-2">
-              <div className="font-medium text-secondary-text">Invoice</div>
-              <div className="font-medium text-secondary-text">Amount</div>
-              <div className="font-medium text-secondary-text">Status</div>
-              <div className="font-medium text-secondary-text">Issue Date</div>
-              <div className="font-medium text-secondary-text">Due Date</div>
-              <div className="text-right font-medium text-secondary-text">
+              <div className="font-medium text-secondary-text dark:text-slate-400">
+                Invoice
+              </div>
+              <div className="font-medium text-secondary-text dark:text-slate-400">
+                Amount
+              </div>
+              <div className="font-medium text-secondary-text dark:text-slate-400">
+                Status
+              </div>
+              <div className="font-medium text-secondary-text dark:text-slate-400">
+                Issue Date
+              </div>
+              <div className="font-medium text-secondary-text dark:text-slate-400">
+                Due Date
+              </div>
+              <div className="text-right font-medium text-secondary-text dark:text-slate-400">
                 Actions
               </div>
             </div>
@@ -769,28 +808,28 @@ export default function InvoiceTable({
                     className="border-b border-blue-50 hover:bg-blue-50/50 w-full py-3 px-4 grid grid-cols-6 gap-2"
                   >
                     <div>
-                      <p className="font-medium text-header-text">
+                      <p className="font-medium text-header-text dark:text-slate-100">
                         {invoice.invoice_number}
                       </p>
-                      <p className="text-sm text-secondary-text">
+                      <p className="text-sm text-secondary-text dark:text-slate-400">
                         {invoice.description || "No description"}
                       </p>
                     </div>
                     <div>
-                      <p className="font-semibold text-header-text">
+                      <p className="font-semibold text-header-text dark:text-slate-100">
                         {invoice.total}
                       </p>
                     </div>
                     <div>{getStatusBadge(invoice?.status || "draft")}</div>
                     <div>
-                      <p className="text-header-text">
+                      <p className="text-header-text dark:text-slate-100">
                         {invoice.issue_date
                           ? formatDate(invoice.issue_date)
                           : "N/A"}
                       </p>
                     </div>
                     <div>
-                      <p className="text-header-text">
+                      <p className="text-header-text dark:text-slate-100">
                         {formatDate(invoice.due_date)}
                       </p>
                     </div>
@@ -891,11 +930,11 @@ export default function InvoiceTable({
               </div>
             ) : (
               <div className="text-center py-12">
-                <FileText className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-xl font-semibold text-header-text mb-2">
+                <FileText className="h-16 w-16 mx-auto text-gray-400 dark:text-slate-500 mb-4" />
+                <h3 className="text-xl font-semibold text-header-text dark:text-slate-100 mb-2">
                   No Invoices Yet
                 </h3>
-                <p className="text-secondary-text mb-6">
+                <p className="text-secondary-text dark:text-slate-400 mb-6">
                   Create your first invoice to start tracking payments and
                   managing your business.
                 </p>

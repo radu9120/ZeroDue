@@ -33,7 +33,7 @@ export default async function Page() {
   const monthlyInvoices = await getCurrentMonthInvoiceCountForUser();
 
   return (
-    <main>
+    <main className="min-h-screen bg-gray-50 dark:bg-slate-800 transition-colors">
       <Bounded>
         <DashboardHeader
           userPlan={userPlan}

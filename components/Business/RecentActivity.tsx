@@ -8,7 +8,7 @@ export default function RecentActivity({ recentActivities } : { recentActivities
   return (
     <Card>
         <CardHeader>
-            <h2 className="text-xl font-bold text-header-text mb-6">
+            <h2 className="text-xl font-bold text-header-text dark:text-slate-100 mb-6">
                 Recent Activity
             </h2>
         </CardHeader>
@@ -38,10 +38,10 @@ export default function RecentActivity({ recentActivities } : { recentActivities
                         </div>
                     )}
                     <div className="flex-1">
-                        <p className="font-medium text-header-text">
+                        <p className="font-medium text-header-text dark:text-slate-100">
                             {activity.action}{' '}{activity.target_name}
                         </p>
-                        <p className="text-sm text-secondary-text">
+                        <p className="text-sm text-secondary-text dark:text-slate-400">
                             • {activity.created_at && timestamptzConvert(activity.created_at)}
                         </p>
                     </div>

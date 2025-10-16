@@ -91,7 +91,7 @@ export default function HelpCenterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white">
+    <div className="min-h-screen pt-24 md:pt-28 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Header */}
         <div className="mb-8">
@@ -104,11 +104,11 @@ export default function HelpCenterPage() {
           </Link>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <HelpCircle className="h-6 w-6 text-primary" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
+              <HelpCircle className="h-6 w-6 text-primary dark:text-blue-400" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-header-text">
+              <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
                 Help Center
               </h1>
               <p className="text-secondary-text mt-1">
@@ -121,7 +121,7 @@ export default function HelpCenterPage() {
 
         <div className="max-w-4xl mx-auto">
           {/* Search Bar */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 mb-8">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 mb-8">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary-text h-5 w-5" />
               <input
@@ -138,15 +138,15 @@ export default function HelpCenterPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <Link
               href="/contact"
-              className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all group"
+              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <MessageCircle className="h-6 w-6 text-primary" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <MessageCircle className="h-6 w-6 text-primary dark:text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-header-text">Contact Us</h3>
-                  <p className="text-sm text-secondary-text">
+                  <h3 className="font-semibold text-header-text dark:text-slate-100">Contact Us</h3>
+                  <p className="text-sm text-secondary-text dark:text-slate-400">
                     Get personalized help
                   </p>
                 </div>
@@ -155,33 +155,33 @@ export default function HelpCenterPage() {
 
             <Link
               href="mailto:privacy@invoiceflow.com"
-              className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all group"
+              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Mail className="h-6 w-6 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-header-text">
+                  <h3 className="font-semibold text-header-text dark:text-slate-100">
                     Email Support
                   </h3>
-                  <p className="text-sm text-secondary-text">
+                  <p className="text-sm text-secondary-text dark:text-slate-400">
                     Send us an email
                   </p>
                 </div>
               </div>
             </Link>
 
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+            <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                   <Book className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-header-text">
+                  <h3 className="font-semibold text-header-text dark:text-slate-100">
                     Documentation
                   </h3>
-                  <p className="text-sm text-secondary-text">Coming soon</p>
+                  <p className="text-sm text-secondary-text dark:text-slate-400">Coming soon</p>
                 </div>
               </div>
             </div>
@@ -192,7 +192,7 @@ export default function HelpCenterPage() {
             {faqData.map((section, sectionIndex) => (
               <div
                 key={sectionIndex}
-                className="bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100"
+                className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700"
               >
                 <h2 className="text-xl font-semibold text-header-text mb-6">
                   {section.category}
@@ -209,15 +209,15 @@ export default function HelpCenterPage() {
                       >
                         <button
                           onClick={() => toggleFaq(globalIndex)}
-                          className="w-full px-6 py-4 text-left bg-blue-50 hover:bg-blue-100 transition-colors flex items-center justify-between"
+                          className="w-full px-6 py-4 text-left bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 transition-colors flex items-center justify-between"
                         >
                           <span className="font-medium text-primary-text">
                             {faq.question}
                           </span>
                           {isExpanded ? (
-                            <ChevronDown className="h-5 w-5 text-primary" />
+                            <ChevronDown className="h-5 w-5 text-primary dark:text-blue-400" />
                           ) : (
-                            <ChevronRight className="h-5 w-5 text-primary" />
+                            <ChevronRight className="h-5 w-5 text-primary dark:text-blue-400" />
                           )}
                         </button>
                         {isExpanded && (

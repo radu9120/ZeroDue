@@ -114,7 +114,7 @@ const InvoiceItemRow = ({ index, onRemove }: { index: number; onRemove: () => vo
                                     })}
                                     className="pr-6 w-full"
                                     />
-                                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">%</span>
+                                    <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-slate-500 text-sm">%</span>
                                 </div>
                                 </FormControl>
                                 <FormMessage />
@@ -126,7 +126,7 @@ const InvoiceItemRow = ({ index, onRemove }: { index: number; onRemove: () => vo
             </div>
             
             <div className="w-full flex justify-end">
-                <div className="flex gap-4 text-right font-medium text-primary-text">
+                <div className="flex gap-4 text-right font-medium text-primary-text dark:text-slate-300">
                     {/* Amount (read-only) */}
                     <FormLabel className="text-base">Ammount:</FormLabel>
                     <FormField
@@ -164,7 +164,7 @@ const InvoiceItems = () => {
     return (
         <div className="w-full">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-header-text">
+                <h3 className="text-lg font-semibold text-header-text dark:text-slate-100">
                     Line Items
                 </h3>
                 <Button
@@ -185,11 +185,11 @@ const InvoiceItems = () => {
                 </Button>
 
             </div>
-            <div className="bg-white border border-blue-100 rounded-lg overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 border border-blue-100 rounded-lg overflow-hidden">
                 <div className="w-full">
                     <div className="bg-blue-50 pl-2 pr-4">
                         <div className="grid grid-cols-2 gap-4 py-3">
-                            <div className=" flex text-left gap-4 text-sm font-medium text-secondary-text">
+                            <div className=" flex text-left gap-4 text-sm font-medium text-secondary-text dark:text-slate-400">
                                 <div className="w-6">
 
                                 </div>
@@ -197,13 +197,13 @@ const InvoiceItems = () => {
                                 
                             </div>
                             <div className="flex gap-4 w-full">
-                                <div className="text-center w-[26%] text-sm font-medium text-secondary-text">
+                                <div className="text-center w-[26%] text-sm font-medium text-secondary-text dark:text-slate-400">
                                     <p>Qty</p>
                                 </div>
-                                <div className="text-center flex-1 text-sm font-medium text-secondary-text">
+                                <div className="text-center flex-1 text-sm font-medium text-secondary-text dark:text-slate-400">
                                     <p>Rate</p>
                                 </div>
-                                <div className="text-center w-[30%] text-sm font-medium text-secondary-text">
+                                <div className="text-center w-[30%] text-sm font-medium text-secondary-text dark:text-slate-400">
                                     <p>Tax</p>
                                 </div>
                             </div>
