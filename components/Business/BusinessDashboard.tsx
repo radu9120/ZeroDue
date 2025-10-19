@@ -41,7 +41,9 @@ export default function BusinessDashboard({
                 {business.name}
               </h1>
             </div>
-            <p className="text-sm md:text-base text-secondary-text dark:text-slate-400">{business.email}</p>
+            <p className="text-sm md:text-base text-secondary-text dark:text-slate-400">
+              {business.email}
+            </p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto">

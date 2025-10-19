@@ -110,7 +110,9 @@ export default function ClientManagement({
             <p className="text-2xl font-bold text-header-text dark:text-slate-100">
               {clients.length}
             </p>
-            <p className="text-sm text-secondary-text dark:text-slate-400">Total Clients</p>
+            <p className="text-sm text-secondary-text dark:text-slate-400">
+              Total Clients
+            </p>
           </div>
         </div>
 
@@ -122,7 +124,9 @@ export default function ClientManagement({
             {/* <p className="text-2xl font-bold text-header-text dark:text-slate-100">
                     {clients.filter((c) => c.status === "active").length}
                 </p> */}
-            <p className="text-sm text-secondary-text dark:text-slate-400">Active Clients</p>
+            <p className="text-sm text-secondary-text dark:text-slate-400">
+              Active Clients
+            </p>
           </div>
         </div>
 
@@ -134,7 +138,9 @@ export default function ClientManagement({
             {/* <p className="text-2xl font-bold text-header-text dark:text-slate-100">
                     {clients.reduce((sum, client) => sum + client.invoices, 0)}
                 </p> */}
-            <p className="text-sm text-secondary-text dark:text-slate-400">Total Invoices</p>
+            <p className="text-sm text-secondary-text dark:text-slate-400">
+              Total Invoices
+            </p>
           </div>
         </div>
 
@@ -143,9 +149,13 @@ export default function ClientManagement({
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
               <DollarSign className="h-6 w-6 text-green-600" />
             </div>
-            <p className="text-2xl font-bold text-header-text dark:text-slate-100">0</p>{" "}
+            <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+              0
+            </p>{" "}
             {/* Replace with actual revenue calculation */}
-            <p className="text-sm text-secondary-text dark:text-slate-400">Total Revenue</p>
+            <p className="text-sm text-secondary-text dark:text-slate-400">
+              Total Revenue
+            </p>
           </div>
         </div>
       </div>

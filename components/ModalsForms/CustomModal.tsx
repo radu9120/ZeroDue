@@ -85,7 +85,9 @@ export default function CustomModal({
                   <X className="h-5 w-5 text-gray-600 dark:text-slate-400" />
                 </Button>
               </div>
-              <div className="p-4 md:p-6 overflow-y-auto">{childrenWithProps}</div>
+              <div className="p-4 md:p-6 overflow-y-auto">
+                {childrenWithProps}
+              </div>
             </div>
           </div>
         </ModalPortal>

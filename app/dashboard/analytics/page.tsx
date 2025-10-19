@@ -93,9 +93,14 @@ export default async function AnalyticsPage({
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div className="flex items-center gap-3">
             <Calendar className="h-5 w-5 text-secondary-text dark:text-slate-400" />
-            <span className="text-sm text-secondary-text dark:text-slate-400">Last 30 days</span>
+            <span className="text-sm text-secondary-text dark:text-slate-400">
+              Last 30 days
+            </span>
           </div>
-          <Button variant="secondary" className="border-blue-200 w-full sm:w-auto">
+          <Button
+            variant="secondary"
+            className="border-blue-200 w-full sm:w-auto"
+          >
             <Download className="h-4 w-4 mr-2" /> Export Report
           </Button>
         </div>

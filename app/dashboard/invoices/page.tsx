@@ -221,10 +221,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
         {/* Filters and Search */}
         <Card className="shadow-lg border-0">
           <CardContent className="p-4 md:p-6">
-            <form
-              method="GET"
-              className="flex flex-col gap-4"
-            >
+            <form method="GET" className="flex flex-col gap-4">
               <input type="hidden" name="business_id" value={businessId} />
 
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 flex-1">
@@ -272,8 +269,13 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                     className="h-11 px-4 border border-gray-200 dark:border-slate-700 rounded-xl w-full"
                   >
                     <ArrowUpDown className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Sort by Date ({sortOrder === "desc" ? "Newest" : "Oldest"})</span>
-                    <span className="sm:hidden">Sort ({sortOrder === "desc" ? "↓" : "↑"})</span>
+                    <span className="hidden sm:inline">
+                      Sort by Date ({sortOrder === "desc" ? "Newest" : "Oldest"}
+                      )
+                    </span>
+                    <span className="sm:hidden">
+                      Sort ({sortOrder === "desc" ? "↓" : "↑"})
+                    </span>
                   </Button>
                 </Link>
               </div>
