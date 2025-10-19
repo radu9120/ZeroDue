@@ -75,14 +75,14 @@ export default async function AnalyticsPage({
             <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
           </Link>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-green-600" />
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-header-text dark:text-slate-100">
                 Analytics & Reports
               </h1>
-              <p className="text-secondary-text dark:text-slate-400 mt-1">
+              <p className="text-sm md:text-base text-secondary-text dark:text-slate-400 mt-1">
                 Track your business performance and insights.
               </p>
             </div>
@@ -90,12 +90,12 @@ export default async function AnalyticsPage({
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div className="flex items-center gap-3">
             <Calendar className="h-5 w-5 text-secondary-text dark:text-slate-400" />
             <span className="text-sm text-secondary-text dark:text-slate-400">Last 30 days</span>
           </div>
-          <Button variant="secondary" className="border-blue-200">
+          <Button variant="secondary" className="border-blue-200 w-full sm:w-auto">
             <Download className="h-4 w-4 mr-2" /> Export Report
           </Button>
         </div>

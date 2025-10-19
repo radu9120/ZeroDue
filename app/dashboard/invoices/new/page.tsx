@@ -46,10 +46,10 @@ export default async function NewInvoice({
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-blue-100 shadow-xl p-6 mb-6">
-          <div className="flex items-center gap-5">
+        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-blue-100 shadow-xl p-4 md:p-6 mb-6">
+          <div className="flex items-center gap-3 md:gap-5">
             {business.logo && (
-              <div className="w-20 h-16 rounded-xl overflow-hidden bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 flex items-center justify-center">
+              <div className="w-16 h-12 md:w-20 md:h-16 rounded-xl overflow-hidden bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 flex items-center justify-center flex-shrink-0">
                 <Image
                   src={business.logo}
                   alt={`${business.name} logo`}
@@ -59,11 +59,11 @@ export default async function NewInvoice({
                 />
               </div>
             )}
-            <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-header-text dark:text-slate-100">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-header-text dark:text-slate-100">
                 Create Invoice
               </h1>
-              <p className="text-secondary-text dark:text-slate-400 mt-1">
+              <p className="text-sm md:text-base text-secondary-text dark:text-slate-400 mt-1 truncate">
                 {business.name}
                 {business.email ? ` • ${business.email}` : ""}
               </p>
@@ -71,7 +71,7 @@ export default async function NewInvoice({
           </div>
         </div>
 
-        <article className="bg-white dark:bg-slate-800 rounded-xl mx-auto shadow-2xl max-w-4xl w-full p-6">
+        <article className="bg-white dark:bg-slate-800 rounded-xl mx-auto shadow-2xl max-w-4xl w-full p-4 md:p-6">
           <InvoiceForm company_data={business} clients={clients} />
         </article>
       </Bounded>

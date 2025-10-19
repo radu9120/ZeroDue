@@ -30,21 +30,21 @@ export default function BusinessDashboard({
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to Companies
       </Link>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
-            <Building className="h-8 w-8 text-white" />
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
+        <div className="flex items-center gap-3 md:gap-4">
+          <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center flex-shrink-0">
+            <Building className="h-6 w-6 md:h-8 md:w-8 text-white" />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1 md:space-y-2">
             <div className="">
-              <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-header-text dark:text-slate-100">
                 {business.name}
               </h1>
             </div>
-            <p className="text-secondary-text dark:text-slate-400">{business.email}</p>
+            <p className="text-sm md:text-base text-secondary-text dark:text-slate-400">{business.email}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto">
           <CustomButton
             label={"Create Invoice"}
             icon={PlusIcon}

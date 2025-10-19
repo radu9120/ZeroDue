@@ -49,14 +49,14 @@ export default function ClientManagement({
         </Link>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-            <Users className="h-6 w-6 text-purple-600" />
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <Users className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-header-text dark:text-slate-100">
               Client Management
             </h1>
-            <p className="text-secondary-text dark:text-slate-400 mt-1">
+            <p className="text-sm md:text-base text-secondary-text dark:text-slate-400 mt-1">
               Manage your clients and their information.
             </p>
           </div>
@@ -64,16 +64,16 @@ export default function ClientManagement({
       </div>
 
       {/* Actions Bar */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div className="flex items-center gap-3">
-          <div className="relative">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary-text dark:text-slate-400 h-4 w-4" />
             <Input
               type="text"
               placeholder="Search clients..."
               // value={searchTerm}
               // onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border-blue-200 focus:ring-primary"
+              className="pl-10 pr-4 py-2 border-blue-200 focus:ring-primary w-full sm:w-64"
             />
           </div>
           <CustomButton

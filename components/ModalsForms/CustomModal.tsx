@@ -66,12 +66,12 @@ export default function CustomModal({
         <ModalPortal>
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
-              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
-                <div>
-                  <h2 className="text-2xl font-bold text-header-text dark:text-slate-100">
+              <div className="flex items-start sm:items-center justify-between p-4 md:p-6 border-b border-gray-200 dark:border-slate-700">
+                <div className="flex-1 min-w-0 pr-2">
+                  <h2 className="text-xl md:text-2xl font-bold text-header-text dark:text-slate-100">
                     {heading}
                   </h2>
-                  <p className="text-secondary-text dark:text-slate-400 mt-1">
+                  <p className="text-sm md:text-base text-secondary-text dark:text-slate-400 mt-1">
                     {description}
                   </p>
                 </div>
@@ -79,13 +79,13 @@ export default function CustomModal({
                   variant="ghost"
                   size="icon"
                   onClick={closeModal}
-                  className="hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full"
+                  className="hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full flex-shrink-0"
                   aria-label="Close modal"
                 >
                   <X className="h-5 w-5 text-gray-600 dark:text-slate-400" />
                 </Button>
               </div>
-              <div className="p-6 overflow-y-auto">{childrenWithProps}</div>
+              <div className="p-4 md:p-6 overflow-y-auto">{childrenWithProps}</div>
             </div>
           </div>
         </ModalPortal>

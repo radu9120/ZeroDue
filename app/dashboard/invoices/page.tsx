@@ -120,18 +120,18 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white z-0" />
       <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/30 mix-blend-multiply blur-3xl"></div>
 
-      <div className="relative z-10 max-w-7xl mx-auto p-6 space-y-8">
+      <div className="relative z-10 max-w-7xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
         {/* Header Section */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-              <FileText className="h-6 w-6 text-blue-600" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center space-x-3 md:space-x-4">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <FileText className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-slate-100">
                 Invoices
               </h1>
-              <p className="text-gray-600 dark:text-slate-400">
+              <p className="text-sm md:text-base text-gray-600 dark:text-slate-400">
                 Manage and track all your invoices for {business.name}
               </p>
             </div>
@@ -220,26 +220,26 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
         {/* Filters and Search */}
         <Card className="shadow-lg border-0">
-          <CardContent className="p-6">
+          <CardContent className="p-4 md:p-6">
             <form
               method="GET"
-              className="flex flex-col md:flex-row gap-4 items-center justify-between"
+              className="flex flex-col gap-4"
             >
               <input type="hidden" name="business_id" value={businessId} />
 
-              <div className="flex flex-col md:flex-row gap-4 flex-1">
-                <div className="relative flex-1 max-w-md">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 flex-1">
+                <div className="relative flex-1 w-full">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-500 h-4 w-4" />
                   <Input
                     name="search"
                     placeholder="Search invoices..."
-                    className="pl-10 h-11 border-gray-200 dark:border-slate-700 rounded-xl"
+                    className="pl-10 h-11 border-gray-200 dark:border-slate-700 rounded-xl w-full"
                     defaultValue={searchQuery}
                   />
                 </div>
 
                 <Select name="status" defaultValue={statusFilter}>
-                  <SelectTrigger className="w-48 h-11 border-gray-200 dark:border-slate-700 rounded-xl">
+                  <SelectTrigger className="w-full sm:w-48 h-11 border-gray-200 dark:border-slate-700 rounded-xl">
                     <Filter className="h-4 w-4 mr-2" />
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
@@ -252,10 +252,10 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                 </Select>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full">
                 <Button
                   type="submit"
-                  className="h-11 px-6 bg-blue-600 hover:bg-blue-700"
+                  className="h-11 px-6 bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
                 >
                   Apply Filters
                 </Button>
@@ -264,14 +264,16 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
                   href={`/dashboard/invoices?business_id=${businessId}&sort=${
                     sortOrder === "desc" ? "asc" : "desc"
                   }&search=${searchQuery}&status=${statusFilter}`}
+                  className="w-full sm:w-auto"
                 >
                   <Button
                     type="button"
                     variant="ghost"
-                    className="h-11 px-4 border border-gray-200 dark:border-slate-700 rounded-xl"
+                    className="h-11 px-4 border border-gray-200 dark:border-slate-700 rounded-xl w-full"
                   >
                     <ArrowUpDown className="h-4 w-4 mr-2" />
-                    Sort by Date ({sortOrder === "desc" ? "Newest" : "Oldest"})
+                    <span className="hidden sm:inline">Sort by Date ({sortOrder === "desc" ? "Newest" : "Oldest"})</span>
+                    <span className="sm:hidden">Sort ({sortOrder === "desc" ? "↓" : "↑"})</span>
                   </Button>
                 </Link>
               </div>
