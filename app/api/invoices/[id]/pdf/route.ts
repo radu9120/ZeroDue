@@ -17,7 +17,7 @@ export async function GET(
     const supabase = createSupabaseAdminClient();
     const { data: invoice, error } = await supabase
       .from("Invoices")
-      .select("*, author, company_details(*)")
+      .select("*")
       .eq("id", id)
       .single();
     if (error || !invoice)
@@ -30,9 +30,19 @@ export async function GET(
 
     // Try to locate a company logo URL from common fields. These schema names are inferred
     // from the app; if your project uses a different field, we'll fall back to no-logo.
+    // company_details may be JSON or string; parse safely
+    let companyDetails: any = invoice.company_details || null;
+    try {
+      if (typeof companyDetails === "string") {
+        companyDetails = JSON.parse(companyDetails);
+      }
+    } catch {
+      companyDetails = invoice.company_details; // leave as-is
+    }
+
     const logoUrl =
-      invoice.company_details?.logo_url ||
-      invoice.company_details?.logo ||
+      companyDetails?.logo_url ||
+      companyDetails?.logo ||
       invoice.logo_url ||
       null;
 
@@ -139,7 +149,15 @@ export async function GET(
     });
 
     // Items
-    const items = invoice.items || invoice.line_items || [];
+    // Items may be stored as JSON text; parse if necessary
+    let items = invoice.items || invoice.line_items || [];
+    if (typeof items === "string") {
+      try {
+        items = JSON.parse(items);
+      } catch {
+        items = [];
+      }
+    }
     let y = tableTop - 18;
     if (!Array.isArray(items) || items.length === 0) {
       page.drawText("(no items)", { x: colX[0], y, size: 10, font: helvetica });

@@ -24,6 +24,7 @@ import { useState, useEffect } from "react";
 import CustomModal from "../ModalsForms/CustomModal";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
+import { Badge } from "../ui/badge";
 
 // Invoice Preview Component for Modal
 function InvoicePreview({
@@ -867,6 +868,47 @@ export default function InvoiceTable({
                         <p className="text-sm text-secondary-text dark:text-slate-400">
                           {invoice.description || "No description"}
                         </p>
+                        {/* Email engagement badges */}
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {invoice.email_sent_at && (
+                            <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                              Sent
+                            </Badge>
+                          )}
+                          {invoice.email_delivered && (
+                            <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                              Delivered
+                            </Badge>
+                          )}
+                          {invoice.email_open_count ? (
+                            <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                              Opened {invoice.email_open_count}
+                            </Badge>
+                          ) : invoice.email_opened ? (
+                            <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                              Opened 1
+                            </Badge>
+                          ) : null}
+                          {invoice.email_click_count ? (
+                            <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                              Clicked {invoice.email_click_count}
+                            </Badge>
+                          ) : invoice.email_clicked ? (
+                            <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                              Clicked 1
+                            </Badge>
+                          ) : null}
+                          {invoice.email_bounced && (
+                            <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                              Bounced
+                            </Badge>
+                          )}
+                          {invoice.email_complained && (
+                            <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                              Marked as spam
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                       <div>
                         <p className="font-semibold text-header-text dark:text-slate-100">

@@ -124,6 +124,21 @@ export interface InvoiceListItem {
   total: string;
   notes?: string;
   bank_details?: string;
+  // Email tracking (optional fields; may be null if not sent yet)
+  email_id?: string | null;
+  email_sent_at?: string | null;
+  email_delivered?: boolean | null;
+  email_delivered_at?: string | null;
+  email_opened?: boolean | null;
+  email_opened_at?: string | null;
+  email_open_count?: number | null;
+  email_clicked?: boolean | null;
+  email_clicked_at?: string | null;
+  email_click_count?: number | null;
+  email_bounced?: boolean | null;
+  email_bounced_at?: string | null;
+  email_complained?: boolean | null;
+  email_complained_at?: string | null;
 }
 
 interface UserActivityLog {

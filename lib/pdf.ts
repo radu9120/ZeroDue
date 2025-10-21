@@ -168,7 +168,7 @@ export async function downloadElementAsPDF(
     // ignore
   }
 
-  // html2canvas renders the DOM to a canvas bitmap respecting CSS; try with foreignObject first
+  // html2canvas renders the DOM to a canvas bitmap. Try WITHOUT foreignObject first
   let canvas: HTMLCanvasElement | null = null;
   let lastError: unknown = null;
   try {
@@ -179,7 +179,7 @@ export async function downloadElementAsPDF(
       scrollX: 0,
       scrollY: 0,
       backgroundColor: "#ffffff",
-      foreignObjectRendering: true,
+      foreignObjectRendering: false,
       windowWidth: targetContentWidthPx,
       windowHeight: Math.max(
         window.innerHeight,
@@ -192,7 +192,7 @@ export async function downloadElementAsPDF(
     lastError = e;
   }
 
-  // Fallback: retry without foreignObjectRendering and with simpler styles
+  // Fallback: retry WITH foreignObjectRendering and simpler styles
   if (!canvas || canvas.width < 2 || canvas.height < 2) {
     try {
       // Remove potential problematic styles
@@ -202,6 +202,23 @@ export async function downloadElementAsPDF(
         style.backdropFilter = "";
         style.filter = "";
         style.transform = "";
+        // Avoid CSS colors that may use unsupported functions like oklch
+        try {
+          const cs = getComputedStyle(el as Element);
+          const bg = cs.background || cs.backgroundColor || "";
+          if (bg && bg.includes("oklch")) {
+            (el as HTMLElement).style.background = "transparent";
+            (el as HTMLElement).style.backgroundColor = "transparent";
+          }
+          const col = cs.color || "";
+          if (col && col.includes("oklch")) {
+            (el as HTMLElement).style.color = "#111";
+          }
+          const borderCol = cs.borderColor || "";
+          if (borderCol && borderCol.includes("oklch")) {
+            (el as HTMLElement).style.borderColor = "#ddd";
+          }
+        } catch {}
       });
     } catch {
       // ignore cleanup errors
@@ -214,7 +231,7 @@ export async function downloadElementAsPDF(
         scrollX: 0,
         scrollY: 0,
         backgroundColor: "#ffffff",
-        foreignObjectRendering: false,
+        foreignObjectRendering: true,
         windowWidth: targetContentWidthPx,
         imageTimeout: 5000,
         logging: process.env.NODE_ENV !== "production",

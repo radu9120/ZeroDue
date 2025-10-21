@@ -16,6 +16,7 @@ import {
   Mail,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -38,6 +39,7 @@ export default function InvoiceSuccessView({
   editMode = false,
   userPlan = "free",
 }: InvoiceSuccessViewProps) {
+  const router = useRouter();
   const isEnterprise = userPlan === "enterprise";
   const [isEditing, setIsEditing] = React.useState(editMode);
   const [status, setStatus] = React.useState<string>(invoice.status || "draft");
@@ -364,6 +366,19 @@ export default function InvoiceSuccessView({
   const [sending, setSending] = React.useState(false);
   // Print is intentionally removed — prefer client-side PDF download
 
+  const formatDateTime = (value?: string | null) => {
+    if (!value) return null;
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   const downloadPDF = async () => {
     try {
       setDownloading(true);
@@ -457,6 +472,10 @@ export default function InvoiceSuccessView({
       }
 
       toast.success(data.message || "Invoice sent successfully!");
+      try {
+        // Refresh the page so status and email badges update immediately
+        router.refresh();
+      } catch {}
     } catch (error: any) {
       console.error("Error sending invoice:", error);
       toast.error(error.message || "Failed to send invoice to client");
@@ -1273,6 +1292,88 @@ export default function InvoiceSuccessView({
               </div>
             </div>
           </CardHeader>
+
+          {/* Email activity summary */}
+          <div className="px-6 pt-4 pb-2 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                {invoice.email_sent_at ? (
+                  <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                    Sent
+                  </Badge>
+                ) : (
+                  <Badge className="bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-200">
+                    Not sent
+                  </Badge>
+                )}
+                {invoice.email_delivered && (
+                  <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                    Delivered
+                  </Badge>
+                )}
+                {invoice.email_open_count ? (
+                  <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                    Opened {invoice.email_open_count}
+                  </Badge>
+                ) : invoice.email_opened ? (
+                  <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                    Opened 1
+                  </Badge>
+                ) : null}
+                {invoice.email_click_count ? (
+                  <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                    Clicked {invoice.email_click_count}
+                  </Badge>
+                ) : invoice.email_clicked ? (
+                  <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                    Clicked 1
+                  </Badge>
+                ) : null}
+                {invoice.email_bounced && (
+                  <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                    Bounced
+                  </Badge>
+                )}
+                {invoice.email_complained && (
+                  <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                    Marked as spam
+                  </Badge>
+                )}
+              </div>
+
+              {/* Timestamps */}
+              <div className="text-xs text-gray-500 dark:text-slate-400 flex flex-wrap gap-x-4 gap-y-1">
+                {invoice.email_sent_at && (
+                  <span>Sent: {formatDateTime(invoice.email_sent_at)}</span>
+                )}
+                {invoice.email_delivered_at && (
+                  <span>
+                    Delivered: {formatDateTime(invoice.email_delivered_at)}
+                  </span>
+                )}
+                {invoice.email_opened_at && (
+                  <span>
+                    Last opened: {formatDateTime(invoice.email_opened_at)}
+                  </span>
+                )}
+                {invoice.email_clicked_at && (
+                  <span>
+                    Last clicked: {formatDateTime(invoice.email_clicked_at)}
+                  </span>
+                )}
+                {invoice.email_bounced_at && (
+                  <span>
+                    Bounced: {formatDateTime(invoice.email_bounced_at)}
+                  </span>
+                )}
+                {invoice.email_complained_at && (
+                  <span>
+                    Spam: {formatDateTime(invoice.email_complained_at)}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
 
           <CardContent
             className="p-12 bg-white dark:bg-slate-800"
