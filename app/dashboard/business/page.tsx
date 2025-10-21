@@ -131,7 +131,11 @@ export default async function Page({
           invoicesLength={totalInvoicesAll}
           companiesLength={1}
         />
-        <InvoiceTable invoices={invoices} business_id={business_id} />
+        <InvoiceTable
+          invoices={invoices}
+          business_id={business_id}
+          userPlan={userPlan}
+        />
         {recentActivities.length > 0 && (
           <RecentActivity recentActivities={recentActivities} />
         )}

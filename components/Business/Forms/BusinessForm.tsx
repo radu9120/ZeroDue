@@ -1,5 +1,4 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,10 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { Textarea } from "../../ui/textarea";
-import { Plus, AlertTriangle, Crown } from "lucide-react";
+import { Plus } from "lucide-react";
 import { companySchema } from "@/schemas/invoiceSchema";
-import { createBusiness } from "@/lib/actions/business.actions";
-import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import type { AppPlan } from "@/lib/utils";
@@ -266,8 +263,8 @@ export default function BusinessForm({
         </div>
 
         {/* Plan Information */}
-        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-          <h4 className="font-medium text-primary mb-2">
+        <div className="bg-blue-50 dark:bg-slate-800 rounded-lg p-4 border border-blue-200 dark:border-slate-600">
+          <h4 className="font-medium text-primary dark:text-blue-400 mb-2">
             {userPlan === "enterprise"
               ? "Enterprise Plan Includes:"
               : userPlan === "professional"
@@ -310,7 +307,7 @@ export default function BusinessForm({
             type="button"
             variant="secondary"
             onClick={onCancel}
-            className="flex-1 border-blue-200 hover:bg-blue-50"
+            className="flex-1 border-blue-200 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-slate-700"
             disabled={isSubmitting}
           >
             Cancel

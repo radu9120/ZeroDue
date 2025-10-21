@@ -115,10 +115,10 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
   };
 
   return (
-    <main className="relative w-full min-h-screen bg-gray-50">
+    <main className="relative w-full min-h-screen bg-gray-50 dark:bg-slate-900 pt-24 md:pt-28">
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white z-0" />
-      <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/30 mix-blend-multiply blur-3xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 z-0" />
+      <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/30 dark:bg-blue-900/20 mix-blend-multiply blur-3xl"></div>
 
       <div className="relative z-10 max-w-7xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
         {/* Header Section */}

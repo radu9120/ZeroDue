@@ -13,9 +13,10 @@ const buttonVariants = cva(
         primary:
           " bg-gradient-to-r from-primary to-accent hover:from-primary-dark text-white shadow-xs ",
         secondary:
-          "w-full flex-1 border-blue-200 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "w-full flex-1 border-blue-200 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 dark:text-slate-200",
         link: "text-primary underline-offset-4 hover:underline",
-        ghost: "hover:bg-blue-100 hover:text-accent-foreground ",
+        ghost:
+          "hover:bg-blue-100 hover:text-accent-foreground dark:hover:bg-slate-700 dark:text-slate-200",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

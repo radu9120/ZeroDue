@@ -1,6 +1,7 @@
 "use client";
 import { InvoiceListItem } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import CustomButton from "../ui/CustomButton";
 import {
@@ -476,9 +477,11 @@ function SearchAndFilter({
 export default function InvoiceTable({
   invoices,
   business_id,
+  userPlan,
 }: {
   invoices: InvoiceListItem[];
   business_id: Number;
+  userPlan: "free_user" | "professional" | "enterprise";
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -723,19 +726,35 @@ export default function InvoiceTable({
     }
   };
 
-  // View invoice - navigate to success page
-  const handleViewInvoice = (invoiceId: number) => {
-    router.push(
-      `/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoiceId}`
-    );
-  };
-
-  // Edit invoice
-  const handleEditInvoice = (invoiceId: number) => {
-    router.push(
-      `/dashboard/invoices/edit/${invoiceId}?business_id=${business_id}`
-    );
-  };
+  /**
+   * NOTE: Invoice Editing is intentionally restricted to maintain plan limit integrity.
+   *
+   * REASON: Invoice creation counts against plan limits (Free: 1 invoice, Pro: 10/month).
+   * Full editing would allow users to create unlimited invoices by repeatedly editing
+   * the same one, bypassing plan restrictions.
+   *
+   * ALLOWED MODIFICATIONS:
+   * - Status changes (draft → sent → paid → overdue → cancelled)
+   * - Bank details (account type, name, sort code, account number)
+   * - Internal notes & terms
+   *
+   * RESTRICTED (to maintain invoice integrity):
+   * - Invoice items (description, price, quantity)
+   * - Client information
+   * - Invoice date/number
+   * - Amounts/totals (subtotal, discount, shipping, total)
+   * - Company details
+   *
+   * RATIONALE:
+   * - Bank details: Often need updates for payment instructions without changing invoice
+   * - Notes: Need to add payment terms, late fees, or special instructions
+   * - Status: Required for invoice lifecycle management
+   * - Everything else: Changing would essentially create a "new" invoice, bypassing limits
+   *
+   * If client needs to change invoice content, they should:
+   * 1. Delete the incorrect invoice (frees up the slot)
+   * 2. Create a new corrected invoice
+   */
 
   // Safe date formatter that tolerates null/invalid inputs
   const formatDate = (value: unknown) => {
@@ -754,201 +773,228 @@ export default function InvoiceTable({
   };
 
   return (
-    <Card>
-      <CardHeader className="flex justify-between">
-        <h2 className="text-xl font-bold text-header-text dark:text-slate-100">
-          All Invoices
-        </h2>
-        <div className="flex items-center gap-3">
-          <CustomModal
-            heading="Search & Filter Invoices"
-            description="Find specific invoices or filter by status"
-            openBtnLabel="Filter"
-            btnVariant="secondary"
-            btnIcon={FilterIcon}
-          >
-            <SearchAndFilter
-              onSearch={handleSearch}
-              onFilterChange={handleFilterChange}
-              searchTerm={search}
-              currentFilter={filter}
-            />
-          </CustomModal>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto lg:w-full w-[1200px]">
-          <div className="w-full">
-            <div className="border-b w-full py-3 px-4 border-blue-100 grid grid-cols-6 gap-2">
-              <div className="font-medium text-secondary-text dark:text-slate-400">
-                Invoice
+    <>
+      <Card>
+        <CardHeader className="flex justify-between">
+          <h2 className="text-xl font-bold text-header-text dark:text-slate-100">
+            All Invoices
+          </h2>
+          <div className="flex items-center gap-3">
+            <CustomModal
+              heading="Search & Filter Invoices"
+              description="Find specific invoices or filter by status"
+              openBtnLabel="Filter"
+              btnVariant="secondary"
+              btnIcon={FilterIcon}
+            >
+              <SearchAndFilter
+                onSearch={handleSearch}
+                onFilterChange={handleFilterChange}
+                searchTerm={search}
+                currentFilter={filter}
+              />
+            </CustomModal>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto lg:w-full w-[1200px]">
+            <div className="w-full">
+              <div className="border-b w-full py-3 px-4 border-blue-100 grid grid-cols-6 gap-2">
+                <div className="font-medium text-secondary-text dark:text-slate-400">
+                  Invoice
+                </div>
+                <div className="font-medium text-secondary-text dark:text-slate-400">
+                  Amount
+                </div>
+                <div className="font-medium text-secondary-text dark:text-slate-400">
+                  Status
+                </div>
+                <div className="font-medium text-secondary-text dark:text-slate-400">
+                  Issue Date
+                </div>
+                <div className="font-medium text-secondary-text dark:text-slate-400">
+                  Due Date
+                </div>
+                <div className="text-right font-medium text-secondary-text dark:text-slate-400">
+                  Actions
+                </div>
               </div>
-              <div className="font-medium text-secondary-text dark:text-slate-400">
-                Amount
-              </div>
-              <div className="font-medium text-secondary-text dark:text-slate-400">
-                Status
-              </div>
-              <div className="font-medium text-secondary-text dark:text-slate-400">
-                Issue Date
-              </div>
-              <div className="font-medium text-secondary-text dark:text-slate-400">
-                Due Date
-              </div>
-              <div className="text-right font-medium text-secondary-text dark:text-slate-400">
-                Actions
-              </div>
-            </div>
 
-            {invoices.length > 0 ? (
-              <div>
-                {invoices.map((invoice) => (
-                  <div
-                    key={invoice.id}
-                    className="border-b border-blue-50 hover:bg-blue-50/50 w-full py-3 px-4 grid grid-cols-6 gap-2"
-                  >
-                    <div>
-                      <p className="font-medium text-header-text dark:text-slate-100">
-                        {invoice.invoice_number}
-                      </p>
-                      <p className="text-sm text-secondary-text dark:text-slate-400">
-                        {invoice.description || "No description"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-header-text dark:text-slate-100">
-                        {invoice.total}
-                      </p>
-                    </div>
-                    <div>{getStatusBadge(invoice?.status || "draft")}</div>
-                    <div>
-                      <p className="text-header-text dark:text-slate-100">
-                        {invoice.issue_date
-                          ? formatDate(invoice.issue_date)
-                          : "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-header-text dark:text-slate-100">
-                        {formatDate(invoice.due_date)}
-                      </p>
-                    </div>
+              {invoices.length > 0 ? (
+                <div>
+                  {invoices.map((invoice) => (
+                    <div
+                      key={invoice.id}
+                      className="border-b border-blue-50 hover:bg-blue-50/50 w-full py-3 px-4 grid grid-cols-6 gap-2"
+                    >
+                      <div>
+                        <p className="font-medium text-header-text dark:text-slate-100">
+                          {invoice.invoice_number}
+                        </p>
+                        <p className="text-sm text-secondary-text dark:text-slate-400">
+                          {invoice.description || "No description"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-header-text dark:text-slate-100">
+                          {invoice.total}
+                        </p>
+                      </div>
+                      <div>{getStatusBadge(invoice?.status || "draft")}</div>
+                      <div>
+                        <p className="text-header-text dark:text-slate-100">
+                          {invoice.issue_date
+                            ? formatDate(invoice.issue_date)
+                            : "N/A"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-header-text dark:text-slate-100">
+                          {formatDate(invoice.due_date)}
+                        </p>
+                      </div>
 
-                    <div className="w-full">
-                      <div className="flex items-center justify-end gap-2">
-                        <CustomModal
-                          heading={`Invoice ${invoice.invoice_number}`}
-                          description="View complete invoice details"
-                          customTrigger={
+                      <div className="w-full">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}`}
+                          >
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="hover:bg-blue-100"
+                              className="hover:bg-blue-100 dark:hover:bg-slate-700"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
-                          }
-                        >
-                          <InvoicePreview
-                            invoice={invoice}
-                            onDownload={handleDownloadPDF}
-                          />
-                        </CustomModal>
+                          </Link>
 
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="hover:bg-blue-100"
-                          onClick={() => handleDownloadPDF(invoice)}
-                          disabled={isDownloading === invoice.id}
-                        >
-                          {isDownloading === invoice.id ? (
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                          ) : (
-                            <Download className="h-4 w-4" />
-                          )}
-                        </Button>
-
-                        <CustomModal
-                          heading="More Actions"
-                          description={`Actions for invoice ${invoice.invoice_number}`}
-                          customTrigger={
+                          <Link
+                            href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}&download=1`}
+                          >
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="hover:bg-blue-100"
+                              className="hover:bg-blue-100 dark:hover:bg-slate-700"
                             >
-                              <MoreVertical className="h-4 w-4" />
+                              <Download className="h-4 w-4" />
                             </Button>
-                          }
-                        >
-                          <div className="space-y-3">
-                            <Button
-                              variant="secondary"
-                              className="w-full justify-start"
-                              onClick={() => handleViewInvoice(invoice.id)}
-                            >
-                              <Eye className="h-4 w-4 mr-2" />
-                              View Full Invoice
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              className="w-full justify-start"
-                              onClick={() => handleEditInvoice(invoice.id)}
-                            >
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit Invoice
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              className="w-full justify-start"
-                              onClick={() => handleDownloadPDF(invoice)}
-                            >
-                              <Download className="h-4 w-4 mr-2" />
-                              Download PDF
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              className="w-full justify-start text-blue-600 hover:text-blue-700"
-                            >
-                              <Send className="h-4 w-4 mr-2" />
-                              Send to Client
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              className="w-full justify-start text-red-600 hover:text-red-700"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete Invoice
-                            </Button>
-                          </div>
-                        </CustomModal>
+                          </Link>
+
+                          <CustomModal
+                            heading="More Actions"
+                            description={`Actions for invoice ${invoice.invoice_number}`}
+                            customTrigger={
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="hover:bg-blue-100 dark:hover:bg-slate-700"
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            }
+                          >
+                            <div className="space-y-2">
+                              <Link
+                                href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}`}
+                                className="block"
+                              >
+                                <Button
+                                  variant="secondary"
+                                  className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
+                                >
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  View Full Invoice
+                                </Button>
+                              </Link>
+
+                              <Link
+                                href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}&edit=1`}
+                                className="block"
+                              >
+                                <Button
+                                  variant="secondary"
+                                  className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
+                                >
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  {userPlan === "enterprise"
+                                    ? "Edit Invoice"
+                                    : "Modify Status/Notes"}
+                                </Button>
+                              </Link>
+
+                              <Link
+                                href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}&download=1`}
+                                className="block"
+                              >
+                                <Button
+                                  variant="secondary"
+                                  className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
+                                >
+                                  <Download className="h-4 w-4 mr-2" />
+                                  Download PDF
+                                </Button>
+                              </Link>
+
+                              <Button
+                                variant="secondary"
+                                className="w-full justify-start text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 dark:bg-slate-700 dark:hover:bg-slate-600"
+                                onClick={() => {
+                                  // TODO: Implement email sending functionality
+                                  alert("Email functionality coming soon");
+                                }}
+                              >
+                                <Send className="h-4 w-4 mr-2" />
+                                Send to Client
+                              </Button>
+
+                              <div className="pt-2 border-t border-gray-200 dark:border-slate-600">
+                                <Button
+                                  variant="secondary"
+                                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:bg-slate-700 dark:hover:bg-red-900/20"
+                                  onClick={() => {
+                                    // TODO: Implement delete with confirmation
+                                    if (
+                                      confirm(
+                                        `Are you sure you want to delete invoice ${invoice.invoice_number}? This action cannot be undone.`
+                                      )
+                                    ) {
+                                      alert("Delete functionality coming soon");
+                                    }
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete Invoice
+                                </Button>
+                              </div>
+                            </div>
+                          </CustomModal>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <FileText className="h-16 w-16 mx-auto text-gray-400 dark:text-slate-500 mb-4" />
-                <h3 className="text-xl font-semibold text-header-text dark:text-slate-100 mb-2">
-                  No Invoices Yet
-                </h3>
-                <p className="text-secondary-text dark:text-slate-400 mb-6">
-                  Create your first invoice to start tracking payments and
-                  managing your business.
-                </p>
-                <CustomButton
-                  label="Create Your First Invoice"
-                  icon={PlusIcon}
-                  variant="primary"
-                  href={`/dashboard/invoices/new?business_id=${business_id}`}
-                />
-              </div>
-            )}
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <FileText className="h-16 w-16 mx-auto text-gray-400 dark:text-slate-500 mb-4" />
+                  <h3 className="text-xl font-semibold text-header-text dark:text-slate-100 mb-2">
+                    No Invoices Yet
+                  </h3>
+                  <p className="text-secondary-text dark:text-slate-400 mb-6">
+                    Create your first invoice to start tracking payments and
+                    managing your business.
+                  </p>
+                  <CustomButton
+                    label="Create Your First Invoice"
+                    icon={PlusIcon}
+                    variant="primary"
+                    href={`/dashboard/invoices/new?business_id=${business_id}`}
+                  />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </>
   );
 }

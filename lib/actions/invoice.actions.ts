@@ -269,3 +269,78 @@ export const getCurrentMonthInvoiceCountForBusiness = async (
   if (error) return 0;
   return count || 0;
 };
+
+// Update only bank details, notes, and status (no plan limit impact)
+export const updateInvoiceBankDetailsAndNotes = async (
+  invoiceId: number,
+  updates: {
+    bank_details?: string;
+    notes?: string;
+    status?: string;
+  }
+) => {
+  const { userId: author } = await auth();
+  if (!author) redirect("/sign-in");
+
+  const supabase = createSupabaseClient();
+
+  // Verify ownership
+  const { data: invoice, error: fetchError } = await supabase
+    .from("Invoices")
+    .select("author, invoice_number, business_id")
+    .eq("id", invoiceId)
+    .single();
+
+  if (fetchError || !invoice) {
+    throw new Error("Invoice not found");
+  }
+
+  if (invoice.author !== author) {
+    throw new Error("Unauthorized: You don't own this invoice");
+  }
+
+  // Update only the allowed fields
+  const { data, error } = await supabase
+    .from("Invoices")
+    .update(updates)
+    .eq("id", invoiceId)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message || "Failed to update invoice");
+  }
+
+  // Log activity
+  await createActivity({
+    user_id: author,
+    business_id: invoice.business_id,
+    action: "Updated invoice status",
+    target_type: "invoice",
+    target_name: invoice.invoice_number,
+    metadata: updates.status ? { from: "", to: updates.status } : undefined,
+  });
+
+  return data;
+};
+
+// Get single invoice by ID
+export const getInvoiceById = async (invoiceId: number) => {
+  const { userId: author } = await auth();
+  if (!author) redirect("/sign-in");
+
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("Invoices")
+    .select("*")
+    .eq("id", invoiceId)
+    .eq("author", author)
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message || "Invoice not found");
+  }
+
+  return data;
+};

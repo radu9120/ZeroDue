@@ -64,7 +64,7 @@ export default async function AnalyticsPage({
   const userPlan: AppPlan = await getCurrentPlan();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white bg-white dark:bg-slate-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white bg-white dark:bg-slate-800 pt-24 md:pt-28">
       <div className="container mx-auto px-4 md:px-6 py-8">
         {/* Header */}
         <div className="mb-8">

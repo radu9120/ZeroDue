@@ -12,11 +12,9 @@ export default function middleware(req: NextRequest, ev: NextFetchEvent) {
   return base(req, ev);
 }
 
+// Use Clerk-recommended matcher to reliably exclude static assets and Next internals.
+// This prevents the middleware from intercepting Turbopack dev asset requests like
+// [root-of-the-server]__*.css, which can otherwise result in 500s during HMR.
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/api/:path*",
-  ],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

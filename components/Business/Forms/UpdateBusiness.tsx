@@ -266,7 +266,7 @@ export const UpdateBusiness = ({
 
   if (error) {
     return (
-      <div className="p-4 my-4 text-center text-red-700 bg-red-100 border border-red-300 rounded-lg min-h-[200px] flex flex-col justify-center items-center">
+      <div className="p-4 my-4 text-center text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-800 rounded-lg min-h-[200px] flex flex-col justify-center items-center">
         <p className="font-semibold text-lg">Update Error</p>
         <p className="text-sm mt-1 mb-3">{error}</p>
         <button
