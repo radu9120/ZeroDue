@@ -90,10 +90,10 @@ export default function ClientManagement({
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
           <div className="text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <Users className="h-6 w-6 text-purple-600" />
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
             </div>
             <p className="text-2xl font-bold text-header-text dark:text-slate-100">
               {clients.length}
@@ -104,10 +104,10 @@ export default function ClientManagement({
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
           <div className="text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <Users className="h-6 w-6 text-green-600" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             {/* <p className="text-2xl font-bold text-header-text dark:text-slate-100">
                     {clients.filter((c) => c.status === "active").length}
@@ -118,10 +118,10 @@ export default function ClientManagement({
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
           <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <FileText className="h-6 w-6 text-primary" />
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <FileText className="h-6 w-6 text-primary dark:text-blue-400" />
             </div>
             {/* <p className="text-2xl font-bold text-header-text dark:text-slate-100">
                     {clients.reduce((sum, client) => sum + client.invoices, 0)}
@@ -132,10 +132,10 @@ export default function ClientManagement({
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
           <div className="text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <DollarSign className="h-6 w-6 text-green-600" />
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             <p className="text-2xl font-bold text-header-text dark:text-slate-100">
               0
