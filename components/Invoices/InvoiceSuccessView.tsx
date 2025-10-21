@@ -1953,7 +1953,9 @@ export default function InvoiceSuccessView({
 
         {/* Action Buttons */}
         <div className="flex gap-4 justify-center pt-6">
-          <Link href={`/dashboard?business_id=${company.id}`}>
+          <Link
+            href={`/dashboard/business?business_id=${company.id}&name=${encodeURIComponent(company.name)}`}
+          >
             <CustomButton
               label="Back to Dashboard"
               icon={ArrowLeft}

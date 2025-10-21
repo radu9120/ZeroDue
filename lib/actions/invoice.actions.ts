@@ -60,7 +60,11 @@ export const createInvoice = async (formData: CreateInvoice) => {
 
   const { data, error } = await supabase
     .from("Invoices")
-    .insert({ ...formData, author })
+    .insert({
+      ...formData,
+      author,
+      status: formData.status || "draft", // Ensure status defaults to draft if not provided
+    })
     .select();
 
   if (error || !data)

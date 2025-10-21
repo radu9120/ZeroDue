@@ -220,8 +220,8 @@ export async function POST(req: NextRequest) {
         .from("Invoices")
         .update({
           status: "sent",
-          email_id: data?.id,
-          email_sent_at: new Date().toISOString(),
+          // email_id: data?.id, // Removed - column doesn't exist in DB
+          // email_sent_at: new Date().toISOString(), // Removed - column doesn't exist in DB
         })
         .eq("id", invoice.id)
         .select("id, status")
@@ -245,7 +245,7 @@ export async function POST(req: NextRequest) {
         action: "Sent invoice",
         target_type: "invoice",
         target_name: invoice.invoice_number,
-        target_id: String(invoice.id),
+        // target_id: String(invoice.id), // Removed - column doesn't exist in DB
         metadata: { to: clientEmail, email_id: data?.id },
       });
     } catch (activityError) {

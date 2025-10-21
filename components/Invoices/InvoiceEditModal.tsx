@@ -30,40 +30,45 @@ export default function InvoiceEditModal({
   onClose,
 }: InvoiceEditModalProps) {
   const isEnterprise = userPlan === "enterprise";
+
   // Parse bank details - handle JSON, object, or plain text
-  let bankDetailsObj = {
-    accountType: "",
-    accountName: "",
-    sortCode: "",
-    accountNumber: "",
-  };
+  let initialBankType = "international";
+  let initialBankText = "";
+  let initialAccountType = "";
+  let initialAccountName = "";
+  let initialSortCode = "";
+  let initialAccountNumber = "";
 
   try {
     if (invoice.bank_details) {
       if (typeof invoice.bank_details === "string") {
-        // Try to parse as JSON first
+        // Try to parse as JSON to check if it's UK format
         try {
           const parsed = JSON.parse(invoice.bank_details);
-          if (typeof parsed === "object" && parsed !== null) {
-            bankDetailsObj = {
-              accountType: parsed.accountType || "",
-              accountName: parsed.accountName || "",
-              sortCode: parsed.sortCode || "",
-              accountNumber: parsed.accountNumber || "",
-            };
+          if (parsed.sortCode && parsed.accountNumber) {
+            initialBankType = "uk";
+            initialAccountType = parsed.accountType || "";
+            initialAccountName = parsed.accountName || "";
+            initialSortCode = parsed.sortCode || "";
+            initialAccountNumber = parsed.accountNumber || "";
+          } else {
+            initialBankText = invoice.bank_details;
           }
         } catch {
-          // If JSON parse fails, it's probably plain text - leave fields empty
-          // User can fill them in the form
-          console.log("Bank details is plain text, not JSON");
+          // Plain text - international format
+          initialBankText = invoice.bank_details;
         }
       } else if (typeof invoice.bank_details === "object") {
-        bankDetailsObj = {
-          accountType: (invoice.bank_details as any).accountType || "",
-          accountName: (invoice.bank_details as any).accountName || "",
-          sortCode: (invoice.bank_details as any).sortCode || "",
-          accountNumber: (invoice.bank_details as any).accountNumber || "",
-        };
+        const details = invoice.bank_details as any;
+        if (details.sortCode && details.accountNumber) {
+          initialBankType = "uk";
+          initialAccountType = details.accountType || "";
+          initialAccountName = details.accountName || "";
+          initialSortCode = details.sortCode || "";
+          initialAccountNumber = details.accountNumber || "";
+        } else {
+          initialBankText = JSON.stringify(invoice.bank_details, null, 2);
+        }
       }
     }
   } catch (e) {
@@ -72,16 +77,14 @@ export default function InvoiceEditModal({
 
   const [status, setStatus] = useState(invoice.status || "draft");
   const [notes, setNotes] = useState(invoice.notes || "");
-  const [accountType, setAccountType] = useState(
-    bankDetailsObj.accountType || ""
+  const [bankType, setBankType] = useState<"uk" | "international">(
+    initialBankType
   );
-  const [accountName, setAccountName] = useState(
-    bankDetailsObj.accountName || ""
-  );
-  const [sortCode, setSortCode] = useState(bankDetailsObj.sortCode || "");
-  const [accountNumber, setAccountNumber] = useState(
-    bankDetailsObj.accountNumber || ""
-  );
+  const [bankDetails, setBankDetails] = useState(initialBankText);
+  const [accountType, setAccountType] = useState(initialAccountType);
+  const [accountName, setAccountName] = useState(initialAccountName);
+  const [sortCode, setSortCode] = useState(initialSortCode);
+  const [accountNumber, setAccountNumber] = useState(initialAccountNumber);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -91,15 +94,23 @@ export default function InvoiceEditModal({
     setError("");
 
     try {
-      const bankDetails = JSON.stringify({
-        accountType,
-        accountName,
-        sortCode,
-        accountNumber,
-      });
+      let bankDetailsToSave = "";
+
+      if (bankType === "uk") {
+        // Save as JSON for UK format
+        bankDetailsToSave = JSON.stringify({
+          accountType: accountType.trim(),
+          accountName: accountName.trim(),
+          sortCode: sortCode.trim(),
+          accountNumber: accountNumber.trim(),
+        });
+      } else {
+        // Save as plain text for international format
+        bankDetailsToSave = bankDetails.trim();
+      }
 
       await updateInvoiceBankDetailsAndNotes(invoice.id, {
-        bank_details: bankDetails,
+        bank_details: bankDetailsToSave,
         notes: notes.trim(),
         status,
       });
@@ -140,59 +151,106 @@ export default function InvoiceEditModal({
           Bank Details
         </h3>
 
+        {/* Bank Format Toggle */}
         <div className="space-y-2">
-          <Label htmlFor="accountType" className="dark:text-slate-200">
-            Account Type
-          </Label>
-          <Input
-            id="accountType"
-            value={accountType}
-            onChange={(e) => setAccountType(e.target.value)}
-            placeholder="e.g., Business, Personal"
-            className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
-          />
+          <Label className="dark:text-slate-200">Banking Format</Label>
+          <Select
+            value={bankType}
+            onValueChange={(value: "uk" | "international") =>
+              setBankType(value)
+            }
+          >
+            <SelectTrigger className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
+              <SelectItem value="uk">
+                UK Banking (Sort Code & Account Number)
+              </SelectItem>
+              <SelectItem value="international">
+                International (IBAN, SWIFT, etc.)
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="accountName" className="dark:text-slate-200">
-            Account Name
-          </Label>
-          <Input
-            id="accountName"
-            value={accountName}
-            onChange={(e) => setAccountName(e.target.value)}
-            placeholder="e.g., VEROSITE LTD"
-            className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
-          />
-        </div>
+        {bankType === "uk" ? (
+          // UK Banking Format
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="accountType" className="dark:text-slate-200">
+                Account Type
+              </Label>
+              <Input
+                id="accountType"
+                value={accountType}
+                onChange={(e) => setAccountType(e.target.value)}
+                placeholder="e.g., Business, Personal"
+                className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+              />
+            </div>
 
-        <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="accountName" className="dark:text-slate-200">
+                Account Name
+              </Label>
+              <Input
+                id="accountName"
+                value={accountName}
+                onChange={(e) => setAccountName(e.target.value)}
+                placeholder="e.g., VEROSITE LTD"
+                className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sortCode" className="dark:text-slate-200">
+                  Sort Code
+                </Label>
+                <Input
+                  id="sortCode"
+                  value={sortCode}
+                  onChange={(e) => setSortCode(e.target.value)}
+                  placeholder="23-11-85"
+                  className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="accountNumber" className="dark:text-slate-200">
+                  Account Number
+                </Label>
+                <Input
+                  id="accountNumber"
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                  placeholder="63274627"
+                  className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          // International Banking Format
           <div className="space-y-2">
-            <Label htmlFor="sortCode" className="dark:text-slate-200">
-              Sort Code
+            <Label htmlFor="bankDetails" className="dark:text-slate-200">
+              Bank Account Information
             </Label>
-            <Input
-              id="sortCode"
-              value={sortCode}
-              onChange={(e) => setSortCode(e.target.value)}
-              placeholder="12-34-56"
-              className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+            <Textarea
+              id="bankDetails"
+              value={bankDetails}
+              onChange={(e) => setBankDetails(e.target.value)}
+              placeholder="Enter your bank details&#10;e.g.:&#10;Bank Name: International Bank&#10;IBAN: GB29 NWBK 6016 1331 9268 19&#10;SWIFT/BIC: NWBKGB2L&#10;Account Name: Your Company Ltd"
+              rows={6}
+              className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:placeholder-slate-400 resize-none font-mono text-sm"
             />
+            <p className="text-xs text-gray-500 dark:text-slate-400">
+              Add any banking information (IBAN, SWIFT, BSB, Routing Number,
+              etc.)
+            </p>
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="accountNumber" className="dark:text-slate-200">
-              Account Number
-            </Label>
-            <Input
-              id="accountNumber"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
-              placeholder="12345678"
-              className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
-            />
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Notes Section */}
