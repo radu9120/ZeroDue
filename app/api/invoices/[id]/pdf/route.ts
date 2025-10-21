@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
-import { createSupabaseClient } from "../../../../../lib/supabase";
+import { createSupabaseAdminClient } from "../../../../../lib/supabase";
+import { auth } from "@clerk/nextjs/server";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 export async function GET(
@@ -7,18 +8,25 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { userId } = await auth();
+    if (!userId) return new Response("Unauthorized", { status: 401 });
     const { id: idParam } = await params;
     const id = Number(idParam);
     if (!id) return new Response("Invalid id", { status: 400 });
 
-    const supabase = createSupabaseClient();
+    const supabase = createSupabaseAdminClient();
     const { data: invoice, error } = await supabase
       .from("Invoices")
-      .select("*, company_details(*)")
+      .select("*, author, company_details(*)")
       .eq("id", id)
       .single();
     if (error || !invoice)
       return new Response(error?.message || "Not found", { status: 404 });
+
+    // Authorize: ensure the requesting user owns this invoice
+    if (invoice.author && invoice.author !== userId) {
+      return new Response("Forbidden", { status: 403 });
+    }
 
     // Try to locate a company logo URL from common fields. These schema names are inferred
     // from the app; if your project uses a different field, we'll fall back to no-logo.
@@ -84,7 +92,8 @@ export async function GET(
     }
 
     // Invoice metadata
-    const invoiceNumber = invoice.number || `#${invoice.id}`;
+    const invoiceNumber =
+      invoice.invoice_number || invoice.number || `#${invoice.id}`;
     const issueDate = new Date(
       invoice.created_at || invoice.issued_at || Date.now()
     ).toLocaleDateString("en-GB");
@@ -139,11 +148,11 @@ export async function GET(
       for (const it of items) {
         const desc = it.description || it.label || it.name || "";
         const qty =
-          typeof it.quantity !== "undefined" ? it.quantity : it.qty ?? 1;
+          typeof it.quantity !== "undefined" ? it.quantity : (it.qty ?? 1);
         const price =
           typeof it.unit_price !== "undefined"
             ? it.unit_price
-            : it.price ?? it.rate ?? 0;
+            : (it.price ?? it.rate ?? 0);
         const rowTotal =
           typeof it.total !== "undefined" ? it.total : price * qty;
 
@@ -178,15 +187,15 @@ export async function GET(
       typeof invoice.subtotal !== "undefined"
         ? invoice.subtotal
         : Array.isArray(items)
-        ? items.reduce(
-            (s: number, it: any) =>
-              s +
-              (it.total ??
-                (it.unit_price ?? it.price ?? 0) *
-                  (it.quantity ?? it.qty ?? 1)),
-            0
-          )
-        : 0;
+          ? items.reduce(
+              (s: number, it: any) =>
+                s +
+                (it.total ??
+                  (it.unit_price ?? it.price ?? 0) *
+                    (it.quantity ?? it.qty ?? 1)),
+              0
+            )
+          : 0;
     const tax = invoice.tax ?? invoice.vat ?? 0;
     const total = invoice.total ?? invoice.amount_due ?? subtotal + tax;
 

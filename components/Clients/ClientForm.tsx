@@ -198,7 +198,7 @@ export const ClientForm = ({
             <Button
               type="button"
               variant="secondary"
-              className="flex-1 border-blue-200"
+              className="flex-1 border-blue-200 dark:border-slate-700"
               disabled={pending}
               onClick={() => {
                 if (closeModal) {

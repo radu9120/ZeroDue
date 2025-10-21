@@ -64,7 +64,7 @@ export default async function AnalyticsPage({
   const userPlan: AppPlan = await getCurrentPlan();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white bg-white dark:bg-slate-800 pt-24 md:pt-28">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 bg-white dark:bg-slate-900 pt-24 md:pt-28">
       <div className="container mx-auto px-4 md:px-6 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -75,7 +75,7 @@ export default async function AnalyticsPage({
             <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
           </Link>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
               <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
             </div>
             <div>
@@ -99,7 +99,7 @@ export default async function AnalyticsPage({
           </div>
           <Button
             variant="secondary"
-            className="border-blue-200 w-full sm:w-auto"
+            className="border-blue-200 dark:border-slate-700 w-full sm:w-auto"
           >
             <Download className="h-4 w-4 mr-2" /> Export Report
           </Button>
@@ -107,7 +107,7 @@ export default async function AnalyticsPage({
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
@@ -117,12 +117,12 @@ export default async function AnalyticsPage({
                   £{overview.totalAmount.toFixed(2)}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
                 <DollarSign className="h-6 w-6 text-green-600" />
               </div>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
@@ -132,12 +132,12 @@ export default async function AnalyticsPage({
                   {overview.total}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                 <FileText className="h-6 w-6 text-primary dark:text-blue-400" />
               </div>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
@@ -147,12 +147,12 @@ export default async function AnalyticsPage({
                   £{avgInvoice.toFixed(2)}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                 <BarChart3 className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
@@ -162,7 +162,7 @@ export default async function AnalyticsPage({
                   {collectionRate}%
                 </p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
                 <TrendingUp className="h-6 w-6 text-green-600" />
               </div>
             </div>
@@ -172,7 +172,7 @@ export default async function AnalyticsPage({
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Revenue Chart */}
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-header-text dark:text-slate-100">
                 Revenue Trend
@@ -184,7 +184,7 @@ export default async function AnalyticsPage({
                 {revenueData.map((d, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center">
                     <div
-                      className="w-full bg-gradient-to-t from-primary to-accent rounded-t-lg"
+                      className="w-full bg-gradient-to-t from-primary to-accent dark:from-blue-500 dark:to-indigo-400 rounded-t-lg"
                       style={{
                         height: `${
                           maxRevenue ? (d.amount / maxRevenue) * 100 : 0
@@ -202,7 +202,7 @@ export default async function AnalyticsPage({
           </div>
 
           {/* Invoice Status Pie Chart */}
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100">
+          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-header-text dark:text-slate-100">
                 Invoice Status
@@ -262,7 +262,7 @@ export default async function AnalyticsPage({
         </div>
 
         {/* Summary Stats */}
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 mt-8">
+        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700 mt-8">
           <h2 className="text-xl font-semibold text-header-text dark:text-slate-100 mb-6">
             Quick Summary
           </h2>
@@ -270,7 +270,7 @@ export default async function AnalyticsPage({
             {invoiceStatusData.map((item, index) => (
               <div
                 key={index}
-                className="text-center p-4 bg-blue-50 rounded-lg"
+                className="text-center p-4 bg-blue-50 dark:bg-slate-800/60 border border-blue-100 dark:border-slate-700 rounded-lg"
               >
                 <div
                   className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3"

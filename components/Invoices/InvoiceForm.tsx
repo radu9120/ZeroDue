@@ -112,11 +112,11 @@ const CalendarPicker = ({
 
   return (
     <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg p-4 w-80">
-      <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+      <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100 dark:border-slate-700">
         <button
           type="button"
           onClick={() => setViewDate(new Date(year, month - 1, 1))}
-          className="p-2 hover:bg-blue-50 rounded-full transition-colors duration-200 text-blue-600"
+          className="p-2 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-full transition-colors duration-200 text-blue-600 dark:text-blue-300"
         >
           <svg
             className="w-4 h-4"
@@ -132,13 +132,13 @@ const CalendarPicker = ({
             />
           </svg>
         </button>
-        <div className="text-lg font-semibold text-gray-800">
+        <div className="text-lg font-semibold text-gray-800 dark:text-slate-100">
           {months[month]} {year}
         </div>
         <button
           type="button"
           onClick={() => setViewDate(new Date(year, month + 1, 1))}
-          className="p-2 hover:bg-blue-50 rounded-full transition-colors duration-200 text-blue-600"
+          className="p-2 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-full transition-colors duration-200 text-blue-600 dark:text-blue-300"
         >
           <svg
             className="w-4 h-4"

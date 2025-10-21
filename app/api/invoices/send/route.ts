@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { Resend } from "resend";
 import { getInvoicesByAuthor } from "@/lib/actions/invoice.actions";
 import { getBusinessById } from "@/lib/actions/business.actions";
-import { createSupabaseClient } from "@/lib/supabase";
+import { createSupabaseAdminClient } from "@/lib/supabase";
 import { createActivity } from "@/lib/actions/userActivity.actions";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -25,19 +25,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Fetch invoice and business details
-    const [allInvoices, business] = await Promise.all([
-      getInvoicesByAuthor(),
-      getBusinessById(Number(businessId)),
-    ]);
+    // Load invoice by id (admin client) and verify ownership
+    const supabaseAdmin = createSupabaseAdminClient();
+    const { data: invoice, error: invErr } = await supabaseAdmin
+      .from("Invoices")
+      .select(
+        "id, author, invoice_number, bill_to, description, issue_date, due_date, total, currency, notes, bank_details"
+      )
+      .eq("id", Number(invoiceId))
+      .single();
 
-    const invoice = allInvoices.find(
-      (inv) => String(inv.id) === String(invoiceId)
-    );
+    if (invErr || !invoice) {
+      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+    }
+    if (invoice.author !== userId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
-    if (!invoice || !business) {
+    // Fetch business details (will be subject to RLS; throws if not accessible)
+    const business = await getBusinessById(Number(businessId));
+
+    if (!business) {
       return NextResponse.json(
-        { error: "Invoice or business not found" },
+        { error: "Business not found" },
         { status: 404 }
       );
     }
@@ -70,7 +80,7 @@ export async function POST(req: NextRequest) {
 
     // Calculate total
     const total = Number(invoice.total || 0).toFixed(2);
-    const currency = invoice.currency || "GBP";
+    const currency = (invoice as any).currency || "GBP";
     const currencySymbol =
       currency === "USD" ? "$" : currency === "EUR" ? "€" : "£";
 
@@ -204,8 +214,7 @@ export async function POST(req: NextRequest) {
 
     // Update invoice status to "sent" after successful email delivery
     try {
-      const supabase = createSupabaseClient();
-      const { error: updateError } = await supabase
+      const { data: updated, error: updateError } = await supabaseAdmin
         .from("Invoices")
         .update({
           status: "sent",
@@ -213,7 +222,8 @@ export async function POST(req: NextRequest) {
           email_sent_at: new Date().toISOString(),
         })
         .eq("id", invoice.id)
-        .eq("author", userId);
+        .select("id, status")
+        .single();
 
       if (updateError) {
         console.warn("Failed to update invoice status:", updateError);
