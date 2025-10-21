@@ -18,7 +18,6 @@ export async function GET() {
     },
     routes: {
       webhook: "/api/clerk/webhooks",
-      settings: "/dashboard/settings",
     },
   });
 }

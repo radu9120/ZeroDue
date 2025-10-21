@@ -6,50 +6,62 @@ import {
   ArrowLeft,
   FileText,
   Building2,
-                <div
-                  style={{
-                    backgroundColor: "#1f2937",
-                    borderRadius: "8px",
-                    padding: "24px",
-                    <div
-                      style={{
-                        backgroundColor: "#1f2937",
-                        borderRadius: "8px",
-                        padding: "24px",
-                        marginTop: 16,
-                      }}
-                    >
-                      <div style={{ textAlign: "center" }}>
-                        <div
-                          style={{
-                            fontSize: 13,
-                            fontWeight: "bold",
-                            color: "#fff",
-                            letterSpacing: "0.5px",
-                            marginBottom: 8,
-                          }}
-                        >
-                          TOTAL AMOUNT
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 32,
-                            fontWeight: "bold",
-                            color: "#fff",
-                          }}
-                        >
-                          {getCurrencySymbol(invoice.currency || "GBP")} {" "}
-                          {Number(
-                            invoice.total ??
-                              Number(invoice.subtotal || 0) +
-                                Number(invoice.shipping || 0) -
-                                (Number(invoice.subtotal || 0) *
-                                  Number(invoice.discount || 0)) /
-                                  100
-                          ).toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
+  User,
+  Calendar,
+  Edit,
+  Save,
+  X,
+  Trash2,
+  Plus,
+  Mail,
+} from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { toast } from "sonner";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import CustomButton from "@/components/ui/CustomButton";
+import { downloadElementAsPDF } from "@/lib/pdf";
+import type { InvoiceListItem, BusinessType } from "@/types";
+import { Badge } from "@/components/ui/badge";
+
+interface InvoiceSuccessViewProps {
+  invoice: InvoiceListItem;
+  company: BusinessType;
+  editMode?: boolean;
+  userPlan?: string;
+}
+
+export default function InvoiceSuccessView({
+  invoice,
+  company,
+  editMode = false,
+  userPlan = "free",
+}: InvoiceSuccessViewProps) {
+  const isEnterprise = userPlan === "enterprise";
+  const [isEditing, setIsEditing] = React.useState(editMode);
+  const [status, setStatus] = React.useState<string>(invoice.status || "draft");
+  const [saving, setSaving] = React.useState(false);
+
+  // Parse bank_details from invoice
+  const initialBank = (() => {
+    const empty = {
+      accountType: "",
+      accountName: "",
+      sortCode: "",
+      accountNumber: "",
+    };
+    if (!invoice.bank_details) return empty;
+    try {
+      if (typeof invoice.bank_details === "string") {
+        // try JSON parse
+        if (invoice.bank_details.trim().startsWith("{")) {
+          const parsed = JSON.parse(invoice.bank_details);
+          return {
+            accountType: parsed.accountType || "",
+            accountName: parsed.accountName || "",
+            sortCode: parsed.sortCode || "",
+            accountNumber: parsed.accountNumber || "",
           };
         }
         // legacy plain text: treat as account name
@@ -62,10 +74,10 @@ import {
       }
       if (typeof invoice.bank_details === "object") {
         return {
-          accountType: invoice.bank_details.accountType || "",
-          accountName: invoice.bank_details.accountName || "",
-          sortCode: invoice.bank_details.sortCode || "",
-          accountNumber: invoice.bank_details.accountNumber || "",
+          accountType: (invoice.bank_details as any).accountType || "",
+          accountName: (invoice.bank_details as any).accountName || "",
+          sortCode: (invoice.bank_details as any).sortCode || "",
+          accountNumber: (invoice.bank_details as any).accountNumber || "",
         };
       }
     } catch {}
@@ -178,10 +190,10 @@ import {
         }
       } else if (typeof invoice.bank_details === "object") {
         bank = {
-          accountType: invoice.bank_details.accountType || "",
-          accountName: invoice.bank_details.accountName || "",
-          sortCode: invoice.bank_details.sortCode || "",
-          accountNumber: invoice.bank_details.accountNumber || "",
+          accountType: (invoice.bank_details as any).accountType || "",
+          accountName: (invoice.bank_details as any).accountName || "",
+          sortCode: (invoice.bank_details as any).sortCode || "",
+          accountNumber: (invoice.bank_details as any).accountNumber || "",
         };
       }
     }
@@ -349,6 +361,7 @@ import {
 
   const [downloading, setDownloading] = React.useState(false);
   const [serverGenerating, setServerGenerating] = React.useState(false);
+  const [sending, setSending] = React.useState(false);
   // Print is intentionally removed — prefer client-side PDF download
 
   const downloadPDF = async () => {
@@ -419,6 +432,36 @@ import {
       toast.error(`Failed to generate PDF: ${msg}`);
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const sendToClient = async () => {
+    try {
+      setSending(true);
+
+      const response = await fetch("/api/invoices/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          invoiceId: invoice.id,
+          businessId: company.id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send invoice");
+      }
+
+      toast.success(data.message || "Invoice sent successfully!");
+    } catch (error: any) {
+      console.error("Error sending invoice:", error);
+      toast.error(error.message || "Failed to send invoice to client");
+    } finally {
+      setSending(false);
     }
   };
 
@@ -617,7 +660,9 @@ import {
                       textAlign: "right",
                     }}
                   >
-                    {new Date(invoice.issue_date).toLocaleDateString("en-GB")}
+                    {invoice.issue_date
+                      ? new Date(invoice.issue_date).toLocaleDateString("en-GB")
+                      : "N/A"}
                   </td>
                   <td
                     style={{
@@ -1085,34 +1130,35 @@ import {
                 >
                   <div
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: "12px",
+                      textAlign: "center",
                     }}
                   >
-                    <span
-                      style={{
-                        fontSize: 13,
-                        fontWeight: "bold",
-                        color: "#fff",
-                        letterSpacing: "0.5px",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      TOTAL AMOUNT
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 24,
-                        fontWeight: "bold",
-                        color: "#fff",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {getCurrencySymbol(invoice.currency || "GBP")}{" "}
-                      {Number(invoice.total || 0).toFixed(2)}
-                    </span>
+                    <div style={{ marginBottom: "8px" }}>
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: "bold",
+                          color: "#fff",
+                          letterSpacing: "0.5px",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        TOTAL AMOUNT
+                      </span>
+                    </div>
+                    <div>
+                      <span
+                        style={{
+                          fontSize: 24,
+                          fontWeight: "bold",
+                          color: "#fff",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {getCurrencySymbol(invoice.currency || "GBP")}{" "}
+                        {Number(invoice.total || 0).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1207,6 +1253,14 @@ import {
                       Edit Invoice
                     </Button>
                     <Button
+                      onClick={sendToClient}
+                      className="bg-green-600 hover:bg-green-700 shadow-lg"
+                      disabled={sending}
+                    >
+                      <Mail className="h-4 w-4 mr-2" />
+                      {sending ? "Sending…" : "Send to Client"}
+                    </Button>
+                    <Button
                       onClick={downloadPDF}
                       className="bg-blue-600 hover:bg-blue-700 shadow-lg"
                       disabled={downloading}
@@ -1293,9 +1347,11 @@ import {
                         />
                       ) : (
                         <span className="text-sm text-gray-900 dark:text-slate-100">
-                          {new Date(invoice.issue_date).toLocaleDateString(
-                            "en-GB"
-                          )}
+                          {invoice.issue_date
+                            ? new Date(invoice.issue_date).toLocaleDateString(
+                                "en-GB"
+                              )
+                            : "N/A"}
                         </span>
                       )}
                     </div>

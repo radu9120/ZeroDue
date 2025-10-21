@@ -137,12 +137,6 @@ export default function Navbar() {
                   Invoices
                 </Link>
               </>
-              <Link
-                href="/dashboard/settings"
-                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
-              >
-                Settings
-              </Link>
             </SignedIn>
           </motion.div>
 
@@ -291,13 +285,6 @@ export default function Navbar() {
                       onClick={closeMenu}
                     >
                       Invoices
-                    </Link>
-                    <Link
-                      href="/dashboard/settings"
-                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
-                      onClick={closeMenu}
-                    >
-                      Settings
                     </Link>
                   </SignedIn>
 

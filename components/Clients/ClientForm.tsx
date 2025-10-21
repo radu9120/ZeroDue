@@ -17,7 +17,7 @@ import React from "react";
 import { Textarea } from "../ui/textarea";
 import { AlertTriangle, Plus } from "lucide-react";
 import { billToSchema } from "@/schemas/invoiceSchema";
-import { createClient } from "@/lib/actions/client.actions";
+import { createClient, updateClient } from "@/lib/actions/client.actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -35,6 +35,7 @@ interface ClientFormProps {
   submitButtonText?: string;
   isSubmitting?: boolean;
   closeModal?: () => void; // injected by CustomModal
+  redirectAfterSubmit?: string; // URL to redirect to after successful submit
 }
 
 export const ClientForm = ({
@@ -44,6 +45,7 @@ export const ClientForm = ({
   submitButtonText = "Save Client",
   isSubmitting = false,
   closeModal,
+  redirectAfterSubmit,
 }: ClientFormProps) => {
   const router = useRouter();
   const [localSubmitting, setLocalSubmitting] = React.useState(false);
@@ -66,19 +68,47 @@ export const ClientForm = ({
         await onSubmit(values);
         toast.success("Client updated successfully");
         closeModal?.();
-        router.refresh();
+        if (redirectAfterSubmit) {
+          router.push(redirectAfterSubmit);
+        } else {
+          router.refresh();
+        }
         return;
       }
 
       setLocalSubmitting(true);
-      const client = await createClient(values);
-      if (client) {
-        toast.success("Client added successfully");
-        form.reset();
-        closeModal?.();
-        router.refresh();
+
+      // If we have an ID in defaultValues, it's an edit operation
+      if (defaultValues?.id) {
+        const dataToUpdate = { ...values, id: defaultValues.id };
+        const updatedClient = await updateClient(dataToUpdate);
+        if (updatedClient) {
+          toast.success("Client updated successfully");
+          form.reset();
+          closeModal?.();
+          if (redirectAfterSubmit) {
+            router.push(redirectAfterSubmit);
+          } else {
+            router.refresh();
+          }
+        } else {
+          toast.error("Failed to update client");
+        }
       } else {
-        toast.error("Failed to create client");
+        // Create new client
+        const client = await createClient(values);
+        if (client) {
+          toast.success("Client added successfully");
+          form.reset();
+          closeModal?.();
+          if (redirectAfterSubmit) {
+            router.push(redirectAfterSubmit);
+          } else {
+            router.refresh();
+          }
+        } else {
+          toast.error("Failed to create client");
+        }
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -170,7 +200,13 @@ export const ClientForm = ({
               variant="secondary"
               className="flex-1 border-blue-200"
               disabled={pending}
-              onClick={() => closeModal?.()}
+              onClick={() => {
+                if (closeModal) {
+                  closeModal();
+                } else if (redirectAfterSubmit) {
+                  router.push(redirectAfterSubmit);
+                }
+              }}
             >
               Cancel
             </Button>

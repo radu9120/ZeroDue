@@ -270,7 +270,10 @@ const InvoiceForm = ({
   return (
     <div className="bg-white dark:bg-slate-800">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="p-8 space-y-12">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="p-8 space-y-12 text-gray-900 dark:text-slate-100"
+        >
           {/* Company & Client Information */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* From - Company Information */}
@@ -280,14 +283,16 @@ const InvoiceForm = ({
                   <Building2 className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">From</h3>
-                  <p className="text-sm text-gray-500">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
+                    From
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">
                     Your business information
                   </p>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-2xl p-6 border border-blue-100/50">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-2xl p-6 border border-blue-100/50 dark:border-blue-800/50">
                 {/* Company Logo Display */}
                 {company_data.logo && (
                   <div className="mb-6 flex justify-start">
@@ -317,14 +322,18 @@ const InvoiceForm = ({
                     <span className="block text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">
                       Email
                     </span>
-                    <p className="text-gray-700">{company_data.email}</p>
+                    <p className="text-gray-700 dark:text-slate-300">
+                      {company_data.email}
+                    </p>
                   </div>
                   {company_data.phone && (
                     <div>
                       <span className="block text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">
                         Phone
                       </span>
-                      <p className="text-gray-700">{company_data.phone}</p>
+                      <p className="text-gray-700 dark:text-slate-300">
+                        {company_data.phone}
+                      </p>
                     </div>
                   )}
                   {company_data.address && (
@@ -358,15 +367,17 @@ const InvoiceForm = ({
                   <User className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
                     Bill To
                   </h3>
-                  <p className="text-sm text-gray-500">Client information</p>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">
+                    Client information
+                  </p>
                 </div>
               </div>
 
               {client_data ? (
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 rounded-2xl p-6 border border-green-100/50">
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl p-6 border border-green-100/50 dark:border-green-800/50">
                   <div className="space-y-4">
                     <div>
                       <span className="block text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">
@@ -380,14 +391,18 @@ const InvoiceForm = ({
                       <span className="block text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">
                         Email
                       </span>
-                      <p className="text-gray-700">{client_data.email}</p>
+                      <p className="text-gray-700 dark:text-slate-300">
+                        {client_data.email}
+                      </p>
                     </div>
                     {client_data.phone && (
                       <div>
                         <span className="block text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">
                           Phone
                         </span>
-                        <p className="text-gray-700">{client_data.phone}</p>
+                        <p className="text-gray-700 dark:text-slate-300">
+                          {client_data.phone}
+                        </p>
                       </div>
                     )}
                     {client_data.address && (
@@ -409,7 +424,7 @@ const InvoiceForm = ({
                     name="client_id"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">
+                        <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
                           Select Client
                         </FormLabel>
                         <FormControl>
@@ -433,8 +448,8 @@ const InvoiceForm = ({
                             }}
                             defaultValue={String(field.value)}
                           >
-                            <SelectTrigger className="w-full h-12 border-gray-200 dark:border-slate-700 rounded-xl">
-                              <span className="text-gray-600">
+                            <SelectTrigger className="w-full h-12 border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl">
+                              <span className="text-gray-600 dark:text-slate-300">
                                 {field.value
                                   ? clients.find((c) => c.id === field.value)
                                       ?.name
@@ -466,7 +481,7 @@ const InvoiceForm = ({
                   />
 
                   {bill_to && (
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 rounded-2xl p-6 border border-green-100/50">
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl p-6 border border-green-100/50 dark:border-green-800/50">
                       <div className="space-y-4">
                         <div>
                           <span className="block text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">
@@ -480,14 +495,18 @@ const InvoiceForm = ({
                           <span className="block text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">
                             Email
                           </span>
-                          <p className="text-gray-700">{bill_to.email}</p>
+                          <p className="text-gray-700 dark:text-slate-300">
+                            {bill_to.email}
+                          </p>
                         </div>
                         {bill_to.phone && (
                           <div>
                             <span className="block text-sm font-medium text-gray-600 dark:text-slate-400 mb-1">
                               Phone
                             </span>
-                            <p className="text-gray-700">{bill_to.phone}</p>
+                            <p className="text-gray-700 dark:text-slate-300">
+                              {bill_to.phone}
+                            </p>
                           </div>
                         )}
                         {bill_to.address && (
@@ -505,15 +524,15 @@ const InvoiceForm = ({
                   )}
                 </div>
               ) : (
-                <div className="bg-gradient-to-br from-amber-50 to-yellow-50/50 border border-amber-200/50 rounded-2xl p-6">
+                <div className="bg-gradient-to-br from-amber-50 to-yellow-50/50 dark:from-amber-900/30 dark:to-yellow-900/30 border border-amber-200/50 dark:border-amber-800/50 rounded-2xl p-6">
                   <div className="text-center">
                     <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                       <User className="h-6 w-6 text-amber-600" />
                     </div>
-                    <p className="text-amber-800 font-medium mb-3">
+                    <p className="text-amber-800 dark:text-amber-300 font-medium mb-3">
                       No clients found for this business
                     </p>
-                    <p className="text-amber-700 text-sm mb-4">
+                    <p className="text-amber-700 dark:text-amber-400 text-sm mb-4">
                       Create your first client to get started with invoicing
                     </p>
                     <Button
@@ -541,10 +560,10 @@ const InvoiceForm = ({
                 <Calendar className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
                   Invoice Details
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-slate-400">
                   Invoice number and dates
                 </p>
               </div>
@@ -556,14 +575,14 @@ const InvoiceForm = ({
                 name="invoice_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
                       Invoice Number
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="INV001"
                         {...field}
-                        className="h-12 font-mono border-gray-200 dark:border-slate-700 rounded-xl"
+                        className="h-12 font-mono border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl"
                       />
                     </FormControl>
                     <FormMessage />
@@ -576,12 +595,12 @@ const InvoiceForm = ({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
                       Description
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className="h-12 border-gray-200 dark:border-slate-700 rounded-xl"
+                        className="h-12 border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl"
                         {...field}
                       />
                     </FormControl>
@@ -596,7 +615,7 @@ const InvoiceForm = ({
                   name="issue_date"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
                         Issue Date
                       </FormLabel>
                       <Popover>
@@ -605,7 +624,7 @@ const InvoiceForm = ({
                             <Button
                               variant="ghost"
                               className={cn(
-                                "w-full h-12 justify-start text-left font-normal border-gray-200 dark:border-slate-700 rounded-xl",
+                                "w-full h-12 justify-start text-left font-normal border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
@@ -633,7 +652,7 @@ const InvoiceForm = ({
                   name="due_date"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
                         Due Date
                       </FormLabel>
                       <Popover>
@@ -642,7 +661,7 @@ const InvoiceForm = ({
                             <Button
                               variant="ghost"
                               className={cn(
-                                "w-full h-12 justify-start text-left font-normal border-gray-200 dark:border-slate-700 rounded-xl",
+                                "w-full h-12 justify-start text-left font-normal border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
@@ -675,10 +694,10 @@ const InvoiceForm = ({
                 <FileText className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
                   Invoice Items
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-slate-400">
                   Add items, services, or products
                 </p>
               </div>
@@ -707,12 +726,12 @@ const InvoiceForm = ({
                   name="bank_details"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
                         Bank Details
                       </FormLabel>
                       <FormControl>
                         <Textarea
-                          className="min-h-32 border-gray-200 dark:border-slate-700 rounded-xl"
+                          className="min-h-32 border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl"
                           placeholder="Enter your bank details or payment instructions..."
                           {...field}
                         />
@@ -727,12 +746,12 @@ const InvoiceForm = ({
                   name="notes"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
                         Notes & Terms
                       </FormLabel>
                       <FormControl>
                         <Textarea
-                          className="min-h-28 border-gray-200 dark:border-slate-700 rounded-xl"
+                          className="min-h-28 border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl"
                           placeholder="Add any additional notes, payment terms, or conditions..."
                           {...field}
                         />
@@ -744,7 +763,7 @@ const InvoiceForm = ({
               </div>
 
               <div className="w-80">
-                <div className="bg-gradient-to-br from-gray-50 to-slate-50 rounded-2xl p-6 border border-gray-100">
+                <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 border border-gray-100 dark:border-slate-700">
                   <h4 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-6">
                     Invoice Summary
                   </h4>
@@ -755,7 +774,7 @@ const InvoiceForm = ({
                       name="shipping"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-gray-700">
+                          <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
                             Shipping (£)
                           </FormLabel>
                           <FormControl>
@@ -764,7 +783,7 @@ const InvoiceForm = ({
                               min="0"
                               step="0.01"
                               placeholder="0.00"
-                              className="h-11 border-gray-200 dark:border-slate-700 rounded-xl"
+                              className="h-11 border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl"
                               {...field}
                             />
                           </FormControl>
@@ -778,7 +797,7 @@ const InvoiceForm = ({
                       name="discount"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-gray-700">
+                          <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
                             Discount (%)
                           </FormLabel>
                           <FormControl>
@@ -788,7 +807,7 @@ const InvoiceForm = ({
                               max="100"
                               step="0.01"
                               placeholder="0"
-                              className="h-11 border-gray-200 dark:border-slate-700 rounded-xl"
+                              className="h-11 border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl"
                               {...field}
                             />
                           </FormControl>
@@ -798,12 +817,12 @@ const InvoiceForm = ({
                     />
 
                     <div className="border-t border-gray-200 dark:border-slate-700 pt-6">
-                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
                         <div className="text-center">
                           <p className="text-sm font-medium text-gray-600 dark:text-slate-400 mb-2">
                             Total Amount
                           </p>
-                          <p className="text-3xl font-bold text-gray-900">
+                          <p className="text-3xl font-bold text-gray-900 dark:text-slate-100">
                             £{total.toFixed(2)}
                           </p>
                         </div>

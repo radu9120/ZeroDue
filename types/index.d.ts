@@ -33,6 +33,7 @@ interface GetClientParam {
 interface SearchParams {
   business_id: number;
   searchTerm?: string;
+  client_id?: string | number;
 }
 
 interface ClientType {
@@ -132,6 +133,12 @@ interface UserActivityLog {
     | "Created invoice"
     | "Updated invoice content"
     | "Updated invoice status"
+    | "Sent invoice"
+    | "Invoice email delivered"
+    | "Invoice email opened"
+    | "Invoice email clicked"
+    | "Invoice email bounced"
+    | "Invoice email marked as spam"
     | "Created Business instance"
     | "Updated business details"
     | "Created Client instance"
@@ -139,7 +146,7 @@ interface UserActivityLog {
   target_type: "invoice" | "business" | "client";
   target_name?: string;
   target_id?: string; // This should match your database column
-  metadata?: { from: string; to: string };
+  metadata?: { from?: string; to?: string; email_id?: string; link?: string };
   created_at?: string;
 }
 

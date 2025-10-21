@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   ArrowLeft,
   Search,
@@ -12,12 +11,10 @@ import {
   PlusIcon,
   FilterIcon,
 } from "lucide-react";
-import { ClientForm } from "@/components/Clients/ClientForm";
 import ClientCard from "@/components/Clients/ClientCard";
-import { useState } from "react";
 import { ClientType } from "@/types";
-import CustomModal from "../ModalsForms/CustomModal";
 import CustomButton from "../ui/CustomButton";
+import { useRouter } from "next/navigation";
 
 export default function ClientManagement({
   clients,
@@ -26,15 +23,7 @@ export default function ClientManagement({
   clients: ClientType[];
   business_id: number;
 }) {
-  const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
-
-  const openAddClientModal = (): void => {
-    setIsAddClientModalOpen(true);
-  };
-
-  const closeAddClientModal = (): void => {
-    setIsAddClientModalOpen(false);
-  };
+  const router = useRouter();
 
   return (
     <div>
@@ -82,15 +71,14 @@ export default function ClientManagement({
             variant={"secondary"}
           />
         </div>
-        <CustomModal
-          openBtnLabel="Add Client"
-          description="Add a new client to your system"
-          heading="Add New Client"
-          btnIcon={PlusIcon}
-          btnVariant="primary"
-        >
-          <ClientForm business_id={business_id} />
-        </CustomModal>
+        <CustomButton
+          label="Add Client"
+          icon={PlusIcon}
+          variant="primary"
+          onClick={() =>
+            router.push(`/dashboard/clients/new?business_id=${business_id}`)
+          }
+        />
       </div>
 
       {/* Clients Grid */}

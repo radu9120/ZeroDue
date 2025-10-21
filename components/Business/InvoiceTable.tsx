@@ -23,6 +23,7 @@ import { Button } from "../ui/button";
 import { useState, useEffect } from "react";
 import CustomModal from "../ModalsForms/CustomModal";
 import jsPDF from "jspdf";
+import { toast } from "sonner";
 
 // Invoice Preview Component for Modal
 function InvoicePreview({
@@ -486,6 +487,7 @@ export default function InvoiceTable({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isDownloading, setIsDownloading] = useState<number | null>(null);
+  const [isSending, setIsSending] = useState<number | null>(null);
 
   const search = searchParams.get("searchTerm") || "";
   const filter = searchParams.get("filter") || "";
@@ -510,6 +512,37 @@ export default function InvoiceTable({
     }
     params.set("page", "1");
     router.push(`?${params.toString()}`);
+  };
+
+  const handleSendToClient = async (invoice: InvoiceListItem) => {
+    setIsSending(invoice.id);
+
+    try {
+      const response = await fetch("/api/invoices/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          invoiceId: invoice.id,
+          businessId: business_id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send invoice");
+      }
+
+      toast.success(data.message || "Invoice sent successfully!");
+      router.refresh(); // Refresh to update invoice status
+    } catch (error: any) {
+      console.error("Error sending invoice:", error);
+      toast.error(error.message || "Failed to send invoice to client");
+    } finally {
+      setIsSending(null);
+    }
   };
 
   // Enhanced PDF Download function
@@ -938,13 +971,13 @@ export default function InvoiceTable({
                               <Button
                                 variant="secondary"
                                 className="w-full justify-start text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 dark:bg-slate-700 dark:hover:bg-slate-600"
-                                onClick={() => {
-                                  // TODO: Implement email sending functionality
-                                  alert("Email functionality coming soon");
-                                }}
+                                onClick={() => handleSendToClient(invoice)}
+                                disabled={isSending === invoice.id}
                               >
                                 <Send className="h-4 w-4 mr-2" />
-                                Send to Client
+                                {isSending === invoice.id
+                                  ? "Sending..."
+                                  : "Send to Client"}
                               </Button>
 
                               <div className="pt-2 border-t border-gray-200 dark:border-slate-600">

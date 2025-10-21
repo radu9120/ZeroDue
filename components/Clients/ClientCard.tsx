@@ -9,45 +9,10 @@ import {
   PlusIcon,
   Users,
 } from "lucide-react";
-import CustomModal from "../ModalsForms/CustomModal";
-import InvoiceByBusinessClient from "../Invoices/InvoiceWrapper";
-import { ClientForm } from "./ClientForm"; // Import ClientForm
-import { updateClient } from "@/lib/actions/client.actions"; // Import update action
-import { useState } from "react";
-import { billToSchema } from "@/schemas/invoiceSchema";
-import { z } from "zod";
 import { useRouter } from "next/navigation";
 
 export default function ClientCard({ client }: { client: any }) {
   const router = useRouter();
-  const [isEditSubmitting, setIsEditSubmitting] = useState(false);
-
-  const handleUpdateClient = async (values: z.infer<typeof billToSchema>) => {
-    setIsEditSubmitting(true);
-    try {
-      // Add the client ID to the values
-      const dataToUpdate = { ...values, id: client.id };
-      const updatedClient = await updateClient(dataToUpdate);
-
-      if (updatedClient) {
-        console.log("Client updated successfully:", updatedClient);
-        router.refresh(); // Refresh to show updated data
-        // Modal should close automatically after successful submission
-      } else {
-        console.error("Failed to update client");
-        alert("Failed to update client. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error updating client:", error);
-      alert(
-        `Error updating client: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-    } finally {
-      setIsEditSubmitting(false);
-    }
-  };
 
   return (
     <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all">
@@ -57,7 +22,9 @@ export default function ClientCard({ client }: { client: any }) {
             <Users className="h-5 w-5 text-purple-600" />
           </div>
           <div>
-            <h3 className="font-semibold text-header-text dark:text-slate-100">{client.name}</h3>
+            <h3 className="font-semibold text-header-text dark:text-slate-100">
+              {client.name}
+            </h3>
           </div>
         </div>
       </div>
@@ -65,18 +32,24 @@ export default function ClientCard({ client }: { client: any }) {
       <div className="space-y-3 mb-6">
         <div className="flex items-center gap-2">
           <Mail className="h-4 w-4 text-secondary-text dark:text-slate-400" />
-          <span className="text-sm text-primary-text dark:text-slate-300">{client.email}</span>
+          <span className="text-sm text-primary-text dark:text-slate-300">
+            {client.email}
+          </span>
         </div>
         {client.phone && (
           <div className="flex items-center gap-2">
             <Phone className="h-4 w-4 text-secondary-text dark:text-slate-400" />
-            <span className="text-sm text-primary-text dark:text-slate-300">{client.phone}</span>
+            <span className="text-sm text-primary-text dark:text-slate-300">
+              {client.phone}
+            </span>
           </div>
         )}
         {client.address && (
           <div className="flex items-start gap-2">
             <MapPin className="h-4 w-4 text-secondary-text dark:text-slate-400 mt-0.5" />
-            <span className="text-sm text-primary-text dark:text-slate-300">{client.address}</span>
+            <span className="text-sm text-primary-text dark:text-slate-300">
+              {client.address}
+            </span>
           </div>
         )}
       </div>
@@ -107,41 +80,28 @@ export default function ClientCard({ client }: { client: any }) {
       </div>
 
       <div className="flex gap-2">
-        <CustomModal
-          heading={`Edit Client: ${client.name}`}
-          description="Update the client's information"
-          openBtnLabel="Edit"
-          btnVariant="secondary"
-          btnIcon={Edit}
-          className="w-full"
+        <button
+          onClick={() =>
+            router.push(
+              `/dashboard/clients/edit?business_id=${client.business_id}&client_id=${client.id}`
+            )
+          }
+          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-900 dark:text-slate-100 rounded-lg font-medium transition-colors"
         >
-          <ClientForm
-            business_id={client.business_id}
-            defaultValues={{
-              id: client.id,
-              name: client.name,
-              email: client.email,
-              phone: client.phone || "",
-              address: client.address || "",
-              business_id: client.business_id,
-            }}
-            onSubmit={handleUpdateClient}
-            submitButtonText="Save Changes"
-            isSubmitting={isEditSubmitting}
-          />
-        </CustomModal>
-        <CustomModal
-          heading={`New Invoice for ${client.name}`}
-          description="Create a new invoice for this client"
-          openBtnLabel="Invoice"
-          btnVariant="primary"
-          btnIcon={PlusIcon}
+          <Edit className="h-4 w-4" />
+          Edit
+        </button>
+        <button
+          onClick={() =>
+            router.push(
+              `/dashboard/invoices/new?business_id=${client.business_id}&client_id=${client.id}`
+            )
+          }
+          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
         >
-          <InvoiceByBusinessClient
-            company_id={client.business_id}
-            client={client}
-          />
-        </CustomModal>
+          <PlusIcon className="h-4 w-4" />
+          Invoice
+        </button>
       </div>
     </div>
   );
