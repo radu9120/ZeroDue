@@ -213,6 +213,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Update invoice status to "sent" after successful email delivery
+    let updatedStatus: string | null = null;
+    let statusUpdated = false;
     try {
       const { data: updated, error: updateError } = await supabaseAdmin
         .from("Invoices")
@@ -227,7 +229,9 @@ export async function POST(req: NextRequest) {
 
       if (updateError) {
         console.warn("Failed to update invoice status:", updateError);
-        // Don't fail the whole request if status update fails
+      } else if (updated) {
+        updatedStatus = updated.status as string;
+        statusUpdated = true;
       }
     } catch (updateError) {
       console.warn("Error updating invoice status:", updateError);
@@ -251,8 +255,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Invoice sent to ${clientEmail}`,
+      message: statusUpdated
+        ? `Invoice sent to ${clientEmail}`
+        : `Invoice sent to ${clientEmail}. Status update may be delayed.`,
       emailId: data?.id,
+      statusUpdated,
+      updatedStatus,
     });
   } catch (error: any) {
     console.error("Error sending invoice:", error);
