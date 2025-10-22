@@ -22,18 +22,17 @@ import getStatusBadge from "../ui/getStatusBadge";
 import { Button } from "../ui/button";
 import { useState, useEffect } from "react";
 import CustomModal from "../ModalsForms/CustomModal";
-import jsPDF from "jspdf";
 import { toast } from "sonner";
 import { Badge } from "../ui/badge";
 
 // Invoice Preview Component for Modal
 function InvoicePreview({
   invoice,
-  onDownload,
+  business_id,
   closeModal,
 }: {
   invoice: InvoiceListItem;
-  onDownload: (invoice: InvoiceListItem) => void;
+  business_id: Number;
   closeModal?: () => void;
 }) {
   // Parse items safely
@@ -399,13 +398,14 @@ function InvoicePreview({
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
-        <Button
-          onClick={() => onDownload(invoice)}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+        <Link
+          href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}&download=1`}
         >
-          <Download className="h-4 w-4 mr-2" />
-          Download PDF
-        </Button>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
+            <Download className="h-4 w-4 mr-2" />
+            Download PDF
+          </Button>
+        </Link>
         <Button variant="secondary" onClick={closeModal}>
           <X className="h-4 w-4 mr-2" />
           Close
@@ -487,7 +487,6 @@ export default function InvoiceTable({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isDownloading, setIsDownloading] = useState<number | null>(null);
   const [isSending, setIsSending] = useState<number | null>(null);
 
   const search = searchParams.get("searchTerm") || "";
@@ -543,220 +542,6 @@ export default function InvoiceTable({
       toast.error(error.message || "Failed to send invoice to client");
     } finally {
       setIsSending(null);
-    }
-  };
-
-  // Enhanced PDF Download function
-  const handleDownloadPDF = async (invoice: InvoiceListItem) => {
-    setIsDownloading(invoice.id);
-
-    try {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.width;
-
-      // Parse invoice data
-      let items: any[] = [];
-      let billTo = null;
-      let companyDetails = null;
-
-      try {
-        if (Array.isArray(invoice.items)) {
-          items = invoice.items;
-        } else if (typeof invoice.items === "string") {
-          items = JSON.parse(invoice.items);
-        }
-      } catch (e) {
-        items = [];
-      }
-
-      try {
-        if (typeof invoice.bill_to === "string") {
-          billTo = JSON.parse(invoice.bill_to);
-        } else if (invoice.bill_to) {
-          billTo = invoice.bill_to;
-        }
-      } catch (e) {
-        billTo = null;
-      }
-
-      try {
-        if (typeof invoice.company_details === "string") {
-          companyDetails = JSON.parse(invoice.company_details);
-        } else if (invoice.company_details) {
-          companyDetails = invoice.company_details;
-        }
-      } catch (e) {
-        companyDetails = null;
-      }
-
-      // PDF Header
-      doc.setFontSize(24);
-      doc.setTextColor(44, 82, 130);
-      doc.text("INVOICE", pageWidth / 2, 30, { align: "center" });
-
-      // Invoice details section
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0);
-
-      // Left side - Company info
-      if (companyDetails) {
-        doc.setFontSize(14);
-        doc.text("From:", 20, 50);
-        doc.setFontSize(11);
-        let yPos = 60;
-        doc.text(companyDetails.name || "", 20, yPos);
-        yPos += 8;
-        doc.text(companyDetails.email || "", 20, yPos);
-        if (companyDetails.phone) {
-          yPos += 8;
-          doc.text(companyDetails.phone, 20, yPos);
-        }
-        if (companyDetails.address) {
-          yPos += 8;
-          doc.text(companyDetails.address, 20, yPos);
-        }
-      }
-
-      // Right side - Invoice info
-      doc.setFontSize(11);
-      doc.text(`Invoice #: ${invoice.invoice_number}`, pageWidth - 100, 50);
-      doc.text(
-        `Issue Date: ${
-          invoice.issue_date
-            ? new Date(invoice.issue_date).toLocaleDateString()
-            : "N/A"
-        }`,
-        pageWidth - 100,
-        60
-      );
-      doc.text(
-        `Due Date: ${new Date(invoice.due_date).toLocaleDateString()}`,
-        pageWidth - 100,
-        70
-      );
-      const statusLabel = invoice?.status
-        ? String(invoice.status).toUpperCase()
-        : "N/A";
-      doc.text(`Status: ${statusLabel}`, pageWidth - 100, 80);
-
-      // Bill To section
-      if (billTo) {
-        doc.setFontSize(14);
-        doc.text("Bill To:", 20, 100);
-        doc.setFontSize(11);
-        let yPos = 110;
-        doc.text(billTo.name || "", 20, yPos);
-        yPos += 8;
-        doc.text(billTo.email || "", 20, yPos);
-        if (billTo.phone) {
-          yPos += 8;
-          doc.text(billTo.phone, 20, yPos);
-        }
-        if (billTo.address) {
-          yPos += 8;
-          doc.text(billTo.address, 20, yPos);
-        }
-      }
-
-      // Items table
-      if (items.length > 0) {
-        const tableTop = 150;
-        doc.setFontSize(11);
-
-        // Table headers
-        doc.text("Description", 20, tableTop);
-        doc.text("Qty", 120, tableTop);
-        doc.text("Price", 140, tableTop);
-        doc.text("Tax", 160, tableTop);
-        doc.text("Amount", 180, tableTop);
-
-        // Header line
-        doc.line(15, tableTop + 5, pageWidth - 15, tableTop + 5);
-
-        let yPos = tableTop + 15;
-        items.forEach((item) => {
-          const quantity = Number(item.quantity) || 0;
-          const unitPrice = Number(item.unit_price) || 0;
-          const tax = Number(item.tax) || 0;
-          const amount = Number(item.amount) || 0;
-
-          doc.text(item.description || "No description", 20, yPos);
-          doc.text(quantity.toString(), 120, yPos);
-          doc.text(`£${unitPrice.toFixed(2)}`, 140, yPos);
-          doc.text(`${tax}%`, 160, yPos);
-          doc.text(`£${amount.toFixed(2)}`, 180, yPos);
-          yPos += 10;
-        });
-
-        // Totals section
-        yPos += 10;
-        doc.line(15, yPos, pageWidth - 15, yPos);
-        yPos += 15;
-
-        if (invoice.subtotal) {
-          doc.text(
-            `Subtotal: £${invoice.subtotal.toFixed(2)}`,
-            pageWidth - 80,
-            yPos
-          );
-          yPos += 10;
-        }
-        if (invoice.discount && invoice.discount > 0) {
-          doc.text(
-            `Discount (${invoice.discount}%): -£${(
-              (invoice.subtotal || 0) *
-              (invoice.discount / 100)
-            ).toFixed(2)}`,
-            pageWidth - 80,
-            yPos
-          );
-          yPos += 10;
-        }
-        if (invoice.shipping && invoice.shipping > 0) {
-          doc.text(
-            `Shipping: £${invoice.shipping.toFixed(2)}`,
-            pageWidth - 80,
-            yPos
-          );
-          yPos += 10;
-        }
-
-        // Total line
-        doc.line(pageWidth - 100, yPos + 2, pageWidth - 15, yPos + 2);
-        doc.setFontSize(14);
-        yPos += 15;
-        doc.text(`Total: ${invoice.total}`, pageWidth - 80, yPos);
-      }
-
-      // Notes and bank details
-      let notesYPos = 250;
-      if (invoice.notes) {
-        doc.setFontSize(12);
-        doc.text("Notes:", 20, notesYPos);
-        doc.setFontSize(10);
-        const noteLines = doc.splitTextToSize(invoice.notes, pageWidth - 40);
-        doc.text(noteLines, 20, notesYPos + 10);
-        notesYPos += 10 + noteLines.length * 5;
-      }
-
-      if (invoice.bank_details) {
-        doc.setFontSize(12);
-        doc.text("Payment Details:", 20, notesYPos + 10);
-        doc.setFontSize(10);
-        const bankLines = doc.splitTextToSize(
-          invoice.bank_details,
-          pageWidth - 40
-        );
-        doc.text(bankLines, 20, notesYPos + 20);
-      }
-
-      // Save the PDF
-      doc.save(`invoice-${invoice.invoice_number}.pdf`);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      alert("Error generating PDF. Please try again.");
-    } finally {
-      setIsDownloading(null);
     }
   };
 
@@ -943,18 +728,6 @@ export default function InvoiceTable({
                             </Button>
                           </Link>
 
-                          <Link
-                            href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}&download=1`}
-                          >
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="hover:bg-blue-100 dark:hover:bg-slate-700"
-                            >
-                              <Download className="h-4 w-4" />
-                            </Button>
-                          </Link>
-
                           <CustomModal
                             heading="More Actions"
                             description={`Actions for invoice ${invoice.invoice_number}`}
@@ -994,19 +767,6 @@ export default function InvoiceTable({
                                   {userPlan === "enterprise"
                                     ? "Edit Invoice"
                                     : "Modify Status/Notes"}
-                                </Button>
-                              </Link>
-
-                              <Link
-                                href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}&download=1`}
-                                className="block"
-                              >
-                                <Button
-                                  variant="secondary"
-                                  className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
-                                >
-                                  <Download className="h-4 w-4 mr-2" />
-                                  Download PDF
                                 </Button>
                               </Link>
 

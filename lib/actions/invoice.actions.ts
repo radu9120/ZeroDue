@@ -63,7 +63,7 @@ export const createInvoice = async (formData: CreateInvoice) => {
     .insert({
       ...formData,
       author,
-      status: formData.status || "draft", // Ensure status defaults to draft if not provided
+      public_token: crypto.randomUUID().replace(/-/g, ""), // Generate secure token for public access
     })
     .select();
 

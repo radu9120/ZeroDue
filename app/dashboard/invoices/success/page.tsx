@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { getInvoicesByAuthor } from "@/lib/actions/invoice.actions";
 import { getBusinessById } from "@/lib/actions/business.actions";
 import InvoiceSuccessView from "@/components/Invoices/InvoiceSuccessView";
-import { Suspense } from "react";
 import { getCurrentPlan } from "@/lib/plan";
 
 interface PageProps {
@@ -36,14 +35,12 @@ export default async function InvoiceSuccessPage({ searchParams }: PageProps) {
     }
 
     return (
-      <Suspense fallback={null}>
-        <InvoiceSuccessView
-          invoice={invoice}
-          company={businessData}
-          editMode={edit === "1"}
-          userPlan={userPlan}
-        />
-      </Suspense>
+      <InvoiceSuccessView
+        invoice={invoice}
+        company={businessData}
+        editMode={edit === "1"}
+        userPlan={userPlan}
+      />
     );
   } catch (error) {
     console.error("Error fetching invoice:", error);

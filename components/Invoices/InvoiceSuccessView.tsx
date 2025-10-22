@@ -5,15 +5,9 @@ import {
   Download,
   ArrowLeft,
   FileText,
-  Building2,
-  User,
-  Calendar,
-  Edit,
-  Save,
-  X,
-  Trash2,
-  Plus,
   Mail,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -25,6 +19,7 @@ import CustomButton from "@/components/ui/CustomButton";
 import { downloadElementAsPDF } from "@/lib/pdf";
 import type { InvoiceListItem, BusinessType } from "@/types";
 import { Badge } from "@/components/ui/badge";
+import currencies from "@/lib/currencies.json";
 
 interface InvoiceSuccessViewProps {
   invoice: InvoiceListItem;
@@ -45,70 +40,33 @@ export default function InvoiceSuccessView({
   const [status, setStatus] = React.useState<string>(invoice.status || "draft");
   const [saving, setSaving] = React.useState(false);
 
-  // Parse bank_details from invoice
-  const initialBank = (() => {
-    const empty = {
-      accountType: "",
-      accountName: "",
-      sortCode: "",
-      accountNumber: "",
-    };
-    if (!invoice.bank_details) return empty;
-    try {
-      if (typeof invoice.bank_details === "string") {
-        // try JSON parse
-        if (invoice.bank_details.trim().startsWith("{")) {
-          const parsed = JSON.parse(invoice.bank_details);
-          return {
-            accountType: parsed.accountType || "",
-            accountName: parsed.accountName || "",
-            sortCode: parsed.sortCode || "",
-            accountNumber: parsed.accountNumber || "",
-          };
-        }
-        // legacy plain text: treat as account name
-        return {
-          accountType: "",
-          accountName: invoice.bank_details,
-          sortCode: "",
-          accountNumber: "",
-        };
-      }
-      if (typeof invoice.bank_details === "object") {
-        return {
-          accountType: (invoice.bank_details as any).accountType || "",
-          accountName: (invoice.bank_details as any).accountName || "",
-          sortCode: (invoice.bank_details as any).sortCode || "",
-          accountNumber: (invoice.bank_details as any).accountNumber || "",
-        };
-      }
-    } catch {}
-    return empty;
-  })();
-  const [bankAccountType, setBankAccountType] = React.useState<string>(
-    initialBank.accountType || ""
-  );
-  const [bankAccountName, setBankAccountName] = React.useState<string>(
-    initialBank.accountName || ""
-  );
-  const [bankSortCode, setBankSortCode] = React.useState<string>(
-    initialBank.sortCode || ""
-  );
-  const [bankAccountNumber, setBankAccountNumber] = React.useState<string>(
-    initialBank.accountNumber || ""
-  );
-  const [notes, setNotes] = React.useState<string>(invoice.notes || "");
-  // Currency helper
-  const getCurrencySymbol = (code?: string) => {
-    switch ((code || "GBP").toUpperCase()) {
-      case "USD":
-        return "$";
-      case "EUR":
-        return "€";
-      case "GBP":
-      default:
-        return "£";
+  // Parse bank_details from invoice - now just a simple text field
+  const initialBankDetails = (() => {
+    if (!invoice.bank_details) return "";
+    if (typeof invoice.bank_details === "string") {
+      return invoice.bank_details;
     }
+    if (typeof invoice.bank_details === "object") {
+      // Legacy structured format - convert to plain text
+      const { accountType, accountName, sortCode, accountNumber } =
+        invoice.bank_details as any;
+      const parts = [];
+      if (accountType) parts.push(`Account Type: ${accountType}`);
+      if (accountName) parts.push(`Account Name: ${accountName}`);
+      if (sortCode) parts.push(`Sort Code: ${sortCode}`);
+      if (accountNumber) parts.push(`Account Number: ${accountNumber}`);
+      return parts.join("\n");
+    }
+    return "";
+  })();
+  const [bankAccountName, setBankAccountName] =
+    React.useState<string>(initialBankDetails);
+  const [notes, setNotes] = React.useState<string>(invoice.notes || "");
+  // Currency helper - now uses the comprehensive currency list
+  const getCurrencySymbol = (code?: string) => {
+    const currencyCode = (code || "GBP").toUpperCase();
+    const currency = currencies.find((c) => c.code === currencyCode);
+    return currency ? currency.symbol : "£";
   };
 
   // Enterprise: editable items and meta
@@ -165,44 +123,24 @@ export default function InvoiceSuccessView({
 
   const resetFieldsFromInvoice = () => {
     setStatus(invoice.status || "draft");
-    // Reset bank fields from current invoice
-    let bank = {
-      accountType: "",
-      accountName: "",
-      sortCode: "",
-      accountNumber: "",
-    } as any;
+    // Reset bank details
+    let bankText = "";
     if (invoice.bank_details) {
       if (typeof invoice.bank_details === "string") {
-        try {
-          const parsed = JSON.parse(invoice.bank_details);
-          bank = {
-            accountType: parsed.accountType || "",
-            accountName: parsed.accountName || "",
-            sortCode: parsed.sortCode || "",
-            accountNumber: parsed.accountNumber || "",
-          };
-        } catch {
-          bank = {
-            accountType: "",
-            accountName: invoice.bank_details,
-            sortCode: "",
-            accountNumber: "",
-          };
-        }
+        bankText = invoice.bank_details;
       } else if (typeof invoice.bank_details === "object") {
-        bank = {
-          accountType: (invoice.bank_details as any).accountType || "",
-          accountName: (invoice.bank_details as any).accountName || "",
-          sortCode: (invoice.bank_details as any).sortCode || "",
-          accountNumber: (invoice.bank_details as any).accountNumber || "",
-        };
+        // Legacy structured format - convert to plain text
+        const { accountType, accountName, sortCode, accountNumber } =
+          invoice.bank_details as any;
+        const parts = [];
+        if (accountType) parts.push(`Account Type: ${accountType}`);
+        if (accountName) parts.push(`Account Name: ${accountName}`);
+        if (sortCode) parts.push(`Sort Code: ${sortCode}`);
+        if (accountNumber) parts.push(`Account Number: ${accountNumber}`);
+        bankText = parts.join("\n");
       }
     }
-    setBankAccountType(bank.accountType || "");
-    setBankAccountName(bank.accountName || "");
-    setBankSortCode(bank.sortCode || "");
-    setBankAccountNumber(bank.accountNumber || "");
+    setBankAccountName(bankText);
     setNotes(invoice.notes || "");
     // Enterprise fields
     setDesc(invoice.description || "");
@@ -245,15 +183,9 @@ export default function InvoiceSuccessView({
   const saveChanges = async () => {
     try {
       setSaving(true);
-      const bank_details = JSON.stringify({
-        accountType: bankAccountType,
-        accountName: bankAccountName,
-        sortCode: bankSortCode,
-        accountNumber: bankAccountNumber,
-      });
       const payload: any = {
         invoiceId: invoice.id,
-        bank_details,
+        bank_details: bankAccountName.trim(),
         notes: notes.trim(),
         status,
       };
@@ -313,54 +245,6 @@ export default function InvoiceSuccessView({
     billTo = null;
   }
 
-  // Format bank details for display
-  const formatBankDetails = () => {
-    // Return raw bank_details if it exists
-    if (!invoice.bank_details) return "No bank details provided";
-
-    // If it's already a string, return it directly
-    if (typeof invoice.bank_details === "string") {
-      // Check if it looks like JSON
-      if (invoice.bank_details.trim().startsWith("{")) {
-        try {
-          const parsed = JSON.parse(invoice.bank_details);
-          const { accountType, accountName, sortCode, accountNumber } = parsed;
-          const parts = [];
-
-          if (accountType) parts.push(`Account type: ${accountType}`);
-          if (accountName) parts.push(`Account name: ${accountName}`);
-          if (sortCode) parts.push(`Sort code: ${sortCode}`);
-          if (accountNumber) parts.push(`Account number: ${accountNumber}`);
-
-          return parts.length > 0
-            ? parts.join("\n")
-            : "No bank details provided";
-        } catch {
-          // If JSON parse fails, return the string as-is
-          return invoice.bank_details;
-        }
-      }
-      // Not JSON, just return the plain text
-      return invoice.bank_details;
-    }
-
-    // If it's an object, format it nicely
-    if (typeof invoice.bank_details === "object") {
-      const { accountType, accountName, sortCode, accountNumber } =
-        invoice.bank_details;
-      const parts = [];
-
-      if (accountType) parts.push(`Account type: ${accountType}`);
-      if (accountName) parts.push(`Account name: ${accountName}`);
-      if (sortCode) parts.push(`Sort code: ${sortCode}`);
-      if (accountNumber) parts.push(`Account number: ${accountNumber}`);
-
-      return parts.length > 0 ? parts.join("\n") : "No bank details provided";
-    }
-
-    return "No bank details provided";
-  };
-
   const [downloading, setDownloading] = React.useState(false);
   const [serverGenerating, setServerGenerating] = React.useState(false);
   const [sending, setSending] = React.useState(false);
@@ -382,66 +266,91 @@ export default function InvoiceSuccessView({
   const downloadPDF = async () => {
     try {
       setDownloading(true);
-      // Prefer a lightweight client-side capture of the dedicated printable DOM.
-      // This avoids heavy server-side rendering and gives fast, deterministic output.
-      const printable = document.getElementById(
-        "invoice-printable"
-      ) as HTMLElement | null;
-      if (printable) {
-        try {
-          await downloadElementAsPDF(printable, {
-            filename: `Invoice-${invoice.invoice_number || "unnamed"}.pdf`,
-            margin: 8,
-            scale: 3,
-            format: "a4",
-          });
-          toast.success("PDF downloaded");
-          return;
-        } catch (clientErr) {
-          // fallback to the visible preview if printable DOM fails
-          console.warn("Printable capture failed, falling back:", clientErr);
-        }
-      }
 
-      // Fallback: capture the visible invoice preview or ask server to generate
-      const container =
-        (document.getElementById("invoice-capture") as HTMLElement | null) ||
-        (document.querySelector(
-          "[data-invoice-preview]"
-        ) as HTMLElement | null);
+      // Capture the CardContent which has the full invoice with padding
+      const container = document.querySelector(
+        "[data-invoice-preview]"
+      ) as HTMLElement | null;
+
       if (!container) {
-        toast.error("Could not find invoice preview to export.");
+        // No container, try server as last resort
+        const res = await fetch(`/api/invoices/${invoice.id}/pdf`);
+        if (!res.ok) throw new Error("Could not generate PDF");
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Invoice-${invoice.invoice_number || invoice.id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        toast.success("PDF downloaded");
         return;
       }
+
+      // Force the entire document to light mode temporarily for PDF capture
+      const html = document.documentElement;
+      const body = document.body;
+      const originalHtmlClass = html.className;
+      const originalBodyBg = body.style.backgroundColor;
+      const originalBodyColor = body.style.color;
+      const originalContainerBg = container.style.backgroundColor;
+      const originalContainerColor = container.style.color;
+
+      // Remove dark class and force light styling
+      html.classList.remove("dark");
+      body.style.backgroundColor = "#ffffff";
+      body.style.color = "#000000";
+      container.style.backgroundColor = "#ffffff";
+      container.style.color = "#000000";
+
+      // Force all elements in container to light mode
+      const allElements = container.querySelectorAll("*");
+      const originalStyles: Array<{
+        el: HTMLElement;
+        bg: string;
+        color: string;
+      }> = [];
+
+      allElements.forEach((el) => {
+        const htmlEl = el as HTMLElement;
+        // Skip intentionally dark elements (table headers, summary boxes)
+        const isDarkDesign =
+          htmlEl.classList.contains("bg-gray-800") ||
+          htmlEl.classList.contains("bg-gray-900");
+        if (!isDarkDesign) {
+          originalStyles.push({
+            el: htmlEl,
+            bg: htmlEl.style.backgroundColor,
+            color: htmlEl.style.color,
+          });
+        }
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
       try {
         await downloadElementAsPDF(container, {
           filename: `Invoice-${invoice.invoice_number || "unnamed"}.pdf`,
-          margin: 12,
-          scale: 2.5,
+          margin: 8,
+          scale: 3,
           format: "a4",
         });
-        toast.success("PDF downloaded (preview)");
-        return;
-      } catch (clientErr) {
-        // Last resort: try server route
-        try {
-          const res = await fetch(`/api/invoices/${invoice.id}/pdf`);
-          if (!res.ok) throw new Error(await res.text());
-          const blob = await res.blob();
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `Invoice-${invoice.invoice_number || invoice.id}.pdf`;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(url);
-          toast.success("PDF downloaded (server)");
-          return;
-        } catch (serverErr) {
-          throw serverErr || clientErr;
-        }
+        toast.success("PDF downloaded");
+      } finally {
+        // Restore all original styles
+        html.className = originalHtmlClass;
+        body.style.backgroundColor = originalBodyBg;
+        body.style.color = originalBodyColor;
+        container.style.backgroundColor = originalContainerBg;
+        container.style.color = originalContainerColor;
+        originalStyles.forEach(({ el, bg, color }) => {
+          el.style.backgroundColor = bg;
+          el.style.color = color;
+        });
       }
+      return;
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Unknown error";
       toast.error(`Failed to generate PDF: ${msg}`);
@@ -474,7 +383,9 @@ export default function InvoiceSuccessView({
       toast.success(data.message || "Invoice sent successfully!");
       try {
         // Refresh the page so status and email badges update immediately
-        router.refresh();
+        if (router) {
+          router.refresh();
+        }
       } catch {}
     } catch (error: any) {
       console.error("Error sending invoice:", error);
@@ -514,6 +425,10 @@ export default function InvoiceSuccessView({
     try {
       const url = new URL(window.location.href);
       if (url.searchParams.get("download") === "1") {
+        // Remove the download parameter to prevent re-downloading
+        url.searchParams.delete("download");
+        window.history.replaceState({}, "", url.toString());
+
         // Give the preview a moment to render and images to settle
         setTimeout(() => {
           downloadPDF();
@@ -910,84 +825,21 @@ export default function InvoiceSuccessView({
                 Bank Details
               </h4>
               {isEditing ? (
-                <div
+                <textarea
+                  value={bankAccountName}
+                  onChange={(e) => setBankAccountName(e.target.value)}
+                  rows={4}
                   style={{
+                    width: "100%",
                     backgroundColor: "#f9fafb",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
                     padding: 16,
-                    display: "grid",
-                    gap: 12,
+                    fontSize: 12,
+                    color: "#374151",
                   }}
-                >
-                  <div style={{ display: "grid", gap: 6 }}>
-                    <label style={{ fontSize: 12, color: "#374151" }}>
-                      Account Type
-                    </label>
-                    <input
-                      value={bankAccountType}
-                      onChange={(e) => setBankAccountType(e.target.value)}
-                      style={{
-                        padding: 10,
-                        border: "1px solid #d1d5db",
-                        borderRadius: 6,
-                      }}
-                    />
-                  </div>
-                  <div style={{ display: "grid", gap: 6 }}>
-                    <label style={{ fontSize: 12, color: "#374151" }}>
-                      Account Name
-                    </label>
-                    <input
-                      value={bankAccountName}
-                      onChange={(e) => setBankAccountName(e.target.value)}
-                      placeholder="e.g., VEROSITE LTD"
-                      style={{
-                        padding: 10,
-                        border: "1px solid #d1d5db",
-                        borderRadius: 6,
-                      }}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: 12,
-                    }}
-                  >
-                    <div style={{ display: "grid", gap: 6 }}>
-                      <label style={{ fontSize: 12, color: "#374151" }}>
-                        Sort Code
-                      </label>
-                      <input
-                        value={bankSortCode}
-                        onChange={(e) => setBankSortCode(e.target.value)}
-                        placeholder="23-11-85"
-                        style={{
-                          padding: 10,
-                          border: "1px solid #d1d5db",
-                          borderRadius: 6,
-                        }}
-                      />
-                    </div>
-                    <div style={{ display: "grid", gap: 6 }}>
-                      <label style={{ fontSize: 12, color: "#374151" }}>
-                        Account Number
-                      </label>
-                      <input
-                        value={bankAccountNumber}
-                        onChange={(e) => setBankAccountNumber(e.target.value)}
-                        placeholder="63274627"
-                        style={{
-                          padding: 10,
-                          border: "1px solid #d1d5db",
-                          borderRadius: 6,
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
+                  placeholder="Add bank details or payment instructions..."
+                />
               ) : (
                 <div
                   style={{
@@ -1001,7 +853,7 @@ export default function InvoiceSuccessView({
                     lineHeight: 1.7,
                   }}
                 >
-                  {formatBankDetails()}
+                  {bankAccountName || "No bank details provided"}
                 </div>
               )}
             </div>
@@ -1218,7 +1070,7 @@ export default function InvoiceSuccessView({
 
         {/* Invoice Preview */}
         <Card className="shadow-2xl border-0">
-          <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-slate-800 dark:to-slate-700 border-b border-gray-200 dark:border-slate-700">
+          <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-slate-900 dark:to-slate-800 border-b border-gray-200 dark:border-slate-700">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center">
@@ -1297,13 +1149,9 @@ export default function InvoiceSuccessView({
           <div className="px-6 pt-4 pb-2 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2">
-                {invoice.email_sent_at ? (
+                {invoice.email_sent_at && (
                   <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                     Sent
-                  </Badge>
-                ) : (
-                  <Badge className="bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-slate-200">
-                    Not sent
                   </Badge>
                 )}
                 {invoice.email_delivered && (
@@ -1376,11 +1224,19 @@ export default function InvoiceSuccessView({
           </div>
 
           <CardContent
-            className="p-12 bg-white dark:bg-slate-800"
+            className="p-12 bg-white"
             data-invoice-preview
-            style={{ height: "auto" }}
+            style={{
+              height: "auto",
+              backgroundColor: "#ffffff",
+              color: "#000000",
+            }}
           >
-            <div id="invoice-capture" className="max-w-5xl mx-auto">
+            <div
+              id="invoice-capture"
+              className="max-w-5xl mx-auto"
+              style={{ backgroundColor: "#ffffff", color: "#000000" }}
+            >
               {/* Professional Invoice Header */}
               <div className="flex justify-between items-start mb-10">
                 <div className="flex-1">
@@ -1396,26 +1252,22 @@ export default function InvoiceSuccessView({
                     </div>
                   )}
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-3">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-3">
                       {company.name}
                     </h2>
                     {company.address && (
-                      <p className="text-sm text-gray-600 dark:text-slate-400 leading-relaxed whitespace-pre-line mb-2">
+                      <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line mb-2">
                         {company.address}
                       </p>
                     )}
                     {company.email && (
-                      <p className="text-sm text-gray-600 dark:text-slate-400">
-                        {company.email}
-                      </p>
+                      <p className="text-sm text-gray-600">{company.email}</p>
                     )}
                     {company.phone && (
-                      <p className="text-sm text-gray-600 dark:text-slate-400">
-                        {company.phone}
-                      </p>
+                      <p className="text-sm text-gray-600">{company.phone}</p>
                     )}
                     {company.vat && (
-                      <p className="text-sm text-gray-600 dark:text-slate-400">
+                      <p className="text-sm text-gray-600">
                         VAT: {company.vat}
                       </p>
                     )}
@@ -1423,20 +1275,20 @@ export default function InvoiceSuccessView({
                 </div>
 
                 <div className="text-right min-w-[280px]">
-                  <h1 className="text-4xl font-bold text-gray-900 dark:text-slate-100 mb-6">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-6">
                     INVOICE
                   </h1>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-sm font-medium text-gray-600 dark:text-slate-400">
+                      <span className="text-sm font-medium text-gray-600">
                         Invoice #:
                       </span>
-                      <span className="text-sm font-bold text-gray-900 dark:text-slate-100">
+                      <span className="text-sm font-bold text-gray-900">
                         {invoice.invoice_number || "N/A"}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm font-medium text-gray-600 dark:text-slate-400">
+                      <span className="text-sm font-medium text-gray-600">
                         Date:
                       </span>
                       {isEditing && isEnterprise ? (
@@ -1444,10 +1296,10 @@ export default function InvoiceSuccessView({
                           type="date"
                           value={(issueDate || "").slice(0, 10)}
                           onChange={(e) => setIssueDate(e.target.value)}
-                          className="text-sm border border-gray-300 dark:border-slate-600 rounded-md px-2 py-1 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100"
+                          className="text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900"
                         />
                       ) : (
-                        <span className="text-sm text-gray-900 dark:text-slate-100">
+                        <span className="text-sm text-gray-900">
                           {invoice.issue_date
                             ? new Date(invoice.issue_date).toLocaleDateString(
                                 "en-GB"
@@ -1457,7 +1309,7 @@ export default function InvoiceSuccessView({
                       )}
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm font-medium text-gray-600 dark:text-slate-400">
+                      <span className="text-sm font-medium text-gray-600">
                         Due Date:
                       </span>
                       {isEditing && isEnterprise ? (
@@ -1465,10 +1317,10 @@ export default function InvoiceSuccessView({
                           type="date"
                           value={(dueDate || "").slice(0, 10)}
                           onChange={(e) => setDueDate(e.target.value)}
-                          className="text-sm border border-gray-300 dark:border-slate-600 rounded-md px-2 py-1 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100"
+                          className="text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900"
                         />
                       ) : (
-                        <span className="text-sm text-gray-900 dark:text-slate-100">
+                        <span className="text-sm text-gray-900">
                           {new Date(invoice.due_date).toLocaleDateString(
                             "en-GB"
                           )}
@@ -1476,21 +1328,23 @@ export default function InvoiceSuccessView({
                       )}
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm font-medium text-gray-600 dark:text-slate-400">
+                      <span className="text-sm font-medium text-gray-600">
                         Currency:
                       </span>
                       {isEditing && isEnterprise ? (
                         <select
                           value={currency}
                           onChange={(e) => setCurrency(e.target.value)}
-                          className="text-sm border border-gray-300 dark:border-slate-600 rounded-md px-2 py-1 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100"
+                          className="text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900 max-w-[200px]"
                         >
-                          <option value="GBP">GBP</option>
-                          <option value="USD">USD</option>
-                          <option value="EUR">EUR</option>
+                          {currencies.map((curr) => (
+                            <option key={curr.code} value={curr.code}>
+                              {curr.code} - {curr.symbol} ({curr.name})
+                            </option>
+                          ))}
                         </select>
                       ) : (
-                        <span className="text-sm text-gray-900 dark:text-slate-100">
+                        <span className="text-sm text-gray-900">
                           {invoice.currency || "GBP"}
                         </span>
                       )}
@@ -1500,28 +1354,26 @@ export default function InvoiceSuccessView({
               </div>
 
               {/* Bill To Section */}
-              <div className="mb-8 pb-6 border-b border-gray-200 dark:border-slate-700">
-                <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 uppercase tracking-wide mb-3">
+              <div className="mb-8 pb-6 border-b border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
                   Bill To:
                 </h3>
-                <p className="text-base font-bold text-gray-900 dark:text-slate-100 mb-1">
+                <p className="text-base font-bold text-gray-900 mb-1">
                   {billTo?.name || "Client"}
                 </p>
                 {billTo?.address && (
-                  <p className="text-sm text-gray-600 dark:text-slate-400 whitespace-pre-line">
+                  <p className="text-sm text-gray-600 whitespace-pre-line">
                     {billTo.address}
                   </p>
                 )}
                 {billTo?.email && (
-                  <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">
-                    {billTo.email}
-                  </p>
+                  <p className="text-sm text-gray-600 mt-1">{billTo.email}</p>
                 )}
               </div>
 
               {/* Invoice Description (Enterprise editable) */}
               <div className="mb-8">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-2">
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">
                   Description
                 </h4>
                 {isEditing && isEnterprise ? (
@@ -1529,11 +1381,11 @@ export default function InvoiceSuccessView({
                     value={desc}
                     onChange={(e) => setDesc(e.target.value)}
                     rows={3}
-                    className="w-full bg-gray-50 dark:bg-slate-900 rounded-lg p-3 border border-gray-200 dark:border-slate-700 text-sm text-gray-900 dark:text-slate-100"
+                    className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 text-sm text-gray-900"
                     placeholder="Describe the invoice..."
                   />
                 ) : (
-                  <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-line">
+                  <p className="text-sm text-gray-700 whitespace-pre-line">
                     {invoice.description || "No description"}
                   </p>
                 )}
@@ -1541,36 +1393,63 @@ export default function InvoiceSuccessView({
 
               {/* Professional Items Table */}
               <div className="mb-8">
-                <div className="border border-gray-300 dark:border-slate-600 rounded-md overflow-hidden">
-                  <table className="w-full">
+                <div
+                  className="border-2 border-gray-300 rounded-md overflow-hidden"
+                  style={{ border: "2px solid #d1d5db" }}
+                >
+                  <table
+                    className="w-full"
+                    style={{ borderCollapse: "collapse" }}
+                  >
                     <thead>
-                      <tr className="bg-gray-800 dark:bg-slate-800 text-white">
-                        <th className="px-6 py-4 text-left text-sm font-semibold">
+                      <tr
+                        className="bg-gray-800 text-white"
+                        style={{ backgroundColor: "#1f2937", color: "#ffffff" }}
+                      >
+                        <th
+                          className="px-6 py-4 text-left text-sm font-semibold"
+                          style={{ padding: "16px 24px", textAlign: "left" }}
+                        >
                           Description
                         </th>
-                        <th className="px-6 py-4 text-center text-sm font-semibold w-24">
+                        <th
+                          className="px-6 py-4 text-center text-sm font-semibold w-24"
+                          style={{ padding: "16px 24px", textAlign: "center" }}
+                        >
                           Qty
                         </th>
-                        <th className="px-6 py-4 text-right text-sm font-semibold w-32">
+                        <th
+                          className="px-6 py-4 text-right text-sm font-semibold w-32"
+                          style={{ padding: "16px 24px", textAlign: "right" }}
+                        >
                           Unit Price
                         </th>
-                        <th className="px-6 py-4 text-center text-sm font-semibold w-24">
+                        <th
+                          className="px-6 py-4 text-center text-sm font-semibold w-24"
+                          style={{ padding: "16px 24px", textAlign: "center" }}
+                        >
                           Tax
                         </th>
-                        <th className="px-6 py-4 text-right text-sm font-semibold w-36">
+                        <th
+                          className="px-6 py-4 text-right text-sm font-semibold w-36"
+                          style={{ padding: "16px 24px", textAlign: "right" }}
+                        >
                           Amount
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-slate-800">
+                    <tbody
+                      className="bg-white"
+                      style={{ backgroundColor: "#ffffff" }}
+                    >
                       {isEditing && isEnterprise ? (
                         itemRows.length > 0 ? (
                           itemRows.map((item: any, index: number) => (
                             <tr
                               key={index}
-                              className="border-b border-gray-200 dark:border-slate-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-slate-800"
+                              className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
                             >
-                              <td className="px-6 py-3 text-sm text-gray-900 dark:text-slate-100">
+                              <td className="px-6 py-3 text-sm text-gray-900">
                                 <div className="flex items-center gap-2">
                                   <input
                                     value={item.description || ""}
@@ -1580,11 +1459,10 @@ export default function InvoiceSuccessView({
                                       });
                                     }}
                                     placeholder="Item description"
-                                    className="w-full border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 bg-white dark:bg-slate-700"
+                                    className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white"
                                   />
                                   <Button
                                     variant="secondary"
-                                    className="dark:bg-slate-700 dark:hover:bg-slate-600"
                                     onClick={() => removeItem(index)}
                                   >
                                     Remove
@@ -1607,7 +1485,7 @@ export default function InvoiceSuccessView({
                                     });
                                     recalcAmounts();
                                   }}
-                                  className="w-20 text-sm border border-gray-300 dark:border-slate-600 rounded-md px-2 py-1 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 text-center"
+                                  className="w-20 text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900 text-center"
                                 />
                               </td>
                               <td className="px-6 py-3 text-right">
@@ -1627,7 +1505,7 @@ export default function InvoiceSuccessView({
                                     });
                                     recalcAmounts();
                                   }}
-                                  className="w-28 text-sm border border-gray-300 dark:border-slate-600 rounded-md px-2 py-1 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 text-right"
+                                  className="w-28 text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900 text-right"
                                 />
                               </td>
                               <td className="px-3 py-3 text-center">
@@ -1646,10 +1524,10 @@ export default function InvoiceSuccessView({
                                     });
                                     recalcAmounts();
                                   }}
-                                  className="w-20 text-sm border border-gray-300 dark:border-slate-600 rounded-md px-2 py-1 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 text-center"
+                                  className="w-20 text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900 text-center"
                                 />
                               </td>
-                              <td className="px-6 py-3 text-right text-base font-bold text-gray-900 dark:text-slate-100">
+                              <td className="px-6 py-3 text-right text-base font-bold text-gray-900">
                                 {getCurrencySymbol(currency)}
                                 {Number(item.amount || 0).toFixed(2)}
                               </td>
@@ -1669,22 +1547,58 @@ export default function InvoiceSuccessView({
                         items.map((item: any, index: number) => (
                           <tr
                             key={index}
-                            className="border-b border-gray-200 dark:border-slate-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-slate-800"
+                            className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
+                            style={{ borderBottom: "1px solid #e5e7eb" }}
                           >
-                            <td className="px-6 py-4 text-sm text-gray-900 dark:text-slate-100">
+                            <td
+                              className="px-6 py-4 text-sm text-gray-900"
+                              style={{
+                                padding: "16px 24px",
+                                borderBottom: "1px solid #e5e7eb",
+                              }}
+                            >
                               {item.description || "No description"}
                             </td>
-                            <td className="px-6 py-4 text-center text-sm text-gray-900 dark:text-slate-100">
+                            <td
+                              className="px-6 py-4 text-center text-sm text-gray-900"
+                              style={{
+                                padding: "16px 24px",
+                                textAlign: "center",
+                                borderBottom: "1px solid #e5e7eb",
+                              }}
+                            >
                               {item.quantity || 0}
                             </td>
-                            <td className="px-6 py-4 text-right text-sm text-gray-900 dark:text-slate-100">
+                            <td
+                              className="px-6 py-4 text-right text-sm text-gray-900"
+                              style={{
+                                padding: "16px 24px",
+                                textAlign: "right",
+                                borderBottom: "1px solid #e5e7eb",
+                              }}
+                            >
                               {getCurrencySymbol(invoice.currency || "GBP")}{" "}
                               {(item.unit_price || 0).toFixed(2)}
                             </td>
-                            <td className="px-6 py-4 text-center text-sm text-gray-900 dark:text-slate-100">
+                            <td
+                              className="px-6 py-4 text-center text-sm text-gray-900"
+                              style={{
+                                padding: "16px 24px",
+                                textAlign: "center",
+                                borderBottom: "1px solid #e5e7eb",
+                              }}
+                            >
                               {item.tax || 0}%
                             </td>
-                            <td className="px-6 py-4 text-right text-base font-bold text-gray-900 dark:text-slate-100">
+                            <td
+                              className="px-6 py-4 text-right text-base font-bold text-gray-900"
+                              style={{
+                                padding: "16px 24px",
+                                textAlign: "right",
+                                fontWeight: "bold",
+                                borderBottom: "1px solid #e5e7eb",
+                              }}
+                            >
                               {getCurrencySymbol(invoice.currency || "GBP")}{" "}
                               {(item.amount || 0).toFixed(2)}
                             </td>
@@ -1705,11 +1619,7 @@ export default function InvoiceSuccessView({
                 </div>
                 {isEditing && isEnterprise && (
                   <div className="mt-4">
-                    <Button
-                      variant="secondary"
-                      className="dark:bg-slate-700 dark:hover:bg-slate-600"
-                      onClick={() => addItem()}
-                    >
+                    <Button variant="secondary" onClick={() => addItem()}>
                       Add Item
                     </Button>
                   </div>
@@ -1717,86 +1627,66 @@ export default function InvoiceSuccessView({
               </div>
 
               {/* Additional Details & Summary */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-8">
-                <div className="lg:col-span-2 space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 pt-8">
+                <div className="lg:col-span-3 space-y-5">
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">
+                    <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
                       Bank Details
                     </h4>
                     {isEditing ? (
-                      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-5 border border-gray-200 dark:border-slate-700 grid gap-3">
-                        <div className="grid gap-1">
-                          <label className="text-xs text-gray-600 dark:text-slate-300">
-                            Account Type
-                          </label>
-                          <input
-                            value={bankAccountType}
-                            onChange={(e) => setBankAccountType(e.target.value)}
-                            className="px-3 py-2 rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-gray-900 dark:text-slate-100"
-                          />
-                        </div>
-                        <div className="grid gap-1">
-                          <label className="text-xs text-gray-600 dark:text-slate-300">
-                            Account Name
-                          </label>
-                          <input
-                            value={bankAccountName}
-                            onChange={(e) => setBankAccountName(e.target.value)}
-                            placeholder="e.g., VEROSITE LTD"
-                            className="px-3 py-2 rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-gray-900 dark:text-slate-100"
-                          />
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div className="grid gap-1">
-                            <label className="text-xs text-gray-600 dark:text-slate-300">
-                              Sort Code
-                            </label>
-                            <input
-                              value={bankSortCode}
-                              onChange={(e) => setBankSortCode(e.target.value)}
-                              placeholder="23-11-85"
-                              className="px-3 py-2 rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-gray-900 dark:text-slate-100"
-                            />
-                          </div>
-                          <div className="grid gap-1">
-                            <label className="text-xs text-gray-600 dark:text-slate-300">
-                              Account Number
-                            </label>
-                            <input
-                              value={bankAccountNumber}
-                              onChange={(e) =>
-                                setBankAccountNumber(e.target.value)
-                              }
-                              placeholder="63274627"
-                              className="px-3 py-2 rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-gray-900 dark:text-slate-100"
-                            />
-                          </div>
-                        </div>
-                      </div>
+                      <textarea
+                        value={bankAccountName}
+                        onChange={(e) => setBankAccountName(e.target.value)}
+                        rows={3}
+                        className="w-full bg-white rounded-lg p-4 border-2 border-gray-300 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+                        placeholder="Add bank details or payment instructions..."
+                      />
                     ) : (
-                      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-5 border border-gray-200 dark:border-slate-700">
-                        <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
-                          {formatBankDetails()}
+                      <div
+                        className="bg-white rounded-lg p-4 border-2 border-gray-300"
+                        style={{
+                          border: "3px solid #9ca3af",
+                          borderRadius: "8px",
+                          padding: "16px",
+                          backgroundColor: "#ffffff",
+                        }}
+                      >
+                        <p
+                          className="text-sm text-gray-900 whitespace-pre-line leading-relaxed"
+                          style={{ color: "#111827", lineHeight: "1.6" }}
+                        >
+                          {bankAccountName || "No bank details provided"}
                         </p>
                       </div>
                     )}
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3">
+                    <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
                       Notes & Terms
                     </h4>
                     {isEditing ? (
                       <textarea
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        rows={4}
-                        className="w-full bg-gray-50 dark:bg-slate-900 rounded-lg p-5 border border-gray-200 dark:border-slate-700 text-sm text-gray-900 dark:text-slate-100"
+                        rows={3}
+                        className="w-full bg-white rounded-lg p-4 border-2 border-gray-300 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
                         placeholder="Add notes or terms..."
                       />
                     ) : (
-                      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-5 border border-gray-200 dark:border-slate-700">
-                        <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">
+                      <div
+                        className="bg-white rounded-lg p-4 border-2 border-gray-300"
+                        style={{
+                          border: "3px solid #9ca3af",
+                          borderRadius: "8px",
+                          padding: "16px",
+                          backgroundColor: "#ffffff",
+                        }}
+                      >
+                        <p
+                          className="text-sm text-gray-900 whitespace-pre-line leading-relaxed"
+                          style={{ color: "#111827", lineHeight: "1.6" }}
+                        >
                           {invoice.notes || "No additional notes"}
                         </p>
                       </div>
@@ -1804,9 +1694,19 @@ export default function InvoiceSuccessView({
                   </div>
                 </div>
 
-                <div className="lg:col-span-1">
-                  <div className="bg-gray-50 dark:bg-slate-900 rounded-lg border-2 border-gray-300 dark:border-slate-600 overflow-hidden">
-                    <div className="bg-gray-800 dark:bg-slate-800 px-6 py-4">
+                <div className="lg:col-span-2">
+                  <div
+                    className="bg-gray-50 rounded-lg border-2 border-gray-300 overflow-hidden"
+                    style={{ border: "3px solid #9ca3af", borderRadius: "8px" }}
+                  >
+                    <div
+                      className="bg-gray-800 px-6 py-4"
+                      style={{
+                        backgroundColor: "#1f2937",
+                        color: "#ffffff",
+                        padding: "16px 24px",
+                      }}
+                    >
                       <h4 className="text-base font-bold text-white">
                         Invoice Summary
                       </h4>
@@ -1836,18 +1736,18 @@ export default function InvoiceSuccessView({
                         const total = subtotal + ship - (subtotal * disc) / 100;
                         return (
                           <>
-                            <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-700">
-                              <span className="text-sm font-medium text-gray-700 dark:text-slate-300">
+                            <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                              <span className="text-sm font-medium text-gray-700">
                                 Subtotal
                               </span>
-                              <span className="text-base font-semibold text-gray-900 dark:text-slate-100">
+                              <span className="text-base font-semibold text-gray-900">
                                 {symbol}
                                 {subtotal.toFixed(2)}
                               </span>
                             </div>
 
-                            <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-700">
-                              <span className="text-sm font-medium text-gray-700 dark:text-slate-300">
+                            <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                              <span className="text-sm font-medium text-gray-700">
                                 Shipping
                               </span>
                               {isEditing && isEnterprise ? (
@@ -1860,18 +1760,18 @@ export default function InvoiceSuccessView({
                                       parseFloat(e.target.value || "0")
                                     )
                                   }
-                                  className="w-28 text-right text-sm border border-gray-300 dark:border-slate-600 rounded-md px-2 py-1 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100"
+                                  className="w-28 text-right text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900"
                                 />
                               ) : (
-                                <span className="text-base font-semibold text-gray-900 dark:text-slate-100">
+                                <span className="text-base font-semibold text-gray-900">
                                   {symbol}
                                   {ship.toFixed(2)}
                                 </span>
                               )}
                             </div>
 
-                            <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-slate-700">
-                              <span className="text-sm font-medium text-gray-700 dark:text-slate-300">
+                            <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+                              <span className="text-sm font-medium text-gray-700">
                                 Discount
                               </span>
                               {isEditing && isEnterprise ? (
@@ -1887,20 +1787,28 @@ export default function InvoiceSuccessView({
                                         parseFloat(e.target.value || "0")
                                       )
                                     }
-                                    className="w-20 text-right text-sm border border-gray-300 dark:border-slate-600 rounded-md px-2 py-1 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100"
+                                    className="w-20 text-right text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900"
                                   />
-                                  <span className="text-sm text-gray-600 dark:text-slate-300">
+                                  <span className="text-sm text-gray-600">
                                     %
                                   </span>
                                 </div>
                               ) : (
-                                <span className="text-base font-semibold text-gray-900 dark:text-slate-100">
+                                <span className="text-base font-semibold text-gray-900">
                                   {disc}%
                                 </span>
                               )}
                             </div>
 
-                            <div className="bg-gray-800 dark:bg-slate-800 rounded-lg p-6 mt-4">
+                            <div
+                              className="bg-gray-800 rounded-lg p-6 mt-4"
+                              style={{
+                                backgroundColor: "#1f2937",
+                                color: "#ffffff",
+                                borderRadius: "8px",
+                                padding: "24px",
+                              }}
+                            >
                               <div className="text-center space-y-3">
                                 <span className="block text-sm font-bold text-white tracking-wider">
                                   TOTAL AMOUNT
@@ -1967,8 +1875,6 @@ export default function InvoiceSuccessView({
           </Link>
         </div>
       </div>
-      {/* Hidden printable DOM for clean PDF capture */}
-      <PrintableInvoice />
     </main>
   );
 }

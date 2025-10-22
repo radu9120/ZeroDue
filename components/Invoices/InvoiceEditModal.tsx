@@ -32,7 +32,7 @@ export default function InvoiceEditModal({
   const isEnterprise = userPlan === "enterprise";
 
   // Parse bank details - handle JSON, object, or plain text
-  let initialBankType = "international";
+  let initialBankType: "uk" | "international" = "international";
   let initialBankText = "";
   let initialAccountType = "";
   let initialAccountName = "";

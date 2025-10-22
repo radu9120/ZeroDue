@@ -97,8 +97,7 @@ export async function downloadElementAsPDF(
   wrapper.style.left = "0";
   wrapper.style.top = "0";
   wrapper.style.zIndex = "999999";
-  // force a white background for printable invoices to avoid transparent artifacts
-  wrapper.style.background = "#ffffff";
+  // Background stays light for consistent PDF output
   wrapper.style.padding = "0";
   wrapper.style.pointerEvents = "none";
 
@@ -109,7 +108,7 @@ export async function downloadElementAsPDF(
   clone.style.boxShadow = "none";
   clone.style.transform = "none";
   clone.style.filter = "none";
-  clone.style.background = "transparent";
+  // Background stays light for consistent PDF output
   clone.style.height = "auto";
   clone.style.maxHeight = "none";
   clone.style.overflow = "visible";
@@ -120,7 +119,71 @@ export async function downloadElementAsPDF(
     clone.style.top = "0";
   } catch {}
 
-  // Normalize <img> elements to avoid lazy loading and CORS issues for html2canvas
+  // ALWAYS use light mode for PDFs - remove dark mode variants and normalize colors
+  try {
+    // Remove all dark: variant classes
+    clone.querySelectorAll("*").forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      if (htmlEl.classList) {
+        const classes = Array.from(htmlEl.classList);
+        classes.forEach((cls) => {
+          if (cls.startsWith("dark:")) {
+            htmlEl.classList.remove(cls);
+          }
+        });
+      }
+    });
+
+    // Force white page background
+    clone.style.background = "#ffffff";
+    wrapper.style.background = "#ffffff";
+
+    // Normalize all elements to light mode
+    clone.querySelectorAll("*").forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      const computed = getComputedStyle(htmlEl);
+
+      // Check if this is an intentionally dark design element (table headers, summary boxes)
+      const hasDesignedDarkBg =
+        htmlEl.classList.contains("bg-gray-800") ||
+        htmlEl.classList.contains("bg-gray-900") ||
+        htmlEl.classList.contains("bg-slate-800") ||
+        htmlEl.classList.contains("bg-slate-900");
+
+      if (hasDesignedDarkBg) {
+        // Keep these dark with white text - they're part of the design
+        return;
+      }
+
+      // For all other elements, ensure light backgrounds
+      const bgColor = computed.backgroundColor;
+      if (bgColor && bgColor.includes("rgb")) {
+        const match = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (match) {
+          const [, r, g, b] = match.map(Number);
+          // If it's dark (from dark mode), make it white
+          if (r < 128 && g < 128 && b < 128) {
+            htmlEl.style.backgroundColor = "#ffffff";
+          }
+        }
+      }
+
+      // Ensure dark text on light backgrounds
+      const textColor = computed.color;
+      if (textColor && textColor.includes("rgb")) {
+        const match = textColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (match) {
+          const [, r, g, b] = match.map(Number);
+          // If text is light (from dark mode), make it dark
+          if (r > 200 && g > 200 && b > 200 && !hasDesignedDarkBg) {
+            htmlEl.style.color = "#111111";
+          }
+        }
+      }
+    });
+  } catch (err) {
+    console.warn("Light mode normalization failed:", err);
+  } // Normalize <img> elements to avoid lazy loading and CORS issues for html2canvas
   const imgs = Array.from(clone.querySelectorAll("img"));
   imgs.forEach((img) => {
     try {
@@ -156,12 +219,23 @@ export async function downloadElementAsPDF(
   await inlineImages(clone);
   await waitForImages(clone);
 
-  // Remove Tailwind background utility classes (bg-*) to avoid white boxes around logos
+  // Additional cleanup: strip any remaining Tailwind dark utilities
   try {
     clone.querySelectorAll("[class]").forEach((el) => {
-      const cls = (el as HTMLElement).className || "";
-      if (typeof cls === "string" && /\bbg-[^\s]+\b/.test(cls)) {
-        (el as HTMLElement).style.background = "transparent";
+      const htmlEl = el as HTMLElement;
+      const cls = htmlEl.className || "";
+      if (typeof cls === "string") {
+        // Remove dark mode class variants
+        if (cls.includes("dark:")) {
+          htmlEl.className = cls.replace(/\bdark:[\w-]+/g, "").trim();
+        }
+        // Don't override intentionally dark design elements (table headers, summary boxes)
+        const hasDesignDark =
+          /bg-gray-800|bg-gray-900|bg-slate-800|bg-slate-900/.test(cls);
+        if (hasDesignDark) {
+          // Keep these dark elements as-is
+          return;
+        }
       }
     });
   } catch {
@@ -324,10 +398,16 @@ export async function downloadElementAsPDF(
 
   // Cleanup DOM
   document.body.removeChild(wrapper);
+
+  // If all client-side attempts failed, silently fall back to server-side PDF generation
+  // instead of throwing an error. The caller can handle the fallback by catching this
+  // and requesting /api/invoices/[id]/pdf
   if (!canvas || canvas.width < 2 || canvas.height < 2) {
-    // As a last resort, throw a helpful error to the caller
-    console.error("PDF generation failed", lastError);
-    throw new Error("Failed to render PDF content. Please try again.");
+    console.warn(
+      "Client PDF capture failed, recommend server fallback:",
+      lastError
+    );
+    throw new Error("CLIENT_PDF_FAILED");
   }
 
   // PDF sizes in mm — single page approach: scale the whole canvas to fit A4 (width and height)

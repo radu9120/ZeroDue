@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     const { data: invoice, error: invErr } = await supabaseAdmin
       .from("Invoices")
       .select(
-        "id, author, invoice_number, bill_to, description, issue_date, due_date, total, currency, notes, bank_details"
+        "id, author, invoice_number, bill_to, description, issue_date, due_date, total, currency, notes, bank_details, public_token"
       )
       .eq("id", Number(invoiceId))
       .single();
@@ -40,6 +40,16 @@ export async function POST(req: NextRequest) {
     }
     if (invoice.author !== userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // Generate public token if it doesn't exist
+    let publicToken = invoice.public_token;
+    if (!publicToken) {
+      publicToken = crypto.randomUUID().replace(/-/g, "");
+      await supabaseAdmin
+        .from("Invoices")
+        .update({ public_token: publicToken })
+        .eq("id", invoice.id);
     }
 
     // Fetch business details (will be subject to RLS; throws if not accessible)
@@ -84,12 +94,10 @@ export async function POST(req: NextRequest) {
     const currencySymbol =
       currency === "USD" ? "$" : currency === "EUR" ? "€" : "£";
 
-    // Create invoice URL
+    // Create public invoice URL (no auth required) - opens printable view
     const invoiceUrl = `${
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    }/dashboard/invoices/success?invoice_id=${
-      invoice.id
-    }&business_id=${businessId}`;
+    }/api/invoices/download/${publicToken}`;
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
