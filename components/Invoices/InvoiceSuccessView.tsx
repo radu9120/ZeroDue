@@ -253,6 +253,22 @@ export default function InvoiceSuccessView({
   const [sending, setSending] = React.useState(false);
   // Print is intentionally removed — prefer client-side PDF download
 
+  const baseInvoiceContainerClass =
+    "mx-auto w-full max-w-[794px] bg-white px-8 py-10 sm:px-12 sm:py-12 rounded-2xl";
+  const invoiceContainerClass = isPublicView
+    ? `${baseInvoiceContainerClass} shadow-lg`
+    : `${baseInvoiceContainerClass} shadow-xl`;
+
+  // Helper to determine if we should show the description section
+  const rawDescription = (invoice.description || "").trim();
+  const isDefaultDescription =
+    rawDescription.length === 0 ||
+    rawDescription.toLowerCase() === "new invoice";
+  const currentDescription = (isEditing ? desc : rawDescription).trim();
+  const shouldRenderDescription =
+    (isEditing && isEnterprise) ||
+    (!isDefaultDescription && currentDescription.length > 0);
+
   const copyPublicLink = () => {
     if (!invoice.public_token) {
       toast.error("Public link unavailable. Try sending the invoice first.");
@@ -349,25 +365,68 @@ export default function InvoiceSuccessView({
 
       await new Promise((resolve) => setTimeout(resolve, 200));
 
-      try {
-        await downloadElementAsPDF(container, {
-          filename: `Invoice-${invoice.invoice_number || "unnamed"}.pdf`,
-          margin: 8,
-          scale: 3,
-          format: "a4",
-        });
-        toast.success("PDF downloaded");
-      } finally {
-        // Restore all original styles
-        html.className = originalHtmlClass;
-        body.style.backgroundColor = originalBodyBg;
-        body.style.color = originalBodyColor;
-        container.style.backgroundColor = originalContainerBg;
-        container.style.color = originalContainerColor;
-        originalStyles.forEach(({ el, bg, color }) => {
-          el.style.backgroundColor = bg;
-          el.style.color = color;
-        });
+      // Only strip decorative chrome on public view PDFs
+      if (isPublicView) {
+        const originalInlineBorder = container.style.border;
+        const originalInlineShadow = container.style.boxShadow;
+        const originalInlineBackground = container.style.background;
+        const originalInlinePadding = container.style.padding;
+        container.style.border = "none";
+        container.style.boxShadow = "none";
+        container.style.background = "#ffffff";
+        if (!originalInlinePadding) {
+          container.style.padding = "48px";
+        }
+
+        try {
+          await downloadElementAsPDF(container, {
+            filename: `Invoice-${invoice.invoice_number || "unnamed"}.pdf`,
+            margin: 40,
+            scale: 3,
+            format: "a4",
+          });
+          toast.success("PDF downloaded");
+        } finally {
+          container.style.border = originalInlineBorder;
+          container.style.boxShadow = originalInlineShadow;
+          container.style.background = originalInlineBackground;
+          if (!originalInlinePadding) {
+            container.style.removeProperty("padding");
+          } else {
+            container.style.padding = originalInlinePadding;
+          }
+          // Restore all original styles
+          html.className = originalHtmlClass;
+          body.style.backgroundColor = originalBodyBg;
+          body.style.color = originalBodyColor;
+          container.style.backgroundColor = originalContainerBg;
+          container.style.color = originalContainerColor;
+          originalStyles.forEach(({ el, bg, color }) => {
+            el.style.backgroundColor = bg;
+            el.style.color = color;
+          });
+        }
+      } else {
+        try {
+          await downloadElementAsPDF(container, {
+            filename: `Invoice-${invoice.invoice_number || "unnamed"}.pdf`,
+            margin: 8,
+            scale: 3,
+            format: "a4",
+          });
+          toast.success("PDF downloaded");
+        } finally {
+          // Restore all original styles
+          html.className = originalHtmlClass;
+          body.style.backgroundColor = originalBodyBg;
+          body.style.color = originalBodyColor;
+          container.style.backgroundColor = originalContainerBg;
+          container.style.color = originalContainerColor;
+          originalStyles.forEach(({ el, bg, color }) => {
+            el.style.backgroundColor = bg;
+            el.style.color = color;
+          });
+        }
       }
       return;
     } catch (e) {
@@ -502,26 +561,26 @@ export default function InvoiceSuccessView({
           boxSizing: "border-box",
         }}
       >
-        {/* Professional Header */}
+        {/* Header - Matches visible invoice design */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
-            marginBottom: 40,
-            paddingBottom: 20,
+            marginBottom: 24,
+            paddingBottom: 24,
             borderBottom: "2px solid #e5e7eb",
           }}
         >
-          <div style={{ flex: 1, maxWidth: "55%" }}>
+          <div style={{ flex: 1 }}>
             {company?.logo && (
-              <div style={{ marginBottom: 18 }}>
+              <div style={{ marginBottom: 16 }}>
                 <img
                   src={company.logo}
                   alt="Company Logo"
                   style={{
-                    maxWidth: "200px",
-                    maxHeight: "90px",
+                    maxWidth: "220px",
+                    maxHeight: "100px",
                     objectFit: "contain",
                   }}
                 />
@@ -529,238 +588,223 @@ export default function InvoiceSuccessView({
             )}
             <h2
               style={{
-                fontSize: 22,
+                fontSize: 20,
                 fontWeight: "bold",
-                margin: "0 0 14px 0",
-                color: "#111",
+                margin: "0 0 8px 0",
+                color: "#111827",
               }}
             >
               {company?.name}
             </h2>
-            {company?.address && (
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "#666",
-                  marginBottom: 6,
-                  whiteSpace: "pre-line",
-                  lineHeight: 1.5,
-                }}
-              >
-                {company.address}
-              </div>
-            )}
-            {company?.email && (
-              <div style={{ fontSize: 12, color: "#666" }}>{company.email}</div>
-            )}
-            {company?.phone && (
-              <div style={{ fontSize: 12, color: "#666" }}>{company.phone}</div>
-            )}
-            {company?.vat && (
-              <div style={{ fontSize: 12, color: "#666" }}>
-                VAT: {company.vat}
-              </div>
-            )}
+            <div style={{ fontSize: 14, color: "#4b5563", lineHeight: 1.6 }}>
+              {company?.address && (
+                <div style={{ marginBottom: 2, whiteSpace: "pre-line" }}>
+                  {company.address}
+                </div>
+              )}
+              {company?.email && <div>{company.email}</div>}
+              {company?.phone && <div>{company.phone}</div>}
+              {company?.vat && <div>VAT: {company.vat}</div>}
+            </div>
           </div>
 
           <div style={{ textAlign: "right", minWidth: "250px" }}>
             <h1
               style={{
-                fontSize: 38,
+                fontSize: 48,
                 fontWeight: "bold",
                 margin: "0 0 24px 0",
-                color: "#111",
-                letterSpacing: "1px",
+                color: "#111827",
+                letterSpacing: "-0.5px",
               }}
             >
               INVOICE
             </h1>
-            <table style={{ fontSize: 12, marginLeft: "auto", width: "100%" }}>
-              <tbody>
-                <tr>
-                  <td
-                    style={{
-                      padding: "6px 16px 6px 0",
-                      fontWeight: 600,
-                      color: "#666",
-                      textAlign: "left",
-                    }}
-                  >
-                    Invoice #:
-                  </td>
-                  <td
-                    style={{
-                      padding: "6px 0",
-                      fontWeight: "bold",
-                      color: "#111",
-                      textAlign: "right",
-                    }}
-                  >
-                    {invoice.invoice_number || "N/A"}
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    style={{
-                      padding: "6px 16px 6px 0",
-                      fontWeight: 600,
-                      color: "#666",
-                      textAlign: "left",
-                    }}
-                  >
-                    Date:
-                  </td>
-                  <td
-                    style={{
-                      padding: "6px 0",
-                      color: "#111",
-                      textAlign: "right",
-                    }}
-                  >
-                    {invoice.issue_date
-                      ? new Date(invoice.issue_date).toLocaleDateString("en-GB")
-                      : "N/A"}
-                  </td>
-                  <td
-                    style={{
-                      padding: "6px 16px 6px 0",
-                      fontWeight: 600,
-                      color: "#666",
-                      textAlign: "left",
-                    }}
-                  >
-                    Due Date:
-                  </td>
-                  <td
-                    style={{
-                      padding: "6px 0",
-                      color: "#111",
-                      textAlign: "right",
-                    }}
-                  >
-                    {new Date(invoice.due_date).toLocaleDateString("en-GB")}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div
+              style={{
+                backgroundColor: "#f9fafb",
+                borderRadius: "8px",
+                padding: "16px",
+                fontSize: 14,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 8,
+                }}
+              >
+                <span style={{ fontWeight: 600, color: "#374151" }}>
+                  Invoice #
+                </span>
+                <span style={{ fontWeight: "bold", color: "#111827" }}>
+                  {invoice.invoice_number || "N/A"}
+                </span>
+              </div>
+              <div
+                style={{
+                  height: "1px",
+                  backgroundColor: "#e5e7eb",
+                  margin: "8px 0",
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 8,
+                }}
+              >
+                <span style={{ fontWeight: 600, color: "#374151" }}>Date</span>
+                <span style={{ color: "#111827" }}>
+                  {invoice.issue_date
+                    ? new Date(invoice.issue_date).toLocaleDateString("en-GB")
+                    : "N/A"}
+                </span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span style={{ fontWeight: 600, color: "#374151" }}>
+                  Due Date
+                </span>
+                <span style={{ color: "#111827" }}>
+                  {new Date(invoice.due_date).toLocaleDateString("en-GB")}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Bill To */}
-        <div
-          style={{
-            marginBottom: 30,
-            paddingBottom: 24,
-            borderBottom: "1px solid #e5e7eb",
-          }}
-        >
+        {/* Bill To - Matches visible invoice design */}
+        <div style={{ marginBottom: 24 }}>
           <div
             style={{
               fontSize: 11,
-              fontWeight: 600,
-              color: "#666",
+              fontWeight: "bold",
+              color: "#6b7280",
               textTransform: "uppercase",
               letterSpacing: "0.8px",
               marginBottom: 12,
             }}
           >
-            Bill To:
+            Bill To
           </div>
           <div
             style={{
-              fontSize: 15,
-              fontWeight: "bold",
-              color: "#111",
-              marginBottom: 8,
+              backgroundColor: "#f9fafb",
+              borderRadius: "8px",
+              padding: "16px",
+              border: "1px solid #e5e7eb",
             }}
           >
-            {billTo?.name || "Client"}
-          </div>
-          {billTo?.address && (
             <div
               style={{
-                fontSize: 12,
-                color: "#666",
-                whiteSpace: "pre-line",
-                lineHeight: 1.6,
+                fontSize: 16,
+                fontWeight: "bold",
+                color: "#111827",
+                marginBottom: 4,
               }}
             >
-              {billTo.address}
+              {billTo?.name || "Client"}
             </div>
-          )}
-          {billTo?.email && (
-            <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>
-              {billTo.email}
-            </div>
-          )}
+            {billTo?.address && (
+              <div
+                style={{
+                  fontSize: 14,
+                  color: "#4b5563",
+                  whiteSpace: "pre-line",
+                  lineHeight: 1.6,
+                }}
+              >
+                {billTo.address}
+              </div>
+            )}
+            {billTo?.email && (
+              <div style={{ fontSize: 14, color: "#4b5563", marginTop: 4 }}>
+                {billTo.email}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Items Table */}
+        {/* Items Table - Matches visible invoice design */}
         <table
           style={{
             width: "100%",
             borderCollapse: "collapse",
-            marginBottom: 32,
+            marginBottom: 24,
             border: "2px solid #1f2937",
+            borderRadius: "8px",
+            overflow: "hidden",
           }}
         >
           <thead>
             <tr style={{ backgroundColor: "#1f2937", color: "#fff" }}>
               <th
                 style={{
-                  padding: "14px 18px",
+                  padding: "12px 16px",
                   textAlign: "left",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  letterSpacing: "0.5px",
+                  fontSize: 11,
+                  fontWeight: "bold",
+                  letterSpacing: "0.8px",
+                  textTransform: "uppercase",
                 }}
               >
                 Description
               </th>
               <th
                 style={{
-                  padding: "14px 18px",
+                  padding: "12px 16px",
                   textAlign: "center",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  width: "90px",
-                  letterSpacing: "0.5px",
+                  fontSize: 11,
+                  fontWeight: "bold",
+                  width: "80px",
+                  letterSpacing: "0.8px",
+                  textTransform: "uppercase",
                 }}
               >
                 Qty
               </th>
               <th
                 style={{
-                  padding: "14px 18px",
+                  padding: "12px 16px",
                   textAlign: "right",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  width: "120px",
-                  letterSpacing: "0.5px",
+                  fontSize: 11,
+                  fontWeight: "bold",
+                  width: "112px",
+                  letterSpacing: "0.8px",
+                  textTransform: "uppercase",
                 }}
               >
                 Unit Price
               </th>
               <th
                 style={{
-                  padding: "14px 18px",
+                  padding: "12px 16px",
                   textAlign: "center",
-                  fontSize: 12,
-                  fontWeight: 600,
+                  fontSize: 11,
+                  fontWeight: "bold",
                   width: "80px",
-                  letterSpacing: "0.5px",
+                  letterSpacing: "0.8px",
+                  textTransform: "uppercase",
                 }}
               >
                 Tax
               </th>
               <th
                 style={{
-                  padding: "14px 18px",
+                  padding: "12px 16px",
                   textAlign: "right",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  width: "130px",
-                  letterSpacing: "0.5px",
+                  fontSize: 11,
+                  fontWeight: "bold",
+                  width: "128px",
+                  letterSpacing: "0.8px",
+                  textTransform: "uppercase",
                 }}
               >
                 Amount
@@ -769,28 +813,39 @@ export default function InvoiceSuccessView({
           </thead>
           <tbody>
             {items.map((item: any, idx: number) => (
-              <tr key={idx} style={{ borderBottom: "1px solid #e5e7eb" }}>
+              <tr
+                key={idx}
+                style={{
+                  borderBottom:
+                    idx < items.length - 1 ? "1px solid #f3f4f6" : "none",
+                  backgroundColor: "#fff",
+                }}
+              >
                 <td
-                  style={{ padding: "14px 18px", fontSize: 12, color: "#111" }}
+                  style={{
+                    padding: "12px 16px",
+                    fontSize: 14,
+                    color: "#111827",
+                  }}
                 >
                   {item.description || "-"}
                 </td>
                 <td
                   style={{
-                    padding: "14px 18px",
+                    padding: "12px 16px",
                     textAlign: "center",
-                    fontSize: 12,
-                    color: "#111",
+                    fontSize: 14,
+                    color: "#111827",
                   }}
                 >
                   {item.quantity || 0}
                 </td>
                 <td
                   style={{
-                    padding: "14px 18px",
+                    padding: "12px 16px",
                     textAlign: "right",
-                    fontSize: 12,
-                    color: "#111",
+                    fontSize: 14,
+                    color: "#111827",
                   }}
                 >
                   {getCurrencySymbol(invoice.currency || "GBP")}{" "}
@@ -798,21 +853,21 @@ export default function InvoiceSuccessView({
                 </td>
                 <td
                   style={{
-                    padding: "14px 18px",
+                    padding: "12px 16px",
                     textAlign: "center",
-                    fontSize: 12,
-                    color: "#111",
+                    fontSize: 14,
+                    color: "#111827",
                   }}
                 >
                   {item.tax || 0}%
                 </td>
                 <td
                   style={{
-                    padding: "14px 18px",
+                    padding: "12px 16px",
                     textAlign: "right",
                     fontSize: 14,
                     fontWeight: "bold",
-                    color: "#111",
+                    color: "#111827",
                   }}
                 >
                   {getCurrencySymbol(invoice.currency || "GBP")}{" "}
@@ -823,112 +878,76 @@ export default function InvoiceSuccessView({
           </tbody>
         </table>
 
-        {/* Bottom Section: Bank Details + Summary */}
+        {/* Bottom Section: Bank Details, Notes & Summary - Matches visible invoice */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1.5fr 1fr",
-            gap: 32,
-            marginTop: 32,
+            gridTemplateColumns: "1fr 1fr",
+            gap: 24,
+            marginTop: 24,
           }}
         >
-          {/* Bank Details & Notes */}
+          {/* Left Column: Bank Details & Notes */}
           <div>
-            <div style={{ marginBottom: 24 }}>
+            <div style={{ marginBottom: 20 }}>
               <h4
                 style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: "#666",
-                  marginBottom: 12,
+                  fontSize: 11,
+                  fontWeight: "bold",
+                  color: "#6b7280",
+                  marginBottom: 8,
                   textTransform: "uppercase",
-                  letterSpacing: "0.5px",
+                  letterSpacing: "0.8px",
                 }}
               >
                 Bank Details
               </h4>
-              {isEditing ? (
-                <textarea
-                  value={bankAccountName}
-                  onChange={(e) => setBankAccountName(e.target.value)}
-                  rows={4}
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#f9fafb",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "6px",
-                    padding: 16,
-                    fontSize: 12,
-                    color: "#374151",
-                  }}
-                  placeholder="Add bank details or payment instructions..."
-                />
-              ) : (
-                <div
-                  style={{
-                    backgroundColor: "#f9fafb",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "6px",
-                    padding: 16,
-                    fontSize: 12,
-                    color: "#374151",
-                    whiteSpace: "pre-line",
-                    lineHeight: 1.7,
-                  }}
-                >
-                  {bankAccountName || "No bank details provided"}
-                </div>
-              )}
+              <div
+                style={{
+                  backgroundColor: "#f9fafb",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  padding: 12,
+                  fontSize: 14,
+                  color: "#111827",
+                  whiteSpace: "pre-line",
+                  lineHeight: 1.6,
+                }}
+              >
+                {bankAccountName || "No bank details provided"}
+              </div>
             </div>
             <div>
               <h4
                 style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: "#666",
-                  marginBottom: 12,
+                  fontSize: 11,
+                  fontWeight: "bold",
+                  color: "#6b7280",
+                  marginBottom: 8,
                   textTransform: "uppercase",
-                  letterSpacing: "0.5px",
+                  letterSpacing: "0.8px",
                 }}
               >
                 Notes & Terms
               </h4>
-              {isEditing ? (
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  rows={4}
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#f9fafb",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "6px",
-                    padding: 16,
-                    fontSize: 12,
-                    color: "#374151",
-                  }}
-                  placeholder="Add notes or terms..."
-                />
-              ) : (
-                <div
-                  style={{
-                    backgroundColor: "#f9fafb",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "6px",
-                    padding: 16,
-                    fontSize: 12,
-                    color: "#374151",
-                    whiteSpace: "pre-line",
-                    lineHeight: 1.7,
-                  }}
-                >
-                  {invoice.notes || "No additional notes"}
-                </div>
-              )}
+              <div
+                style={{
+                  backgroundColor: "#f9fafb",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  padding: 12,
+                  fontSize: 14,
+                  color: "#111827",
+                  whiteSpace: "pre-line",
+                  lineHeight: 1.6,
+                }}
+              >
+                {invoice.notes || "No additional notes"}
+              </div>
             </div>
           </div>
 
-          {/* Invoice Summary */}
+          {/* Right Column: Invoice Summary */}
           <div>
             <div
               style={{
@@ -938,7 +957,7 @@ export default function InvoiceSuccessView({
                 overflow: "hidden",
               }}
             >
-              <div style={{ backgroundColor: "#1f2937", padding: "14px 20px" }}>
+              <div style={{ backgroundColor: "#1f2937", padding: "12px 20px" }}>
                 <h4
                   style={{
                     fontSize: 14,
@@ -946,6 +965,7 @@ export default function InvoiceSuccessView({
                     color: "#fff",
                     margin: 0,
                     letterSpacing: "0.5px",
+                    textTransform: "uppercase",
                   }}
                 >
                   Invoice Summary
@@ -956,18 +976,22 @@ export default function InvoiceSuccessView({
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    paddingBottom: 12,
-                    marginBottom: 12,
-                    borderBottom: "1px solid #e5e7eb",
+                    paddingBottom: 8,
+                    marginBottom: 8,
+                    borderBottom: "1px solid #f3f4f6",
                   }}
                 >
                   <span
-                    style={{ fontSize: 12, fontWeight: 600, color: "#374151" }}
+                    style={{ fontSize: 14, fontWeight: 600, color: "#4b5563" }}
                   >
                     Subtotal
                   </span>
                   <span
-                    style={{ fontSize: 14, fontWeight: 600, color: "#111" }}
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "bold",
+                      color: "#111827",
+                    }}
                   >
                     {getCurrencySymbol(invoice.currency || "GBP")}{" "}
                     {Number(invoice.subtotal || 0).toFixed(2)}
@@ -977,18 +1001,22 @@ export default function InvoiceSuccessView({
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    paddingBottom: 12,
-                    marginBottom: 12,
-                    borderBottom: "1px solid #e5e7eb",
+                    paddingBottom: 8,
+                    marginBottom: 8,
+                    borderBottom: "1px solid #f3f4f6",
                   }}
                 >
                   <span
-                    style={{ fontSize: 12, fontWeight: 600, color: "#374151" }}
+                    style={{ fontSize: 14, fontWeight: 600, color: "#4b5563" }}
                   >
                     Shipping
                   </span>
                   <span
-                    style={{ fontSize: 14, fontWeight: 600, color: "#111" }}
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "bold",
+                      color: "#111827",
+                    }}
                   >
                     {getCurrencySymbol(invoice.currency || "GBP")}{" "}
                     {Number(invoice.shipping || 0).toFixed(2)}
@@ -998,18 +1026,22 @@ export default function InvoiceSuccessView({
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    paddingBottom: 12,
-                    marginBottom: 12,
-                    borderBottom: "1px solid #e5e7eb",
+                    paddingBottom: 8,
+                    marginBottom: 8,
+                    borderBottom: "1px solid #f3f4f6",
                   }}
                 >
                   <span
-                    style={{ fontSize: 12, fontWeight: 600, color: "#374151" }}
+                    style={{ fontSize: 14, fontWeight: 600, color: "#4b5563" }}
                   >
                     Discount
                   </span>
                   <span
-                    style={{ fontSize: 14, fontWeight: 600, color: "#111" }}
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "bold",
+                      color: "#111827",
+                    }}
                   >
                     {invoice.discount || 0}%
                   </span>
@@ -1018,35 +1050,30 @@ export default function InvoiceSuccessView({
                   style={{
                     backgroundColor: "#1f2937",
                     borderRadius: "8px",
-                    padding: "20px",
-                    marginTop: 16,
+                    padding: "16px",
+                    marginTop: 12,
                   }}
                 >
-                  <div
-                    style={{
-                      textAlign: "center",
-                    }}
-                  >
+                  <div style={{ textAlign: "center" }}>
                     <div style={{ marginBottom: "8px" }}>
                       <span
                         style={{
-                          fontSize: 13,
+                          fontSize: 11,
                           fontWeight: "bold",
                           color: "#fff",
-                          letterSpacing: "0.5px",
-                          whiteSpace: "nowrap",
+                          letterSpacing: "0.8px",
+                          textTransform: "uppercase",
                         }}
                       >
-                        TOTAL AMOUNT
+                        Total Amount
                       </span>
                     </div>
                     <div>
                       <span
                         style={{
-                          fontSize: 24,
+                          fontSize: 28,
                           fontWeight: "bold",
                           color: "#fff",
-                          whiteSpace: "nowrap",
                         }}
                       >
                         {getCurrencySymbol(invoice.currency || "GBP")}{" "}
@@ -1266,11 +1293,12 @@ export default function InvoiceSuccessView({
           )}
 
           <CardContent
-            className="p-12 bg-white"
+            className="p-6 bg-white"
             style={{
               height: "auto",
               backgroundColor: "#ffffff",
               color: "#000000",
+              padding: "24px",
             }}
           >
             {isPublicView && (
@@ -1287,72 +1315,169 @@ export default function InvoiceSuccessView({
             )}
             <div
               id="invoice-capture"
-              className="max-w-5xl mx-auto"
+              className={invoiceContainerClass}
               style={{ backgroundColor: "#ffffff", color: "#000000" }}
             >
-              {/* Professional Invoice Header */}
-              <div className="flex justify-between items-start mb-10">
-                <div className="flex-1">
+              {/* Redesigned Header - Clean and Balanced */}
+              <div
+                className="mb-6 pb-6 border-b-2 border-gray-200"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  gap: "32px",
+                  marginBottom: "24px",
+                  paddingBottom: "24px",
+                  borderBottom: "2px solid #e5e7eb",
+                }}
+              >
+                {/* Left: Company Info */}
+                <div className="flex-1" style={{ flex: 1 }}>
                   {company.logo && (
-                    <div className="mb-6">
+                    <div
+                      className="mb-4"
+                      style={{
+                        marginBottom: "16px",
+                        display: "flex",
+                        alignItems: "flex-start",
+                      }}
+                    >
                       <Image
                         src={company.logo}
                         alt="Company Logo"
-                        width={180}
-                        height={80}
-                        className="object-contain"
+                        width={220}
+                        height={100}
+                        className="object-contain object-left"
+                        style={{
+                          maxWidth: "220px",
+                          maxHeight: "100px",
+                          objectFit: "contain",
+                          objectPosition: "left center",
+                        }}
                       />
                     </div>
                   )}
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                      {company.name}
-                    </h2>
+                  <h2
+                    className="text-xl font-bold text-gray-900 mb-2"
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      color: "#111827",
+                      margin: "0 0 8px 0",
+                    }}
+                  >
+                    {company.name}
+                  </h2>
+                  <div
+                    className="text-sm text-gray-600 space-y-0.5"
+                    style={{
+                      fontSize: "14px",
+                      color: "#4b5563",
+                      lineHeight: 1.6,
+                      margin: 0,
+                    }}
+                  >
                     {company.address && (
-                      <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line mb-2">
+                      <p
+                        className="whitespace-pre-line leading-relaxed"
+                        style={{ whiteSpace: "pre-line", marginBottom: "2px" }}
+                      >
                         {company.address}
                       </p>
                     )}
                     {company.email && (
-                      <p className="text-sm text-gray-600">{company.email}</p>
+                      <p style={{ marginBottom: "2px" }}>{company.email}</p>
                     )}
                     {company.phone && (
-                      <p className="text-sm text-gray-600">{company.phone}</p>
+                      <p style={{ marginBottom: "2px" }}>{company.phone}</p>
                     )}
                     {company.vat && (
-                      <p className="text-sm text-gray-600">
-                        VAT: {company.vat}
-                      </p>
+                      <p style={{ marginBottom: "2px" }}>VAT: {company.vat}</p>
                     )}
                   </div>
                 </div>
 
-                <div className="text-right min-w-[280px]">
-                  <h1 className="text-4xl font-bold text-gray-900 mb-6">
+                {/* Right: Invoice Title & Meta */}
+                <div
+                  className="text-right"
+                  style={{ textAlign: "right", minWidth: "250px" }}
+                >
+                  <h1
+                    className="text-5xl font-bold text-gray-900 mb-6 tracking-tight"
+                    style={{
+                      fontSize: "48px",
+                      fontWeight: "bold",
+                      color: "#111827",
+                      marginBottom: "24px",
+                      letterSpacing: "-0.5px",
+                    }}
+                  >
                     INVOICE
                   </h1>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium text-gray-600">
-                        Invoice #:
+                  <div
+                    className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm"
+                    style={{
+                      backgroundColor: "#f9fafb",
+                      borderRadius: "8px",
+                      padding: "16px",
+                      fontSize: "14px",
+                    }}
+                  >
+                    <div
+                      className="flex justify-between items-center"
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      <span
+                        className="font-semibold text-gray-700"
+                        style={{ fontWeight: 600, color: "#374151" }}
+                      >
+                        Invoice #
                       </span>
-                      <span className="text-sm font-bold text-gray-900">
+                      <span
+                        className="font-bold text-gray-900"
+                        style={{ fontWeight: "bold", color: "#111827" }}
+                      >
                         {invoice.invoice_number || "N/A"}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium text-gray-600">
-                        Date:
+                    <div
+                      className="h-px bg-gray-200"
+                      style={{
+                        height: "1px",
+                        backgroundColor: "#e5e7eb",
+                        margin: "8px 0",
+                      }}
+                    ></div>
+                    <div
+                      className="flex justify-between items-center"
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "8px",
+                      }}
+                    >
+                      <span
+                        className="font-semibold text-gray-700"
+                        style={{ fontWeight: 600, color: "#374151" }}
+                      >
+                        Date
                       </span>
                       {isEditing && isEnterprise ? (
                         <input
                           type="date"
                           value={(issueDate || "").slice(0, 10)}
                           onChange={(e) => setIssueDate(e.target.value)}
-                          className="text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900"
+                          className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
                         />
                       ) : (
-                        <span className="text-sm text-gray-900">
+                        <span
+                          className="text-gray-900"
+                          style={{ color: "#111827" }}
+                        >
                           {invoice.issue_date
                             ? new Date(invoice.issue_date).toLocaleDateString(
                                 "en-GB"
@@ -1361,131 +1486,232 @@ export default function InvoiceSuccessView({
                         </span>
                       )}
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium text-gray-600">
-                        Due Date:
+                    <div
+                      className="flex justify-between items-center"
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <span
+                        className="font-semibold text-gray-700"
+                        style={{ fontWeight: 600, color: "#374151" }}
+                      >
+                        Due Date
                       </span>
                       {isEditing && isEnterprise ? (
                         <input
                           type="date"
                           value={(dueDate || "").slice(0, 10)}
                           onChange={(e) => setDueDate(e.target.value)}
-                          className="text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900"
+                          className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
                         />
                       ) : (
-                        <span className="text-sm text-gray-900">
+                        <span
+                          className="text-gray-900"
+                          style={{ color: "#111827" }}
+                        >
                           {new Date(invoice.due_date).toLocaleDateString(
                             "en-GB"
                           )}
                         </span>
                       )}
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium text-gray-600">
-                        Currency:
-                      </span>
-                      {isEditing && isEnterprise ? (
-                        <select
-                          value={currency}
-                          onChange={(e) => setCurrency(e.target.value)}
-                          className="text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900 max-w-[200px]"
-                        >
-                          {currencies.map((curr) => (
-                            <option key={curr.code} value={curr.code}>
-                              {curr.code} - {curr.symbol} ({curr.name})
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <span className="text-sm text-gray-900">
-                          {invoice.currency || "GBP"}
-                        </span>
-                      )}
-                    </div>
+                    {isEditing && isEnterprise && (
+                      <>
+                        <div className="h-px bg-gray-200"></div>
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold text-gray-700">
+                            Currency
+                          </span>
+                          <select
+                            value={currency}
+                            onChange={(e) => setCurrency(e.target.value)}
+                            className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+                          >
+                            {currencies.map((curr) => (
+                              <option key={curr.code} value={curr.code}>
+                                {curr.code}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Bill To Section */}
-              <div className="mb-8 pb-6 border-b border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
-                  Bill To:
+              <div className="mb-6" style={{ marginBottom: "24px" }}>
+                <h3
+                  className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3"
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: "bold",
+                    color: "#6b7280",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.8px",
+                    marginBottom: "12px",
+                  }}
+                >
+                  Bill To
                 </h3>
-                <p className="text-base font-bold text-gray-900 mb-1">
-                  {billTo?.name || "Client"}
-                </p>
-                {billTo?.address && (
-                  <p className="text-sm text-gray-600 whitespace-pre-line">
-                    {billTo.address}
+                <div
+                  className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                  style={{
+                    backgroundColor: "#f9fafb",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    border: "1px solid #e5e7eb",
+                  }}
+                >
+                  <p
+                    className="font-bold text-gray-900 text-base mb-1"
+                    style={{
+                      fontWeight: "bold",
+                      color: "#111827",
+                      fontSize: "16px",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {billTo?.name || "Client"}
                   </p>
-                )}
-                {billTo?.email && (
-                  <p className="text-sm text-gray-600 mt-1">{billTo.email}</p>
-                )}
+                  {billTo?.address && (
+                    <p
+                      className="text-sm text-gray-600 whitespace-pre-line leading-relaxed"
+                      style={{
+                        fontSize: "14px",
+                        color: "#4b5563",
+                        whiteSpace: "pre-line",
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {billTo.address}
+                    </p>
+                  )}
+                  {billTo?.email && (
+                    <p
+                      className="text-sm text-gray-600 mt-1"
+                      style={{
+                        fontSize: "14px",
+                        color: "#4b5563",
+                        marginTop: "4px",
+                      }}
+                    >
+                      {billTo.email}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              {/* Invoice Description (Enterprise editable) */}
-              <div className="mb-8">
-                <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                  Description
-                </h4>
-                {isEditing && isEnterprise ? (
-                  <textarea
-                    value={desc}
-                    onChange={(e) => setDesc(e.target.value)}
-                    rows={3}
-                    className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 text-sm text-gray-900"
-                    placeholder="Describe the invoice..."
-                  />
-                ) : (
-                  <p className="text-sm text-gray-700 whitespace-pre-line">
-                    {invoice.description || "No description"}
-                  </p>
-                )}
-              </div>
+              {/* Invoice Description - only show if not default */}
+              {shouldRenderDescription && (
+                <div className="mb-6">
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                    Description
+                  </h4>
+                  {isEditing && isEnterprise ? (
+                    <textarea
+                      value={desc}
+                      onChange={(e) => setDesc(e.target.value)}
+                      rows={2}
+                      className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 text-sm text-gray-900"
+                      placeholder="Describe the invoice..."
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-700 whitespace-pre-line bg-gray-50 rounded-lg p-3 border border-gray-200">
+                      {currentDescription || "No description"}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Professional Items Table */}
-              <div className="mb-8">
+              <div className="mb-6" style={{ marginBottom: "24px" }}>
                 <div
-                  className="border-2 border-gray-300 rounded-md overflow-hidden"
-                  style={{ border: "2px solid #d1d5db" }}
+                  className="overflow-hidden rounded-lg border-2 border-gray-800"
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: "8px",
+                    border: "2px solid #1f2937",
+                  }}
                 >
                   <table
                     className="w-full"
-                    style={{ borderCollapse: "collapse" }}
+                    style={{ borderCollapse: "collapse", width: "100%" }}
                   >
                     <thead>
                       <tr
                         className="bg-gray-800 text-white"
-                        style={{ backgroundColor: "#1f2937", color: "#ffffff" }}
+                        style={{ backgroundColor: "#1f2937", color: "#fff" }}
                       >
                         <th
-                          className="px-6 py-4 text-left text-sm font-semibold"
-                          style={{ padding: "16px 24px", textAlign: "left" }}
+                          className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide"
+                          style={{
+                            padding: "12px 16px",
+                            textAlign: "left",
+                            fontSize: "11px",
+                            fontWeight: "bold",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.8px",
+                          }}
                         >
                           Description
                         </th>
                         <th
-                          className="px-6 py-4 text-center text-sm font-semibold w-24"
-                          style={{ padding: "16px 24px", textAlign: "center" }}
+                          className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide w-20"
+                          style={{
+                            padding: "12px 16px",
+                            textAlign: "center",
+                            fontSize: "11px",
+                            fontWeight: "bold",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.8px",
+                            width: "80px",
+                          }}
                         >
                           Qty
                         </th>
                         <th
-                          className="px-6 py-4 text-right text-sm font-semibold w-32"
-                          style={{ padding: "16px 24px", textAlign: "right" }}
+                          className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wide w-28"
+                          style={{
+                            padding: "12px 16px",
+                            textAlign: "right",
+                            fontSize: "11px",
+                            fontWeight: "bold",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.8px",
+                            width: "112px",
+                          }}
                         >
                           Unit Price
                         </th>
                         <th
-                          className="px-6 py-4 text-center text-sm font-semibold w-24"
-                          style={{ padding: "16px 24px", textAlign: "center" }}
+                          className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide w-20"
+                          style={{
+                            padding: "12px 16px",
+                            textAlign: "center",
+                            fontSize: "11px",
+                            fontWeight: "bold",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.8px",
+                            width: "80px",
+                          }}
                         >
                           Tax
                         </th>
                         <th
-                          className="px-6 py-4 text-right text-sm font-semibold w-36"
-                          style={{ padding: "16px 24px", textAlign: "right" }}
+                          className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wide w-32"
+                          style={{
+                            padding: "12px 16px",
+                            textAlign: "right",
+                            fontSize: "11px",
+                            fontWeight: "bold",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.8px",
+                            width: "128px",
+                          }}
                         >
                           Amount
                         </th>
@@ -1493,16 +1719,16 @@ export default function InvoiceSuccessView({
                     </thead>
                     <tbody
                       className="bg-white"
-                      style={{ backgroundColor: "#ffffff" }}
+                      style={{ backgroundColor: "#fff" }}
                     >
                       {isEditing && isEnterprise ? (
                         itemRows.length > 0 ? (
                           itemRows.map((item: any, index: number) => (
                             <tr
                               key={index}
-                              className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
+                              className="border-b border-gray-100 last:border-b-0"
                             >
-                              <td className="px-6 py-3 text-sm text-gray-900">
+                              <td className="px-4 py-3 text-sm">
                                 <div className="flex items-center gap-2">
                                   <input
                                     value={item.description || ""}
@@ -1512,17 +1738,18 @@ export default function InvoiceSuccessView({
                                       });
                                     }}
                                     placeholder="Item description"
-                                    className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white"
+                                    className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm"
                                   />
                                   <Button
+                                    size="sm"
                                     variant="secondary"
                                     onClick={() => removeItem(index)}
                                   >
-                                    Remove
+                                    <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>
                               </td>
-                              <td className="px-3 py-3 text-center">
+                              <td className="px-4 py-3 text-center">
                                 <input
                                   type="number"
                                   min={0}
@@ -1538,10 +1765,10 @@ export default function InvoiceSuccessView({
                                     });
                                     recalcAmounts();
                                   }}
-                                  className="w-20 text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900 text-center"
+                                  className="w-16 text-center text-sm border border-gray-300 rounded px-2 py-1"
                                 />
                               </td>
-                              <td className="px-6 py-3 text-right">
+                              <td className="px-4 py-3 text-right">
                                 <input
                                   type="number"
                                   min={0}
@@ -1558,10 +1785,10 @@ export default function InvoiceSuccessView({
                                     });
                                     recalcAmounts();
                                   }}
-                                  className="w-28 text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900 text-right"
+                                  className="w-24 text-right text-sm border border-gray-300 rounded px-2 py-1"
                                 />
                               </td>
-                              <td className="px-3 py-3 text-center">
+                              <td className="px-4 py-3 text-center">
                                 <input
                                   type="number"
                                   min={0}
@@ -1577,10 +1804,10 @@ export default function InvoiceSuccessView({
                                     });
                                     recalcAmounts();
                                   }}
-                                  className="w-20 text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900 text-center"
+                                  className="w-16 text-center text-sm border border-gray-300 rounded px-2 py-1"
                                 />
                               </td>
-                              <td className="px-6 py-3 text-right text-base font-bold text-gray-900">
+                              <td className="px-4 py-3 text-right font-bold text-gray-900">
                                 {getCurrencySymbol(currency)}
                                 {Number(item.amount || 0).toFixed(2)}
                               </td>
@@ -1590,7 +1817,7 @@ export default function InvoiceSuccessView({
                           <tr>
                             <td
                               colSpan={5}
-                              className="px-6 py-8 text-center text-sm text-gray-500"
+                              className="px-4 py-8 text-center text-sm text-gray-500"
                             >
                               No items yet
                             </td>
@@ -1600,58 +1827,22 @@ export default function InvoiceSuccessView({
                         items.map((item: any, index: number) => (
                           <tr
                             key={index}
-                            className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
-                            style={{ borderBottom: "1px solid #e5e7eb" }}
+                            className="border-b border-gray-100 last:border-b-0"
                           >
-                            <td
-                              className="px-6 py-4 text-sm text-gray-900"
-                              style={{
-                                padding: "16px 24px",
-                                borderBottom: "1px solid #e5e7eb",
-                              }}
-                            >
+                            <td className="px-4 py-3.5 text-sm text-gray-900">
                               {item.description || "No description"}
                             </td>
-                            <td
-                              className="px-6 py-4 text-center text-sm text-gray-900"
-                              style={{
-                                padding: "16px 24px",
-                                textAlign: "center",
-                                borderBottom: "1px solid #e5e7eb",
-                              }}
-                            >
+                            <td className="px-4 py-3.5 text-center text-sm text-gray-900">
                               {item.quantity || 0}
                             </td>
-                            <td
-                              className="px-6 py-4 text-right text-sm text-gray-900"
-                              style={{
-                                padding: "16px 24px",
-                                textAlign: "right",
-                                borderBottom: "1px solid #e5e7eb",
-                              }}
-                            >
+                            <td className="px-4 py-3.5 text-right text-sm text-gray-900">
                               {getCurrencySymbol(invoice.currency || "GBP")}{" "}
                               {(item.unit_price || 0).toFixed(2)}
                             </td>
-                            <td
-                              className="px-6 py-4 text-center text-sm text-gray-900"
-                              style={{
-                                padding: "16px 24px",
-                                textAlign: "center",
-                                borderBottom: "1px solid #e5e7eb",
-                              }}
-                            >
+                            <td className="px-4 py-3.5 text-center text-sm text-gray-900">
                               {item.tax || 0}%
                             </td>
-                            <td
-                              className="px-6 py-4 text-right text-base font-bold text-gray-900"
-                              style={{
-                                padding: "16px 24px",
-                                textAlign: "right",
-                                fontWeight: "bold",
-                                borderBottom: "1px solid #e5e7eb",
-                              }}
-                            >
+                            <td className="px-4 py-3.5 text-right font-bold text-gray-900">
                               {getCurrencySymbol(invoice.currency || "GBP")}{" "}
                               {(item.amount || 0).toFixed(2)}
                             </td>
@@ -1661,7 +1852,7 @@ export default function InvoiceSuccessView({
                         <tr>
                           <td
                             colSpan={5}
-                            className="px-6 py-8 text-center text-sm text-gray-500"
+                            className="px-4 py-8 text-center text-sm text-gray-500"
                           >
                             No items found
                           </td>
@@ -1671,19 +1862,50 @@ export default function InvoiceSuccessView({
                   </table>
                 </div>
                 {isEditing && isEnterprise && (
-                  <div className="mt-4">
-                    <Button variant="secondary" onClick={() => addItem()}>
+                  <div className="mt-3">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => addItem()}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
                       Add Item
                     </Button>
                   </div>
                 )}
               </div>
 
-              {/* Additional Details & Summary */}
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 pt-8">
-                <div className="lg:col-span-3 space-y-5">
+              {/* Bottom Section: Bank Details, Notes & Summary */}
+              <div
+                className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "24px",
+                  paddingTop: "24px",
+                }}
+              >
+                {/* Left Column: Bank Details & Notes */}
+                <div
+                  className="space-y-5"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "20px",
+                  }}
+                >
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
+                    <h4
+                      className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2"
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: "bold",
+                        color: "#6b7280",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.8px",
+                        marginBottom: "8px",
+                      }}
+                    >
                       Bank Details
                     </h4>
                     {isEditing ? (
@@ -1691,22 +1913,27 @@ export default function InvoiceSuccessView({
                         value={bankAccountName}
                         onChange={(e) => setBankAccountName(e.target.value)}
                         rows={3}
-                        className="w-full bg-white rounded-lg p-4 border-2 border-gray-300 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
-                        placeholder="Add bank details or payment instructions..."
+                        className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+                        placeholder="Add bank details..."
                       />
                     ) : (
                       <div
-                        className="bg-white rounded-lg p-4 border-2 border-gray-300"
+                        className="bg-gray-50 rounded-lg p-3 border border-gray-200"
                         style={{
-                          border: "3px solid #9ca3af",
+                          backgroundColor: "#f9fafb",
                           borderRadius: "8px",
-                          padding: "16px",
-                          backgroundColor: "#ffffff",
+                          padding: "12px",
+                          border: "1px solid #e5e7eb",
                         }}
                       >
                         <p
                           className="text-sm text-gray-900 whitespace-pre-line leading-relaxed"
-                          style={{ color: "#111827", lineHeight: "1.6" }}
+                          style={{
+                            fontSize: "14px",
+                            color: "#111827",
+                            whiteSpace: "pre-line",
+                            lineHeight: 1.6,
+                          }}
                         >
                           {bankAccountName || "No bank details provided"}
                         </p>
@@ -1715,7 +1942,17 @@ export default function InvoiceSuccessView({
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
+                    <h4
+                      className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2"
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: "bold",
+                        color: "#6b7280",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.8px",
+                        marginBottom: "8px",
+                      }}
+                    >
                       Notes & Terms
                     </h4>
                     {isEditing ? (
@@ -1723,22 +1960,27 @@ export default function InvoiceSuccessView({
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={3}
-                        className="w-full bg-white rounded-lg p-4 border-2 border-gray-300 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
-                        placeholder="Add notes or terms..."
+                        className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+                        placeholder="Add notes..."
                       />
                     ) : (
                       <div
-                        className="bg-white rounded-lg p-4 border-2 border-gray-300"
+                        className="bg-gray-50 rounded-lg p-3 border border-gray-200"
                         style={{
-                          border: "3px solid #9ca3af",
+                          backgroundColor: "#f9fafb",
                           borderRadius: "8px",
-                          padding: "16px",
-                          backgroundColor: "#ffffff",
+                          padding: "12px",
+                          border: "1px solid #e5e7eb",
                         }}
                       >
                         <p
                           className="text-sm text-gray-900 whitespace-pre-line leading-relaxed"
-                          style={{ color: "#111827", lineHeight: "1.6" }}
+                          style={{
+                            fontSize: "14px",
+                            color: "#111827",
+                            whiteSpace: "pre-line",
+                            lineHeight: 1.6,
+                          }}
                         >
                           {invoice.notes || "No additional notes"}
                         </p>
@@ -1747,25 +1989,40 @@ export default function InvoiceSuccessView({
                   </div>
                 </div>
 
-                <div className="lg:col-span-2">
+                {/* Right Column: Invoice Summary */}
+                <div>
                   <div
-                    className="bg-gray-50 rounded-lg border-2 border-gray-300 overflow-hidden"
-                    style={{ border: "3px solid #9ca3af", borderRadius: "8px" }}
+                    className="bg-white rounded-lg border-2 border-gray-800 overflow-hidden"
+                    style={{
+                      backgroundColor: "#fff",
+                      borderRadius: "8px",
+                      border: "2px solid #1f2937",
+                      overflow: "hidden",
+                    }}
                   >
                     <div
-                      className="bg-gray-800 px-6 py-4"
+                      className="bg-gray-800 px-5 py-3"
                       style={{
                         backgroundColor: "#1f2937",
-                        color: "#ffffff",
-                        padding: "16px 24px",
+                        padding: "12px 20px",
                       }}
                     >
-                      <h4 className="text-base font-bold text-white">
+                      <h4
+                        className="text-sm font-bold text-white uppercase tracking-wide"
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                          color: "#fff",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.5px",
+                          margin: 0,
+                        }}
+                      >
                         Invoice Summary
                       </h4>
                     </div>
 
-                    <div className="p-6 space-y-5">
+                    <div className="p-5 space-y-3" style={{ padding: "20px" }}>
                       {(() => {
                         const symbol =
                           isEditing && isEnterprise
@@ -1789,18 +2046,61 @@ export default function InvoiceSuccessView({
                         const total = subtotal + ship - (subtotal * disc) / 100;
                         return (
                           <>
-                            <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                              <span className="text-sm font-medium text-gray-700">
+                            <div
+                              className="flex justify-between items-center py-2 border-b border-gray-100"
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                paddingTop: "8px",
+                                paddingBottom: "8px",
+                                borderBottom: "1px solid #f3f4f6",
+                                marginBottom: "8px",
+                              }}
+                            >
+                              <span
+                                className="text-sm font-semibold text-gray-600"
+                                style={{
+                                  fontSize: "14px",
+                                  fontWeight: 600,
+                                  color: "#4b5563",
+                                }}
+                              >
                                 Subtotal
                               </span>
-                              <span className="text-base font-semibold text-gray-900">
+                              <span
+                                className="text-sm font-bold text-gray-900"
+                                style={{
+                                  fontSize: "14px",
+                                  fontWeight: "bold",
+                                  color: "#111827",
+                                }}
+                              >
                                 {symbol}
                                 {subtotal.toFixed(2)}
                               </span>
                             </div>
 
-                            <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                              <span className="text-sm font-medium text-gray-700">
+                            <div
+                              className="flex justify-between items-center py-2 border-b border-gray-100"
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                paddingTop: "8px",
+                                paddingBottom: "8px",
+                                borderBottom: "1px solid #f3f4f6",
+                                marginBottom: "8px",
+                              }}
+                            >
+                              <span
+                                className="text-sm font-semibold text-gray-600"
+                                style={{
+                                  fontSize: "14px",
+                                  fontWeight: 600,
+                                  color: "#4b5563",
+                                }}
+                              >
                                 Shipping
                               </span>
                               {isEditing && isEnterprise ? (
@@ -1813,18 +2113,43 @@ export default function InvoiceSuccessView({
                                       parseFloat(e.target.value || "0")
                                     )
                                   }
-                                  className="w-28 text-right text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900"
+                                  className="w-24 text-right text-sm border border-gray-300 rounded px-2 py-1"
                                 />
                               ) : (
-                                <span className="text-base font-semibold text-gray-900">
+                                <span
+                                  className="text-sm font-bold text-gray-900"
+                                  style={{
+                                    fontSize: "14px",
+                                    fontWeight: "bold",
+                                    color: "#111827",
+                                  }}
+                                >
                                   {symbol}
                                   {ship.toFixed(2)}
                                 </span>
                               )}
                             </div>
 
-                            <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                              <span className="text-sm font-medium text-gray-700">
+                            <div
+                              className="flex justify-between items-center py-2 border-b border-gray-100"
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                paddingTop: "8px",
+                                paddingBottom: "8px",
+                                borderBottom: "1px solid #f3f4f6",
+                                marginBottom: "8px",
+                              }}
+                            >
+                              <span
+                                className="text-sm font-semibold text-gray-600"
+                                style={{
+                                  fontSize: "14px",
+                                  fontWeight: 600,
+                                  color: "#4b5563",
+                                }}
+                              >
                                 Discount
                               </span>
                               {isEditing && isEnterprise ? (
@@ -1840,38 +2165,65 @@ export default function InvoiceSuccessView({
                                         parseFloat(e.target.value || "0")
                                       )
                                     }
-                                    className="w-20 text-right text-sm border border-gray-300 rounded-md px-2 py-1 bg-white text-gray-900"
+                                    className="w-16 text-right text-sm border border-gray-300 rounded px-2 py-1"
                                   />
                                   <span className="text-sm text-gray-600">
                                     %
                                   </span>
                                 </div>
                               ) : (
-                                <span className="text-base font-semibold text-gray-900">
+                                <span
+                                  className="text-sm font-bold text-gray-900"
+                                  style={{
+                                    fontSize: "14px",
+                                    fontWeight: "bold",
+                                    color: "#111827",
+                                  }}
+                                >
                                   {disc}%
                                 </span>
                               )}
                             </div>
 
                             <div
-                              className="bg-gray-800 rounded-lg p-6 mt-4"
+                              className="bg-gray-800 rounded-lg p-4 mt-4"
                               style={{
                                 backgroundColor: "#1f2937",
-                                color: "#ffffff",
                                 borderRadius: "8px",
-                                padding: "24px",
+                                padding: "16px",
+                                marginTop: "12px",
                               }}
                             >
-                              <div className="text-center space-y-3">
-                                <span className="block text-sm font-bold text-white tracking-wider">
-                                  TOTAL AMOUNT
-                                </span>
-                                <span className="block text-4xl font-bold text-white">
+                              <div
+                                className="text-center"
+                                style={{ textAlign: "center" }}
+                              >
+                                <div
+                                  className="text-xs font-bold text-white uppercase tracking-wider mb-2"
+                                  style={{
+                                    fontSize: "11px",
+                                    fontWeight: "bold",
+                                    color: "#fff",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.8px",
+                                    marginBottom: "8px",
+                                  }}
+                                >
+                                  Total Amount
+                                </div>
+                                <div
+                                  className="text-3xl font-bold text-white"
+                                  style={{
+                                    fontSize: "28px",
+                                    fontWeight: "bold",
+                                    color: "#fff",
+                                  }}
+                                >
                                   {symbol}
                                   {(Number.isFinite(total) ? total : 0).toFixed(
                                     2
                                   )}
-                                </span>
+                                </div>
                               </div>
                             </div>
                           </>
@@ -1903,9 +2255,13 @@ export default function InvoiceSuccessView({
               position: absolute;
               left: 0;
               top: 0;
-              width: 190mm; /* a bit less than A4 to account for margins */
+              width: calc(100% - 24mm);
+              margin: 0 auto;
+              padding: 12mm;
               background: white !important;
               color: black !important;
+              border: none !important;
+              box-shadow: none !important;
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
