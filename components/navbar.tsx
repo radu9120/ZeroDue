@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MenuIcon, XIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   SignInButton,
   SignUpButton,
@@ -19,8 +19,13 @@ import { ThemeToggle } from "@/components/theme-toggle";
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const businessId = searchParams?.get("business_id");
+
+  if (pathname && pathname.startsWith("/invoice")) {
+    return null;
+  }
 
   const closeMenu = () => setIsMenuOpen(false);
 

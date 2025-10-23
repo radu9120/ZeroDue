@@ -132,7 +132,8 @@ export const getInvoicesList = async ({
     discount,
     shipping,
     description,
-    currency
+    currency,
+    public_token
   `
     )
     .eq("business_id", business_id);
@@ -192,7 +193,8 @@ export const getInvoices = async (
       discount,
       shipping,
       description,
-      currency
+      currency,
+      public_token
     `,
       { count: "exact" }
     )

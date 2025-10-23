@@ -26,6 +26,7 @@ interface InvoiceSuccessViewProps {
   company: BusinessType;
   editMode?: boolean;
   userPlan?: string;
+  publicView?: boolean;
 }
 
 export default function InvoiceSuccessView({
@@ -33,9 +34,11 @@ export default function InvoiceSuccessView({
   company,
   editMode = false,
   userPlan = "free",
+  publicView = false,
 }: InvoiceSuccessViewProps) {
   const router = useRouter();
   const isEnterprise = userPlan === "enterprise";
+  const isPublicView = publicView;
   const [isEditing, setIsEditing] = React.useState(editMode);
   const [status, setStatus] = React.useState<string>(invoice.status || "draft");
   const [saving, setSaving] = React.useState(false);
@@ -216,7 +219,7 @@ export default function InvoiceSuccessView({
       setSaving(false);
     }
   };
-  const [showSuccess, setShowSuccess] = React.useState(true);
+  const [showSuccess, setShowSuccess] = React.useState(!isPublicView);
   // Parse items safely
   let items: any[] = [];
   try {
@@ -250,6 +253,22 @@ export default function InvoiceSuccessView({
   const [sending, setSending] = React.useState(false);
   // Print is intentionally removed — prefer client-side PDF download
 
+  const copyPublicLink = () => {
+    if (!invoice.public_token) {
+      toast.error("Public link unavailable. Try sending the invoice first.");
+      return;
+    }
+    const publicUrl = `${window.location.origin}/invoice/${invoice.public_token}`;
+    navigator.clipboard
+      .writeText(publicUrl)
+      .then(() => {
+        toast.success("Public invoice link copied to clipboard!");
+      })
+      .catch(() => {
+        toast.error("Failed to copy link");
+      });
+  };
+
   const formatDateTime = (value?: string | null) => {
     if (!value) return null;
     const d = new Date(value);
@@ -268,8 +287,8 @@ export default function InvoiceSuccessView({
       setDownloading(true);
 
       // Capture the CardContent which has the full invoice with padding
-      const container = document.querySelector(
-        "[data-invoice-preview]"
+      const container = document.getElementById(
+        "invoice-capture"
       ) as HTMLElement | null;
 
       if (!container) {
@@ -441,6 +460,10 @@ export default function InvoiceSuccessView({
 
   // Show success banner only once per invoice id
   React.useEffect(() => {
+    if (isPublicView) {
+      setShowSuccess(false);
+      return;
+    }
     try {
       const key = `invoice_${invoice?.id}_shown`;
       const alreadyShown = localStorage.getItem(key);
@@ -1041,13 +1064,21 @@ export default function InvoiceSuccessView({
   );
 
   return (
-    <main className="relative w-full min-h-[100vh] pt-24 md:pt-28">
-      <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-white to-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 z-0" />
-      <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-green-100/40 dark:bg-green-900/20 mix-blend-multiply blur-3xl"></div>
+    <main
+      className={`relative w-full min-h-[100vh] ${
+        isPublicView ? "py-12 bg-gray-50 dark:bg-slate-900" : "pt-24 md:pt-28"
+      }`}
+    >
+      {!isPublicView && (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-white to-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 z-0" />
+          <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-green-100/40 dark:bg-green-900/20 mix-blend-multiply blur-3xl"></div>
+        </>
+      )}
 
       <div className="relative z-10 max-w-6xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
         {/* Success Header - show only first time for this invoice */}
-        {showSuccess && (
+        {!isPublicView && showSuccess && (
           <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-green-200 dark:border-green-800 shadow-xl">
             <CardContent className="p-6 md:p-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6">
@@ -1070,168 +1101,190 @@ export default function InvoiceSuccessView({
 
         {/* Invoice Preview */}
         <Card className="shadow-2xl border-0">
-          <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-slate-900 dark:to-slate-800 border-b border-gray-200 dark:border-slate-700">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          {!isPublicView && (
+            <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-slate-900 dark:to-slate-800 border-b border-gray-200 dark:border-slate-700">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-100">
+                      Invoice Preview
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-slate-400">
+                      Review your invoice details
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-100">
-                    Invoice Preview
-                  </h2>
-                  <p className="text-sm text-gray-500 dark:text-slate-400">
-                    Review your invoice details
-                  </p>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+                  {isEditing ? (
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        className="border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 bg-white dark:bg-slate-700 text-sm text-gray-900 dark:text-slate-100"
+                      >
+                        <option value="draft">Draft</option>
+                        <option value="sent">Sent</option>
+                        <option value="paid">Paid</option>
+                        <option value="overdue">Overdue</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                      <Button
+                        onClick={saveChanges}
+                        disabled={saving}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        {saving ? "Saving…" : "Save Changes"}
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={cancelEdit}
+                        className="dark:bg-slate-700 dark:hover:bg-slate-600"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="secondary"
+                        onClick={enterEditMode}
+                        className="dark:bg-slate-700 dark:hover:bg-slate-600"
+                      >
+                        Edit Invoice
+                      </Button>
+                      {invoice.public_token && (
+                        <Button
+                          onClick={copyPublicLink}
+                          variant="secondary"
+                          className="bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800"
+                        >
+                          Copy Public Link
+                        </Button>
+                      )}
+                      <Button
+                        onClick={sendToClient}
+                        className="bg-green-600 hover:bg-green-700 shadow-lg"
+                        disabled={sending}
+                      >
+                        <Mail className="h-4 w-4 mr-2" />
+                        {sending ? "Sending…" : "Send to Client"}
+                      </Button>
+                      <Button
+                        onClick={downloadPDF}
+                        className="bg-blue-600 hover:bg-blue-700 shadow-lg"
+                        disabled={downloading}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        {downloading ? "Generating…" : "Download PDF"}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-                {isEditing ? (
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      className="border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 bg-white dark:bg-slate-700 text-sm text-gray-900 dark:text-slate-100"
-                    >
-                      <option value="draft">Draft</option>
-                      <option value="sent">Sent</option>
-                      <option value="paid">Paid</option>
-                      <option value="overdue">Overdue</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                    <Button
-                      onClick={saveChanges}
-                      disabled={saving}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      {saving ? "Saving…" : "Save Changes"}
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={cancelEdit}
-                      className="dark:bg-slate-700 dark:hover:bg-slate-600"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="secondary"
-                      onClick={enterEditMode}
-                      className="dark:bg-slate-700 dark:hover:bg-slate-600"
-                    >
-                      Edit Invoice
-                    </Button>
-                    <Button
-                      onClick={sendToClient}
-                      className="bg-green-600 hover:bg-green-700 shadow-lg"
-                      disabled={sending}
-                    >
-                      <Mail className="h-4 w-4 mr-2" />
-                      {sending ? "Sending…" : "Send to Client"}
-                    </Button>
-                    <Button
-                      onClick={downloadPDF}
-                      className="bg-blue-600 hover:bg-blue-700 shadow-lg"
-                      disabled={downloading}
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      {downloading ? "Generating…" : "Download PDF"}
-                    </Button>
-                  </div>
-                )}
+            </CardHeader>
+          )}
+
+          {!isPublicView && (
+            <div className="px-6 pt-4 pb-2 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  {invoice.email_sent_at && (
+                    <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                      Sent
+                    </Badge>
+                  )}
+                  {invoice.email_delivered && (
+                    <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                      Delivered
+                    </Badge>
+                  )}
+                  {invoice.email_open_count ? (
+                    <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                      Opened {invoice.email_open_count}
+                    </Badge>
+                  ) : invoice.email_opened ? (
+                    <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                      Opened 1
+                    </Badge>
+                  ) : null}
+                  {invoice.email_click_count ? (
+                    <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                      Clicked {invoice.email_click_count}
+                    </Badge>
+                  ) : invoice.email_clicked ? (
+                    <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                      Clicked 1
+                    </Badge>
+                  ) : null}
+                  {invoice.email_bounced && (
+                    <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                      Bounced
+                    </Badge>
+                  )}
+                  {invoice.email_complained && (
+                    <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                      Marked as spam
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="text-xs text-gray-500 dark:text-slate-400 flex flex-wrap gap-x-4 gap-y-1">
+                  {invoice.email_sent_at && (
+                    <span>Sent: {formatDateTime(invoice.email_sent_at)}</span>
+                  )}
+                  {invoice.email_delivered_at && (
+                    <span>
+                      Delivered: {formatDateTime(invoice.email_delivered_at)}
+                    </span>
+                  )}
+                  {invoice.email_opened_at && (
+                    <span>
+                      Last opened: {formatDateTime(invoice.email_opened_at)}
+                    </span>
+                  )}
+                  {invoice.email_clicked_at && (
+                    <span>
+                      Last clicked: {formatDateTime(invoice.email_clicked_at)}
+                    </span>
+                  )}
+                  {invoice.email_bounced_at && (
+                    <span>
+                      Bounced: {formatDateTime(invoice.email_bounced_at)}
+                    </span>
+                  )}
+                  {invoice.email_complained_at && (
+                    <span>
+                      Spam: {formatDateTime(invoice.email_complained_at)}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </CardHeader>
-
-          {/* Email activity summary */}
-          <div className="px-6 pt-4 pb-2 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-2">
-                {invoice.email_sent_at && (
-                  <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                    Sent
-                  </Badge>
-                )}
-                {invoice.email_delivered && (
-                  <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
-                    Delivered
-                  </Badge>
-                )}
-                {invoice.email_open_count ? (
-                  <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                    Opened {invoice.email_open_count}
-                  </Badge>
-                ) : invoice.email_opened ? (
-                  <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                    Opened 1
-                  </Badge>
-                ) : null}
-                {invoice.email_click_count ? (
-                  <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
-                    Clicked {invoice.email_click_count}
-                  </Badge>
-                ) : invoice.email_clicked ? (
-                  <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
-                    Clicked 1
-                  </Badge>
-                ) : null}
-                {invoice.email_bounced && (
-                  <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
-                    Bounced
-                  </Badge>
-                )}
-                {invoice.email_complained && (
-                  <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
-                    Marked as spam
-                  </Badge>
-                )}
-              </div>
-
-              {/* Timestamps */}
-              <div className="text-xs text-gray-500 dark:text-slate-400 flex flex-wrap gap-x-4 gap-y-1">
-                {invoice.email_sent_at && (
-                  <span>Sent: {formatDateTime(invoice.email_sent_at)}</span>
-                )}
-                {invoice.email_delivered_at && (
-                  <span>
-                    Delivered: {formatDateTime(invoice.email_delivered_at)}
-                  </span>
-                )}
-                {invoice.email_opened_at && (
-                  <span>
-                    Last opened: {formatDateTime(invoice.email_opened_at)}
-                  </span>
-                )}
-                {invoice.email_clicked_at && (
-                  <span>
-                    Last clicked: {formatDateTime(invoice.email_clicked_at)}
-                  </span>
-                )}
-                {invoice.email_bounced_at && (
-                  <span>
-                    Bounced: {formatDateTime(invoice.email_bounced_at)}
-                  </span>
-                )}
-                {invoice.email_complained_at && (
-                  <span>
-                    Spam: {formatDateTime(invoice.email_complained_at)}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+          )}
 
           <CardContent
             className="p-12 bg-white"
-            data-invoice-preview
             style={{
               height: "auto",
               backgroundColor: "#ffffff",
               color: "#000000",
             }}
           >
+            {isPublicView && (
+              <div className="flex justify-end mb-6">
+                <Button
+                  onClick={downloadPDF}
+                  className="bg-blue-600 hover:bg-blue-700 shadow-lg"
+                  disabled={downloading}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  {downloading ? "Generating…" : "Download PDF"}
+                </Button>
+              </div>
+            )}
             <div
               id="invoice-capture"
               className="max-w-5xl mx-auto"
@@ -1859,21 +1912,22 @@ export default function InvoiceSuccessView({
           }
         `}</style>
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 justify-center pt-6">
-          <Link
-            href={`/dashboard/business?business_id=${company.id}&name=${encodeURIComponent(company.name)}`}
-          >
-            <CustomButton
-              label="Back to Dashboard"
-              icon={ArrowLeft}
-              variant="secondary"
-            />
-          </Link>
-          <Link href={`/dashboard/invoices?business_id=${company.id}`}>
-            <CustomButton label="View All Invoices" variant="primary" />
-          </Link>
-        </div>
+        {!isPublicView && (
+          <div className="flex gap-4 justify-center pt-6">
+            <Link
+              href={`/dashboard/business?business_id=${company.id}&name=${encodeURIComponent(company.name)}`}
+            >
+              <CustomButton
+                label="Back to Dashboard"
+                icon={ArrowLeft}
+                variant="secondary"
+              />
+            </Link>
+            <Link href={`/dashboard/invoices?business_id=${company.id}`}>
+              <CustomButton label="View All Invoices" variant="primary" />
+            </Link>
+          </div>
+        )}
       </div>
     </main>
   );

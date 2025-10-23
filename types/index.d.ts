@@ -124,6 +124,7 @@ export interface InvoiceListItem {
   total: string;
   notes?: string;
   bank_details?: string;
+  public_token?: string;
   // Email tracking (optional fields; may be null if not sent yet)
   email_id?: string | null;
   email_sent_at?: string | null;

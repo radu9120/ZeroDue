@@ -30,7 +30,7 @@ export async function GET(
 
     // Fetch business details
     const { data: business, error: bizErr } = await supabaseAdmin
-      .from("Business")
+      .from("Businesses")
       .select("*")
       .eq("id", invoice.business_id)
       .single();

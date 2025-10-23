@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     // Create public invoice URL (no auth required) - opens printable view
     const invoiceUrl = `${
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    }/api/invoices/download/${publicToken}`;
+    }/invoice/${publicToken}`;
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({

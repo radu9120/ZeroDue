@@ -13,8 +13,14 @@ import {
   Clock,
 } from "lucide-react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname && pathname.startsWith("/invoice")) {
+    return null;
+  }
+
   return (
     <footer
       id="contact"

@@ -22,7 +22,7 @@ export default async function PublicInvoicePage({
 
   // Fetch business details
   const { data: business } = await supabaseAdmin
-    .from("Business")
+    .from("Businesses")
     .select("*")
     .eq("id", invoice.business_id)
     .single();
@@ -44,6 +44,7 @@ export default async function PublicInvoicePage({
           company={business}
           editMode={false}
           userPlan="free"
+          publicView
         />
       </div>
     </div>

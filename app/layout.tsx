@@ -18,6 +18,7 @@ import CookieBanner from "@/components/cookie-banner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import HideOnRoutes from "@/components/layout/HideOnRoutes";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -70,14 +71,18 @@ export default function RootLayout({
           <ThemeProvider defaultTheme="light" storageKey="invoiceflow-theme">
             <Analytics />
             <Suspense fallback={null}>
-              <Navbar />
+              <HideOnRoutes routes={["/invoice"]}>
+                <Navbar />
+              </HideOnRoutes>
             </Suspense>
             <Suspense fallback={null}>
               <div id="root">{children}</div>
             </Suspense>
             <div id="modal-root"></div>
             <Toaster richColors position="top-right" />
-            <Footer />
+            <HideOnRoutes routes={["/invoice"]}>
+              <Footer />
+            </HideOnRoutes>
             <CookieBanner />
             <SpeedInsights />
           </ThemeProvider>
