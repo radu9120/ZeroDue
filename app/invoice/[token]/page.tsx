@@ -5,15 +5,16 @@ import InvoiceSuccessView from "@/components/Invoices/InvoiceSuccessView";
 export default async function PublicInvoicePage({
   params,
 }: {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }) {
+  const { token } = await params;
   const supabaseAdmin = createSupabaseAdminClient();
 
   // Fetch invoice by public token
   const { data: invoice, error } = await supabaseAdmin
     .from("Invoices")
     .select("*")
-    .eq("public_token", params.token)
+    .eq("public_token", token)
     .single();
 
   if (error || !invoice) {
