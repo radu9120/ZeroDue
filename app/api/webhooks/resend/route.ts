@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseClient } from "@/lib/supabase";
+import { createSupabaseAdminClient } from "@/lib/supabase";
 import { createActivity } from "@/lib/actions/userActivity.actions";
 import { Resend } from "resend";
 
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     console.log("Resend webhook received:", type, data);
 
     // We'll store the email_id in the database when sending and match on it here
-    const supabase = createSupabaseClient();
+    const supabase = createSupabaseAdminClient();
 
     // Prefer matching by email_id
     let invSelect = await supabase

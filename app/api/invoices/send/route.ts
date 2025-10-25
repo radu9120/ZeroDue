@@ -228,8 +228,8 @@ export async function POST(req: NextRequest) {
         .from("Invoices")
         .update({
           status: "sent",
-          // email_id: data?.id, // Removed - column doesn't exist in DB
-          // email_sent_at: new Date().toISOString(), // Removed - column doesn't exist in DB
+          email_id: data?.id || null,
+          email_sent_at: new Date().toISOString(),
         })
         .eq("id", invoice.id)
         .select("id, status")

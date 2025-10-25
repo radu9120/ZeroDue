@@ -133,7 +133,21 @@ export const getInvoicesList = async ({
     shipping,
     description,
     currency,
-    public_token
+    public_token,
+    email_id,
+    email_sent_at,
+    email_delivered,
+    email_delivered_at,
+    email_opened,
+    email_opened_at,
+    email_open_count,
+    email_clicked,
+    email_clicked_at,
+    email_click_count,
+    email_bounced,
+    email_bounced_at,
+    email_complained,
+    email_complained_at
   `
     )
     .eq("business_id", business_id);
@@ -194,7 +208,21 @@ export const getInvoices = async (
       shipping,
       description,
       currency,
-      public_token
+      public_token,
+      email_id,
+      email_sent_at,
+      email_delivered,
+      email_delivered_at,
+      email_opened,
+      email_opened_at,
+      email_open_count,
+      email_clicked,
+      email_clicked_at,
+      email_click_count,
+      email_bounced,
+      email_bounced_at,
+      email_complained,
+      email_complained_at
     `,
       { count: "exact" }
     )
