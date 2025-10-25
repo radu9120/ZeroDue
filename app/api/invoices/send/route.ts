@@ -225,18 +225,18 @@ export async function POST(req: NextRequest) {
     try {
       const updatePayload: Record<string, unknown> = {
         status: "sent",
-        email_sent_at: null,
-        email_delivered: null,
+        email_sent_at: new Date().toISOString(),
+        email_delivered: false,
         email_delivered_at: null,
-        email_opened: null,
+        email_opened: false,
         email_opened_at: null,
-        email_open_count: null,
-        email_clicked: null,
+        email_open_count: 0,
+        email_clicked: false,
         email_clicked_at: null,
-        email_click_count: null,
-        email_bounced: null,
+        email_click_count: 0,
+        email_bounced: false,
         email_bounced_at: null,
-        email_complained: null,
+        email_complained: false,
         email_complained_at: null,
       };
 
