@@ -17,7 +17,10 @@ interface ResendWebhookPayload {
   type: ResendEvent;
   created_at: string;
   data: {
-    email_id: string;
+    // Resend may send either `email_id` or `id` as the message identifier depending on event type
+    email_id?: string;
+    id?: string;
+    message_id?: string;
     from: string;
     to: string[];
     subject: string;
@@ -56,28 +59,57 @@ export async function POST(req: NextRequest) {
     }
     const { type, data } = payload;
 
+    const candidateIds = Array.from(
+      new Set(
+        [
+          typeof data.email_id === "string" ? data.email_id.trim() : null,
+          typeof (data as any).id === "string" ? (data as any).id.trim() : null,
+          typeof data.message_id === "string" ? data.message_id.trim() : null,
+        ].filter((val): val is string => !!val && val.length > 0)
+      )
+    );
+
+    let messageId: string | null = candidateIds[0] || null;
+
     console.log("Resend webhook received:", type, data);
 
     // We'll store the email_id in the database when sending and match on it here
     const supabase = createSupabaseAdminClient();
 
-    // Prefer matching by email_id
-    let invSelect = await supabase
-      .from("Invoices")
-      .select(
-        "id, invoice_number, author, business_id, email_open_count, email_click_count"
-      )
-      .eq("email_id", data.email_id)
-      .single();
+    type InvoiceRow = {
+      id: number;
+      invoice_number: string;
+      author: string;
+      business_id: number;
+      email_open_count?: number | null;
+      email_click_count?: number | null;
+      email_id?: string | null;
+    };
 
-    let invoice = invSelect.data as
-      | (typeof invSelect.data & {
-          email_open_count?: number | null;
-          email_click_count?: number | null;
-        })
-      | null;
+    let invoice: InvoiceRow | null = null;
 
-    if (invSelect.error || !invoice) {
+    if (candidateIds.length > 0) {
+      const invById = await supabase
+        .from("Invoices")
+        .select(
+          "id, invoice_number, author, business_id, email_open_count, email_click_count, email_id"
+        )
+        .in("email_id", candidateIds)
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (invById.error) {
+        console.warn("Invoice lookup by email_id failed", {
+          ids: candidateIds,
+          error: invById.error,
+        });
+      } else if (invById.data) {
+        invoice = invById.data as InvoiceRow;
+      }
+    }
+
+    if (!invoice) {
       // Fallback: try extracting invoice number from subject
       const invoiceNumberMatch = data.subject?.match(/Invoice\s+(\S+)/);
       const invoiceNumber = invoiceNumberMatch ? invoiceNumberMatch[1] : null;
@@ -85,7 +117,7 @@ export async function POST(req: NextRequest) {
       if (!invoiceNumber) {
         console.warn(
           "Invoice not found for email_id and no invoice number in subject",
-          { email_id: data.email_id }
+          { candidateIds }
         );
         return NextResponse.json({ received: true });
       }
@@ -93,7 +125,7 @@ export async function POST(req: NextRequest) {
       const fallback = await supabase
         .from("Invoices")
         .select(
-          "id, invoice_number, author, business_id, email_open_count, email_click_count"
+          "id, invoice_number, author, business_id, email_open_count, email_click_count, email_id"
         )
         .eq("invoice_number", invoiceNumber)
         .single();
@@ -103,10 +135,11 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ received: true });
       }
 
-      invoice = fallback.data as typeof fallback.data & {
-        email_open_count?: number | null;
-        email_click_count?: number | null;
-      };
+      invoice = fallback.data as InvoiceRow;
+    }
+
+    if (!messageId && invoice.email_id) {
+      messageId = invoice.email_id;
     }
 
     // Track different email events
@@ -118,8 +151,20 @@ export async function POST(req: NextRequest) {
         activityAction = "Sent invoice";
         statusUpdate = {
           status: "sent",
-          email_id: data.email_id,
+          email_id: messageId,
           email_sent_at: data.created_at,
+          email_delivered: false,
+          email_delivered_at: null,
+          email_opened: false,
+          email_opened_at: null,
+          email_open_count: 0,
+          email_clicked: false,
+          email_clicked_at: null,
+          email_click_count: 0,
+          email_bounced: false,
+          email_bounced_at: null,
+          email_complained: false,
+          email_complained_at: null,
         };
         break;
 
@@ -172,9 +217,14 @@ export async function POST(req: NextRequest) {
 
     // Update invoice with email tracking data
     try {
+      const finalUpdate = {
+        ...statusUpdate,
+        ...(messageId ? { email_id: messageId } : {}),
+      };
+
       const { error: updateError } = await supabase
         .from("Invoices")
-        .update(statusUpdate)
+        .update(finalUpdate)
         .eq("id", invoice.id);
 
       if (updateError) {
@@ -196,7 +246,7 @@ export async function POST(req: NextRequest) {
           target_id: String(invoice.id),
           metadata: {
             to: data.to[0],
-            email_id: data.email_id,
+            email_id: messageId || invoice.email_id || undefined,
             ...(data.link && { link: data.link }),
           },
         });

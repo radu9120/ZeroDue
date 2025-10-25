@@ -502,12 +502,15 @@ export default function InvoiceSuccessView({
       }
 
       toast.success(data.message || "Invoice sent successfully!");
-      try {
-        // Refresh the page so status and email badges update immediately
+
+      // Wait 2 seconds for webhook to process, then force refresh
+      setTimeout(() => {
         if (router) {
           router.refresh();
         }
-      } catch {}
+        // Also reload the page to ensure fresh data
+        window.location.reload();
+      }, 2000);
     } catch (error: any) {
       console.error("Error sending invoice:", error);
       toast.error(error.message || "Failed to send invoice to client");

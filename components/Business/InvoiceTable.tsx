@@ -536,7 +536,12 @@ export default function InvoiceTable({
       }
 
       toast.success(data.message || "Invoice sent successfully!");
-      router.refresh(); // Refresh to update invoice status
+
+      // Wait 2 seconds for webhook to process, then reload
+      setTimeout(() => {
+        router.refresh();
+        window.location.reload();
+      }, 2000);
     } catch (error: any) {
       console.error("Error sending invoice:", error);
       toast.error(error.message || "Failed to send invoice to client");

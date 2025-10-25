@@ -219,48 +219,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Update invoice status to "sent" after successful email delivery
+    // Update invoice status to "sent" and store email_id
+    // Let the webhook handle all other email tracking fields
     let updatedStatus: string | null = null;
     let statusUpdated = false;
     try {
-      const updatePayload: Record<string, unknown> = {
-        status: "sent",
-        email_sent_at: new Date().toISOString(),
-        email_delivered: false,
-        email_delivered_at: null,
-        email_opened: false,
-        email_opened_at: null,
-        email_open_count: 0,
-        email_clicked: false,
-        email_clicked_at: null,
-        email_click_count: 0,
-        email_bounced: false,
-        email_bounced_at: null,
-        email_complained: false,
-        email_complained_at: null,
-      };
-
-      if (data?.id) {
-        updatePayload.email_id = data.id;
-      } else {
-        updatePayload.email_id = null;
-      }
-
       const { data: updated, error: updateError } = await supabaseAdmin
         .from("Invoices")
-        .update(updatePayload)
+        .update({
+          email_id: data?.id || null,
+        })
         .eq("id", invoice.id)
         .select("id, status")
         .single();
 
       if (updateError) {
-        console.warn("Failed to update invoice status:", updateError);
+        console.warn("Failed to update invoice:", updateError);
       } else if (updated) {
         updatedStatus = updated.status as string;
         statusUpdated = true;
       }
     } catch (updateError) {
-      console.warn("Error updating invoice status:", updateError);
+      console.warn("Error updating invoice:", updateError);
     }
 
     return NextResponse.json({
