@@ -616,9 +616,9 @@ export default function InvoiceTable({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto lg:w-full w-[1200px]">
+          <div className="overflow-x-auto lg:w-full w-[1400px]">
             <div className="w-full">
-              <div className="border-b w-full py-3 px-4 border-blue-100 grid grid-cols-6 gap-2">
+              <div className="border-b w-full py-3 px-4 border-blue-100 grid grid-cols-7 gap-2">
                 <div className="font-medium text-secondary-text dark:text-slate-400">
                   Invoice
                 </div>
@@ -634,6 +634,9 @@ export default function InvoiceTable({
                 <div className="font-medium text-secondary-text dark:text-slate-400">
                   Due Date
                 </div>
+                <div className="font-medium text-secondary-text dark:text-slate-400">
+                  Email Status
+                </div>
                 <div className="text-right font-medium text-secondary-text dark:text-slate-400">
                   Actions
                 </div>
@@ -644,7 +647,7 @@ export default function InvoiceTable({
                   {invoices.map((invoice) => (
                     <div
                       key={invoice.id}
-                      className="border-b border-blue-50 hover:bg-blue-50/50 w-full py-3 px-4 grid grid-cols-6 gap-2"
+                      className="border-b border-blue-50 hover:bg-blue-50/50 w-full py-3 px-4 grid grid-cols-7 gap-2"
                     >
                       <div>
                         <p className="font-medium text-header-text dark:text-slate-100">
@@ -653,47 +656,6 @@ export default function InvoiceTable({
                         <p className="text-sm text-secondary-text dark:text-slate-400">
                           {invoice.description || "No description"}
                         </p>
-                        {/* Email engagement badges */}
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {invoice.email_sent_at && (
-                            <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                              Sent
-                            </Badge>
-                          )}
-                          {invoice.email_delivered && (
-                            <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
-                              Delivered
-                            </Badge>
-                          )}
-                          {invoice.email_open_count ? (
-                            <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                              Opened {invoice.email_open_count}
-                            </Badge>
-                          ) : invoice.email_opened ? (
-                            <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                              Opened 1
-                            </Badge>
-                          ) : null}
-                          {invoice.email_click_count ? (
-                            <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
-                              Clicked {invoice.email_click_count}
-                            </Badge>
-                          ) : invoice.email_clicked ? (
-                            <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
-                              Clicked 1
-                            </Badge>
-                          ) : null}
-                          {invoice.email_bounced && (
-                            <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
-                              Bounced
-                            </Badge>
-                          )}
-                          {invoice.email_complained && (
-                            <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
-                              Marked as spam
-                            </Badge>
-                          )}
-                        </div>
                       </div>
                       <div>
                         <p className="font-semibold text-header-text dark:text-slate-100">
@@ -712,6 +674,55 @@ export default function InvoiceTable({
                         <p className="text-header-text dark:text-slate-100">
                           {formatDate(invoice.due_date)}
                         </p>
+                      </div>
+
+                      {/* Email Status Column */}
+                      <div>
+                        <div className="flex flex-wrap gap-1">
+                          {invoice.email_sent_at && (
+                            <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-xs">
+                              Sent
+                            </Badge>
+                          )}
+                          {invoice.email_delivered && (
+                            <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 text-xs">
+                              Delivered
+                            </Badge>
+                          )}
+                          {invoice.email_open_count ? (
+                            <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs">
+                              Opened {invoice.email_open_count}
+                            </Badge>
+                          ) : invoice.email_opened ? (
+                            <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs">
+                              Opened
+                            </Badge>
+                          ) : null}
+                          {invoice.email_click_count ? (
+                            <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 text-xs">
+                              Clicked {invoice.email_click_count}
+                            </Badge>
+                          ) : invoice.email_clicked ? (
+                            <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 text-xs">
+                              Clicked
+                            </Badge>
+                          ) : null}
+                          {invoice.email_bounced && (
+                            <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 text-xs">
+                              Bounced
+                            </Badge>
+                          )}
+                          {invoice.email_complained && (
+                            <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 text-xs">
+                              Spam
+                            </Badge>
+                          )}
+                          {!invoice.email_sent_at && (
+                            <span className="text-xs text-gray-400 dark:text-slate-500">
+                              Not sent
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="w-full">
