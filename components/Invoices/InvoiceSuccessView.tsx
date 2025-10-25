@@ -72,6 +72,49 @@ export default function InvoiceSuccessView({
     return currency ? currency.symbol : "£";
   };
 
+  type BankDetailsDisplay =
+    | { type: "empty" }
+    | { type: "text"; text: string }
+    | { type: "list"; entries: { label: string; value: string }[] };
+
+  const bankDetailsDisplay = React.useMemo<BankDetailsDisplay>(() => {
+    const raw = bankAccountName?.trim();
+    if (!raw) {
+      return { type: "empty" };
+    }
+
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        const toLabel = (key: string) =>
+          key
+            .replace(/[_-]+/g, " ")
+            .replace(/([a-z])([A-Z])/g, "$1 $2")
+            .replace(/\s+/g, " ")
+            .trim()
+            .replace(/(^|\s)\w/g, (match) => match.toUpperCase());
+
+        const entries = Object.entries(parsed)
+          .filter(
+            ([_, value]) =>
+              value !== null && value !== undefined && String(value).trim()
+          )
+          .map(([key, value]) => ({
+            label: toLabel(key),
+            value: String(value).trim(),
+          }));
+
+        if (entries.length > 0) {
+          return { type: "list", entries };
+        }
+      }
+    } catch (error) {
+      // Ignore JSON parse failures and fall back to raw text rendering.
+    }
+
+    return { type: "text", text: raw };
+  }, [bankAccountName]);
+
   // Enterprise: editable items and meta
   const [desc, setDesc] = React.useState<string>(invoice.description || "");
   const [issueDate, setIssueDate] = React.useState<string>(
@@ -1892,6 +1935,7 @@ export default function InvoiceSuccessView({
                     display: "flex",
                     flexDirection: "column",
                     gap: "20px",
+                    minWidth: 0,
                   }}
                 >
                   <div>
@@ -1926,17 +1970,44 @@ export default function InvoiceSuccessView({
                           border: "1px solid #e5e7eb",
                         }}
                       >
-                        <p
-                          className="text-sm text-gray-900 whitespace-pre-line leading-relaxed"
-                          style={{
-                            fontSize: "14px",
-                            color: "#111827",
-                            whiteSpace: "pre-line",
-                            lineHeight: 1.6,
-                          }}
-                        >
-                          {bankAccountName || "No bank details provided"}
-                        </p>
+                        {bankDetailsDisplay.type === "list" ? (
+                          <dl className="space-y-2">
+                            {bankDetailsDisplay.entries.map((entry) => (
+                              <div
+                                key={`${entry.label}-${entry.value}`}
+                                className="flex items-start justify-between gap-4"
+                              >
+                                <dt className="text-sm font-medium text-gray-600">
+                                  {entry.label}
+                                </dt>
+                                <dd
+                                  className="text-sm text-gray-900 text-right"
+                                  style={{
+                                    maxWidth: "65%",
+                                    wordBreak: "break-word",
+                                  }}
+                                >
+                                  {entry.value}
+                                </dd>
+                              </div>
+                            ))}
+                          </dl>
+                        ) : (
+                          <p
+                            className="text-sm text-gray-900 whitespace-pre-line leading-relaxed"
+                            style={{
+                              fontSize: "14px",
+                              color: "#111827",
+                              whiteSpace: "pre-line",
+                              lineHeight: 1.6,
+                              wordBreak: "break-word",
+                            }}
+                          >
+                            {bankDetailsDisplay.type === "text"
+                              ? bankDetailsDisplay.text
+                              : "No bank details provided"}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1980,6 +2051,7 @@ export default function InvoiceSuccessView({
                             color: "#111827",
                             whiteSpace: "pre-line",
                             lineHeight: 1.6,
+                            wordBreak: "break-word",
                           }}
                         >
                           {invoice.notes || "No additional notes"}

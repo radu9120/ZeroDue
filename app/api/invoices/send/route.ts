@@ -4,7 +4,6 @@ import { Resend } from "resend";
 import { getInvoicesByAuthor } from "@/lib/actions/invoice.actions";
 import { getBusinessById } from "@/lib/actions/business.actions";
 import { createSupabaseAdminClient } from "@/lib/supabase";
-import { createActivity } from "@/lib/actions/userActivity.actions";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -224,13 +223,32 @@ export async function POST(req: NextRequest) {
     let updatedStatus: string | null = null;
     let statusUpdated = false;
     try {
+      const updatePayload: Record<string, unknown> = {
+        status: "sent",
+        email_sent_at: null,
+        email_delivered: null,
+        email_delivered_at: null,
+        email_opened: null,
+        email_opened_at: null,
+        email_open_count: null,
+        email_clicked: null,
+        email_clicked_at: null,
+        email_click_count: null,
+        email_bounced: null,
+        email_bounced_at: null,
+        email_complained: null,
+        email_complained_at: null,
+      };
+
+      if (data?.id) {
+        updatePayload.email_id = data.id;
+      } else {
+        updatePayload.email_id = null;
+      }
+
       const { data: updated, error: updateError } = await supabaseAdmin
         .from("Invoices")
-        .update({
-          status: "sent",
-          email_id: data?.id || null,
-          email_sent_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq("id", invoice.id)
         .select("id, status")
         .single();
@@ -243,22 +261,6 @@ export async function POST(req: NextRequest) {
       }
     } catch (updateError) {
       console.warn("Error updating invoice status:", updateError);
-    }
-
-    // Log activity for sending invoice
-    try {
-      await createActivity({
-        user_id: userId,
-        business_id: Number(businessId),
-        action: "Sent invoice",
-        target_type: "invoice",
-        target_name: invoice.invoice_number,
-        // target_id: String(invoice.id), // Removed - column doesn't exist in DB
-        metadata: { to: clientEmail, email_id: data?.id },
-      });
-    } catch (activityError) {
-      console.warn("Error logging activity:", activityError);
-      // Don't fail the whole request if activity logging fails
     }
 
     return NextResponse.json({

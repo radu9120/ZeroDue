@@ -114,6 +114,15 @@ export async function POST(req: NextRequest) {
     let statusUpdate: any = {};
 
     switch (type) {
+      case "email.sent":
+        activityAction = "Sent invoice";
+        statusUpdate = {
+          status: "sent",
+          email_id: data.email_id,
+          email_sent_at: data.created_at,
+        };
+        break;
+
       case "email.delivered":
         activityAction = "Invoice email delivered";
         statusUpdate = {
