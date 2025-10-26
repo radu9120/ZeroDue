@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase";
 import { createActivity } from "@/lib/actions/userActivity.actions";
-import { Resend } from "resend";
+import { Webhook, type WebhookRequiredHeaders } from "svix";
 
 // Resend webhook events we want to track
 type ResendEvent =
@@ -31,47 +31,47 @@ interface ResendWebhookPayload {
   };
 }
 
+export const runtime = "nodejs";
+
 export async function POST(req: NextRequest) {
   try {
     // Verify the webhook signature (optional but recommended for production)
-    const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
+    const webhookSecretRaw = process.env.RESEND_WEBHOOK_SECRET;
+    const webhookSecret = webhookSecretRaw?.trim();
+
+    if (!webhookSecret) {
+      console.error("Resend webhook secret is not configured");
+      return new NextResponse("Webhook not configured", { status: 500 });
+    }
 
     // Parse the webhook payload (use raw body when verifying)
+    const payloadText = await req.text();
+    const svixId = req.headers.get("svix-id");
+    const svixTimestamp = req.headers.get("svix-timestamp");
+    const svixSignature = req.headers.get("svix-signature");
+
+    if (!svixId || !svixTimestamp || !svixSignature) {
+      console.error("Resend webhook missing signature headers", {
+        svixId,
+        svixTimestamp,
+        svixSignature,
+      });
+      return new NextResponse("Invalid webhook", { status: 400 });
+    }
+
     let payload: ResendWebhookPayload;
-    if (webhookSecret) {
-      const payloadText = await req.text();
-      const svixId = req.headers.get("svix-id");
-      const svixTimestamp = req.headers.get("svix-timestamp");
-      const svixSignature = req.headers.get("svix-signature");
-
-      if (!svixId || !svixTimestamp || !svixSignature) {
-        console.error("Resend webhook missing signature headers", {
-          svixId,
-          svixTimestamp,
-          svixSignature,
-        });
-        return new NextResponse("Invalid webhook", { status: 400 });
-      }
-
-      try {
-        const resend = new Resend();
-        payload = (await resend.webhooks.verify({
-          payload: payloadText,
-          headers: {
-            id: svixId,
-            timestamp: svixTimestamp,
-            signature: svixSignature,
-          },
-          webhookSecret: webhookSecret.trim(),
-        })) as unknown as ResendWebhookPayload;
-      } catch (err) {
-        console.error("Resend webhook verification failed", {
-          message: err instanceof Error ? err.message : String(err),
-        });
-        return new NextResponse("Invalid webhook", { status: 400 });
-      }
-    } else {
-      payload = await req.json();
+    try {
+      const verifier = new Webhook(webhookSecret);
+      payload = verifier.verify(payloadText, {
+        "svix-id": svixId,
+        "svix-timestamp": svixTimestamp,
+        "svix-signature": svixSignature,
+      } as WebhookRequiredHeaders) as ResendWebhookPayload;
+    } catch (err) {
+      console.error("Resend webhook verification failed", {
+        message: err instanceof Error ? err.message : String(err),
+      });
+      return new NextResponse("Invalid webhook", { status: 400 });
     }
     const { type, data } = payload;
 
