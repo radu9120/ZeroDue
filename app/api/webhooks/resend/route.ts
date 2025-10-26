@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
           "id, invoice_number, author, business_id, email_open_count, email_click_count, email_id"
         )
         .in("email_id", candidateIds)
-        .order("updated_at", { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
