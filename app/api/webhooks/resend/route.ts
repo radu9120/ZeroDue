@@ -123,6 +123,15 @@ export async function POST(req: NextRequest) {
         });
       } else if (invById.data) {
         invoice = invById.data as InvoiceRow;
+        console.log("Invoice matched by email_id", {
+          ids: candidateIds,
+          invoiceId: invoice.id,
+          invoiceNumber: invoice.invoice_number,
+        });
+      } else {
+        console.log("No invoice found by email_id", {
+          ids: candidateIds,
+        });
       }
     }
 
