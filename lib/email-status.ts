@@ -39,6 +39,83 @@ export type EmailStatusState = {
   email_complained_at: string | null;
 };
 
+type EmailStatusSource = {
+  email_sent_at?: string | null;
+  email_delivered?: boolean | null;
+  email_open_count?: number | null;
+  email_opened?: boolean | null;
+  email_click_count?: number | null;
+  email_clicked?: boolean | null;
+  email_bounced?: boolean | null;
+  email_complained?: boolean | null;
+};
+
+export type EmailStatusBadge = {
+  key: string;
+  label: string;
+  className: string;
+};
+
+export const buildEmailStatusBadges = (
+  source: EmailStatusSource
+): EmailStatusBadge[] => {
+  const openCount = source.email_open_count ?? 0;
+  const clickCount = source.email_click_count ?? 0;
+
+  const candidates: Array<EmailStatusBadge & { active: boolean }> = [
+    {
+      key: "spam",
+      label: "Marked as spam",
+      className:
+        "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
+      active: Boolean(source.email_complained),
+    },
+    {
+      key: "bounced",
+      label: "Bounced",
+      className: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+      active: Boolean(source.email_bounced),
+    },
+    {
+      key: "clicked",
+      label: clickCount > 1 ? `Clicked ${clickCount}` : "Clicked",
+      className:
+        "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300",
+      active: clickCount > 0 || Boolean(source.email_clicked),
+    },
+    {
+      key: "opened",
+      label: openCount > 1 ? `Opened ${openCount}` : "Opened",
+      className:
+        "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+      active: openCount > 0 || Boolean(source.email_opened),
+    },
+    {
+      key: "delivered",
+      label: "Delivered",
+      className:
+        "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+      active: Boolean(source.email_delivered),
+    },
+    {
+      key: "sent",
+      label: "Sent",
+      className:
+        "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+      active: Boolean(source.email_sent_at),
+    },
+  ];
+
+  const activeBadge = candidates.find((candidate) => candidate.active);
+
+  if (!activeBadge) {
+    return [];
+  }
+
+  const { active, ...badge } = activeBadge;
+  return [badge];
+};
+
 export const toEmailStatusState = (
   source?: EmailStatusPatch | null
 ): EmailStatusState => {

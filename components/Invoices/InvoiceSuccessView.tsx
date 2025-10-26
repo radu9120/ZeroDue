@@ -23,6 +23,7 @@ import currencies from "@/lib/currencies.json";
 import {
   EmailStatusPatch,
   EmailStatusState,
+  buildEmailStatusBadges,
   mergeEmailStatusState,
   shouldStopStatusPolling,
   toEmailStatusState,
@@ -1391,44 +1392,28 @@ export default function InvoiceSuccessView({
             <div className="px-6 pt-4 pb-2 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  {emailStatus.email_sent_at && (
-                    <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                      Sent
-                    </Badge>
-                  )}
-                  {emailStatus.email_delivered && (
-                    <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
-                      Delivered
-                    </Badge>
-                  )}
-                  {emailStatus.email_open_count ? (
-                    <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                      Opened {emailStatus.email_open_count}
-                    </Badge>
-                  ) : emailStatus.email_opened ? (
-                    <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                      Opened 1
-                    </Badge>
-                  ) : null}
-                  {emailStatus.email_click_count ? (
-                    <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
-                      Clicked {emailStatus.email_click_count}
-                    </Badge>
-                  ) : emailStatus.email_clicked ? (
-                    <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
-                      Clicked 1
-                    </Badge>
-                  ) : null}
-                  {emailStatus.email_bounced && (
-                    <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
-                      Bounced
-                    </Badge>
-                  )}
-                  {emailStatus.email_complained && (
-                    <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
-                      Marked as spam
-                    </Badge>
-                  )}
+                  {(() => {
+                    const badges = buildEmailStatusBadges(emailStatus);
+
+                    if (!badges.length) {
+                      return (
+                        <span className="text-xs text-gray-400 dark:text-slate-500">
+                          Not sent
+                        </span>
+                      );
+                    }
+
+                    return badges.map((badge, index) => (
+                      <React.Fragment key={badge.key}>
+                        <Badge className={badge.className}>{badge.label}</Badge>
+                        {index < badges.length - 1 && (
+                          <span className="text-xs text-gray-400 dark:text-slate-500">
+                            →
+                          </span>
+                        )}
+                      </React.Fragment>
+                    ));
+                  })()}
                 </div>
 
                 <div className="text-xs text-gray-500 dark:text-slate-400 flex flex-wrap gap-x-4 gap-y-1">

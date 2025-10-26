@@ -20,12 +20,13 @@ import {
 } from "lucide-react";
 import getStatusBadge from "../ui/getStatusBadge";
 import { Button } from "../ui/button";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { Fragment, useState, useEffect, useCallback, useRef } from "react";
 import CustomModal from "../ModalsForms/CustomModal";
 import { toast } from "sonner";
 import { Badge } from "../ui/badge";
 import {
   EmailStatusPatch,
+  buildEmailStatusBadges,
   mergeEmailStatusState,
   shouldStopStatusPolling,
   toEmailStatusState,
@@ -850,50 +851,31 @@ export default function InvoiceTable({
 
                       {/* Email Status Column */}
                       <div>
-                        <div className="flex flex-wrap gap-1">
-                          {invoice.email_sent_at && (
-                            <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-xs">
-                              Sent
-                            </Badge>
-                          )}
-                          {invoice.email_delivered && (
-                            <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 text-xs">
-                              Delivered
-                            </Badge>
-                          )}
-                          {invoice.email_open_count ? (
-                            <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs">
-                              Opened {invoice.email_open_count}
-                            </Badge>
-                          ) : invoice.email_opened ? (
-                            <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs">
-                              Opened
-                            </Badge>
-                          ) : null}
-                          {invoice.email_click_count ? (
-                            <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 text-xs">
-                              Clicked {invoice.email_click_count}
-                            </Badge>
-                          ) : invoice.email_clicked ? (
-                            <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 text-xs">
-                              Clicked
-                            </Badge>
-                          ) : null}
-                          {invoice.email_bounced && (
-                            <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 text-xs">
-                              Bounced
-                            </Badge>
-                          )}
-                          {invoice.email_complained && (
-                            <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 text-xs">
-                              Spam
-                            </Badge>
-                          )}
-                          {!invoice.email_sent_at && (
-                            <span className="text-xs text-gray-400 dark:text-slate-500">
-                              Not sent
-                            </span>
-                          )}
+                        <div className="flex flex-wrap items-center gap-1">
+                          {(() => {
+                            const badges = buildEmailStatusBadges(invoice);
+
+                            if (!badges.length) {
+                              return (
+                                <span className="text-xs text-gray-400 dark:text-slate-500">
+                                  Not sent
+                                </span>
+                              );
+                            }
+
+                            return badges.map((badge, index) => (
+                              <Fragment key={`${invoice.id}-${badge.key}`}>
+                                <Badge className={`${badge.className} text-xs`}>
+                                  {badge.label}
+                                </Badge>
+                                {index < badges.length - 1 && (
+                                  <span className="text-xs text-gray-400 dark:text-slate-500">
+                                    →
+                                  </span>
+                                )}
+                              </Fragment>
+                            ));
+                          })()}
                         </div>
                       </div>
 
