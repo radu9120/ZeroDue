@@ -148,7 +148,10 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (fallback.error || !fallback.data) {
-        console.warn("Invoice not found by subject number:", invoiceNumber);
+        console.warn("Invoice not found by subject number:", invoiceNumber, {
+          subject: data.subject,
+          candidateIds,
+        });
         return NextResponse.json({ received: true });
       }
 
