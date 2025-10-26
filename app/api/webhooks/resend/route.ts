@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
         svixId,
         svixTimestamp,
         svixSignature,
+        headers: Object.fromEntries(req.headers.entries()),
       });
       return new NextResponse("Invalid webhook", { status: 400 });
     }
