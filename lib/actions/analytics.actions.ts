@@ -89,6 +89,10 @@ export async function getInvoiceStatusBreakdown(
   };
   (data || []).forEach((r: any) => {
     const s = String(r.status || "").toLowerCase();
+    if (s === "sent") {
+      counts.pending += 1;
+      return;
+    }
     if (s in counts) counts[s] += 1;
   });
 
@@ -127,9 +131,10 @@ export async function getOverview(
   const paid = rows.filter(
     (r: any) => String(r.status).toLowerCase() === "paid"
   ).length;
-  const pending = rows.filter(
-    (r: any) => String(r.status).toLowerCase() === "pending"
-  ).length;
+  const pending = rows.filter((r: any) => {
+    const status = String(r.status).toLowerCase();
+    return status === "pending" || status === "sent";
+  }).length;
   const overdue = rows.filter(
     (r: any) => String(r.status).toLowerCase() === "overdue"
   ).length;

@@ -98,7 +98,72 @@ export const getAllClients = async ({
 
   if (error) throw new Error(error.message);
 
-  return clients;
+  if (!clients || clients.length === 0) {
+    return clients || [];
+  }
+
+  const clientIds = clients.map((client) => client.id).filter(Boolean);
+
+  if (clientIds.length === 0) {
+    return clients;
+  }
+
+  const { data: invoiceRows, error: invoiceError } = await supabase
+    .from("Invoices")
+    .select("client_id,total,currency")
+    .eq("business_id", business_id)
+    .in("client_id", clientIds);
+
+  if (invoiceError) {
+    console.error("Failed to load invoice stats for clients", invoiceError);
+    return clients;
+  }
+
+  const aggregates = new Map<
+    number,
+    { count: number; amount: number; currency: string | null }
+  >();
+
+  (invoiceRows || []).forEach((row: any) => {
+    const clientId =
+      typeof row.client_id === "number" ? row.client_id : Number(row.client_id);
+    if (!clientId) return;
+
+    const current = aggregates.get(clientId) ?? {
+      count: 0,
+      amount: 0,
+      currency: null,
+    };
+
+    current.count += 1;
+
+    const numericTotal =
+      typeof row.total === "number" ? row.total : parseFloat(row.total ?? "0");
+    if (!Number.isNaN(numericTotal)) {
+      current.amount += numericTotal;
+    }
+
+    if (!current.currency && row.currency) {
+      current.currency = row.currency as string;
+    }
+
+    aggregates.set(clientId, current);
+  });
+
+  return clients.map((client) => {
+    const stats = aggregates.get(client.id) ?? {
+      count: 0,
+      amount: 0,
+      currency: null,
+    };
+
+    return {
+      ...client,
+      invoice_count: stats.count,
+      invoice_total: Number(stats.amount.toFixed(2)),
+      invoice_currency: stats.currency,
+    };
+  });
 };
 
 export const getClients = async ({ business_id }: GetAllClientsParams) => {

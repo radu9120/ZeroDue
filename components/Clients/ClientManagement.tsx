@@ -1,6 +1,6 @@
 "use client";
+import React from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   ArrowLeft,
@@ -16,6 +16,31 @@ import { ClientType } from "@/types";
 import CustomButton from "../ui/CustomButton";
 import { useRouter } from "next/navigation";
 
+const formatCurrency = (amount?: number, currency?: string | null) => {
+  if (!amount || Number.isNaN(amount)) {
+    return "$0.00";
+  }
+
+  const safeCurrency =
+    currency && typeof currency === "string" ? currency : "USD";
+
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: safeCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  }
+};
+
 export default function ClientManagement({
   clients,
   business_id,
@@ -24,6 +49,46 @@ export default function ClientManagement({
   business_id: number;
 }) {
   const router = useRouter();
+
+  const stats = React.useMemo(() => {
+    if (!clients || clients.length === 0) {
+      return {
+        totalInvoices: 0,
+        activeClients: 0,
+        totalRevenue: 0,
+        representativeCurrency: "USD",
+      };
+    }
+
+    let totalInvoices = 0;
+    let activeClients = 0;
+    let totalRevenue = 0;
+    let representativeCurrency: string | undefined;
+
+    for (const client of clients) {
+      const invoiceCount = client.invoice_count ?? 0;
+      if (invoiceCount > 0) {
+        activeClients += 1;
+      }
+      totalInvoices += invoiceCount;
+
+      const amount = client.invoice_total ?? 0;
+      if (!Number.isNaN(amount)) {
+        totalRevenue += amount;
+      }
+
+      if (!representativeCurrency && client.invoice_currency) {
+        representativeCurrency = client.invoice_currency;
+      }
+    }
+
+    return {
+      totalInvoices,
+      activeClients,
+      totalRevenue,
+      representativeCurrency: representativeCurrency || "USD",
+    };
+  }, [clients]);
 
   return (
     <div>
@@ -109,9 +174,9 @@ export default function ClientManagement({
             <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
               <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
-            {/* <p className="text-2xl font-bold text-header-text dark:text-slate-100">
-                    {clients.filter((c) => c.status === "active").length}
-                </p> */}
+            <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+              {stats.activeClients}
+            </p>
             <p className="text-sm text-secondary-text dark:text-slate-400">
               Active Clients
             </p>
@@ -123,9 +188,9 @@ export default function ClientManagement({
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
               <FileText className="h-6 w-6 text-primary dark:text-blue-400" />
             </div>
-            {/* <p className="text-2xl font-bold text-header-text dark:text-slate-100">
-                    {clients.reduce((sum, client) => sum + client.invoices, 0)}
-                </p> */}
+            <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+              {stats.totalInvoices}
+            </p>
             <p className="text-sm text-secondary-text dark:text-slate-400">
               Total Invoices
             </p>
@@ -138,7 +203,7 @@ export default function ClientManagement({
               <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
             <p className="text-2xl font-bold text-header-text dark:text-slate-100">
-              0
+              {formatCurrency(stats.totalRevenue, stats.representativeCurrency)}
             </p>{" "}
             {/* Replace with actual revenue calculation */}
             <p className="text-sm text-secondary-text dark:text-slate-400">

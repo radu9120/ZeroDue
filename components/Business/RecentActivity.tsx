@@ -17,6 +17,61 @@ export default function RecentActivity({
 }: {
   recentActivities: UserActivityLog[];
 }) {
+  const aggregatedActivities = React.useMemo(() => {
+    if (!recentActivities || recentActivities.length === 0) {
+      return [] as Array<{
+        latest: UserActivityLog;
+        count: number;
+        latestTimestamp: number;
+      }>;
+    }
+
+    const groups = new Map<
+      string,
+      {
+        latest: UserActivityLog;
+        count: number;
+        latestTimestamp: number;
+      }
+    >();
+
+    for (const activity of recentActivities) {
+      const date = activity.created_at ? new Date(activity.created_at) : null;
+      const timestamp =
+        date && !Number.isNaN(date.getTime()) ? date.getTime() : 0;
+      const dayKey =
+        date && !Number.isNaN(date.getTime())
+          ? date.toISOString().slice(0, 10)
+          : "unknown";
+
+      const key = [
+        activity.action,
+        activity.target_id ?? activity.target_name ?? "",
+        dayKey,
+      ].join("|");
+
+      const existing = groups.get(key);
+
+      if (existing) {
+        existing.count += 1;
+        if (timestamp > existing.latestTimestamp) {
+          existing.latest = activity;
+          existing.latestTimestamp = timestamp;
+        }
+      } else {
+        groups.set(key, {
+          latest: activity,
+          count: 1,
+          latestTimestamp: timestamp,
+        });
+      }
+    }
+
+    return Array.from(groups.values()).sort(
+      (a, b) => b.latestTimestamp - a.latestTimestamp
+    );
+  }, [recentActivities]);
+
   const getActivityIcon = (activity: UserActivityLog) => {
     // Email-related activities
     if (activity.action === "Sent invoice") {
@@ -122,21 +177,26 @@ export default function RecentActivity({
           className="overflow-y-auto pr-4 pl-6 pb-6 space-y-3 custom-scrollbar"
           style={{ maxHeight: "600px" }}
         >
-          {recentActivities.length > 0 ? (
+          {aggregatedActivities.length > 0 ? (
             <>
-              {recentActivities.map((activity, idx) => (
+              {aggregatedActivities.map(({ latest, count }, idx) => (
                 <div
                   key={idx}
-                  className={`flex items-center gap-4 p-4 rounded-lg transition-all hover:shadow-md ${getActivityBackground(activity)}`}
+                  className={`flex items-center gap-4 p-4 rounded-lg transition-all hover:shadow-md ${getActivityBackground(latest)}`}
                 >
-                  {getActivityIcon(activity)}
+                  {getActivityIcon(latest)}
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-header-text dark:text-slate-100">
-                      {activity.action} {activity.target_name}
+                      {latest.action} {latest.target_name}
+                      {count > 1 && (
+                        <span className="ml-2 text-xs text-secondary-text dark:text-slate-400">
+                          ({count} events)
+                        </span>
+                      )}
                     </p>
                     <p className="text-sm text-secondary-text dark:text-slate-400">
-                      {activity.created_at &&
-                        timestamptzConvert(activity.created_at)}
+                      {latest.created_at &&
+                        timestamptzConvert(latest.created_at)}
                     </p>
                   </div>
                 </div>
@@ -148,10 +208,10 @@ export default function RecentActivity({
             </div>
           )}
         </div>
-        {recentActivities.length > 5 && (
+        {aggregatedActivities.length > 5 && (
           <div className="text-center py-2 border-t border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50">
             <p className="text-xs text-secondary-text dark:text-slate-400">
-              {recentActivities.length} total activities
+              {aggregatedActivities.length} unique activity entries
             </p>
           </div>
         )}

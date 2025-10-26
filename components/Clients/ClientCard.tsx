@@ -11,6 +11,31 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+const formatCurrency = (amount?: number, currency?: string | null) => {
+  if (!amount || Number.isNaN(amount)) {
+    return "$0.00";
+  }
+
+  const safeCurrency =
+    currency && typeof currency === "string" ? currency : "USD";
+
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: safeCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  }
+};
+
 export default function ClientCard({ client }: { client: any }) {
   const router = useRouter();
 
@@ -63,7 +88,7 @@ export default function ClientCard({ client }: { client: any }) {
             </span>
           </div>
           <span className="text-lg font-bold text-header-text dark:text-slate-100">
-            {client.invoices || 0}
+            {client.invoice_count || 0}
           </span>
         </div>
         <div className="text-center p-3 bg-green-50 dark:bg-slate-700/50 rounded-lg">
@@ -74,7 +99,7 @@ export default function ClientCard({ client }: { client: any }) {
             </span>
           </div>
           <span className="text-lg font-bold text-green-600 dark:text-green-400">
-            {client.totalPaid || "$0.00"}
+            {formatCurrency(client.invoice_total, client.invoice_currency)}
           </span>
         </div>
       </div>
