@@ -40,18 +40,34 @@ export async function POST(req: NextRequest) {
     let payload: ResendWebhookPayload;
     if (webhookSecret) {
       const payloadText = await req.text();
+      const svixId = req.headers.get("svix-id");
+      const svixTimestamp = req.headers.get("svix-timestamp");
+      const svixSignature = req.headers.get("svix-signature");
+
+      if (!svixId || !svixTimestamp || !svixSignature) {
+        console.error("Resend webhook missing signature headers", {
+          svixId,
+          svixTimestamp,
+          svixSignature,
+        });
+        return new NextResponse("Invalid webhook", { status: 400 });
+      }
+
       try {
         const resend = new Resend();
         payload = (await resend.webhooks.verify({
           payload: payloadText,
           headers: {
-            id: req.headers.get("svix-id")!,
-            timestamp: req.headers.get("svix-timestamp")!,
-            signature: req.headers.get("svix-signature")!,
+            id: svixId,
+            timestamp: svixTimestamp,
+            signature: svixSignature,
           },
-          webhookSecret,
+          webhookSecret: webhookSecret.trim(),
         })) as unknown as ResendWebhookPayload;
-      } catch {
+      } catch (err) {
+        console.error("Resend webhook verification failed", {
+          message: err instanceof Error ? err.message : String(err),
+        });
         return new NextResponse("Invalid webhook", { status: 400 });
       }
     } else {

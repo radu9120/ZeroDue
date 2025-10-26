@@ -219,15 +219,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Update invoice status to "sent" and store email_id
-    // Let the webhook handle all other email tracking fields
+    // Update invoice status to "sent" and record a fresh baseline while waiting for webhook events
+    const sendTimestamp = new Date().toISOString();
     let updatedStatus: string | null = null;
     let statusUpdated = false;
     try {
       const { data: updated, error: updateError } = await supabaseAdmin
         .from("Invoices")
         .update({
+          status: "sent",
           email_id: data?.id || null,
+          email_sent_at: sendTimestamp,
+          email_delivered: null,
+          email_delivered_at: null,
+          email_opened: null,
+          email_opened_at: null,
+          email_open_count: 0,
+          email_clicked: null,
+          email_clicked_at: null,
+          email_click_count: 0,
+          email_bounced: null,
+          email_bounced_at: null,
+          email_complained: null,
+          email_complained_at: null,
         })
         .eq("id", invoice.id)
         .select("id, status")
