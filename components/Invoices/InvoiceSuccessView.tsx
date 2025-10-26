@@ -20,6 +20,13 @@ import { downloadElementAsPDF } from "@/lib/pdf";
 import type { InvoiceListItem, BusinessType } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import currencies from "@/lib/currencies.json";
+import {
+  EmailStatusPatch,
+  EmailStatusState,
+  mergeEmailStatusState,
+  shouldStopStatusPolling,
+  toEmailStatusState,
+} from "@/lib/email-status";
 
 interface InvoiceSuccessViewProps {
   invoice: InvoiceListItem;
@@ -42,6 +49,115 @@ export default function InvoiceSuccessView({
   const [isEditing, setIsEditing] = React.useState(editMode);
   const [status, setStatus] = React.useState<string>(invoice.status || "draft");
   const [saving, setSaving] = React.useState(false);
+  const [emailStatus, setEmailStatus] = React.useState<EmailStatusState>(() =>
+    toEmailStatusState({
+      status: invoice.status,
+      email_id: invoice.email_id,
+      email_sent_at: invoice.email_sent_at,
+      email_delivered: invoice.email_delivered,
+      email_delivered_at: invoice.email_delivered_at,
+      email_opened: invoice.email_opened,
+      email_opened_at: invoice.email_opened_at,
+      email_open_count: invoice.email_open_count,
+      email_clicked: invoice.email_clicked,
+      email_clicked_at: invoice.email_clicked_at,
+      email_click_count: invoice.email_click_count,
+      email_bounced: invoice.email_bounced,
+      email_bounced_at: invoice.email_bounced_at,
+      email_complained: invoice.email_complained,
+      email_complained_at: invoice.email_complained_at,
+    })
+  );
+  const pollingStateRef = React.useRef<{
+    active: boolean;
+    timeoutId: ReturnType<typeof setTimeout> | null;
+  }>({ active: false, timeoutId: null });
+  const mergeEmailStatus = React.useCallback((patch: EmailStatusPatch) => {
+    if (!patch) return;
+
+    const nextStatusValue =
+      patch.status !== undefined ? (patch.status ?? null) : undefined;
+
+    setEmailStatus((prev) => mergeEmailStatusState(prev, patch));
+
+    if (patch.status !== undefined && nextStatusValue) {
+      setStatus(nextStatusValue);
+    }
+  }, []);
+
+  const fetchLatestEmailStatus = React.useCallback(async () => {
+    try {
+      const res = await fetch(`/api/invoices/${invoice.id}/status`, {
+        method: "GET",
+        cache: "no-store",
+      });
+
+      if (!res.ok) {
+        if (res.status !== 404) {
+          console.warn("Failed to refresh invoice status", res.statusText);
+        }
+        return null;
+      }
+
+      const payload = (await res.json()) as { invoice?: EmailStatusPatch };
+
+      if (payload?.invoice) {
+        mergeEmailStatus(payload.invoice);
+        return payload.invoice;
+      }
+    } catch (error) {
+      console.error("Error fetching invoice status:", error);
+    }
+
+    return null;
+  }, [invoice.id, mergeEmailStatus]);
+
+  const stopStatusPolling = React.useCallback(() => {
+    const controller = pollingStateRef.current;
+    controller.active = false;
+    if (controller.timeoutId) {
+      clearTimeout(controller.timeoutId);
+      controller.timeoutId = null;
+    }
+  }, []);
+
+  const startStatusPolling = React.useCallback(() => {
+    stopStatusPolling();
+
+    const controller = pollingStateRef.current;
+    controller.active = true;
+    const startedAt = Date.now();
+    const maxDurationMs = 30000; // poll for up to 30s after sending
+
+    const poll = async () => {
+      if (!controller.active) return;
+
+      const latest = await fetchLatestEmailStatus();
+
+      if (!controller.active) return;
+
+      if (shouldStopStatusPolling(latest)) {
+        stopStatusPolling();
+        return;
+      }
+
+      if (Date.now() - startedAt >= maxDurationMs) {
+        stopStatusPolling();
+        return;
+      }
+
+      controller.timeoutId = setTimeout(poll, 2000);
+    };
+
+    // Kick off the first poll immediately
+    void poll();
+  }, [fetchLatestEmailStatus, stopStatusPolling]);
+
+  React.useEffect(() => {
+    return () => {
+      stopStatusPolling();
+    };
+  }, [stopStatusPolling]);
 
   // Parse bank_details from invoice - now just a simple text field
   const initialBankDetails = (() => {
@@ -503,14 +619,25 @@ export default function InvoiceSuccessView({
 
       toast.success(data.message || "Invoice sent successfully!");
 
-      // Wait 2 seconds for webhook to process, then force refresh
-      setTimeout(() => {
-        if (router) {
-          router.refresh();
-        }
-        // Also reload the page to ensure fresh data
-        window.location.reload();
-      }, 2000);
+      mergeEmailStatus({
+        status: (data.updatedStatus as string | null) || "sent",
+        email_id: (data.emailId as string | null) ?? emailStatus.email_id,
+        email_sent_at: new Date().toISOString(),
+        email_delivered: null,
+        email_delivered_at: null,
+        email_opened: null,
+        email_opened_at: null,
+        email_open_count: 0,
+        email_clicked: null,
+        email_clicked_at: null,
+        email_click_count: 0,
+        email_bounced: null,
+        email_bounced_at: null,
+        email_complained: null,
+        email_complained_at: null,
+      });
+
+      startStatusPolling();
     } catch (error: any) {
       console.error("Error sending invoice:", error);
       toast.error(error.message || "Failed to send invoice to client");
@@ -1264,40 +1391,40 @@ export default function InvoiceSuccessView({
             <div className="px-6 pt-4 pb-2 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  {invoice.email_sent_at && (
+                  {emailStatus.email_sent_at && (
                     <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                       Sent
                     </Badge>
                   )}
-                  {invoice.email_delivered && (
+                  {emailStatus.email_delivered && (
                     <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
                       Delivered
                     </Badge>
                   )}
-                  {invoice.email_open_count ? (
+                  {emailStatus.email_open_count ? (
                     <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                      Opened {invoice.email_open_count}
+                      Opened {emailStatus.email_open_count}
                     </Badge>
-                  ) : invoice.email_opened ? (
+                  ) : emailStatus.email_opened ? (
                     <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
                       Opened 1
                     </Badge>
                   ) : null}
-                  {invoice.email_click_count ? (
+                  {emailStatus.email_click_count ? (
                     <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
-                      Clicked {invoice.email_click_count}
+                      Clicked {emailStatus.email_click_count}
                     </Badge>
-                  ) : invoice.email_clicked ? (
+                  ) : emailStatus.email_clicked ? (
                     <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
                       Clicked 1
                     </Badge>
                   ) : null}
-                  {invoice.email_bounced && (
+                  {emailStatus.email_bounced && (
                     <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
                       Bounced
                     </Badge>
                   )}
-                  {invoice.email_complained && (
+                  {emailStatus.email_complained && (
                     <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
                       Marked as spam
                     </Badge>
@@ -1305,32 +1432,36 @@ export default function InvoiceSuccessView({
                 </div>
 
                 <div className="text-xs text-gray-500 dark:text-slate-400 flex flex-wrap gap-x-4 gap-y-1">
-                  {invoice.email_sent_at && (
-                    <span>Sent: {formatDateTime(invoice.email_sent_at)}</span>
-                  )}
-                  {invoice.email_delivered_at && (
+                  {emailStatus.email_sent_at && (
                     <span>
-                      Delivered: {formatDateTime(invoice.email_delivered_at)}
+                      Sent: {formatDateTime(emailStatus.email_sent_at)}
                     </span>
                   )}
-                  {invoice.email_opened_at && (
+                  {emailStatus.email_delivered_at && (
                     <span>
-                      Last opened: {formatDateTime(invoice.email_opened_at)}
+                      Delivered:{" "}
+                      {formatDateTime(emailStatus.email_delivered_at)}
                     </span>
                   )}
-                  {invoice.email_clicked_at && (
+                  {emailStatus.email_opened_at && (
                     <span>
-                      Last clicked: {formatDateTime(invoice.email_clicked_at)}
+                      Last opened: {formatDateTime(emailStatus.email_opened_at)}
                     </span>
                   )}
-                  {invoice.email_bounced_at && (
+                  {emailStatus.email_clicked_at && (
                     <span>
-                      Bounced: {formatDateTime(invoice.email_bounced_at)}
+                      Last clicked:{" "}
+                      {formatDateTime(emailStatus.email_clicked_at)}
                     </span>
                   )}
-                  {invoice.email_complained_at && (
+                  {emailStatus.email_bounced_at && (
                     <span>
-                      Spam: {formatDateTime(invoice.email_complained_at)}
+                      Bounced: {formatDateTime(emailStatus.email_bounced_at)}
+                    </span>
+                  )}
+                  {emailStatus.email_complained_at && (
+                    <span>
+                      Spam: {formatDateTime(emailStatus.email_complained_at)}
                     </span>
                   )}
                 </div>

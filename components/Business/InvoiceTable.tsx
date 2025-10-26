@@ -20,10 +20,42 @@ import {
 } from "lucide-react";
 import getStatusBadge from "../ui/getStatusBadge";
 import { Button } from "../ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import CustomModal from "../ModalsForms/CustomModal";
 import { toast } from "sonner";
 import { Badge } from "../ui/badge";
+import {
+  EmailStatusPatch,
+  mergeEmailStatusState,
+  shouldStopStatusPolling,
+  toEmailStatusState,
+} from "@/lib/email-status";
+
+const applyStatusPatchToInvoice = (
+  invoice: InvoiceListItem,
+  patch: EmailStatusPatch
+): InvoiceListItem => {
+  const merged = mergeEmailStatusState(toEmailStatusState(invoice), patch);
+
+  return {
+    ...invoice,
+    status: merged.status ?? invoice.status,
+    email_id: merged.email_id,
+    email_sent_at: merged.email_sent_at,
+    email_delivered: merged.email_delivered,
+    email_delivered_at: merged.email_delivered_at,
+    email_opened: merged.email_opened,
+    email_opened_at: merged.email_opened_at,
+    email_open_count: merged.email_open_count,
+    email_clicked: merged.email_clicked,
+    email_clicked_at: merged.email_clicked_at,
+    email_click_count: merged.email_click_count,
+    email_bounced: merged.email_bounced,
+    email_bounced_at: merged.email_bounced_at,
+    email_complained: merged.email_complained,
+    email_complained_at: merged.email_complained_at,
+  };
+};
 
 // Invoice Preview Component for Modal
 function InvoicePreview({
@@ -488,6 +520,127 @@ export default function InvoiceTable({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSending, setIsSending] = useState<number | null>(null);
+  const [invoiceRows, setInvoiceRows] = useState<InvoiceListItem[]>(invoices);
+  const pollingMapRef = useRef(
+    new Map<
+      number,
+      {
+        timeoutId: ReturnType<typeof setTimeout> | null;
+        startedAt: number;
+        active: boolean;
+      }
+    >()
+  );
+
+  useEffect(() => {
+    setInvoiceRows(invoices);
+  }, [invoices]);
+
+  const mergeInvoiceStatus = useCallback(
+    (invoiceId: number, patch: EmailStatusPatch) => {
+      if (!patch) return;
+
+      setInvoiceRows((prev) =>
+        prev.map((row) =>
+          row.id === invoiceId ? applyStatusPatchToInvoice(row, patch) : row
+        )
+      );
+    },
+    []
+  );
+
+  const stopInvoicePolling = useCallback((invoiceId: number) => {
+    const state = pollingMapRef.current.get(invoiceId);
+    if (!state) return;
+
+    if (state.timeoutId) {
+      clearTimeout(state.timeoutId);
+    }
+
+    pollingMapRef.current.delete(invoiceId);
+  }, []);
+
+  const fetchInvoiceStatus = useCallback(
+    async (invoiceId: number) => {
+      try {
+        const res = await fetch(`/api/invoices/${invoiceId}/status`, {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          if (res.status !== 404) {
+            console.warn("Failed to refresh invoice status", res.statusText);
+          }
+          return null;
+        }
+
+        const payload = (await res.json()) as { invoice?: EmailStatusPatch };
+
+        if (payload?.invoice) {
+          mergeInvoiceStatus(invoiceId, payload.invoice);
+          return payload.invoice;
+        }
+      } catch (error) {
+        console.error("Error fetching invoice status:", error);
+      }
+
+      return null;
+    },
+    [mergeInvoiceStatus]
+  );
+
+  const startInvoicePolling = useCallback(
+    (invoiceId: number) => {
+      stopInvoicePolling(invoiceId);
+
+      const state = {
+        timeoutId: null as ReturnType<typeof setTimeout> | null,
+        startedAt: Date.now(),
+        active: true,
+      };
+
+      pollingMapRef.current.set(invoiceId, state);
+
+      const poll = async () => {
+        const current = pollingMapRef.current.get(invoiceId);
+        if (!current || !current.active) return;
+
+        const latest = await fetchInvoiceStatus(invoiceId);
+
+        const stillActive = pollingMapRef.current.get(invoiceId);
+        if (!stillActive || !stillActive.active) {
+          return;
+        }
+
+        if (shouldStopStatusPolling(latest)) {
+          stopInvoicePolling(invoiceId);
+          return;
+        }
+
+        if (Date.now() - stillActive.startedAt >= 30000) {
+          stopInvoicePolling(invoiceId);
+          return;
+        }
+
+        stillActive.timeoutId = setTimeout(poll, 2000);
+      };
+
+      void poll();
+    },
+    [fetchInvoiceStatus, stopInvoicePolling]
+  );
+
+  useEffect(() => {
+    return () => {
+      pollingMapRef.current.forEach((state) => {
+        if (state.timeoutId) {
+          clearTimeout(state.timeoutId);
+        }
+      });
+      pollingMapRef.current.clear();
+    };
+  }, []);
 
   const search = searchParams.get("searchTerm") || "";
   const filter = searchParams.get("filter") || "";
@@ -537,11 +690,25 @@ export default function InvoiceTable({
 
       toast.success(data.message || "Invoice sent successfully!");
 
-      // Wait 2 seconds for webhook to process, then reload
-      setTimeout(() => {
-        router.refresh();
-        window.location.reload();
-      }, 2000);
+      mergeInvoiceStatus(invoice.id, {
+        status: (data.updatedStatus as string | null) || "sent",
+        email_id: (data.emailId as string | null) ?? invoice.email_id,
+        email_sent_at: new Date().toISOString(),
+        email_delivered: null,
+        email_delivered_at: null,
+        email_opened: null,
+        email_opened_at: null,
+        email_open_count: 0,
+        email_clicked: null,
+        email_clicked_at: null,
+        email_click_count: 0,
+        email_bounced: null,
+        email_bounced_at: null,
+        email_complained: null,
+        email_complained_at: null,
+      });
+
+      startInvoicePolling(invoice.id);
     } catch (error: any) {
       console.error("Error sending invoice:", error);
       toast.error(error.message || "Failed to send invoice to client");
@@ -647,9 +814,9 @@ export default function InvoiceTable({
                 </div>
               </div>
 
-              {invoices.length > 0 ? (
+              {invoiceRows.length > 0 ? (
                 <div>
-                  {invoices.map((invoice) => (
+                  {invoiceRows.map((invoice) => (
                     <div
                       key={invoice.id}
                       className="border-b border-blue-50 hover:bg-blue-50/50 w-full py-3 px-4 grid grid-cols-7 gap-2"
