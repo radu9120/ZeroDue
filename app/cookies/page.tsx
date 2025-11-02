@@ -2,12 +2,24 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Cookie, Shield, Eye, Target, Settings } from "lucide-react";
-import { useState, useEffect } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 export default function CookiesPage() {
   const [cookieConsent, setCookieConsent] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     // Set page title
@@ -50,6 +62,41 @@ export default function CookiesPage() {
       return new Date(dateString).toLocaleDateString();
     }
     return "Not set";
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setFeedback(null);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.error || "We could not send your message.");
+      }
+
+      setFeedback({
+        type: "success",
+        message: "Thanks! We received your request and will respond shortly.",
+      });
+      setFormData({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error("Cookie policy contact failed", error);
+      const description =
+        error instanceof Error ? error.message : "Something went wrong.";
+      setFeedback({
+        type: "error",
+        message: description,
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -287,17 +334,96 @@ export default function CookiesPage() {
             </h2>
             <p className="text-primary-text mb-4">
               If you have any questions about our use of cookies or this policy,
-              please contact us:
+              send us a note using the form below. We respond within one
+              business day.
             </p>
-            <div className="space-y-2 text-primary-text">
-              <p>
-                <strong>Email:</strong> privacy@invoiceflow.com
-              </p>
-              <p>
-                <strong>Address:</strong> 123 Business St, Suite 100, City,
-                State 12345
-              </p>
-            </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="contact-name"
+                    className="block text-sm font-medium text-secondary-text dark:text-slate-300 mb-1"
+                  >
+                    Full name
+                  </label>
+                  <Input
+                    id="contact-name"
+                    name="name"
+                    value={formData.name}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        name: event.target.value,
+                      }))
+                    }
+                    required
+                    placeholder="Jane Doe"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="contact-email"
+                    className="block text-sm font-medium text-secondary-text dark:text-slate-300 mb-1"
+                  >
+                    Email address
+                  </label>
+                  <Input
+                    id="contact-email"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={(event) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        email: event.target.value,
+                      }))
+                    }
+                    required
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </div>
+              <div>
+                <label
+                  htmlFor="contact-message"
+                  className="block text-sm font-medium text-secondary-text dark:text-slate-300 mb-1"
+                >
+                  How can we help?
+                </label>
+                <Textarea
+                  id="contact-message"
+                  name="message"
+                  rows={4}
+                  value={formData.message}
+                  onChange={(event) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      message: event.target.value,
+                    }))
+                  }
+                  required
+                  placeholder="Share as much detail as you can so we can help quickly."
+                />
+              </div>
+              {feedback && (
+                <p
+                  className={`text-sm ${
+                    feedback.type === "success"
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-red-600 dark:text-red-400"
+                  }`}
+                >
+                  {feedback.message}
+                </p>
+              )}
+              <Button
+                type="submit"
+                className="bg-primary hover:bg-primary-dark text-white"
+                disabled={submitting}
+              >
+                {submitting ? "Sending…" : "Send message"}
+              </Button>
+            </form>
           </div>
 
           {/* Back to Home */}

@@ -2,16 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-  Mail,
-  Globe,
-  Shield,
-  Clock,
-} from "lucide-react";
+import { Mail, Globe, Shield, Clock } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
@@ -58,22 +49,10 @@ export default function Footer() {
                 InvoiceFlow
               </span>
             </Link>
-            <p className="text-secondary-text dark:text-slate-400 mb-6">
+            <p className="text-secondary-text dark:text-slate-400">
               Streamline your invoicing process with our powerful, intuitive
               platform designed for modern businesses.
             </p>
-            <div className="flex space-x-3">
-              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
-                <Link
-                  key={i}
-                  href="#"
-                  className="w-10 h-10 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 flex items-center justify-center text-primary dark:text-blue-400 transition-colors hover:-translate-y-1 transform duration-200"
-                >
-                  <Icon className="h-5 w-5" />
-                  <span className="sr-only">Social media</span>
-                </Link>
-              ))}
-            </div>
           </motion.div>
 
           <motion.div
@@ -116,7 +95,7 @@ export default function Footer() {
               { name: "Contact Us", href: "/contact" },
               { name: "Privacy Policy", href: "/privacy-policy" },
               { name: "Cookie Policy", href: "/cookies" },
-              { name: "Sitemap", href: "#" },
+              { name: "Sitemap", href: "/sitemap" },
             ].map((item, i) => (
               <Link
                 key={i}
@@ -150,20 +129,6 @@ export default function Footer() {
                   >
                     privacy@invoiceflow.com
                   </a>
-                </div>
-              </div>
-
-              <div className="flex items-start group">
-                <Globe className="h-5 w-5 text-primary dark:text-blue-400 mr-3 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-                <div>
-                  <p className="font-medium text-header-text dark:text-slate-100">
-                    Location
-                  </p>
-                  <p className="text-secondary-text dark:text-slate-400">
-                    123 Business Street, Suite 100
-                    <br />
-                    London, EC1A 1BB, United Kingdom
-                  </p>
                 </div>
               </div>
             </div>
