@@ -50,7 +50,7 @@ export default function DashboardHeader({
 
       {/* Action buttons container: only show if there are existing businesses OR if on a paid plan (which might allow creating from zero via header) */}
       {(totalBusinesses > 0 || isPaidPlan) && (
-        <div className="flex items-center gap-3 mt-3 sm:mt-0 flex-wrap">
+        <div className="mt-3 flex w-full flex-col gap-3 sm:mt-0 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           {showUpgradeElements && (
             <>
               <div className="flex items-center gap-2 text-yellow-600 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200">
@@ -61,7 +61,7 @@ export default function DashboardHeader({
               </div>
               <button
                 onClick={handleUpgradeClick}
-                className="flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-white px-4 py-2 rounded-lg hover:from-primary/90 hover:to-accent/90 transition-all whitespace-nowrap text-sm font-medium"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-medium text-white transition-all hover:from-primary/90 hover:to-accent/90 sm:w-auto"
               >
                 <Crown className="h-4 w-4" />
                 <span>Upgrade Plan</span>
@@ -73,7 +73,7 @@ export default function DashboardHeader({
           {isPaidPlan && (
             <button
               onClick={() => (window.location.href = "/upgrade")}
-              className="flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-white px-4 py-2 rounded-lg hover:from-primary/90 hover:to-accent/90 transition-all whitespace-nowrap text-sm font-medium"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-medium text-white transition-all hover:from-primary/90 hover:to-accent/90 sm:w-auto"
             >
               <Crown className="h-4 w-4" />
               <span>Manage Plan</span>

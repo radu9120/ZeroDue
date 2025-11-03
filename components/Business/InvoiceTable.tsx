@@ -796,236 +796,257 @@ export default function InvoiceTable({
   };
 
   return (
-    <>
-      <Card>
-        <CardHeader className="flex justify-between">
-          <h2 className="text-xl font-bold text-header-text dark:text-slate-100">
-            All Invoices
-          </h2>
-          <div className="flex items-center gap-3">
-            <CustomModal
-              heading="Search & Filter Invoices"
-              description="Find specific invoices or filter by status"
-              openBtnLabel="Filter"
-              btnVariant="secondary"
-              btnIcon={FilterIcon}
-            >
-              <SearchAndFilter
-                onSearch={handleSearch}
-                onFilterChange={handleFilterChange}
-                searchTerm={search}
-                currentFilter={filter}
-              />
-            </CustomModal>
+    <Card>
+      <CardHeader className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <h2 className="text-xl font-bold text-header-text dark:text-slate-100">
+          All Invoices
+        </h2>
+        <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+          <CustomModal
+            heading="Search & Filter Invoices"
+            description="Find specific invoices or filter by status"
+            openBtnLabel="Filter"
+            btnVariant="secondary"
+            btnIcon={FilterIcon}
+          >
+            <SearchAndFilter
+              onSearch={handleSearch}
+              onFilterChange={handleFilterChange}
+              searchTerm={search}
+              currentFilter={filter}
+            />
+          </CustomModal>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="w-full">
+          <div className="hidden border-b w-full py-3 px-4 border-blue-100 md:grid md:grid-cols-7 md:gap-2">
+            <div className="font-medium text-secondary-text dark:text-slate-400">
+              Invoice
+            </div>
+            <div className="font-medium text-secondary-text dark:text-slate-400">
+              Amount
+            </div>
+            <div className="font-medium text-secondary-text dark:text-slate-400">
+              Status
+            </div>
+            <div className="font-medium text-secondary-text dark:text-slate-400">
+              Issue Date
+            </div>
+            <div className="font-medium text-secondary-text dark:text-slate-400">
+              Due Date
+            </div>
+            <div className="font-medium text-secondary-text dark:text-slate-400">
+              Email Status
+            </div>
+            <div className="text-right font-medium text-secondary-text dark:text-slate-400">
+              Actions
+            </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto lg:w-full w-[1400px]">
-            <div className="w-full">
-              <div className="border-b w-full py-3 px-4 border-blue-100 grid grid-cols-7 gap-2">
-                <div className="font-medium text-secondary-text dark:text-slate-400">
-                  Invoice
-                </div>
-                <div className="font-medium text-secondary-text dark:text-slate-400">
-                  Amount
-                </div>
-                <div className="font-medium text-secondary-text dark:text-slate-400">
-                  Status
-                </div>
-                <div className="font-medium text-secondary-text dark:text-slate-400">
-                  Issue Date
-                </div>
-                <div className="font-medium text-secondary-text dark:text-slate-400">
-                  Due Date
-                </div>
-                <div className="font-medium text-secondary-text dark:text-slate-400">
-                  Email Status
-                </div>
-                <div className="text-right font-medium text-secondary-text dark:text-slate-400">
-                  Actions
-                </div>
-              </div>
 
-              {invoiceRows.length > 0 ? (
-                <div>
-                  {invoiceRows.map((invoice) => (
-                    <div
-                      key={invoice.id}
-                      className="border-b border-blue-50 hover:bg-blue-50/50 w-full py-3 px-4 grid grid-cols-7 gap-2"
-                    >
-                      <div>
-                        <p className="font-medium text-header-text dark:text-slate-100">
-                          {invoice.invoice_number}
-                        </p>
-                        <p className="text-sm text-secondary-text dark:text-slate-400">
-                          {invoice.description || "No description"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-header-text dark:text-slate-100">
-                          {formatInvoiceAmount(invoice.total, invoice.currency)}
-                        </p>
-                      </div>
-                      <div>{getStatusBadge(invoice?.status || "draft")}</div>
-                      <div>
-                        <p className="text-header-text dark:text-slate-100">
-                          {invoice.issue_date
-                            ? formatDate(invoice.issue_date)
-                            : "N/A"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-header-text dark:text-slate-100">
-                          {formatDate(invoice.due_date)}
-                        </p>
-                      </div>
+          {invoiceRows.length > 0 ? (
+            <div className="divide-y divide-blue-100 dark:divide-slate-700">
+              {invoiceRows.map((invoice) => (
+                <div
+                  key={invoice.id}
+                  className="grid w-full gap-4 px-3 py-4 transition-colors hover:bg-blue-50/50 md:grid-cols-7 md:px-4 md:py-3"
+                >
+                  <div className="min-w-0">
+                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                      Invoice
+                    </span>
+                    <p className="font-medium text-header-text dark:text-slate-100">
+                      {invoice.invoice_number}
+                    </p>
+                    <p className="text-sm text-secondary-text dark:text-slate-400">
+                      {invoice.description || "No description"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                      Amount
+                    </span>
+                    <p className="font-semibold text-header-text dark:text-slate-100">
+                      {formatInvoiceAmount(invoice.total, invoice.currency)}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                      Status
+                    </span>
+                    <div className="mt-1 md:mt-0">
+                      {getStatusBadge(invoice?.status || "draft")}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                      Issue Date
+                    </span>
+                    <p className="text-header-text dark:text-slate-100">
+                      {invoice.issue_date
+                        ? formatDate(invoice.issue_date)
+                        : "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                      Due Date
+                    </span>
+                    <p className="text-header-text dark:text-slate-100">
+                      {formatDate(invoice.due_date)}
+                    </p>
+                  </div>
 
-                      {/* Email Status Column */}
-                      <div>
-                        <div className="flex flex-wrap items-center gap-1">
-                          {(() => {
-                            const badges = buildEmailStatusBadges(invoice);
+                  {/* Email Status Column */}
+                  <div>
+                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                      Email Status
+                    </span>
+                    <div className="mt-1 flex flex-wrap items-center gap-1 md:mt-0">
+                      {(() => {
+                        const badges = buildEmailStatusBadges(invoice);
 
-                            if (!badges.length) {
-                              return (
-                                <span className="text-xs text-gray-400 dark:text-slate-500">
-                                  Not sent
-                                </span>
-                              );
-                            }
+                        if (!badges.length) {
+                          return (
+                            <span className="text-xs text-gray-400 dark:text-slate-500">
+                              Not sent
+                            </span>
+                          );
+                        }
 
-                            return badges.map((badge, index) => (
-                              <Fragment key={`${invoice.id}-${badge.key}`}>
-                                <Badge className={`${badge.className} text-xs`}>
-                                  {badge.label}
-                                </Badge>
-                                {index < badges.length - 1 && (
-                                  <span className="text-xs text-gray-400 dark:text-slate-500">
-                                    →
-                                  </span>
-                                )}
-                              </Fragment>
-                            ));
-                          })()}
-                        </div>
-                      </div>
+                        return badges.map((badge, index) => (
+                          <Fragment key={`${invoice.id}-${badge.key}`}>
+                            <Badge className={`${badge.className} text-xs`}>
+                              {badge.label}
+                            </Badge>
+                            {index < badges.length - 1 && (
+                              <span className="text-xs text-gray-400 dark:text-slate-500">
+                                →
+                              </span>
+                            )}
+                          </Fragment>
+                        ));
+                      })()}
+                    </div>
+                  </div>
 
-                      <div className="w-full">
-                        <div className="flex items-center justify-end gap-2">
+                  <div className="md:text-right">
+                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                      Actions
+                    </span>
+                    <div className="mt-2 flex flex-wrap items-center justify-start gap-2 md:mt-0 md:justify-end">
+                      <Link
+                        href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}`}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="hover:bg-blue-100 dark:hover:bg-slate-700"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </Link>
+
+                      <CustomModal
+                        heading="More Actions"
+                        description={`Actions for invoice ${invoice.invoice_number}`}
+                        customTrigger={
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="hover:bg-blue-100 dark:hover:bg-slate-700"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        }
+                      >
+                        <div className="space-y-2">
                           <Link
                             href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}`}
+                            className="block"
                           >
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="hover:bg-blue-100 dark:hover:bg-slate-700"
+                              variant="secondary"
+                              className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
                             >
-                              <Eye className="h-4 w-4" />
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Full Invoice
                             </Button>
                           </Link>
 
-                          <CustomModal
-                            heading="More Actions"
-                            description={`Actions for invoice ${invoice.invoice_number}`}
-                            customTrigger={
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="hover:bg-blue-100 dark:hover:bg-slate-700"
-                              >
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            }
+                          <Link
+                            href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}&edit=1`}
+                            className="block"
                           >
-                            <div className="space-y-2">
-                              <Link
-                                href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}`}
-                                className="block"
-                              >
-                                <Button
-                                  variant="secondary"
-                                  className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
-                                >
-                                  <Eye className="h-4 w-4 mr-2" />
-                                  View Full Invoice
-                                </Button>
-                              </Link>
+                            <Button
+                              variant="secondary"
+                              className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              {userPlan === "enterprise"
+                                ? "Edit Invoice"
+                                : "Modify Status/Notes"}
+                            </Button>
+                          </Link>
 
-                              <Link
-                                href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}&edit=1`}
-                                className="block"
-                              >
-                                <Button
-                                  variant="secondary"
-                                  className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
-                                >
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  {userPlan === "enterprise"
-                                    ? "Edit Invoice"
-                                    : "Modify Status/Notes"}
-                                </Button>
-                              </Link>
+                          <Button
+                            variant="secondary"
+                            className="w-full justify-start text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 dark:bg-slate-700 dark:hover:bg-slate-600"
+                            onClick={() => handleSendToClient(invoice)}
+                            disabled={isSending === invoice.id}
+                          >
+                            <Send className="h-4 w-4 mr-2" />
+                            {isSending === invoice.id
+                              ? "Sending..."
+                              : "Send to Client"}
+                          </Button>
 
-                              <Button
-                                variant="secondary"
-                                className="w-full justify-start text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 dark:bg-slate-700 dark:hover:bg-slate-600"
-                                onClick={() => handleSendToClient(invoice)}
-                                disabled={isSending === invoice.id}
-                              >
-                                <Send className="h-4 w-4 mr-2" />
-                                {isSending === invoice.id
-                                  ? "Sending..."
-                                  : "Send to Client"}
-                              </Button>
-
-                              <div className="pt-2 border-t border-gray-200 dark:border-slate-600">
-                                <Button
-                                  variant="secondary"
-                                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:bg-slate-700 dark:hover:bg-red-900/20"
-                                  onClick={() => {
-                                    // TODO: Implement delete with confirmation
-                                    if (
-                                      confirm(
-                                        `Are you sure you want to delete invoice ${invoice.invoice_number}? This action cannot be undone.`
-                                      )
-                                    ) {
-                                      alert("Delete functionality coming soon");
-                                    }
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Delete Invoice
-                                </Button>
-                              </div>
-                            </div>
-                          </CustomModal>
+                          <div className="pt-2 border-t border-gray-200 dark:border-slate-600">
+                            <Button
+                              variant="secondary"
+                              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:bg-slate-700 dark:hover:bg-red-900/20"
+                              onClick={() => {
+                                // TODO: Implement delete with confirmation
+                                if (
+                                  confirm(
+                                    `Are you sure you want to delete invoice ${invoice.invoice_number}? This action cannot be undone.`
+                                  )
+                                ) {
+                                  alert("Delete functionality coming soon");
+                                }
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Invoice
+                            </Button>
+                          </div>
                         </div>
-                      </div>
+                      </CustomModal>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              ) : (
-                <div className="text-center py-12">
-                  <FileText className="h-16 w-16 mx-auto text-gray-400 dark:text-slate-500 mb-4" />
-                  <h3 className="text-xl font-semibold text-header-text dark:text-slate-100 mb-2">
-                    No Invoices Yet
-                  </h3>
-                  <p className="text-secondary-text dark:text-slate-400 mb-6">
-                    Create your first invoice to start tracking payments and
-                    managing your business.
-                  </p>
-                  <CustomButton
-                    label="Create Your First Invoice"
-                    icon={PlusIcon}
-                    variant="primary"
-                    href={`/dashboard/invoices/new?business_id=${business_id}`}
-                  />
-                </div>
-              )}
+              ))}
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    </>
+          ) : (
+            <div className="text-center py-12">
+              <FileText className="h-16 w-16 mx-auto text-gray-400 dark:text-slate-500 mb-4" />
+              <h3 className="text-xl font-semibold text-header-text dark:text-slate-100 mb-2">
+                No Invoices Yet
+              </h3>
+              <p className="text-secondary-text dark:text-slate-400 mb-6">
+                Create your first invoice to start tracking payments and
+                managing your business.
+              </p>
+              <CustomButton
+                label="Create Your First Invoice"
+                icon={PlusIcon}
+                variant="primary"
+                href={`/dashboard/invoices/new?business_id=${business_id}`}
+              />
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

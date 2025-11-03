@@ -182,6 +182,18 @@ export default function InvoiceSuccessView({
   const [bankAccountName, setBankAccountName] =
     React.useState<string>(initialBankDetails);
   const [notes, setNotes] = React.useState<string>(invoice.notes || "");
+  const [isCompactLayout, setIsCompactLayout] = React.useState(false);
+
+  React.useEffect(() => {
+    const updateLayout = () => {
+      if (typeof window === "undefined") return;
+      setIsCompactLayout(window.innerWidth < 768);
+    };
+
+    updateLayout();
+    window.addEventListener("resize", updateLayout);
+    return () => window.removeEventListener("resize", updateLayout);
+  }, []);
   // Currency helper - now uses the comprehensive currency list
   const getCurrencySymbol = (code?: string) => {
     const currencyCode = (code || "GBP").toUpperCase();
@@ -907,157 +919,165 @@ export default function InvoiceSuccessView({
         </div>
 
         {/* Items Table - Matches visible invoice design */}
-        <table
+        <div
           style={{
             width: "100%",
-            borderCollapse: "collapse",
-            marginBottom: 24,
-            border: "2px solid #1f2937",
-            borderRadius: "8px",
-            overflow: "hidden",
+            overflowX: isCompactLayout ? "auto" : "visible",
           }}
         >
-          <thead>
-            <tr style={{ backgroundColor: "#1f2937", color: "#fff" }}>
-              <th
-                style={{
-                  padding: "12px 16px",
-                  textAlign: "left",
-                  fontSize: 11,
-                  fontWeight: "bold",
-                  letterSpacing: "0.8px",
-                  textTransform: "uppercase",
-                }}
-              >
-                Description
-              </th>
-              <th
-                style={{
-                  padding: "12px 16px",
-                  textAlign: "center",
-                  fontSize: 11,
-                  fontWeight: "bold",
-                  width: "80px",
-                  letterSpacing: "0.8px",
-                  textTransform: "uppercase",
-                }}
-              >
-                Qty
-              </th>
-              <th
-                style={{
-                  padding: "12px 16px",
-                  textAlign: "right",
-                  fontSize: 11,
-                  fontWeight: "bold",
-                  width: "112px",
-                  letterSpacing: "0.8px",
-                  textTransform: "uppercase",
-                }}
-              >
-                Unit Price
-              </th>
-              <th
-                style={{
-                  padding: "12px 16px",
-                  textAlign: "center",
-                  fontSize: 11,
-                  fontWeight: "bold",
-                  width: "80px",
-                  letterSpacing: "0.8px",
-                  textTransform: "uppercase",
-                }}
-              >
-                Tax
-              </th>
-              <th
-                style={{
-                  padding: "12px 16px",
-                  textAlign: "right",
-                  fontSize: 11,
-                  fontWeight: "bold",
-                  width: "128px",
-                  letterSpacing: "0.8px",
-                  textTransform: "uppercase",
-                }}
-              >
-                Amount
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item: any, idx: number) => (
-              <tr
-                key={idx}
-                style={{
-                  borderBottom:
-                    idx < items.length - 1 ? "1px solid #f3f4f6" : "none",
-                  backgroundColor: "#fff",
-                }}
-              >
-                <td
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              marginBottom: 24,
+              border: "2px solid #1f2937",
+              borderRadius: "8px",
+              overflow: "hidden",
+              minWidth: isCompactLayout ? 640 : "100%",
+            }}
+          >
+            <thead>
+              <tr style={{ backgroundColor: "#1f2937", color: "#fff" }}>
+                <th
                   style={{
                     padding: "12px 16px",
-                    fontSize: 14,
-                    color: "#111827",
-                  }}
-                >
-                  {item.description || "-"}
-                </td>
-                <td
-                  style={{
-                    padding: "12px 16px",
-                    textAlign: "center",
-                    fontSize: 14,
-                    color: "#111827",
-                  }}
-                >
-                  {item.quantity || 0}
-                </td>
-                <td
-                  style={{
-                    padding: "12px 16px",
-                    textAlign: "right",
-                    fontSize: 14,
-                    color: "#111827",
-                  }}
-                >
-                  {getCurrencySymbol(invoice.currency || "GBP")}{" "}
-                  {Number(item.unit_price || 0).toFixed(2)}
-                </td>
-                <td
-                  style={{
-                    padding: "12px 16px",
-                    textAlign: "center",
-                    fontSize: 14,
-                    color: "#111827",
-                  }}
-                >
-                  {item.tax || 0}%
-                </td>
-                <td
-                  style={{
-                    padding: "12px 16px",
-                    textAlign: "right",
-                    fontSize: 14,
+                    textAlign: "left",
+                    fontSize: 11,
                     fontWeight: "bold",
-                    color: "#111827",
+                    letterSpacing: "0.8px",
+                    textTransform: "uppercase",
                   }}
                 >
-                  {getCurrencySymbol(invoice.currency || "GBP")}{" "}
-                  {Number(item.amount || 0).toFixed(2)}
-                </td>
+                  Description
+                </th>
+                <th
+                  style={{
+                    padding: "12px 16px",
+                    textAlign: "center",
+                    fontSize: 11,
+                    fontWeight: "bold",
+                    width: "80px",
+                    letterSpacing: "0.8px",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Qty
+                </th>
+                <th
+                  style={{
+                    padding: "12px 16px",
+                    textAlign: "right",
+                    fontSize: 11,
+                    fontWeight: "bold",
+                    width: "112px",
+                    letterSpacing: "0.8px",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Unit Price
+                </th>
+                <th
+                  style={{
+                    padding: "12px 16px",
+                    textAlign: "center",
+                    fontSize: 11,
+                    fontWeight: "bold",
+                    width: "80px",
+                    letterSpacing: "0.8px",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Tax
+                </th>
+                <th
+                  style={{
+                    padding: "12px 16px",
+                    textAlign: "right",
+                    fontSize: 11,
+                    fontWeight: "bold",
+                    width: "128px",
+                    letterSpacing: "0.8px",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Amount
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {items.map((item: any, idx: number) => (
+                <tr
+                  key={idx}
+                  style={{
+                    borderBottom:
+                      idx < items.length - 1 ? "1px solid #f3f4f6" : "none",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  <td
+                    style={{
+                      padding: "12px 16px",
+                      fontSize: 14,
+                      color: "#111827",
+                    }}
+                  >
+                    {item.description || "-"}
+                  </td>
+                  <td
+                    style={{
+                      padding: "12px 16px",
+                      textAlign: "center",
+                      fontSize: 14,
+                      color: "#111827",
+                    }}
+                  >
+                    {item.quantity || 0}
+                  </td>
+                  <td
+                    style={{
+                      padding: "12px 16px",
+                      textAlign: "right",
+                      fontSize: 14,
+                      color: "#111827",
+                    }}
+                  >
+                    {getCurrencySymbol(invoice.currency || "GBP")}{" "}
+                    {Number(item.unit_price || 0).toFixed(2)}
+                  </td>
+                  <td
+                    style={{
+                      padding: "12px 16px",
+                      textAlign: "center",
+                      fontSize: 14,
+                      color: "#111827",
+                    }}
+                  >
+                    {item.tax || 0}%
+                  </td>
+                  <td
+                    style={{
+                      padding: "12px 16px",
+                      textAlign: "right",
+                      fontSize: 14,
+                      fontWeight: "bold",
+                      color: "#111827",
+                    }}
+                  >
+                    {getCurrencySymbol(invoice.currency || "GBP")}{" "}
+                    {Number(item.amount || 0).toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         {/* Bottom Section: Bank Details, Notes & Summary - Matches visible invoice */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 24,
+            gridTemplateColumns: isCompactLayout ? "1fr" : "1fr 1fr",
+            gap: isCompactLayout ? 16 : 24,
             marginTop: 24,
           }}
         >
@@ -1455,12 +1475,12 @@ export default function InvoiceSuccessView({
           )}
 
           <CardContent
-            className="p-6 bg-white"
+            className="bg-white p-4 sm:p-6"
             style={{
               height: "auto",
               backgroundColor: "#ffffff",
               color: "#000000",
-              padding: "24px",
+              padding: isCompactLayout ? "16px" : "24px",
             }}
           >
             {isPublicView && (
@@ -1792,186 +1812,233 @@ export default function InvoiceSuccessView({
               {/* Professional Items Table */}
               <div className="mb-6" style={{ marginBottom: "24px" }}>
                 <div
-                  className="overflow-hidden rounded-lg border-2 border-gray-800"
+                  className="overflow-x-auto"
                   style={{
-                    overflow: "hidden",
-                    borderRadius: "8px",
-                    border: "2px solid #1f2937",
+                    overflowX: isCompactLayout ? "auto" : "visible",
                   }}
                 >
-                  <table
-                    className="w-full"
-                    style={{ borderCollapse: "collapse", width: "100%" }}
+                  <div
+                    className="overflow-hidden rounded-lg border-2 border-gray-800"
+                    style={{
+                      overflow: "hidden",
+                      borderRadius: "8px",
+                      border: "2px solid #1f2937",
+                    }}
                   >
-                    <thead>
-                      <tr
-                        className="bg-gray-800 text-white"
-                        style={{ backgroundColor: "#1f2937", color: "#fff" }}
-                      >
-                        <th
-                          className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide"
-                          style={{
-                            padding: "12px 16px",
-                            textAlign: "left",
-                            fontSize: "11px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.8px",
-                          }}
-                        >
-                          Description
-                        </th>
-                        <th
-                          className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide w-20"
-                          style={{
-                            padding: "12px 16px",
-                            textAlign: "center",
-                            fontSize: "11px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.8px",
-                            width: "80px",
-                          }}
-                        >
-                          Qty
-                        </th>
-                        <th
-                          className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wide w-28"
-                          style={{
-                            padding: "12px 16px",
-                            textAlign: "right",
-                            fontSize: "11px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.8px",
-                            width: "112px",
-                          }}
-                        >
-                          Unit Price
-                        </th>
-                        <th
-                          className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide w-20"
-                          style={{
-                            padding: "12px 16px",
-                            textAlign: "center",
-                            fontSize: "11px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.8px",
-                            width: "80px",
-                          }}
-                        >
-                          Tax
-                        </th>
-                        <th
-                          className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wide w-32"
-                          style={{
-                            padding: "12px 16px",
-                            textAlign: "right",
-                            fontSize: "11px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.8px",
-                            width: "128px",
-                          }}
-                        >
-                          Amount
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody
-                      className="bg-white"
-                      style={{ backgroundColor: "#fff" }}
+                    <table
+                      className="w-full"
+                      style={{
+                        borderCollapse: "collapse",
+                        width: "100%",
+                        minWidth: isCompactLayout ? 640 : "100%",
+                      }}
                     >
-                      {isEditing && isEnterprise ? (
-                        itemRows.length > 0 ? (
-                          itemRows.map((item: any, index: number) => (
+                      <thead>
+                        <tr
+                          className="bg-gray-800 text-white"
+                          style={{ backgroundColor: "#1f2937", color: "#fff" }}
+                        >
+                          <th
+                            className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide"
+                            style={{
+                              padding: "12px 16px",
+                              textAlign: "left",
+                              fontSize: "11px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.8px",
+                            }}
+                          >
+                            Description
+                          </th>
+                          <th
+                            className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide w-20"
+                            style={{
+                              padding: "12px 16px",
+                              textAlign: "center",
+                              fontSize: "11px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.8px",
+                              width: "80px",
+                            }}
+                          >
+                            Qty
+                          </th>
+                          <th
+                            className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wide w-28"
+                            style={{
+                              padding: "12px 16px",
+                              textAlign: "right",
+                              fontSize: "11px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.8px",
+                              width: "112px",
+                            }}
+                          >
+                            Unit Price
+                          </th>
+                          <th
+                            className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wide w-20"
+                            style={{
+                              padding: "12px 16px",
+                              textAlign: "center",
+                              fontSize: "11px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.8px",
+                              width: "80px",
+                            }}
+                          >
+                            Tax
+                          </th>
+                          <th
+                            className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wide w-32"
+                            style={{
+                              padding: "12px 16px",
+                              textAlign: "right",
+                              fontSize: "11px",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.8px",
+                              width: "128px",
+                            }}
+                          >
+                            Amount
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody
+                        className="bg-white"
+                        style={{ backgroundColor: "#fff" }}
+                      >
+                        {isEditing && isEnterprise ? (
+                          itemRows.length > 0 ? (
+                            itemRows.map((item: any, index: number) => (
+                              <tr
+                                key={index}
+                                className="border-b border-gray-100 last:border-b-0"
+                              >
+                                <td className="px-4 py-3 text-sm">
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      value={item.description || ""}
+                                      onChange={(e) => {
+                                        updateItem(index, {
+                                          description: e.target.value,
+                                        });
+                                      }}
+                                      placeholder="Item description"
+                                      className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm"
+                                    />
+                                    <Button
+                                      size="sm"
+                                      variant="secondary"
+                                      onClick={() => removeItem(index)}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    step={1}
+                                    value={item.quantity ?? 0}
+                                    onChange={(e) => {
+                                      const val = parseInt(
+                                        e.target.value || "0",
+                                        10
+                                      );
+                                      updateItem(index, {
+                                        quantity: Number.isFinite(val)
+                                          ? val
+                                          : 0,
+                                      });
+                                      recalcAmounts();
+                                    }}
+                                    className="w-16 text-center text-sm border border-gray-300 rounded px-2 py-1"
+                                  />
+                                </td>
+                                <td className="px-4 py-3 text-right">
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    step={0.01}
+                                    value={item.unit_price ?? 0}
+                                    onChange={(e) => {
+                                      const val = parseFloat(
+                                        e.target.value || "0"
+                                      );
+                                      updateItem(index, {
+                                        unit_price: Number.isFinite(val)
+                                          ? val
+                                          : 0,
+                                      });
+                                      recalcAmounts();
+                                    }}
+                                    className="w-24 text-right text-sm border border-gray-300 rounded px-2 py-1"
+                                  />
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    max={100}
+                                    step={0.01}
+                                    value={item.tax ?? 0}
+                                    onChange={(e) => {
+                                      const val = parseFloat(
+                                        e.target.value || "0"
+                                      );
+                                      updateItem(index, {
+                                        tax: Number.isFinite(val) ? val : 0,
+                                      });
+                                      recalcAmounts();
+                                    }}
+                                    className="w-16 text-center text-sm border border-gray-300 rounded px-2 py-1"
+                                  />
+                                </td>
+                                <td className="px-4 py-3 text-right font-bold text-gray-900">
+                                  {getCurrencySymbol(currency)}
+                                  {Number(item.amount || 0).toFixed(2)}
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td
+                                colSpan={5}
+                                className="px-4 py-8 text-center text-sm text-gray-500"
+                              >
+                                No items yet
+                              </td>
+                            </tr>
+                          )
+                        ) : items.length > 0 ? (
+                          items.map((item: any, index: number) => (
                             <tr
                               key={index}
                               className="border-b border-gray-100 last:border-b-0"
                             >
-                              <td className="px-4 py-3 text-sm">
-                                <div className="flex items-center gap-2">
-                                  <input
-                                    value={item.description || ""}
-                                    onChange={(e) => {
-                                      updateItem(index, {
-                                        description: e.target.value,
-                                      });
-                                    }}
-                                    placeholder="Item description"
-                                    className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm"
-                                  />
-                                  <Button
-                                    size="sm"
-                                    variant="secondary"
-                                    onClick={() => removeItem(index)}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
+                              <td className="px-4 py-3.5 text-sm text-gray-900">
+                                {item.description || "No description"}
                               </td>
-                              <td className="px-4 py-3 text-center">
-                                <input
-                                  type="number"
-                                  min={0}
-                                  step={1}
-                                  value={item.quantity ?? 0}
-                                  onChange={(e) => {
-                                    const val = parseInt(
-                                      e.target.value || "0",
-                                      10
-                                    );
-                                    updateItem(index, {
-                                      quantity: Number.isFinite(val) ? val : 0,
-                                    });
-                                    recalcAmounts();
-                                  }}
-                                  className="w-16 text-center text-sm border border-gray-300 rounded px-2 py-1"
-                                />
+                              <td className="px-4 py-3.5 text-center text-sm text-gray-900">
+                                {item.quantity || 0}
                               </td>
-                              <td className="px-4 py-3 text-right">
-                                <input
-                                  type="number"
-                                  min={0}
-                                  step={0.01}
-                                  value={item.unit_price ?? 0}
-                                  onChange={(e) => {
-                                    const val = parseFloat(
-                                      e.target.value || "0"
-                                    );
-                                    updateItem(index, {
-                                      unit_price: Number.isFinite(val)
-                                        ? val
-                                        : 0,
-                                    });
-                                    recalcAmounts();
-                                  }}
-                                  className="w-24 text-right text-sm border border-gray-300 rounded px-2 py-1"
-                                />
+                              <td className="px-4 py-3.5 text-right text-sm text-gray-900">
+                                {getCurrencySymbol(invoice.currency || "GBP")}{" "}
+                                {(item.unit_price || 0).toFixed(2)}
                               </td>
-                              <td className="px-4 py-3 text-center">
-                                <input
-                                  type="number"
-                                  min={0}
-                                  max={100}
-                                  step={0.01}
-                                  value={item.tax ?? 0}
-                                  onChange={(e) => {
-                                    const val = parseFloat(
-                                      e.target.value || "0"
-                                    );
-                                    updateItem(index, {
-                                      tax: Number.isFinite(val) ? val : 0,
-                                    });
-                                    recalcAmounts();
-                                  }}
-                                  className="w-16 text-center text-sm border border-gray-300 rounded px-2 py-1"
-                                />
+                              <td className="px-4 py-3.5 text-center text-sm text-gray-900">
+                                {item.tax || 0}%
                               </td>
-                              <td className="px-4 py-3 text-right font-bold text-gray-900">
-                                {getCurrencySymbol(currency)}
-                                {Number(item.amount || 0).toFixed(2)}
+                              <td className="px-4 py-3.5 text-right font-bold text-gray-900">
+                                {getCurrencySymbol(invoice.currency || "GBP")}{" "}
+                                {(item.amount || 0).toFixed(2)}
                               </td>
                             </tr>
                           ))
@@ -1981,47 +2048,13 @@ export default function InvoiceSuccessView({
                               colSpan={5}
                               className="px-4 py-8 text-center text-sm text-gray-500"
                             >
-                              No items yet
+                              No items found
                             </td>
                           </tr>
-                        )
-                      ) : items.length > 0 ? (
-                        items.map((item: any, index: number) => (
-                          <tr
-                            key={index}
-                            className="border-b border-gray-100 last:border-b-0"
-                          >
-                            <td className="px-4 py-3.5 text-sm text-gray-900">
-                              {item.description || "No description"}
-                            </td>
-                            <td className="px-4 py-3.5 text-center text-sm text-gray-900">
-                              {item.quantity || 0}
-                            </td>
-                            <td className="px-4 py-3.5 text-right text-sm text-gray-900">
-                              {getCurrencySymbol(invoice.currency || "GBP")}{" "}
-                              {(item.unit_price || 0).toFixed(2)}
-                            </td>
-                            <td className="px-4 py-3.5 text-center text-sm text-gray-900">
-                              {item.tax || 0}%
-                            </td>
-                            <td className="px-4 py-3.5 text-right font-bold text-gray-900">
-                              {getCurrencySymbol(invoice.currency || "GBP")}{" "}
-                              {(item.amount || 0).toFixed(2)}
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td
-                            colSpan={5}
-                            className="px-4 py-8 text-center text-sm text-gray-500"
-                          >
-                            No items found
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
                 {isEditing && isEnterprise && (
                   <div className="mt-3">
@@ -2042,8 +2075,8 @@ export default function InvoiceSuccessView({
                 className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6"
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "24px",
+                  gridTemplateColumns: isCompactLayout ? "1fr" : "1fr 1fr",
+                  gap: isCompactLayout ? "20px" : "24px",
                   paddingTop: "24px",
                 }}
               >
