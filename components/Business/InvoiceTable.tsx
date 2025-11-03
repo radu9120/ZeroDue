@@ -32,6 +32,37 @@ import {
   toEmailStatusState,
 } from "@/lib/email-status";
 
+const formatInvoiceAmount = (value: unknown, currency?: string) => {
+  const currencyCode = (currency || "GBP").toUpperCase();
+
+  const toNumber = (raw: unknown) => {
+    if (typeof raw === "number" && Number.isFinite(raw)) return raw;
+    if (typeof raw === "string") {
+      const parsed = Number(raw.replace(/[^0-9.-]/g, ""));
+      if (Number.isFinite(parsed)) return parsed;
+    }
+    return null;
+  };
+
+  const amount = toNumber(value);
+
+  if (amount === null) {
+    return typeof value === "string" && value.trim().length > 0
+      ? value
+      : `${currencyCode} ${value ?? ""}`.trim();
+  }
+
+  try {
+    return new Intl.NumberFormat("en-GB", {
+      style: "currency",
+      currency: currencyCode,
+    }).format(amount);
+  } catch (error) {
+    console.warn("Currency formatting error", error);
+    return `${currencyCode} ${amount.toFixed(2)}`;
+  }
+};
+
 const applyStatusPatchToInvoice = (
   invoice: InvoiceListItem,
   patch: EmailStatusPatch
@@ -832,7 +863,7 @@ export default function InvoiceTable({
                       </div>
                       <div>
                         <p className="font-semibold text-header-text dark:text-slate-100">
-                          {invoice.total}
+                          {formatInvoiceAmount(invoice.total, invoice.currency)}
                         </p>
                       </div>
                       <div>{getStatusBadge(invoice?.status || "draft")}</div>

@@ -8,7 +8,7 @@ type ButtonProps = {
   target?: "_blank";
   href?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  variant: "primary" | "secondary" | "ghost";
+  variant: "primary" | "secondary" | "ghost" | "neutral" | "neutralOutline";
   type?: "button" | "submit" | "reset";
   children?: React.ReactNode;
   disabled?: boolean;
@@ -37,6 +37,8 @@ const CustomButton: React.FC<ButtonProps> = ({
             ''
         `,
     ghost: "",
+    neutral: "",
+    neutralOutline: "",
   };
 
   // Apply styles based on the variant prop

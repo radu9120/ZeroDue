@@ -71,7 +71,7 @@ export default async function NewInvoice({
           </div>
         </div>
 
-        <article className="bg-white dark:bg-slate-800 rounded-xl mx-auto shadow-2xl max-w-4xl w-full p-4 md:p-6">
+        <article className="bg-white dark:bg-slate-800 rounded-2xl mx-auto shadow-2xl ring-1 ring-blue-100/60 dark:ring-slate-700/60 max-w-6xl w-full p-4 md:p-6 lg:p-8">
           <InvoiceForm company_data={business} clients={clients} />
         </article>
       </Bounded>

@@ -17,6 +17,10 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         ghost:
           "hover:bg-blue-100 hover:text-accent-foreground dark:hover:bg-slate-700 dark:text-slate-200",
+        neutral:
+          "bg-neutral-900 text-white hover:bg-neutral-800 border border-neutral-900 shadow-xs dark:bg-neutral-100 dark:text-slate-900 dark:hover:bg-neutral-200 dark:border-neutral-200",
+        neutralOutline:
+          "border border-neutral-300 text-neutral-700 bg-white hover:bg-neutral-100 shadow-xs dark:border-neutral-600 dark:text-neutral-200 dark:hover:bg-neutral-700/40 dark:bg-transparent",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

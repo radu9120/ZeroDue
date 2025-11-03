@@ -197,8 +197,8 @@ export const ClientForm = ({
           <div className="flex gap-3">
             <Button
               type="button"
-              variant="secondary"
-              className="flex-1 border-blue-200 dark:border-slate-700"
+              variant="neutralOutline"
+              className="flex-1"
               disabled={pending}
               onClick={() => {
                 if (closeModal) {
@@ -212,7 +212,8 @@ export const ClientForm = ({
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-gradient-to-r from-primary to-accent text-white"
+              variant="neutral"
+              className="flex-1"
               disabled={!form.formState.isValid || pending}
             >
               <Plus className="h-4 w-4 mr-2" />
