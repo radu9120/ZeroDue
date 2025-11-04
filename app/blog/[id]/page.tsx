@@ -5,9 +5,9 @@ import { notFound } from "next/navigation";
 import { blogPosts, findBlogPost } from "../posts";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export function generateStaticParams() {
@@ -16,8 +16,11 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
-  const post = findBlogPost(params.slug);
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = findBlogPost(slug);
 
   if (!post) {
     return {
@@ -33,8 +36,9 @@ export function generateMetadata({ params }: PageProps): Metadata {
   };
 }
 
-export default function BlogPostPage({ params }: PageProps) {
-  const post = findBlogPost(params.slug);
+export default async function BlogPostPage({ params }: PageProps) {
+  const { slug } = await params;
+  const post = findBlogPost(slug);
 
   if (!post) {
     notFound();
