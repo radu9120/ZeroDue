@@ -50,12 +50,12 @@ export default async function BlogPostPage({ params }: PageProps) {
         <div className="mx-auto max-w-4xl">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-green-700 transition hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
+            className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-green-700 transition hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
           >
             <span aria-hidden="true">←</span>
             Back to all stories
           </Link>
-          <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-green-700 dark:bg-green-900/30 dark:text-green-300">
+          <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-green-700 dark:bg-green-900/30 dark:text-green-300">
             {post.category}
           </span>
           <h1 className="mt-8 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl lg:text-5xl">

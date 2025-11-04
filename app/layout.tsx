@@ -68,7 +68,7 @@ export default function RootLayout({
         <body
           className={`${inter.className} bg-white dark:bg-slate-900 transition-colors`}
         >
-          <ThemeProvider defaultTheme="light" storageKey="invoiceflow-theme">
+          <ThemeProvider defaultTheme="system" storageKey="invoiceflow-theme">
             <Analytics />
             <Suspense fallback={null}>
               <HideOnRoutes routes={["/invoice"]}>
