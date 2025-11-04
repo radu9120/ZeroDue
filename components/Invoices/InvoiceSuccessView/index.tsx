@@ -721,11 +721,12 @@ export default function InvoiceSuccessView({
     }
   }, [invoice?.id, isPublicView]);
 
-  const baseInvoiceContainerClass =
-    "mx-auto w-full max-w-[794px] bg-white px-8 py-10 sm:px-12 sm:py-12 rounded-2xl";
+  const baseInvoiceContainerClass = isCompactLayout
+    ? "w-full max-w-none bg-white px-4 py-6 sm:px-6 sm:py-8 rounded-xl"
+    : "mx-auto w-full max-w-[794px] bg-white px-8 py-10 sm:px-12 sm:py-12 rounded-2xl";
   const invoiceContainerClass = isPublicView
-    ? `${baseInvoiceContainerClass} shadow-lg`
-    : `${baseInvoiceContainerClass} shadow-xl`;
+    ? `${baseInvoiceContainerClass} ${isCompactLayout ? "shadow-md" : "shadow-lg"}`
+    : `${baseInvoiceContainerClass} ${isCompactLayout ? "shadow-lg" : "shadow-xl"}`;
 
   const rawDescription = (invoice.description || "").trim();
   const isDefaultDescription =
@@ -912,6 +913,7 @@ export default function InvoiceSuccessView({
                   currency={currency}
                   invoice={invoice}
                   getCurrencySymbol={getCurrencySymbol}
+                  isCompactLayout={isCompactLayout}
                 />
               </div>
             </div>

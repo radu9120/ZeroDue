@@ -13,6 +13,7 @@ interface InvoiceSummarySectionProps {
   currency: string;
   invoice: InvoiceListItem;
   getCurrencySymbol: (code?: string) => string;
+  isCompactLayout: boolean;
 }
 
 export function InvoiceSummarySection({
@@ -26,6 +27,7 @@ export function InvoiceSummarySection({
   currency,
   invoice,
   getCurrencySymbol,
+  isCompactLayout,
 }: InvoiceSummarySectionProps) {
   const symbol =
     isEditing && isEnterprise
@@ -48,22 +50,25 @@ export function InvoiceSummarySection({
   return (
     <div>
       <div
-        className="bg-white rounded-lg border-2 border-gray-800 overflow-hidden"
+        className={`bg-white rounded-lg overflow-hidden ${isCompactLayout ? "border border-gray-200" : "border-2 border-gray-800"}`}
         style={{
           backgroundColor: "#fff",
           borderRadius: "8px",
-          border: "2px solid #1f2937",
+          border: isCompactLayout ? "1px solid #e5e7eb" : "2px solid #1f2937",
           overflow: "hidden",
         }}
       >
         <div
-          className="bg-gray-800 px-5 py-3"
-          style={{ backgroundColor: "#1f2937", padding: "12px 20px" }}
+          className="px-5 py-3"
+          style={{
+            backgroundColor: isCompactLayout ? "#111827" : "#1f2937",
+            padding: isCompactLayout ? "10px 18px" : "12px 20px",
+          }}
         >
           <h4
             className="text-sm font-bold text-white uppercase tracking-wide"
             style={{
-              fontSize: "14px",
+              fontSize: isCompactLayout ? "13px" : "14px",
               fontWeight: "bold",
               color: "#fff",
               textTransform: "uppercase",
@@ -75,28 +80,39 @@ export function InvoiceSummarySection({
           </h4>
         </div>
 
-        <div className="p-5 space-y-3" style={{ padding: "20px" }}>
+        <div
+          className="space-y-3"
+          style={{ padding: isCompactLayout ? "16px 18px" : "20px" }}
+        >
           <div
             className="flex justify-between items-center py-2 border-b border-gray-100"
             style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              paddingTop: "8px",
-              paddingBottom: "8px",
+              paddingTop: isCompactLayout ? "6px" : "8px",
+              paddingBottom: isCompactLayout ? "6px" : "8px",
               borderBottom: "1px solid #f3f4f6",
-              marginBottom: "8px",
+              marginBottom: isCompactLayout ? "6px" : "8px",
             }}
           >
             <span
               className="text-sm font-semibold text-gray-600"
-              style={{ fontSize: "14px", fontWeight: 600, color: "#4b5563" }}
+              style={{
+                fontSize: isCompactLayout ? "13px" : "14px",
+                fontWeight: 600,
+                color: "#4b5563",
+              }}
             >
               Subtotal
             </span>
             <span
               className="text-sm font-bold text-gray-900"
-              style={{ fontSize: "14px", fontWeight: "bold", color: "#111827" }}
+              style={{
+                fontSize: isCompactLayout ? "13px" : "14px",
+                fontWeight: "bold",
+                color: "#111827",
+              }}
             >
               {symbol}
               {subtotal.toFixed(2)}
@@ -109,15 +125,19 @@ export function InvoiceSummarySection({
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              paddingTop: "8px",
-              paddingBottom: "8px",
+              paddingTop: isCompactLayout ? "6px" : "8px",
+              paddingBottom: isCompactLayout ? "6px" : "8px",
               borderBottom: "1px solid #f3f4f6",
-              marginBottom: "8px",
+              marginBottom: isCompactLayout ? "6px" : "8px",
             }}
           >
             <span
               className="text-sm font-semibold text-gray-600"
-              style={{ fontSize: "14px", fontWeight: 600, color: "#4b5563" }}
+              style={{
+                fontSize: isCompactLayout ? "13px" : "14px",
+                fontWeight: 600,
+                color: "#4b5563",
+              }}
             >
               Shipping
             </span>
@@ -135,7 +155,7 @@ export function InvoiceSummarySection({
               <span
                 className="text-sm font-bold text-gray-900"
                 style={{
-                  fontSize: "14px",
+                  fontSize: isCompactLayout ? "13px" : "14px",
                   fontWeight: "bold",
                   color: "#111827",
                 }}
@@ -152,15 +172,19 @@ export function InvoiceSummarySection({
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              paddingTop: "8px",
-              paddingBottom: "8px",
+              paddingTop: isCompactLayout ? "6px" : "8px",
+              paddingBottom: isCompactLayout ? "6px" : "8px",
               borderBottom: "1px solid #f3f4f6",
-              marginBottom: "8px",
+              marginBottom: isCompactLayout ? "6px" : "8px",
             }}
           >
             <span
               className="text-sm font-semibold text-gray-600"
-              style={{ fontSize: "14px", fontWeight: 600, color: "#4b5563" }}
+              style={{
+                fontSize: isCompactLayout ? "13px" : "14px",
+                fontWeight: 600,
+                color: "#4b5563",
+              }}
             >
               Discount
             </span>
@@ -177,13 +201,18 @@ export function InvoiceSummarySection({
                   }
                   className="w-16 text-right text-sm border border-gray-300 rounded px-2 py-1"
                 />
-                <span className="text-sm text-gray-600">%</span>
+                <span
+                  className="text-sm text-gray-600"
+                  style={{ fontSize: isCompactLayout ? "13px" : "14px" }}
+                >
+                  %
+                </span>
               </div>
             ) : (
               <span
                 className="text-sm font-bold text-gray-900"
                 style={{
-                  fontSize: "14px",
+                  fontSize: isCompactLayout ? "13px" : "14px",
                   fontWeight: "bold",
                   color: "#111827",
                 }}
@@ -194,11 +223,11 @@ export function InvoiceSummarySection({
           </div>
 
           <div
-            className="bg-gray-800 rounded-lg p-4 mt-4"
+            className="rounded-lg p-4 mt-4"
             style={{
-              backgroundColor: "#1f2937",
+              backgroundColor: isCompactLayout ? "#111827" : "#1f2937",
               borderRadius: "8px",
-              padding: "16px",
+              padding: isCompactLayout ? "14px" : "16px",
               marginTop: "12px",
             }}
           >
@@ -206,7 +235,7 @@ export function InvoiceSummarySection({
               <div
                 className="text-xs font-bold text-white uppercase tracking-wider mb-2"
                 style={{
-                  fontSize: "11px",
+                  fontSize: isCompactLayout ? "10px" : "11px",
                   fontWeight: "bold",
                   color: "#fff",
                   textTransform: "uppercase",
@@ -218,7 +247,11 @@ export function InvoiceSummarySection({
               </div>
               <div
                 className="text-3xl font-bold text-white"
-                style={{ fontSize: "28px", fontWeight: "bold", color: "#fff" }}
+                style={{
+                  fontSize: isCompactLayout ? "24px" : "28px",
+                  fontWeight: "bold",
+                  color: "#fff",
+                }}
               >
                 {symbol}
                 {(Number.isFinite(total) ? total : 0).toFixed(2)}
