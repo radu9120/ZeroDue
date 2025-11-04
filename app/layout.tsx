@@ -25,6 +25,32 @@ export const metadata: Metadata = {
   title: "InvoiceFlow - Modern Invoicing Solution",
   description:
     "Streamline your invoicing process with our powerful, intuitive platform.",
+  openGraph: {
+    type: "website",
+    locale: "en_GB",
+    url: "https://www.invcyflow.com",
+    title: "InvoiceFlow • Modern Invoicing Solution",
+    description:
+      "InvoiceFlow automates invoices, tracks payments, and gives you the insights to stay cash-flow positive.",
+    siteName: "InvoiceFlow",
+    images: [
+      {
+        url: "https://www.invcyflow.com/og-cover.png",
+        width: 1200,
+        height: 630,
+        alt: "InvoiceFlow dashboard preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@invoiceflow",
+    creator: "@invoiceflow",
+    title: "InvoiceFlow • Modern Invoicing Solution",
+    description:
+      "Send professional invoices, automate follow-up, and monitor cash flow in one place.",
+    images: ["https://www.invcyflow.com/og-cover.png"],
+  },
 };
 
 export default function RootLayout({
