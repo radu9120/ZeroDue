@@ -13,7 +13,8 @@ import { useRouter } from "next/navigation";
 
 const formatCurrency = (amount?: number, currency?: string | null) => {
   if (!amount || Number.isNaN(amount)) {
-    return "$0.00";
+    const symbol = currency && typeof currency === "string" ? currency : "USD";
+    return `${symbol} 0.00`;
   }
 
   const safeCurrency =
@@ -27,12 +28,7 @@ const formatCurrency = (amount?: number, currency?: string | null) => {
       maximumFractionDigits: 2,
     }).format(amount);
   } catch {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
+    return `${safeCurrency} ${amount.toFixed(2)}`;
   }
 };
 
