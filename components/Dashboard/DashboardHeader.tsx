@@ -73,7 +73,7 @@ export default function DashboardHeader({
           {isPaidPlan && (
             <button
               onClick={() => (window.location.href = "/upgrade")}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-medium text-white transition-all hover:from-primary/90 hover:to-accent/90 sm:w-auto"
+              className="hidden w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-medium text-white transition-all hover:from-primary/90 hover:to-accent/90 sm:flex sm:w-auto"
             >
               <Crown className="h-4 w-4" />
               <span>Manage Plan</span>

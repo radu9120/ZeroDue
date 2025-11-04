@@ -845,11 +845,11 @@ export default function InvoiceTable({
           </div>
 
           {invoiceRows.length > 0 ? (
-            <div className="divide-y divide-blue-100 dark:divide-slate-700">
+            <div className="space-y-4 md:space-y-0 md:divide-y md:divide-blue-100 dark:md:divide-slate-700">
               {invoiceRows.map((invoice) => (
                 <div
                   key={invoice.id}
-                  className="grid w-full gap-4 px-3 py-4 transition-colors hover:bg-blue-50/50 md:grid-cols-7 md:px-4 md:py-3"
+                  className="flex w-full flex-col gap-4 rounded-2xl border border-blue-100 bg-white px-4 py-4 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-800 md:grid md:grid-cols-7 md:gap-2 md:rounded-none md:border-0 md:bg-transparent md:px-4 md:py-3 md:shadow-none md:hover:bg-blue-50/50 dark:md:hover:bg-slate-800"
                 >
                   <div className="min-w-0">
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
@@ -902,7 +902,7 @@ export default function InvoiceTable({
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Email Status
                     </span>
-                    <div className="mt-1 flex flex-wrap items-center gap-1 md:mt-0">
+                    <div className="mt-2 flex flex-wrap items-center gap-1 md:mt-0">
                       {(() => {
                         const badges = buildEmailStatusBadges(invoice);
 
@@ -930,11 +930,11 @@ export default function InvoiceTable({
                     </div>
                   </div>
 
-                  <div className="md:text-right">
+                  <div className="border-t border-blue-100 pt-3 md:border-none md:pt-0 md:text-right dark:border-slate-700">
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Actions
                     </span>
-                    <div className="mt-2 flex flex-wrap items-center justify-start gap-2 md:mt-0 md:justify-end">
+                    <div className="mt-3 flex flex-wrap items-center justify-start gap-2 md:mt-0 md:justify-end">
                       <Link
                         href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}`}
                       >
