@@ -6,21 +6,21 @@ import { blogPosts, findBlogPost } from "../posts";
 
 type PageProps = {
   params: Promise<{
-    slug: string;
+    id: string;
   }>;
 };
 
 export function generateStaticParams() {
   return blogPosts.map((post) => ({
-    slug: post.slug,
+    id: post.slug,
   }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const post = findBlogPost(slug);
+  const { id } = await params;
+  const post = findBlogPost(id);
 
   if (!post) {
     return {
@@ -37,8 +37,8 @@ export async function generateMetadata({
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
-  const { slug } = await params;
-  const post = findBlogPost(slug);
+  const { id } = await params;
+  const post = findBlogPost(id);
 
   if (!post) {
     notFound();
