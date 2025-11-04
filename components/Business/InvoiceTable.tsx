@@ -33,7 +33,23 @@ import {
 } from "@/lib/email-status";
 
 const formatInvoiceAmount = (value: unknown, currency?: string) => {
-  const currencyCode = (currency || "GBP").toUpperCase();
+  const normalizeCurrencyCode = (raw?: string) => {
+    if (!raw) return "GBP";
+    const trimmed = raw.trim().toUpperCase();
+    const aliases: Record<string, string> = {
+      "BRITISH POUND": "GBP",
+      "UK POUND": "GBP",
+      POUND: "GBP",
+      GBR: "GBP",
+      "£": "GBP",
+    };
+
+    if (aliases[trimmed]) return aliases[trimmed];
+    return /^[A-Z]{3}$/.test(trimmed) ? trimmed : "GBP";
+  };
+
+  const currencyCode = normalizeCurrencyCode(currency);
+  const currencySymbol = currencyCode === "GBP" ? "£" : currencyCode;
 
   const toNumber = (raw: unknown) => {
     if (typeof raw === "number" && Number.isFinite(raw)) return raw;
@@ -49,7 +65,7 @@ const formatInvoiceAmount = (value: unknown, currency?: string) => {
   if (amount === null) {
     return typeof value === "string" && value.trim().length > 0
       ? value
-      : `${currencyCode} ${value ?? ""}`.trim();
+      : `${currencySymbol} ${value ?? ""}`.trim();
   }
 
   try {

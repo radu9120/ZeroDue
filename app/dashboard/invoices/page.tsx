@@ -124,8 +124,8 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-3 md:space-x-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-              <FileText className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0 dark:bg-blue-900/40">
+              <FileText className="h-5 w-5 md:h-6 md:w-6 text-blue-600 dark:text-blue-200" />
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-slate-100">
@@ -149,69 +149,73 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-900 border-blue-200 dark:from-slate-900 dark:to-slate-800 dark:text-slate-100 dark:border-slate-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-blue-700">
+                  <p className="text-sm font-medium text-blue-700 dark:text-blue-200">
                     Total Invoices
                   </p>
-                  <p className="text-2xl font-bold text-blue-900">
+                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                     {stats.total}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <FileText className="h-6 w-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center dark:bg-blue-900/40">
+                  <FileText className="h-6 w-6 text-blue-600 dark:text-blue-200" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 text-green-900 border-green-200 dark:from-slate-900 dark:to-slate-800 dark:text-slate-100 dark:border-slate-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-green-700">Paid</p>
-                  <p className="text-2xl font-bold text-green-900">
+                  <p className="text-sm font-medium text-green-700 dark:text-green-200">
+                    Paid
+                  </p>
+                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">
                     {stats.paid}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center dark:bg-green-900/40">
+                  <DollarSign className="h-6 w-6 text-green-600 dark:text-green-200" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200">
+          <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 text-yellow-900 border-yellow-200 dark:from-slate-900 dark:to-slate-800 dark:text-slate-100 dark:border-slate-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-yellow-700">Pending</p>
-                  <p className="text-2xl font-bold text-yellow-900">
+                  <p className="text-sm font-medium text-yellow-700 dark:text-yellow-200">
+                    Pending
+                  </p>
+                  <p className="text-2xl font-bold text-yellow-900 dark:text-yellow-100">
                     {stats.pending}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                  <Calendar className="h-6 w-6 text-yellow-600" />
+                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center dark:bg-yellow-900/40">
+                  <Calendar className="h-6 w-6 text-yellow-600 dark:text-yellow-200" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
+          <Card className="bg-gradient-to-br from-purple-50 to-violet-50 text-purple-900 border-purple-200 dark:from-slate-900 dark:to-slate-800 dark:text-slate-100 dark:border-slate-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-purple-700">
+                  <p className="text-sm font-medium text-purple-700 dark:text-purple-200">
                     Total Amount
                   </p>
-                  <p className="text-2xl font-bold text-purple-900">
+                  <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
                     £{stats.totalAmount.toFixed(2)}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-purple-600" />
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center dark:bg-purple-900/40">
+                  <DollarSign className="h-6 w-6 text-purple-600 dark:text-purple-200" />
                 </div>
               </div>
             </CardContent>

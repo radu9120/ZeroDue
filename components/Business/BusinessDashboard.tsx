@@ -7,7 +7,7 @@ import {
   SettingsIcon,
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import CustomButton from "../ui/CustomButton";
 import CustomModal from "../ModalsForms/CustomModal";
 import { UpdateBusiness } from "./Forms/UpdateBusiness";
@@ -21,6 +21,15 @@ export default function BusinessDashboard({
   userPlan: "free_user" | "professional" | "enterprise";
   createDisabled?: boolean;
 }) {
+  useEffect(() => {
+    try {
+      localStorage.setItem("activeBusinessId", String(business.id));
+      localStorage.setItem("activeBusinessName", business.name ?? "");
+    } catch (_) {
+      // Ignore storage access issues
+    }
+  }, [business.id, business.name]);
+
   return (
     <div className="space-y-6">
       <Link

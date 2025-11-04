@@ -12,7 +12,7 @@ import {
   Mail,
   Book,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function HelpCenterPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
@@ -23,68 +23,102 @@ export default function HelpCenterPage() {
       category: "Getting Started",
       questions: [
         {
+          question: "How do I create my first company?",
+          answer:
+            'Open the dashboard and select the "Create Your First Company" button (or "New Company" if you already have one). Add your business name, contact details, and save—this company becomes the profile used on every invoice you generate.',
+        },
+        {
           question: "How do I create my first invoice?",
           answer:
-            "To create your first invoice, log into your account and click 'Create Invoice' on your dashboard. Fill in your client's details, add items or services, set your payment terms, and click 'Send'. Your invoice will be automatically generated and sent to your client.",
+            'From the dashboard, click into a company card and choose "Create Invoice". Fill in the line items, taxes, and client details, then save. You can immediately view, download, or send the invoice to your customer.',
         },
         {
-          question: "How do I set up my business profile?",
+          question: "How do I add clients to a company?",
           answer:
-            "Go to Settings > Business Profile to add your company information, logo, contact details, and tax information. This information will appear on all your invoices automatically.",
-        },
-        {
-          question: "Can I customize my invoice templates?",
-          answer:
-            "Yes! InvoiceFlow offers several professional templates. You can customize colors, add your logo, and modify the layout to match your brand. Go to Settings > Invoice Templates to get started.",
+            'Use the "Manage Clients" quick action (or visit /dashboard/clients) with the relevant business selected. Click "Add Client", complete their contact information, and they will appear in dropdowns when you build invoices.',
         },
       ],
     },
     {
-      category: "Billing & Payments",
+      category: "Invoices & Payments",
       questions: [
         {
-          question: "What payment methods do you accept?",
+          question: "How do I send an invoice to a client?",
           answer:
-            "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers. Your clients can pay invoices using their preferred method through our secure payment gateway.",
+            'After creating an invoice, open it from the invoice list and use the "Send to Client" option. InvoiceFlow emails the branded PDF and begins tracking delivery, opens, and clicks directly in the invoice table.',
         },
         {
-          question: "How do I track payment status?",
+          question: "How do payment statuses update?",
           answer:
-            "All invoice payments are tracked in real-time on your dashboard. You'll receive email notifications when invoices are viewed, paid, or overdue. You can also check the status anytime in your Invoices section.",
+            "Statuses move from Draft to Sent when you email the invoice. Mark it as Paid once you confirm payment, or set it to Overdue if the due date passes. These statuses flow through analytics on the dashboard automatically.",
         },
         {
-          question: "Can I set up recurring invoices?",
+          question: "Can clients pay invoices online inside InvoiceFlow?",
           answer:
-            "Absolutely! You can set up recurring invoices for regular clients. Choose weekly, monthly, quarterly, or annual billing cycles. The system will automatically generate and send invoices according to your schedule.",
-        },
-        {
-          question: "What are your transaction fees?",
-          answer:
-            "We charge a small processing fee of 2.9% + $0.30 per successful transaction. There are no hidden fees, setup costs, or monthly minimums. You only pay when you get paid.",
+            "Not yet. Today, invoices include the payment instructions you provide (such as bank details). Once the client pays through your normal process, update the invoice status to keep records accurate.",
         },
       ],
     },
     {
-      category: "Account Management",
+      category: "Plans & Limits",
       questions: [
         {
-          question: "How do I upgrade or downgrade my plan?",
+          question: "What limits apply to each plan?",
           answer:
-            "You can change your plan anytime in Settings > Billing. Upgrades take effect immediately, while downgrades will take effect at the end of your current billing cycle. No cancellation fees apply.",
+            "Free users can manage one company and keep one active invoice. Professional users can manage up to three companies and send ten invoices per month. Enterprise removes these limits and unlocks advanced controls.",
         },
         {
-          question: "Can I export my data?",
+          question: "What happens when I hit my plan limits?",
           answer:
-            "Yes, you can export all your invoices, client data, and reports in CSV or PDF format. Go to Settings > Data Export to download your information at any time.",
+            "The app highlights the relevant counters on the dashboard and invoice pages. You can still view historical data, but new invoices or companies are blocked until you upgrade or archive existing ones.",
         },
         {
-          question: "How do I cancel my account?",
+          question: "How do I upgrade or manage my subscription?",
           answer:
-            "We're sorry to see you go! You can cancel anytime in Settings > Account. Your account will remain active until the end of your current billing period. All your data will be safely stored for 90 days in case you change your mind.",
+            "Visit /upgrade (also available via the dashboard banners) to review plans and switch tiers. Changes take effect immediately and the dashboard refreshes as soon as the new plan activates.",
+        },
+      ],
+    },
+    {
+      category: "Account & Data",
+      questions: [
+        {
+          question: "How do I update business details?",
+          answer:
+            'Open a company from the dashboard and use the "Settings" button to edit its name, email, address, or VAT information. Updates sync instantly to new invoices you generate for that company.',
+        },
+        {
+          question: "Can I export or download invoices?",
+          answer:
+            'Yes. Every invoice has a "Download PDF" action on the success view and within the invoice table. You can share the PDF or attach it manually outside InvoiceFlow whenever needed.',
+        },
+        {
+          question: "How can I get support if something isn't working?",
+          answer:
+            "Use the contact form, email privacy@invoiceflow.com, or submit feedback from within the dashboard. Our team monitors these channels and replies from Monday through Friday.",
         },
       ],
     },
   ];
+
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+
+  const filteredFaqData = normalizedQuery
+    ? faqData
+        .map((section) => {
+          const questions = section.questions.filter(
+            (faq) =>
+              faq.question.toLowerCase().includes(normalizedQuery) ||
+              faq.answer.toLowerCase().includes(normalizedQuery)
+          );
+          return { ...section, questions };
+        })
+        .filter((section) => section.questions.length > 0)
+    : faqData;
+
+  useEffect(() => {
+    setExpandedFaq(null);
+  }, [normalizedQuery]);
 
   const toggleFaq = (index: number) => {
     setExpandedFaq(expandedFaq === index ? null : index);
@@ -121,15 +155,15 @@ export default function HelpCenterPage() {
 
         <div className="max-w-4xl mx-auto">
           {/* Search Bar */}
-          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 mb-8">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700 mb-8">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary-text h-5 w-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary-text dark:text-slate-400 h-5 w-5" />
               <input
                 type="text"
                 placeholder="Search for help articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-primary-text"
+                className="w-full pl-10 pr-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-primary-text dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:ring-blue-400"
               />
             </div>
           </div>
@@ -138,14 +172,16 @@ export default function HelpCenterPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <Link
               href="/contact"
-              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all group"
+              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700 hover:shadow-xl transition-all group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <MessageCircle className="h-6 w-6 text-primary dark:text-blue-400" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/40 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <MessageCircle className="h-6 w-6 text-primary dark:text-blue-300" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-header-text dark:text-slate-100">Contact Us</h3>
+                  <h3 className="font-semibold text-header-text dark:text-slate-100">
+                    Contact Us
+                  </h3>
                   <p className="text-sm text-secondary-text dark:text-slate-400">
                     Get personalized help
                   </p>
@@ -155,11 +191,11 @@ export default function HelpCenterPage() {
 
             <Link
               href="mailto:privacy@invoiceflow.com"
-              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 hover:shadow-xl transition-all group"
+              className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700 hover:shadow-xl transition-all group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Mail className="h-6 w-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/40 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Mail className="h-6 w-6 text-green-600 dark:text-green-300" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-header-text dark:text-slate-100">
@@ -174,14 +210,16 @@ export default function HelpCenterPage() {
 
             <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Book className="h-6 w-6 text-purple-600" />
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 rounded-lg flex items-center justify-center">
+                  <Book className="h-6 w-6 text-purple-600 dark:text-purple-300" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-header-text dark:text-slate-100">
                     Documentation
                   </h3>
-                  <p className="text-sm text-secondary-text dark:text-slate-400">Coming soon</p>
+                  <p className="text-sm text-secondary-text dark:text-slate-400">
+                    Coming soon
+                  </p>
                 </div>
               </div>
             </div>
@@ -189,12 +227,20 @@ export default function HelpCenterPage() {
 
           {/* FAQ Sections */}
           <div className="space-y-8">
-            {faqData.map((section, sectionIndex) => (
+            {filteredFaqData.length === 0 && normalizedQuery && (
+              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700 text-center">
+                <p className="text-primary-text dark:text-slate-200">
+                  No articles matched "{searchQuery}". Try another keyword or
+                  browse the sections below.
+                </p>
+              </div>
+            )}
+            {filteredFaqData.map((section, sectionIndex) => (
               <div
                 key={sectionIndex}
                 className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700"
               >
-                <h2 className="text-xl font-semibold text-header-text mb-6">
+                <h2 className="text-xl font-semibold text-header-text dark:text-slate-100 mb-6">
                   {section.category}
                 </h2>
                 <div className="space-y-4">
@@ -205,24 +251,24 @@ export default function HelpCenterPage() {
                     return (
                       <div
                         key={faqIndex}
-                        className="border border-blue-200 rounded-lg overflow-hidden"
+                        className="border border-blue-200 dark:border-slate-700 rounded-lg overflow-hidden"
                       >
                         <button
                           onClick={() => toggleFaq(globalIndex)}
-                          className="w-full px-6 py-4 text-left bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 transition-colors flex items-center justify-between"
+                          className="w-full px-6 py-4 text-left bg-blue-50 hover:bg-blue-100 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors flex items-center justify-between"
                         >
-                          <span className="font-medium text-primary-text">
+                          <span className="font-medium text-primary-text dark:text-slate-100">
                             {faq.question}
                           </span>
                           {isExpanded ? (
-                            <ChevronDown className="h-5 w-5 text-primary dark:text-blue-400" />
+                            <ChevronDown className="h-5 w-5 text-primary dark:text-blue-300" />
                           ) : (
-                            <ChevronRight className="h-5 w-5 text-primary dark:text-blue-400" />
+                            <ChevronRight className="h-5 w-5 text-primary dark:text-blue-300" />
                           )}
                         </button>
                         {isExpanded && (
-                          <div className="px-6 py-4 bg-white">
-                            <p className="text-primary-text leading-relaxed">
+                          <div className="px-6 py-4 bg-white dark:bg-slate-900">
+                            <p className="text-primary-text leading-relaxed dark:text-slate-200">
                               {faq.answer}
                             </p>
                           </div>

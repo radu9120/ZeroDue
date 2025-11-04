@@ -68,6 +68,7 @@ export default function Footer() {
             {[
               { name: "Features", href: "#features" },
               { name: "Pricing", href: "/upgrade" },
+              { name: "Blog", href: "/blog" },
               { name: "Testimonials", href: "#testimonials" },
             ].map((item, i) => (
               <Link

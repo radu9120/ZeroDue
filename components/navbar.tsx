@@ -22,6 +22,32 @@ export default function Navbar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const businessId = searchParams?.get("business_id");
+  const [storedBusinessId, setStoredBusinessId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (businessId) {
+      try {
+        window.localStorage.setItem("activeBusinessId", businessId);
+        setStoredBusinessId(businessId);
+        return;
+      } catch (_) {
+        // Ignore storage write issues
+      }
+    }
+
+    try {
+      const stored = window.localStorage.getItem("activeBusinessId");
+      setStoredBusinessId(stored);
+    } catch (_) {
+      setStoredBusinessId(null);
+    }
+  }, [businessId, pathname]);
+
+  const resolvedBusinessId = businessId ?? storedBusinessId ?? undefined;
 
   if (pathname && pathname.startsWith("/invoice")) {
     return null;
@@ -123,8 +149,8 @@ export default function Navbar() {
               <>
                 <Link
                   href={
-                    businessId
-                      ? `/dashboard/clients?business_id=${businessId}`
+                    resolvedBusinessId
+                      ? `/dashboard/clients?business_id=${resolvedBusinessId}`
                       : "/dashboard"
                   }
                   className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
@@ -133,8 +159,8 @@ export default function Navbar() {
                 </Link>
                 <Link
                   href={
-                    businessId
-                      ? `/dashboard/invoices?business_id=${businessId}`
+                    resolvedBusinessId
+                      ? `/dashboard/invoices?business_id=${resolvedBusinessId}`
                       : "/dashboard"
                   }
                   className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
@@ -271,8 +297,8 @@ export default function Navbar() {
                     </Link>
                     <Link
                       href={
-                        businessId
-                          ? `/dashboard/clients?business_id=${businessId}`
+                        resolvedBusinessId
+                          ? `/dashboard/clients?business_id=${resolvedBusinessId}`
                           : "/dashboard"
                       }
                       className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
@@ -282,8 +308,8 @@ export default function Navbar() {
                     </Link>
                     <Link
                       href={
-                        businessId
-                          ? `/dashboard/invoices?business_id=${businessId}`
+                        resolvedBusinessId
+                          ? `/dashboard/invoices?business_id=${resolvedBusinessId}`
                           : "/dashboard"
                       }
                       className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
