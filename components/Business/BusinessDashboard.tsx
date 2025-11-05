@@ -192,7 +192,7 @@ export default function BusinessDashboard({
         Back to Companies
       </Link>
       <Card className="shadow-md">
-        <CardHeader className="space-y-4 pb-4 border-b border-blue-100 dark:border-slate-700">
+        <CardHeader className="space-y-4 pb-4">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center flex-shrink-0">
