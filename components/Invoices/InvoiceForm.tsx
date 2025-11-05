@@ -36,7 +36,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn, normalizeCurrencyCode } from "@/lib/utils";
 
 // Custom Calendar Component
 const CalendarPicker = ({
@@ -225,7 +225,7 @@ const InvoiceForm = ({
       total: 0,
       notes: "",
       bank_details: "",
-      currency: "British pound",
+      currency: "GBP",
       client_id: client_data?.id || undefined,
       business_id: company_data.id,
     },
@@ -256,7 +256,11 @@ const InvoiceForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Add status field before sending to backend
-    const invoiceData = { ...values, status: "draft" as const };
+    const invoiceData = {
+      ...values,
+      status: "draft" as const,
+      currency: normalizeCurrencyCode(values.currency),
+    };
     const invoice = await createInvoice(invoiceData as any);
     if (invoice && invoice.id) {
       const redirectUrl = `/dashboard/invoices/success?invoice_id=${invoice.id}&business_id=${company_data.id}`;

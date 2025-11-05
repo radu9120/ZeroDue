@@ -1,6 +1,7 @@
 import * as React from "react";
 import type { InvoiceListItem } from "@/types";
 import type { InvoiceItemRow } from "./types";
+import { normalizeCurrencyCode } from "@/lib/utils";
 
 interface InvoiceSummarySectionProps {
   isEditing: boolean;
@@ -32,7 +33,7 @@ export function InvoiceSummarySection({
   const symbol =
     isEditing && isEnterprise
       ? getCurrencySymbol(currency)
-      : getCurrencySymbol(invoice.currency || "GBP");
+      : getCurrencySymbol(normalizeCurrencyCode(invoice.currency));
   const subtotal =
     isEditing && isEnterprise
       ? itemRows.reduce((sum, item) => sum + Number(item.amount || 0), 0)

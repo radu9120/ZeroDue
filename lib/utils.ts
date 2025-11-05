@@ -19,3 +19,40 @@ export function normalizePlan(raw: unknown): AppPlan {
   if (val === "enterprise") return "enterprise";
   return "free_user";
 }
+
+const currencyAliases: Record<string, string> = {
+  "BRITISH POUND": "GBP",
+  "UK POUND": "GBP",
+  POUND: "GBP",
+  GBR: "GBP",
+  "£": "GBP",
+};
+
+export const normalizeCurrencyCode = (raw?: string) => {
+  if (!raw) return "GBP";
+  const trimmed = raw.trim();
+  const upper = trimmed.toUpperCase();
+  const mapped = currencyAliases[upper] ?? upper;
+  return /^[A-Z]{3}$/.test(mapped) ? mapped : "GBP";
+};
+
+export const getCurrencySymbol = (raw?: string) => {
+  const currencyCode = normalizeCurrencyCode(raw);
+  if (currencyCode === "GBP") {
+    return "£";
+  }
+
+  try {
+    const parts = new Intl.NumberFormat("en", {
+      style: "currency",
+      currency: currencyCode,
+    })
+      .formatToParts(0)
+      .find((part) => part.type === "currency");
+
+    return parts?.value ?? currencyCode;
+  } catch (error) {
+    console.warn("Currency symbol fallback", { currencyCode, error });
+    return currencyCode;
+  }
+};

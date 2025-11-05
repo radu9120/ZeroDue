@@ -17,6 +17,7 @@ import {
   shouldStopStatusPolling,
   toEmailStatusState,
 } from "@/lib/email-status";
+import { getCurrencySymbol, normalizeCurrencyCode } from "@/lib/utils";
 import { SuccessBanner } from "./SuccessBanner";
 import { InvoiceActionsBar } from "./InvoiceActionsBar";
 import { InvoiceEmailStatus } from "./InvoiceEmailStatus";
@@ -119,14 +120,6 @@ const buildBankDetailsDisplay = (rawValue: string): BankDetailsDisplay => {
   }
 
   return { type: "text", text: raw };
-};
-
-const getCurrencySymbol = (code?: string) => {
-  const currencyCode = (code || "GBP").toUpperCase();
-  const currency = currencies.find(
-    (candidate) => candidate.code === currencyCode
-  );
-  return currency ? currency.symbol : "£";
 };
 
 const formatDateTime = (value?: string | null) => {
@@ -298,6 +291,11 @@ export default function InvoiceSuccessView({
   const [notes, setNotes] = React.useState<string>(invoice.notes || "");
   const [isCompactLayout, setIsCompactLayout] = React.useState(false);
 
+  const normalizedInvoiceCurrency = React.useMemo(
+    () => normalizeCurrencyCode(invoice.currency),
+    [invoice.currency]
+  );
+
   React.useEffect(() => {
     const updateLayout = () => {
       if (typeof window === "undefined") {
@@ -317,7 +315,7 @@ export default function InvoiceSuccessView({
   );
   const [dueDate, setDueDate] = React.useState<string>(invoice.due_date || "");
   const [currency, setCurrency] = React.useState<string>(
-    invoice.currency || "GBP"
+    normalizedInvoiceCurrency
   );
   const [discount, setDiscount] = React.useState<number>(
     Number(invoice.discount || 0)
@@ -386,11 +384,15 @@ export default function InvoiceSuccessView({
     setDesc(invoice.description || "");
     setIssueDate(invoice.issue_date || "");
     setDueDate(invoice.due_date || "");
-    setCurrency(invoice.currency || "GBP");
+    setCurrency(normalizedInvoiceCurrency);
     setDiscount(Number(invoice.discount || 0));
     setShipping(Number(invoice.shipping || 0));
     setItemRows(parseInvoiceItems(invoice.items));
-  }, [invoice]);
+  }, [invoice, normalizedInvoiceCurrency]);
+
+  const handleCurrencyChange = React.useCallback((value: string) => {
+    setCurrency(normalizeCurrencyCode(value));
+  }, []);
 
   const enterEditMode = React.useCallback(() => {
     setIsEditing(true);
@@ -852,7 +854,7 @@ export default function InvoiceSuccessView({
                 dueDate={dueDate}
                 onDueDateChange={setDueDate}
                 currency={currency}
-                onCurrencyChange={setCurrency}
+                onCurrencyChange={handleCurrencyChange}
                 currencies={currencies}
                 isCompactLayout={isCompactLayout}
               />
@@ -878,7 +880,7 @@ export default function InvoiceSuccessView({
                 onAddItem={addItem}
                 onRecalculate={recalcAmounts}
                 currency={currency}
-                invoiceCurrency={invoice.currency || "GBP"}
+                invoiceCurrency={normalizedInvoiceCurrency}
                 getCurrencySymbol={getCurrencySymbol}
                 isCompactLayout={isCompactLayout}
               />

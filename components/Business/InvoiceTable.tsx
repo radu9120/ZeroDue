@@ -31,25 +31,11 @@ import {
   shouldStopStatusPolling,
   toEmailStatusState,
 } from "@/lib/email-status";
+import { getCurrencySymbol, normalizeCurrencyCode } from "@/lib/utils";
 
 const formatInvoiceAmount = (value: unknown, currency?: string) => {
-  const normalizeCurrencyCode = (raw?: string) => {
-    if (!raw) return "GBP";
-    const trimmed = raw.trim().toUpperCase();
-    const aliases: Record<string, string> = {
-      "BRITISH POUND": "GBP",
-      "UK POUND": "GBP",
-      POUND: "GBP",
-      GBR: "GBP",
-      "£": "GBP",
-    };
-
-    if (aliases[trimmed]) return aliases[trimmed];
-    return /^[A-Z]{3}$/.test(trimmed) ? trimmed : "GBP";
-  };
-
   const currencyCode = normalizeCurrencyCode(currency);
-  const currencySymbol = currencyCode === "GBP" ? "£" : currencyCode;
+  const currencySymbol = getCurrencySymbol(currencyCode);
 
   const toNumber = (raw: unknown) => {
     if (typeof raw === "number" && Number.isFinite(raw)) return raw;
@@ -158,6 +144,9 @@ function InvoicePreview({
     console.error("Error parsing company_details:", error);
     companyDetails = null;
   }
+
+  const currencyCode = normalizeCurrencyCode(invoice.currency);
+  const currencySymbol = getCurrencySymbol(currencyCode);
 
   return (
     <div className="space-y-6 max-h-[80vh] overflow-y-auto">
@@ -337,7 +326,8 @@ function InvoicePreview({
                 Currency:
               </span>
               <p className="text-header-text dark:text-slate-100">
-                {invoice.currency || "GBP"}
+                {currencySymbol}
+                {currencyCode ? ` (${currencyCode})` : ""}
               </p>
             </div>
             <div>
@@ -345,7 +335,7 @@ function InvoicePreview({
                 Subtotal:
               </span>
               <p className="text-header-text dark:text-slate-100">
-                £{(invoice.subtotal || 0).toFixed(2)}
+                {formatInvoiceAmount(invoice.subtotal, invoice.currency)}
               </p>
             </div>
             {(invoice.discount ?? 0) > 0 && (
@@ -364,7 +354,7 @@ function InvoicePreview({
                   Shipping:
                 </span>
                 <p className="text-header-text dark:text-slate-100">
-                  £{(invoice.shipping ?? 0).toFixed(2)}
+                  {formatInvoiceAmount(invoice.shipping, invoice.currency)}
                 </p>
               </div>
             )}
@@ -372,7 +362,9 @@ function InvoicePreview({
               <span className="block text-sm font-medium text-secondary-text dark:text-slate-400">
                 Total Amount:
               </span>
-              <p className="text-xl font-bold text-primary">{invoice.total}</p>
+              <p className="text-xl font-bold text-primary">
+                {formatInvoiceAmount(invoice.total, invoice.currency)}
+              </p>
             </div>
           </div>
         </div>
@@ -424,13 +416,13 @@ function InvoicePreview({
                         {quantity}
                       </td>
                       <td className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-right">
-                        £{unitPrice.toFixed(2)}
+                        {formatInvoiceAmount(unitPrice, invoice.currency)}
                       </td>
                       <td className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-center">
                         {tax}%
                       </td>
                       <td className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-right font-medium">
-                        £{amount.toFixed(2)}
+                        {formatInvoiceAmount(amount, invoice.currency)}
                       </td>
                     </tr>
                   );
