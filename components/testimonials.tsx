@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, TouchEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { SectionTitle } from "./ui/SectionTitle";
 import Image from "next/image";
 
@@ -354,11 +355,12 @@ export default function Testimonials() {
           {/* CTA section - better spacing */}
           <div className="mt-10 md:mt-16 text-center">
             <Button
+              asChild
               className="rounded-xl px-6 py-4 md:px-8 md:py-6 text-base md:text-lg font-medium 
               bg-gradient-to-r from-blue-600 to-accent hover:from-primary-dark hover:to-cyan-600
               text-white transition-all duration-300 shadow-lg hover:shadow-xl shadow-primary/20"
             >
-              Join Thousands of Happy Customers
+              <Link href="/sign-up">Join Thousands of Happy Customers</Link>
             </Button>
           </div>
         </div>
