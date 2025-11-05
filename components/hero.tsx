@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, FileText } from "lucide-react";
-import Bounded from "./ui/bounded";
 import CompanyBanner from "./companies-banner";
 
 function FloatingPaths({ position }: { position: number }) {
@@ -108,9 +108,12 @@ export default function Hero() {
                 className="rounded-xl px-6 md:px-8 py-4 md:py-7 text-base md:text-lg font-medium
                   bg-gradient-to-r from-blue-600 to-accent hover:from-primary-dark hover:to-cyan-600
                   text-white shadow-md hover:shadow-lg hover:shadow-primary/20"
+                asChild
               >
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
+                <Link href="/sign-up" className="flex items-center">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
+                </Link>
               </Button>
 
               <Button
