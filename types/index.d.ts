@@ -56,6 +56,7 @@ interface BusinessType {
   phone?: string;
   vat?: number;
   logo?: url | "";
+  currency?: string | null;
 }
 
 interface NewInvoicePageProps {

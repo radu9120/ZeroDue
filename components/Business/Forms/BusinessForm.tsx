@@ -15,9 +15,23 @@ import { UseFormReturn } from "react-hook-form";
 import { Textarea } from "../../ui/textarea";
 import { Plus } from "lucide-react";
 import { companySchema } from "@/schemas/invoiceSchema";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import type { AppPlan } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import currencies from "@/lib/currencies.json";
+
+type CurrencyOption = {
+  code: string;
+  name: string;
+  symbol?: string;
+};
 
 interface BusinessFormProps {
   form: UseFormReturn<z.infer<typeof companySchema>>;
@@ -40,6 +54,20 @@ export default function BusinessForm({
 }: BusinessFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<AppPlan>("free_user");
+  const currencyOptions = useMemo(() => {
+    return (currencies as CurrencyOption[]).map((currency) => {
+      const hasSymbol =
+        typeof currency.symbol === "string" &&
+        currency.symbol.trim().length > 0;
+      const label = hasSymbol
+        ? `${currency.code} — ${currency.symbol} ${currency.name}`
+        : `${currency.code} — ${currency.name}`;
+      return {
+        code: currency.code,
+        label,
+      };
+    });
+  }, []);
 
   // Fetch current plan dynamically so the modal shows accurate limits
   useEffect(() => {
@@ -192,6 +220,41 @@ export default function BusinessForm({
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="currency"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
+                  Default Currency *
+                </FormLabel>
+                <Select
+                  value={field.value || "GBP"}
+                  onValueChange={field.onChange}
+                  disabled={isSubmitting}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="max-h-64">
+                    {currencyOptions.map((option) => (
+                      <SelectItem key={option.code} value={option.code}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormDescription className="text-secondary-text dark:text-slate-300">
+                  Sets the default currency for invoices created under this
+                  business.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         {/* Address Field */}
@@ -268,8 +331,8 @@ export default function BusinessForm({
             {userPlan === "enterprise"
               ? "Enterprise Plan Includes:"
               : userPlan === "professional"
-              ? "Professional Plan Includes:"
-              : "Free Plan Includes:"}
+                ? "Professional Plan Includes:"
+                : "Free Plan Includes:"}
           </h4>
           <ul className="text-sm text-secondary-text dark:text-slate-400 space-y-1">
             {userPlan === "enterprise" && (
@@ -285,7 +348,7 @@ export default function BusinessForm({
             {userPlan === "professional" && (
               <>
                 <li>• Up to 3 companies</li>
-                <li>• Up to 10 invoices per month</li>
+                <li>• Up to 15 invoices per month</li>
                 <li>• Advanced client management</li>
                 <li>• Priority email support</li>
               </>

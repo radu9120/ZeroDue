@@ -70,6 +70,7 @@ export const UpdateBusiness = ({
       address: "",
       phone: "",
       vat: undefined,
+      currency: "GBP",
       logo: "",
     },
     values: business
@@ -79,6 +80,7 @@ export const UpdateBusiness = ({
           address: business.address,
           phone: business.phone || "",
           vat: business.vat,
+          currency: business.currency || "GBP",
           logo: business.logo || "",
         }
       : undefined,
@@ -93,6 +95,7 @@ export const UpdateBusiness = ({
         address: business.address,
         phone: business.phone || "",
         vat: business.vat,
+        currency: business.currency || "GBP",
         logo: business.logo || "",
       });
     }

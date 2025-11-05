@@ -40,8 +40,6 @@ const sections: Array<{
       { label: "Sign In", href: "/sign-in" },
       { label: "Create Account", href: "/sign-up" },
       { label: "Plan & Billing", href: "/dashboard/plan" },
-      { label: "Who Am I", href: "/api/whoami" },
-      { label: "API Health", href: "/api/health" },
     ],
   },
 ];

@@ -28,7 +28,7 @@ const currencyAliases: Record<string, string> = {
   "£": "GBP",
 };
 
-export const normalizeCurrencyCode = (raw?: string) => {
+export const normalizeCurrencyCode = (raw?: string | null) => {
   if (!raw) return "GBP";
   const trimmed = raw.trim();
   const upper = trimmed.toUpperCase();
@@ -36,7 +36,7 @@ export const normalizeCurrencyCode = (raw?: string) => {
   return /^[A-Z]{3}$/.test(mapped) ? mapped : "GBP";
 };
 
-export const getCurrencySymbol = (raw?: string) => {
+export const getCurrencySymbol = (raw?: string | null) => {
   const currencyCode = normalizeCurrencyCode(raw);
   if (currencyCode === "GBP") {
     return "£";

@@ -77,7 +77,7 @@ export default function PrivacyPolicyPage() {
                 London, EC1A 1BB, United Kingdom
               </p>
               <p>
-                <strong>Email:</strong> privacy@invoiceflow.com
+                <strong>Email:</strong> support@invoiceflow.com
               </p>
               <p>
                 <strong>Data Protection Officer:</strong> dpo@invoiceflow.com
@@ -374,7 +374,7 @@ export default function PrivacyPolicyPage() {
             <div className="mt-4 p-4 bg-neutral-50 rounded-lg">
               <p className="text-sm text-secondary-text dark:text-slate-400">
                 To exercise any of these rights, please contact us at{" "}
-                <strong>privacy@invoiceflow.com</strong>. We will respond within
+                <strong>support@invoiceflow.com</strong>. We will respond within
                 one month of receiving your request.
               </p>
             </div>
@@ -454,7 +454,7 @@ export default function PrivacyPolicyPage() {
                   </p>
                   <div className="space-y-2 text-sm">
                     <p>
-                      <strong>Email:</strong> privacy@invoiceflow.com
+                      <strong>Email:</strong> support@invoiceflow.com
                     </p>
                     <p>
                       <strong>Data Protection Officer:</strong>{" "}

@@ -18,7 +18,10 @@ const itemSchema = z.object({
 
 export const billToSchema = z.object({
   id: z.coerce.number().optional(),
-  name: z.string().min(1, { message: "Name is required" }),
+  name: z
+    .string()
+    .min(3, { message: "Name must be between 3 and 100 characters" })
+    .max(100, { message: "Name must be between 3 and 100 characters" }),
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
   address: z.string().min(1, { message: "Quantity is required" }),
   phone: phoneType,
@@ -28,11 +31,21 @@ export const billToSchema = z.object({
 export type CreateClient = z.infer<typeof billToSchema>;
 
 export const companySchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
+  name: z
+    .string()
+    .min(3, { message: "Name must be between 3 and 100 characters" })
+    .max(100, { message: "Name must be between 3 and 100 characters" }),
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
   address: z.string().min(1, { message: "Quantity is required" }),
   phone: phoneType,
   vat: z.coerce.number().optional(),
+  currency: z
+    .string()
+    .trim()
+    .transform((val) => val.toUpperCase())
+    .refine((val) => /^[A-Z]{3}$/.test(val), {
+      message: "Currency must be a 3-letter ISO code",
+    }),
   logo: z.string().optional() || undefined,
 });
 

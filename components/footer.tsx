@@ -125,10 +125,10 @@ export default function Footer() {
                     Email Us
                   </p>
                   <a
-                    href="mailto:privacy@invoiceflow.com"
+                    href="mailto:support@invoiceflow.com"
                     className="text-secondary-text dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 transition-colors"
                   >
-                    privacy@invoiceflow.com
+                    support@invoiceflow.com
                   </a>
                 </div>
               </div>

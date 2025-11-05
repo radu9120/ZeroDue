@@ -56,7 +56,7 @@ export default function DashboardHeader({
               <div className="flex items-center gap-2 text-yellow-600 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200">
                 <AlertTriangle className="h-4 w-4 flex-shrink-0" />
                 <span className="text-sm font-medium">
-                  Free plan limit reached
+                  Free plan limit reached – contact support for options
                 </span>
               </div>
               <button

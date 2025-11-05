@@ -31,6 +31,7 @@ export const CreateBusiness = ({
       address: "",
       phone: "",
       vat: undefined,
+      currency: "GBP",
       logo: "", // Initialize as empty string
     },
   });
@@ -50,9 +51,8 @@ export const CreateBusiness = ({
         logo: logoUrl,
       };
 
-      const result: CreateBusinessResult = await createBusinessAction(
-        finalValues
-      );
+      const result: CreateBusinessResult =
+        await createBusinessAction(finalValues);
 
       if (result.ok) {
         console.log("Success, created business:", result.business);

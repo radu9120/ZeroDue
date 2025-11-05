@@ -85,12 +85,14 @@ export default function ContactPage() {
                       <Mail className="h-5 w-5 text-primary dark:text-blue-400" />
                     </div>
                     <div className="ml-4">
-                      <h3 className="font-semibold text-header-text dark:text-slate-100">Email</h3>
+                      <h3 className="font-semibold text-header-text dark:text-slate-100">
+                        Email
+                      </h3>
                       <a
-                        href="mailto:privacy@invoiceflow.com"
+                        href="mailto:support@invoiceflow.com"
                         className="text-secondary-text hover:text-primary transition-colors"
                       >
-                        privacy@invoiceflow.com
+                        support@invoiceflow.com
                       </a>
                       <p className="text-sm text-secondary-text mt-1">
                         For general inquiries and support

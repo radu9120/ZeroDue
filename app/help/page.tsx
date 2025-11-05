@@ -65,7 +65,7 @@ export default function HelpCenterPage() {
         {
           question: "What limits apply to each plan?",
           answer:
-            "Free users can manage one company and keep one active invoice. Professional users can manage up to three companies and send ten invoices per month. Enterprise removes these limits and unlocks advanced controls.",
+            "Free users can manage one company and keep one active invoice. Professional users can manage up to three companies and send up to 15 invoices per month. Enterprise removes these limits and unlocks advanced controls.",
         },
         {
           question: "What happens when I hit my plan limits?",
@@ -95,7 +95,7 @@ export default function HelpCenterPage() {
         {
           question: "How can I get support if something isn't working?",
           answer:
-            "Use the contact form, email privacy@invoiceflow.com, or submit feedback from within the dashboard. Our team monitors these channels and replies from Monday through Friday.",
+            "Use the contact form, email support@invoiceflow.com, or submit feedback from within the dashboard. Our team monitors these channels and replies from Monday through Friday.",
         },
       ],
     },
@@ -190,7 +190,7 @@ export default function HelpCenterPage() {
             </Link>
 
             <Link
-              href="mailto:privacy@invoiceflow.com"
+              href="mailto:support@invoiceflow.com"
               className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700 hover:shadow-xl transition-all group"
             >
               <div className="flex items-center gap-4">

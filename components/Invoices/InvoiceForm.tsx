@@ -17,7 +17,7 @@ import { Textarea } from "../ui/textarea";
 import { createInvoice } from "@/lib/actions/invoice.actions";
 import { formSchema } from "@/schemas/invoiceSchema";
 import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BusinessType, ClientType } from "@/types";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 import Link from "next/link";
@@ -201,11 +201,28 @@ const InvoiceForm = ({
   client_data?: ClientType;
   clients?: ClientType[];
 }) => {
+  const defaultCurrency = useMemo(
+    () => normalizeCurrencyCode(company_data.currency),
+    [company_data.currency]
+  );
+  const defaultCompanyDetails = useMemo(
+    () => ({
+      name: company_data.name,
+      email: company_data.email,
+      address: company_data.address,
+      phone: company_data.phone ?? "",
+      vat: company_data.vat,
+      logo: company_data.logo ?? "",
+      currency: defaultCurrency,
+    }),
+    [company_data, defaultCurrency]
+  );
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       invoice_number: "INV0001",
-      company_details: company_data,
+      company_details: defaultCompanyDetails,
       bill_to: client_data,
       issue_date: new Date(),
       due_date: new Date(),
@@ -225,11 +242,20 @@ const InvoiceForm = ({
       total: 0,
       notes: "",
       bank_details: "",
-      currency: "GBP",
+      currency: defaultCurrency,
       client_id: client_data?.id || undefined,
       business_id: company_data.id,
     },
   });
+
+  useEffect(() => {
+    form.setValue("company_details", defaultCompanyDetails, {
+      shouldDirty: false,
+    });
+    form.setValue("currency", defaultCurrency, {
+      shouldDirty: false,
+    });
+  }, [defaultCompanyDetails, defaultCurrency, form]);
 
   const items = useWatch({ control: form.control, name: "items" });
   const discount =

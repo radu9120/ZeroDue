@@ -9,7 +9,6 @@ import {
   getCurrentMonthInvoiceCountForBusiness,
   getInvoicesList,
 } from "@/lib/actions/invoice.actions";
-import BusinessStats from "@/components/Business/BusinessStats";
 import QuickActions from "@/components/Business/QuickActions";
 import InvoiceTable from "@/components/Business/InvoiceTable";
 import RecentActivity from "@/components/Business/RecentActivity";
@@ -119,12 +118,12 @@ export default async function Page({
         <BusinessDashboard
           business={business}
           userPlan={userPlan}
+          stats={businessStats}
           createDisabled={
             (userPlan === "free_user" && totalInvoicesAll >= 1) ||
-            (userPlan === "professional" && monthCount >= 10)
+            (userPlan === "professional" && monthCount >= 15)
           }
         />
-        <BusinessStats statistic={businessStats} />
         <QuickActions companyId={business_id} />
         <InvoiceAvailability
           userPlan={userPlan}

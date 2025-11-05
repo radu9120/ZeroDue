@@ -53,7 +53,7 @@ export default function BusinessAvailabilty({
             {userPlan === "free_user"
               ? "You're currently on the Free plan. Upgrade to unlock unlimited invoices and manage more companies."
               : userPlan === "professional"
-                ? "Perfect for freelancers and small businesses — up to 3 companies and 10 invoices per month."
+                ? "Perfect for freelancers and small businesses — up to 3 companies and 15 invoices per month."
                 : "You have unlimited access to all features."}
           </p>
           {userPlan !== "enterprise" && (
@@ -93,12 +93,12 @@ export default function BusinessAvailabilty({
                   <span className="font-medium">Invoices this month: </span>
                   <span
                     className={
-                      monthlyInvoices >= 10
+                      monthlyInvoices >= 15
                         ? "text-red-600 dark:text-red-400 font-semibold"
                         : ""
                     }
                   >
-                    {monthlyInvoices}/10
+                    {monthlyInvoices}/15
                   </span>
                 </div>
               )}

@@ -2,26 +2,50 @@
 import {
   ArrowLeft,
   Building,
+  Calendar,
   CrownIcon,
+  DollarSign,
+  FileText,
   PlusIcon,
   SettingsIcon,
+  TrendingUp,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import * as React from "react";
 import CustomButton from "../ui/CustomButton";
 import CustomModal from "../ModalsForms/CustomModal";
 import { UpdateBusiness } from "./Forms/UpdateBusiness";
+import { Card, CardContent, CardHeader } from "../ui/card";
+import type { BusinessStatistics } from "@/types";
+import { normalizeCurrencyCode, getCurrencySymbol } from "@/lib/utils";
+
+type MetricRow = {
+  text: string;
+  className: string;
+  prefixIcon?: React.ReactNode;
+};
+
+type MetricCard = {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  iconBg: string;
+  subRows: MetricRow[];
+};
 
 export default function BusinessDashboard({
   business,
   userPlan,
+  stats,
   createDisabled = false,
 }: {
-  business: { id: any; name: any; email: any };
+  business: { id: any; name: any; email: any; currency?: string | null };
   userPlan: "free_user" | "professional" | "enterprise";
+  stats?: BusinessStatistics["statistic"] | null;
   createDisabled?: boolean;
 }) {
-  useEffect(() => {
+  React.useEffect(() => {
     try {
       localStorage.setItem("activeBusinessId", String(business.id));
       localStorage.setItem("activeBusinessName", business.name ?? "");
@@ -29,6 +53,134 @@ export default function BusinessDashboard({
       // Ignore storage access issues
     }
   }, [business.id, business.name]);
+
+  const computedStats = React.useMemo(() => {
+    const fallback = {
+      total_invoices: 0,
+      total_paid_amount: "0",
+      total_overdue_invoices: 0,
+      total_clients: 0,
+      total_paid_invoices: 0,
+      total_pending_invoices: 0,
+      total_paid_amount_current_month: "0",
+    };
+
+    if (!stats) return fallback;
+    return {
+      ...fallback,
+      ...stats,
+    };
+  }, [stats]);
+
+  const currencyCode = React.useMemo(
+    () => normalizeCurrencyCode(business.currency),
+    [business.currency]
+  );
+  const currencySymbol = React.useMemo(
+    () => getCurrencySymbol(currencyCode),
+    [currencyCode]
+  );
+  const currencyFormatter = React.useMemo(() => {
+    try {
+      return new Intl.NumberFormat("en-GB", {
+        style: "currency",
+        currency: currencyCode,
+        maximumFractionDigits: 2,
+      });
+    } catch (error) {
+      console.warn("Currency formatting fallback", { currencyCode, error });
+      return null;
+    }
+  }, [currencyCode]);
+
+  const formatCurrencyValue = React.useCallback(
+    (raw: string | number) => {
+      if (typeof raw === "string") {
+        const trimmed = raw.trim();
+        if (trimmed.length === 0) return `${currencySymbol}0.00`;
+        if (/[^0-9.,-]/.test(trimmed)) return trimmed;
+        const numeric = Number(trimmed.replace(/,/g, ""));
+        if (Number.isFinite(numeric)) {
+          return currencyFormatter
+            ? currencyFormatter.format(numeric)
+            : `${currencyCode} ${numeric.toFixed(2)}`;
+        }
+        return trimmed;
+      }
+
+      if (typeof raw === "number" && Number.isFinite(raw)) {
+        return currencyFormatter
+          ? currencyFormatter.format(raw)
+          : `${currencyCode} ${raw.toFixed(2)}`;
+      }
+
+      return String(raw);
+    },
+    [currencyCode, currencyFormatter, currencySymbol]
+  );
+
+  const metricCards = React.useMemo<MetricCard[]>(
+    () => [
+      {
+        title: "Total Invoices",
+        value: computedStats.total_invoices,
+        icon: <FileText className="h-5 w-5 text-primary" />,
+        iconBg: "bg-blue-100",
+        subRows: [
+          {
+            text: `${computedStats.total_paid_invoices} paid`,
+            className: "text-green-600 dark:text-green-400 font-medium",
+          },
+          {
+            text: `• ${computedStats.total_pending_invoices} pending`,
+            className: "text-secondary-text dark:text-slate-400",
+          },
+        ],
+      },
+      {
+        title: "Total Revenue",
+        value: formatCurrencyValue(computedStats.total_paid_amount),
+        icon: <DollarSign className="h-5 w-5 text-green-600" />,
+        iconBg: "bg-green-100",
+        subRows: [
+          {
+            text: `${formatCurrencyValue(
+              computedStats.total_paid_amount_current_month
+            )} this month`,
+            className:
+              "inline-flex items-center gap-1 text-green-600 dark:text-green-400 font-medium",
+            prefixIcon: <TrendingUp className="h-4 w-4" />,
+          },
+        ],
+      },
+      {
+        title: "Total Clients",
+        value: computedStats.total_clients,
+        icon: <Users className="h-5 w-5 text-purple-600" />,
+        iconBg: "bg-purple-100",
+        subRows: [],
+      },
+      {
+        title: "Overdue Invoices",
+        value: computedStats.total_overdue_invoices,
+        icon: <Calendar className="h-5 w-5 text-yellow-600" />,
+        iconBg: "bg-yellow-100",
+        subRows: [
+          {
+            text:
+              computedStats.total_overdue_invoices > 0
+                ? "Needs attention"
+                : "All good!",
+            className:
+              computedStats.total_overdue_invoices > 0
+                ? "text-red-600 dark:text-red-400 font-medium"
+                : "text-secondary-text dark:text-slate-400",
+          },
+        ],
+      },
+    ],
+    [computedStats, formatCurrencyValue]
+  );
 
   return (
     <div className="space-y-6">
@@ -39,58 +191,104 @@ export default function BusinessDashboard({
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to Companies
       </Link>
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
-        <div className="flex items-center gap-3 md:gap-4">
-          <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center flex-shrink-0">
-            <Building className="h-6 w-6 md:h-8 md:w-8 text-white" />
-          </div>
-          <div className="space-y-1 md:space-y-2">
-            <div className="">
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-header-text dark:text-slate-100">
-                {business.name}
-              </h1>
+      <Card className="shadow-md">
+        <CardHeader className="space-y-4 pb-4 border-b border-blue-100 dark:border-slate-700">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center flex-shrink-0">
+                <Building className="h-6 w-6 md:h-8 md:w-8 text-white" />
+              </div>
+              <div className="space-y-1 md:space-y-2">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-header-text dark:text-slate-100">
+                  {business.name}
+                </h1>
+                <p className="text-sm md:text-base text-secondary-text dark:text-slate-400">
+                  {business.email}
+                </p>
+                <p className="text-xs md:text-sm text-secondary-text dark:text-slate-500">
+                  Default currency: {currencyCode} ({currencySymbol})
+                </p>
+              </div>
             </div>
-            <p className="text-sm md:text-base text-secondary-text dark:text-slate-400">
-              {business.email}
-            </p>
+            <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto">
+              <CustomButton
+                label={"Create Invoice"}
+                icon={PlusIcon}
+                variant={"primary"}
+                href={`/dashboard/invoices/new?business_id=${business.id}`}
+                disabled={createDisabled}
+              />
+              <CustomModal
+                heading={"Business details"}
+                description={"Update content"}
+                openBtnLabel={"Settings"}
+                btnVariant={"ghost"}
+                btnIcon={SettingsIcon}
+              >
+                <UpdateBusiness businessId={business.id} />
+              </CustomModal>
+              {userPlan === "free_user" && (
+                <CustomButton
+                  variant="primary"
+                  label="Upgrade"
+                  icon={CrownIcon}
+                  href="/upgrade"
+                />
+              )}
+              {userPlan !== "free_user" && createDisabled && (
+                <CustomButton
+                  variant="primary"
+                  label="Manage Plan"
+                  icon={CrownIcon}
+                  href="/upgrade"
+                />
+              )}
+            </div>
           </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto">
-          <CustomButton
-            label={"Create Invoice"}
-            icon={PlusIcon}
-            variant={"primary"}
-            href={`/dashboard/invoices/new?business_id=${business.id}`}
-            disabled={createDisabled}
-          />
-          <CustomModal
-            heading={"Business details"}
-            description={"Update content"}
-            openBtnLabel={"Settings"}
-            btnVariant={"ghost"}
-            btnIcon={SettingsIcon}
-          >
-            <UpdateBusiness businessId={business.id} />
-          </CustomModal>
-          {userPlan === "free_user" && (
-            <CustomButton
-              // onClick={Updrade}
-              variant="primary"
-              label="Upgrade"
-              icon={CrownIcon}
-              href="/upgrade"
-            />
-          )}
-          {userPlan !== "free_user" && createDisabled && (
-            <CustomButton
-              variant="primary"
-              label="Manage Plan"
-              icon={CrownIcon}
-              href="/upgrade"
-            />
-          )}
-        </div>
-      </div>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            {metricCards.map((metric: MetricCard, index: number) => (
+              <div
+                key={metric.title}
+                className="rounded-xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <div
+                    className={`${metric.iconBg} rounded-lg w-10 h-10 flex items-center justify-center`}
+                  >
+                    {metric.icon}
+                  </div>
+                  <span className="text-2xl font-bold text-header-text dark:text-slate-100">
+                    {metric.value}
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-semibold text-header-text dark:text-slate-100">
+                    {metric.title}
+                  </h3>
+                  {metric.subRows.map((row: MetricRow) => (
+                    <div key={row.text} className={row.className}>
+                      {row.prefixIcon && (
+                        <span className="inline-flex items-center gap-1">
+                          {row.prefixIcon}
+                          <span>{row.text}</span>
+                        </span>
+                      )}
+                      {!row.prefixIcon && <span>{row.text}</span>}
+                    </div>
+                  ))}
+                  {metric.subRows.length === 0 && index === 2 && (
+                    <p className="text-sm text-secondary-text dark:text-slate-400">
+                      Keep growing your client list.
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

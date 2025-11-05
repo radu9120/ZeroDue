@@ -39,10 +39,10 @@ export const createBusiness = async (
     if ((bizCount || 0) >= limit) {
       const msg =
         plan === "free_user"
-          ? "Free plan limit reached: 1 business max."
+          ? "Free plan limit reached: 1 business max. Contact support for upgrade options."
           : plan === "professional"
-          ? "Professional plan limit reached: 3 businesses max."
-          : "Business limit reached.";
+            ? "Professional plan limit reached: 3 businesses max. Contact support for assistance."
+            : "Business limit reached. Contact support for assistance.";
       return { ok: false, error: msg };
     }
   } catch (_) {
@@ -292,7 +292,7 @@ export const getBusiness = async ({
 
   let query = supabase
     .from("Businesses")
-    .select("id, name, email")
+    .select("id, name, email, currency")
     .eq("id", business_id)
     .single();
 
