@@ -5,19 +5,29 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, FileText } from "lucide-react";
 import CompanyBanner from "./companies-banner";
+import { memo, useMemo } from "react";
 
-function FloatingPaths({ position }: { position: number }) {
-  const paths = Array.from({ length: 18 }, (_, i) => ({
-    id: i,
-    d: `M-${380 - i * 6 * position} -${189 + i * 8}C-${
-      380 - i * 6 * position
-    } -${189 + i * 8} -${312 - i * 6 * position} ${216 - i * 8} ${
-      152 - i * 6 * position
-    } ${343 - i * 8}C${616 - i * 6 * position} ${470 - i * 8} ${
-      684 - i * 6 * position
-    } ${875 - i * 8} ${684 - i * 6 * position} ${875 - i * 8}`,
-    width: 0.7 + i * 0.05,
-  }));
+const FloatingPaths = memo(function FloatingPaths({
+  position,
+}: {
+  position: number;
+}) {
+  const paths = useMemo(
+    () =>
+      Array.from({ length: 18 }, (_, i) => ({
+        id: i,
+        d: `M-${380 - i * 6 * position} -${189 + i * 8}C-${
+          380 - i * 6 * position
+        } -${189 + i * 8} -${312 - i * 6 * position} ${216 - i * 8} ${
+          152 - i * 6 * position
+        } ${343 - i * 8}C${616 - i * 6 * position} ${470 - i * 8} ${
+          684 - i * 6 * position
+        } ${875 - i * 8} ${684 - i * 6 * position} ${875 - i * 8}`,
+        width: 0.7 + i * 0.05,
+        duration: 15 + Math.random() * 10,
+      })),
+    [position]
+  );
 
   return (
     <div className="absolute inset-0 pointer-events-none opacity-40">
@@ -39,8 +49,8 @@ function FloatingPaths({ position }: { position: number }) {
               pathOffset: [0, 0.5, 0],
             }}
             transition={{
-              duration: 15 + Math.random() * 10,
-              repeat: Number.POSITIVE_INFINITY,
+              duration: path.duration,
+              repeat: Infinity,
               ease: "linear",
             }}
           />
@@ -48,7 +58,8 @@ function FloatingPaths({ position }: { position: number }) {
       </svg>
     </div>
   );
-}
+});
+FloatingPaths.displayName = "FloatingPaths";
 
 export default function Hero() {
   return (
