@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, FileText } from "lucide-react";
 import CompanyBanner from "./companies-banner";
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 
 const FloatingPaths = memo(function FloatingPaths({
   position,
@@ -61,17 +61,42 @@ const FloatingPaths = memo(function FloatingPaths({
 });
 FloatingPaths.displayName = "FloatingPaths";
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+
+    const updateMatch = () => setIsDesktop(mediaQuery.matches);
+    updateMatch();
+
+    mediaQuery.addEventListener("change", updateMatch);
+    return () => mediaQuery.removeEventListener("change", updateMatch);
+  }, []);
+
+  return isDesktop;
+}
+
 export default function Hero() {
+  const isDesktop = useIsDesktop();
+
   return (
     <div className="relative w-full min-h-[100vh] overflow-hidden flex items-center pt-28 md:pt-32">
       {/* Background elements OUTSIDE of Bounded */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <FloatingPaths position={1} />
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900"
+        aria-hidden="true"
+      >
+        {isDesktop && <FloatingPaths position={1} />}
       </div>
 
-      {/* Background blobs - adjusted ONLY for mobile */}
-      <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/40 dark:bg-blue-900/20 mix-blend-multiply dark:mix-blend-screen blur-3xl"></div>
-      <div className="absolute bottom-20 left-10 md:left-40 w-48 md:w-72 h-48 md:h-72 rounded-full bg-cyan-100/30 dark:bg-cyan-900/20 mix-blend-multiply dark:mix-blend-screen blur-3xl"></div>
+      {/* Background blobs kept for larger viewports to reduce mobile paint cost */}
+      {isDesktop && (
+        <>
+          <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/40 dark:bg-blue-900/20 mix-blend-multiply dark:mix-blend-screen blur-3xl" />
+          <div className="absolute bottom-20 left-10 md:left-40 w-48 md:w-72 h-48 md:h-72 rounded-full bg-cyan-100/30 dark:bg-cyan-900/20 mix-blend-multiply dark:mix-blend-screen blur-3xl" />
+        </>
+      )}
 
       {/* Removed Bounded as it need to be a bit more wide */}
       <div className="relative z-10 w-full mx-auto px-4 md:px-6 lg:px-12 lg:py-24 xl:py-24 py-10 max-w-[1500px] space-y-8 md:space-y-16">
@@ -139,12 +164,12 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Right column */}
+          {/* Right column - desktop rich preview */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="md:w-7/12 flex justify-center md:justify-end relative"
+            className="hidden md:flex md:w-7/12 justify-center md:justify-end relative"
           >
             {/* Browser mockup - mobile optimized sizing */}
             <div className="relative w-full max-w-sm md:max-w-[550px] shadow-xl rounded-xl border border-neutral-200 dark:border-slate-700 overflow-hidden">
@@ -261,6 +286,64 @@ export default function Hero() {
                 </div>
               </div>
             </motion.div>
+          </motion.div>
+
+          {/* Right column - mobile lightweight preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="md:hidden"
+          >
+            <div className="w-full rounded-xl border border-neutral-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800/90 p-4 shadow-xl">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-slate-400">
+                    This week
+                  </p>
+                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    $8,240
+                  </p>
+                </div>
+                <span className="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                  +18%
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-3">
+                  <p className="text-xs text-blue-600 dark:text-blue-300">
+                    Invoices
+                  </p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-slate-100">
+                    12 sent
+                  </p>
+                </div>
+                <div className="rounded-lg bg-cyan-50 dark:bg-cyan-900/20 p-3">
+                  <p className="text-xs text-cyan-600 dark:text-cyan-300">
+                    Payments
+                  </p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-slate-100">
+                    9 received
+                  </p>
+                </div>
+                <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 p-3">
+                  <p className="text-xs text-emerald-600 dark:text-emerald-300">
+                    Overdue
+                  </p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-slate-100">
+                    1 follow-up
+                  </p>
+                </div>
+                <div className="rounded-lg bg-violet-50 dark:bg-violet-900/20 p-3">
+                  <p className="text-xs text-violet-600 dark:text-violet-300">
+                    Clients
+                  </p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-slate-100">
+                    +3 new
+                  </p>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
         <div>
