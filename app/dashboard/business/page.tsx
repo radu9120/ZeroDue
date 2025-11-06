@@ -44,11 +44,15 @@ export default async function Page({
 
   if (!businessId || Number.isNaN(businessId)) return notFound();
 
-  let business;
+  let business: Awaited<ReturnType<typeof getBusiness>> = null;
   try {
     business = await getBusiness({ business_id: businessId });
   } catch (err) {
     console.error("Error fetching business:", err);
+    return notFound();
+  }
+
+  if (!business) {
     return notFound();
   }
 
