@@ -5,33 +5,19 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, FileText } from "lucide-react";
 import CompanyBanner from "./companies-banner";
-import { useSimplifiedMotion } from "@/lib/hooks/useSimplifiedMotion";
-import { useMemo } from "react";
 
-function FloatingPaths({
-  position,
-  simplify,
-}: {
-  position: number;
-  simplify: boolean;
-}) {
-  const pathCount = simplify ? 6 : 18;
-
-  const paths = useMemo(
-    () =>
-      Array.from({ length: pathCount }, (_, i) => ({
-        id: i,
-        d: `M-${380 - i * 6 * position} -${189 + i * 8}C-${
-          380 - i * 6 * position
-        } -${189 + i * 8} -${312 - i * 6 * position} ${216 - i * 8} ${
-          152 - i * 6 * position
-        } ${343 - i * 8}C${616 - i * 6 * position} ${470 - i * 8} ${
-          684 - i * 6 * position
-        } ${875 - i * 8} ${684 - i * 6 * position} ${875 - i * 8}`,
-        width: 0.7 + i * 0.05,
-      })),
-    [pathCount, position]
-  );
+function FloatingPaths({ position }: { position: number }) {
+  const paths = Array.from({ length: 18 }, (_, i) => ({
+    id: i,
+    d: `M-${380 - i * 6 * position} -${189 + i * 8}C-${
+      380 - i * 6 * position
+    } -${189 + i * 8} -${312 - i * 6 * position} ${216 - i * 8} ${
+      152 - i * 6 * position
+    } ${343 - i * 8}C${616 - i * 6 * position} ${470 - i * 8} ${
+      684 - i * 6 * position
+    } ${875 - i * 8} ${684 - i * 6 * position} ${875 - i * 8}`,
+    width: 0.7 + i * 0.05,
+  }));
 
   return (
     <div className="absolute inset-0 pointer-events-none opacity-40">
@@ -40,48 +26,36 @@ function FloatingPaths({
         viewBox="0 0 696 316"
         fill="none"
       >
-        {paths.map((path) =>
-          simplify ? (
-            <path
-              key={path.id}
-              d={path.d}
-              stroke="currentColor"
-              strokeWidth={path.width}
-              strokeOpacity={0.1}
-            />
-          ) : (
-            <motion.path
-              key={path.id}
-              d={path.d}
-              stroke="currentColor"
-              strokeWidth={path.width}
-              strokeOpacity={0.15}
-              initial={{ pathLength: 0.4 }}
-              animate={{
-                pathLength: 0.8,
-                pathOffset: [0, 0.5, 0],
-              }}
-              transition={{
-                duration: 15 + Math.random() * 10,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "linear",
-              }}
-            />
-          )
-        )}
+        {paths.map((path) => (
+          <motion.path
+            key={path.id}
+            d={path.d}
+            stroke="currentColor"
+            strokeWidth={path.width}
+            strokeOpacity={0.15}
+            initial={{ pathLength: 0.4 }}
+            animate={{
+              pathLength: 0.8,
+              pathOffset: [0, 0.5, 0],
+            }}
+            transition={{
+              duration: 15 + Math.random() * 10,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
+          />
+        ))}
       </svg>
     </div>
   );
 }
 
 export default function Hero() {
-  const simplifyMotion = useSimplifiedMotion();
-
   return (
     <div className="relative w-full min-h-[100vh] overflow-hidden flex items-center pt-28 md:pt-32">
       {/* Background elements OUTSIDE of Bounded */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <FloatingPaths position={1} simplify={simplifyMotion} />
+        <FloatingPaths position={1} />
       </div>
 
       {/* Background blobs - adjusted ONLY for mobile */}
@@ -93,9 +67,9 @@ export default function Hero() {
         <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-16">
           {/* Left column */}
           <motion.div
-            initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
-            animate={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={simplifyMotion ? undefined : { duration: 0.5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
             className="md:w-5/12"
           >
             {/* Mobile: smaller text, desktop unchanged */}
@@ -156,11 +130,9 @@ export default function Hero() {
 
           {/* Right column */}
           <motion.div
-            initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
-            animate={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={
-              simplifyMotion ? undefined : { duration: 0.5, delay: 0.2 }
-            }
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="md:w-7/12 flex justify-center md:justify-end relative"
           >
             {/* Browser mockup - mobile optimized sizing */}
@@ -174,9 +146,9 @@ export default function Hero() {
                 </div>
                 <div className="mx-2 md:mx-4 flex-1 bg-neutral-50 dark:bg-slate-700 rounded-md text-xs md:text-sm text-secondary-text dark:text-slate-400 px-2 md:px-4 py-0.5 md:py-1 text-center overflow-hidden">
                   <span className="hidden sm:inline">
-                    app.invoiceflow.com/dashboard
+                    www.invcyflow.com/dashboard
                   </span>
-                  <span className="sm:hidden">invoiceflow.com</span>
+                  <span className="sm:hidden">invcyflow.com</span>
                 </div>
               </div>
 
@@ -237,15 +209,9 @@ export default function Hero() {
 
             {/* Floating success notification */}
             <motion.div
-              initial={
-                simplifyMotion ? false : { opacity: 0, x: 20, scale: 0.9 }
-              }
-              animate={
-                simplifyMotion ? undefined : { opacity: 1, x: 0, scale: 1 }
-              }
-              transition={
-                simplifyMotion ? undefined : { duration: 0.5, delay: 0.8 }
-              }
+              initial={{ opacity: 0, x: 20, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
               className="hidden md:block absolute -right-6 top-1/4 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-2xl border border-gray-100 dark:border-slate-700"
             >
               <div className="flex items-center gap-3">
@@ -265,15 +231,9 @@ export default function Hero() {
 
             {/* Floating invoice notification */}
             <motion.div
-              initial={
-                simplifyMotion ? false : { opacity: 0, x: 20, scale: 0.9 }
-              }
-              animate={
-                simplifyMotion ? undefined : { opacity: 1, x: 0, scale: 1 }
-              }
-              transition={
-                simplifyMotion ? undefined : { duration: 0.5, delay: 1 }
-              }
+              initial={{ opacity: 0, x: 20, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ duration: 0.5, delay: 1 }}
               className="hidden md:block absolute -right-6 bottom-1/4 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-2xl border border-gray-100 dark:border-slate-700"
             >
               <div className="flex items-center gap-3">

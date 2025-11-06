@@ -48,11 +48,12 @@ export default function PrivacyPolicyPage() {
             </h2>
             <div className="space-y-4 text-primary-text leading-relaxed">
               <p>
-                At InvoiceFlow ("we", "our", or "us"), we are committed to
-                protecting and respecting your privacy. This Privacy Policy
-                explains how we collect, use, disclose, and safeguard your
-                information when you visit our website and use our invoicing
-                services.
+                At InvoiceFlow ("we", "our", or "us"), operated by VEROSITE LTD,
+                Company number 16227585, we are committed to protecting and
+                respecting your privacy. InvoiceFlow is a trading name of
+                VEROSITE LTD. This Privacy Policy explains how we collect, use,
+                disclose, and safeguard your information when you visit our
+                website and use our invoicing services.
               </p>
               <p>
                 This policy complies with the UK General Data Protection
@@ -70,11 +71,17 @@ export default function PrivacyPolicyPage() {
             </h2>
             <div className="space-y-3 text-primary-text">
               <p>
-                <strong>Company:</strong> InvoiceFlow Ltd
+                <strong>Company:</strong> VEROSITE LTD
               </p>
               <p>
-                <strong>Address:</strong> 123 Business Street, Suite 100,
-                London, EC1A 1BB, United Kingdom
+                <strong>Trading Name:</strong> InvoiceFlow
+              </p>
+              <p>
+                <strong>Company Number:</strong> 16227585
+              </p>
+              <p>
+                <strong>Registered Office:</strong> Flat 209, 1 Indescon Square,
+                London, England, E14 9DQ
               </p>
               <p>
                 <strong>Email:</strong> support@invoiceflow.com
@@ -454,6 +461,10 @@ export default function PrivacyPolicyPage() {
                   </p>
                   <div className="space-y-2 text-sm">
                     <p>
+                      InvoiceFlow is a trading name of VEROSITE LTD (Company
+                      number 16227585).
+                    </p>
+                    <p>
                       <strong>Email:</strong> support@invoiceflow.com
                     </p>
                     <p>
@@ -461,8 +472,8 @@ export default function PrivacyPolicyPage() {
                       dpo@invoiceflow.com
                     </p>
                     <p>
-                      <strong>Post:</strong> InvoiceFlow Ltd, 123 Business
-                      Street, Suite 100, London, EC1A 1BB, UK
+                      <strong>Post:</strong> VEROSITE LTD, Flat 209, 1 Indescon
+                      Square, London, England, E14 9DQ
                     </p>
                     {/* <p>
                       <strong>ICO Registration:</strong> [Registration Number]

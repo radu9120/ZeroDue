@@ -1,9 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
-import { useState } from "react";
-import { useSimplifiedMotion } from "@/lib/hooks/useSimplifiedMotion";
+import { AnimatePresence, motion } from "framer-motion";
+import { Minus, Plus } from "lucide-react";
+import { useId, useState } from "react";
 
 const faqs = [
   {
@@ -56,82 +55,79 @@ const faqs = [
     answer:
       "Yes! You can easily import your existing invoices, clients, and products via CSV upload. We also provide migration assistance for Enterprise customers switching from other platforms.",
   },
-];
+] as const;
 
-function FAQItem({
-  faq,
-  index,
-  simplifyMotion,
-}: {
-  faq: (typeof faqs)[0];
-  index: number;
-  simplifyMotion: boolean;
-}) {
+type FAQ = (typeof faqs)[number];
+
+function FAQItem({ faq, index }: { faq: FAQ; index: number }) {
   const [isOpen, setIsOpen] = useState(false);
+  const panelId = useId();
 
   return (
     <motion.div
-      initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
-      whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
-      viewport={simplifyMotion ? undefined : { once: true }}
-      transition={
-        simplifyMotion ? undefined : { duration: 0.5, delay: index * 0.05 }
-      }
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
       className="border-b border-gray-200 dark:border-slate-700 last:border-b-0"
     >
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen((prev) => !prev)}
         className="w-full py-6 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors px-6 rounded-lg"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        type="button"
       >
         <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 pr-8">
           {faq.question}
         </h3>
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400">
-          {isOpen ? (
-            <Minus className="h-4 w-4" />
-          ) : (
-            <Plus className="h-4 w-4" />
-          )}
-        </div>
+        <motion.div
+          initial={false}
+          animate={{ rotate: isOpen ? 180 : 0, scale: isOpen ? 0.95 : 1 }}
+          transition={{ duration: 0.2 }}
+          className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400"
+        >
+          {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+        </motion.div>
       </button>
 
-      {isOpen && (
-        <motion.div
-          initial={simplifyMotion ? false : { height: 0, opacity: 0 }}
-          animate={
-            simplifyMotion
-              ? { height: "auto", opacity: 1 }
-              : { height: "auto", opacity: 1 }
-          }
-          exit={
-            simplifyMotion
-              ? { height: "auto", opacity: 1 }
-              : { height: 0, opacity: 0 }
-          }
-          transition={simplifyMotion ? undefined : { duration: 0.3 }}
-          className="overflow-hidden"
-        >
-          <p className="pb-6 px-6 text-gray-600 dark:text-slate-400 leading-relaxed">
-            {faq.answer}
-          </p>
-        </motion.div>
-      )}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            key="content"
+            id={panelId}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.3 }}
+              className="pb-6 px-6 text-gray-600 dark:text-slate-400 leading-relaxed"
+            >
+              {faq.answer}
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
 
 export default function FAQ() {
-  const simplifyMotion = useSimplifiedMotion();
-
   return (
     <section className="py-24 bg-gray-50 dark:bg-slate-800 transition-colors">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
           <motion.h2
-            initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
-            whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={simplifyMotion ? undefined : { once: true }}
-            transition={simplifyMotion ? undefined : { duration: 0.5 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-slate-100"
           >
             Frequently Asked{" "}
@@ -141,12 +137,10 @@ export default function FAQ() {
           </motion.h2>
 
           <motion.p
-            initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
-            whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={simplifyMotion ? undefined : { once: true }}
-            transition={
-              simplifyMotion ? undefined : { duration: 0.5, delay: 0.1 }
-            }
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="text-lg text-gray-600 dark:text-slate-400 max-w-2xl mx-auto"
           >
             Everything you need to know about InvoiceFlow
@@ -154,25 +148,23 @@ export default function FAQ() {
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
-            {faqs.map((faq, index) => (
-              <FAQItem
-                key={index}
-                faq={faq}
-                index={index}
-                simplifyMotion={simplifyMotion}
-              />
-            ))}
-          </div>
-
-          {/* Still have questions CTA */}
           <motion.div
-            initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
-            whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={simplifyMotion ? undefined : { once: true }}
-            transition={
-              simplifyMotion ? undefined : { duration: 0.5, delay: 0.3 }
-            }
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden"
+          >
+            {faqs.map((faq, index) => (
+              <FAQItem key={faq.question} faq={faq} index={index} />
+            ))}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
             className="text-center mt-12"
           >
             <p className="text-gray-600 dark:text-slate-400 mb-4">

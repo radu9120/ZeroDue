@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { UserPlus, FileEdit, Send, CheckCircle } from "lucide-react";
-import { useSimplifiedMotion } from "@/lib/hooks/useSimplifiedMotion";
 
 const steps = [
   {
@@ -35,18 +34,16 @@ const steps = [
 ];
 
 export default function HowItWorks() {
-  const simplifyMotion = useSimplifiedMotion();
-
   return (
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white dark:bg-slate-900 transition-colors">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-10 sm:mb-12 md:mb-16">
           <motion.h2
-            initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
-            whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={simplifyMotion ? undefined : { once: true }}
-            transition={simplifyMotion ? undefined : { duration: 0.5 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-gray-900 dark:text-slate-100"
           >
             How It{" "}
@@ -56,12 +53,10 @@ export default function HowItWorks() {
           </motion.h2>
 
           <motion.p
-            initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
-            whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={simplifyMotion ? undefined : { once: true }}
-            transition={
-              simplifyMotion ? undefined : { duration: 0.5, delay: 0.1 }
-            }
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-slate-400 max-w-2xl mx-auto px-4"
           >
             Get started with professional invoicing in just 4 simple steps
@@ -79,14 +74,10 @@ export default function HowItWorks() {
           {steps.map((step, index) => (
             <motion.div
               key={index}
-              initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
-              whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
-              viewport={simplifyMotion ? undefined : { once: true }}
-              transition={
-                simplifyMotion
-                  ? undefined
-                  : { duration: 0.5, delay: index * 0.1 }
-              }
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
               className="relative"
             >
               <div className="bg-white dark:bg-slate-800 rounded-xl p-6 sm:p-7 md:p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-slate-700 hover:-translate-y-1 relative z-10 h-full">
