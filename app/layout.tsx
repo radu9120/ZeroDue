@@ -11,6 +11,7 @@ import {
 } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
@@ -95,6 +96,20 @@ export default function RootLayout({
           className={`${inter.className} bg-white dark:bg-slate-900 transition-colors`}
         >
           <ThemeProvider defaultTheme="system" storageKey="invoiceflow-theme">
+            {/* Google tag (gtag.js) */}
+            <Script
+              src="https://www.googletagmanager.com/gtag/js?id=G-89218JDW2M"
+              strategy="afterInteractive"
+            />
+            <Script id="gtag-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+
+                gtag('config', 'G-89218JDW2M');
+              `}
+            </Script>
             <Analytics />
             <Suspense fallback={null}>
               <HideOnRoutes routes={["/invoice"]}>
