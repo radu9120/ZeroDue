@@ -1,27 +1,39 @@
 "use client";
 
-import { useState, useEffect, useRef, TouchEvent } from "react";
+import { useState, useEffect, useRef, TouchEvent, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { SectionTitle } from "./ui/SectionTitle";
 import Image from "next/image";
+import { useSimplifiedMotion } from "@/lib/hooks/useSimplifiedMotion";
 
-function FloatingPaths({ position }: { position: number }) {
+function FloatingPaths({
+  position,
+  simplify,
+}: {
+  position: number;
+  simplify: boolean;
+}) {
   // Keep existing FloatingPaths code
-  const paths = Array.from({ length: 36 }, (_, i) => ({
-    id: i,
-    d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
-      380 - i * 5 * position
-    } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
-      152 - i * 5 * position
-    } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
-      684 - i * 5 * position
-    } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-    color: `rgba(15,23,42,${0.1 + i * 0.03})`,
-    width: 0.5 + i * 0.03,
-  }));
+  const pathCount = simplify ? 10 : 36;
+  const paths = useMemo(
+    () =>
+      Array.from({ length: pathCount }, (_, i) => ({
+        id: i,
+        d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
+          380 - i * 5 * position
+        } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
+          152 - i * 5 * position
+        } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
+          684 - i * 5 * position
+        } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
+        color: `rgba(15,23,42,${0.1 + i * 0.03})`,
+        width: 0.5 + i * 0.03,
+      })),
+    [pathCount, position]
+  );
 
   return (
     <div className="absolute inset-0 pointer-events-none">
@@ -31,26 +43,36 @@ function FloatingPaths({ position }: { position: number }) {
         fill="none"
       >
         <title>Background Paths</title>
-        {paths.map((path) => (
-          <motion.path
-            key={path.id}
-            d={path.d}
-            stroke="currentColor"
-            strokeWidth={path.width}
-            strokeOpacity={0.08 + path.id * 0.01}
-            initial={{ pathLength: 0.3, opacity: 0.6 }}
-            animate={{
-              pathLength: 1,
-              opacity: [0.3, 0.6, 0.3],
-              pathOffset: [0, 1, 0],
-            }}
-            transition={{
-              duration: 20 + Math.random() * 10,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          />
-        ))}
+        {paths.map((path) =>
+          simplify ? (
+            <path
+              key={path.id}
+              d={path.d}
+              stroke="currentColor"
+              strokeWidth={path.width}
+              strokeOpacity={0.12}
+            />
+          ) : (
+            <motion.path
+              key={path.id}
+              d={path.d}
+              stroke="currentColor"
+              strokeWidth={path.width}
+              strokeOpacity={0.08 + path.id * 0.01}
+              initial={{ pathLength: 0.3, opacity: 0.6 }}
+              animate={{
+                pathLength: 1,
+                opacity: [0.3, 0.6, 0.3],
+                pathOffset: [0, 1, 0],
+              }}
+              transition={{
+                duration: 20 + Math.random() * 10,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+              }}
+            />
+          )
+        )}
       </svg>
     </div>
   );
@@ -103,6 +125,7 @@ const stats = [
 ];
 
 export default function Testimonials() {
+  const simplifyMotion = useSimplifiedMotion();
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -182,8 +205,8 @@ export default function Testimonials() {
       className="relative py-16 md:py-24 overflow-hidden"
     >
       <div className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white dark:from-slate-800 dark:to-slate-900">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
+        <FloatingPaths position={1} simplify={simplifyMotion} />
+        <FloatingPaths position={-1} simplify={simplifyMotion} />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 md:px-6">
@@ -216,10 +239,15 @@ export default function Testimonials() {
               {/* This wrapper contains both the card AND the navigation buttons */}
               <motion.div
                 key={activeIndex}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                initial={
+                  simplifyMotion ? { opacity: 0 } : { opacity: 0, x: 100 }
+                }
+                animate={simplifyMotion ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                exit={simplifyMotion ? { opacity: 0 } : { opacity: 0, x: -100 }}
+                transition={{
+                  duration: simplifyMotion ? 0.35 : 0.5,
+                  ease: "easeInOut",
+                }}
                 className="relative" // Added relative positioning to this wrapper
               >
                 {/* Navigation buttons now inside the animated wrapper */}
@@ -334,10 +362,10 @@ export default function Testimonials() {
             {stats.map((stat, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
+                whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
+                viewport={simplifyMotion ? undefined : { once: true }}
+                transition={simplifyMotion ? undefined : { delay: i * 0.1 }}
                 className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 md:p-6 shadow-lg border border-blue-100 dark:border-slate-700 text-center"
               >
                 <p className="text-xs md:text-sm text-neutral-600 dark:text-slate-400 mb-1 md:mb-2">

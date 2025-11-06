@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
 import { useState } from "react";
+import { useSimplifiedMotion } from "@/lib/hooks/useSimplifiedMotion";
 
 const faqs = [
   {
@@ -57,15 +58,25 @@ const faqs = [
   },
 ];
 
-function FAQItem({ faq, index }: { faq: (typeof faqs)[0]; index: number }) {
+function FAQItem({
+  faq,
+  index,
+  simplifyMotion,
+}: {
+  faq: (typeof faqs)[0];
+  index: number;
+  simplifyMotion: boolean;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.05 }}
+      initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
+      whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={simplifyMotion ? undefined : { once: true }}
+      transition={
+        simplifyMotion ? undefined : { duration: 0.5, delay: index * 0.05 }
+      }
       className="border-b border-gray-200 dark:border-slate-700 last:border-b-0"
     >
       <button
@@ -86,10 +97,18 @@ function FAQItem({ faq, index }: { faq: (typeof faqs)[0]; index: number }) {
 
       {isOpen && (
         <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          initial={simplifyMotion ? false : { height: 0, opacity: 0 }}
+          animate={
+            simplifyMotion
+              ? { height: "auto", opacity: 1 }
+              : { height: "auto", opacity: 1 }
+          }
+          exit={
+            simplifyMotion
+              ? { height: "auto", opacity: 1 }
+              : { height: 0, opacity: 0 }
+          }
+          transition={simplifyMotion ? undefined : { duration: 0.3 }}
           className="overflow-hidden"
         >
           <p className="pb-6 px-6 text-gray-600 dark:text-slate-400 leading-relaxed">
@@ -102,15 +121,17 @@ function FAQItem({ faq, index }: { faq: (typeof faqs)[0]; index: number }) {
 }
 
 export default function FAQ() {
+  const simplifyMotion = useSimplifiedMotion();
+
   return (
     <section className="py-24 bg-gray-50 dark:bg-slate-800 transition-colors">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
+            whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
+            viewport={simplifyMotion ? undefined : { once: true }}
+            transition={simplifyMotion ? undefined : { duration: 0.5 }}
             className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-slate-100"
           >
             Frequently Asked{" "}
@@ -120,10 +141,12 @@ export default function FAQ() {
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
+            whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
+            viewport={simplifyMotion ? undefined : { once: true }}
+            transition={
+              simplifyMotion ? undefined : { duration: 0.5, delay: 0.1 }
+            }
             className="text-lg text-gray-600 dark:text-slate-400 max-w-2xl mx-auto"
           >
             Everything you need to know about InvoiceFlow
@@ -133,16 +156,23 @@ export default function FAQ() {
         <div className="max-w-4xl mx-auto">
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
             {faqs.map((faq, index) => (
-              <FAQItem key={index} faq={faq} index={index} />
+              <FAQItem
+                key={index}
+                faq={faq}
+                index={index}
+                simplifyMotion={simplifyMotion}
+              />
             ))}
           </div>
 
           {/* Still have questions CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            initial={simplifyMotion ? false : { opacity: 0, y: 20 }}
+            whileInView={simplifyMotion ? undefined : { opacity: 1, y: 0 }}
+            viewport={simplifyMotion ? undefined : { once: true }}
+            transition={
+              simplifyMotion ? undefined : { duration: 0.5, delay: 0.3 }
+            }
             className="text-center mt-12"
           >
             <p className="text-gray-600 dark:text-slate-400 mb-4">

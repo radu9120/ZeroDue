@@ -9,6 +9,7 @@ import {
   Globe,
   Shield,
 } from "lucide-react";
+import { useSimplifiedMotion } from "@/lib/hooks/useSimplifiedMotion";
 
 const features = [
   {
@@ -97,6 +98,35 @@ function BackgroundDecoration() {
 }
 
 export default function Features() {
+  const simplifyMotion = useSimplifiedMotion();
+
+  const headingMotionProps = simplifyMotion
+    ? { initial: false }
+    : {
+        variants: headingVariants,
+        initial: "hidden" as const,
+        whileInView: "visible" as const,
+        viewport: { once: true, amount: 0.4 },
+      };
+
+  const subheadingMotionProps = simplifyMotion
+    ? { initial: false }
+    : {
+        variants: subheadingVariants,
+        initial: "hidden" as const,
+        whileInView: "visible" as const,
+        viewport: { once: true, amount: 0.4 },
+      };
+
+  const gridMotionProps = simplifyMotion
+    ? { initial: false }
+    : {
+        variants: gridVariants,
+        initial: "hidden" as const,
+        whileInView: "visible" as const,
+        viewport: { once: true, amount: 0.3 },
+      };
+
   return (
     <section
       id="features"
@@ -106,10 +136,7 @@ export default function Features() {
       <div className="container relative z-10 mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
           <motion.h2
-            variants={headingVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.4 }}
+            {...headingMotionProps}
             className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-neutral-900 dark:text-slate-100"
           >
             Powerful Features for{" "}
@@ -119,10 +146,7 @@ export default function Features() {
           </motion.h2>
 
           <motion.p
-            variants={subheadingVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.4 }}
+            {...subheadingMotionProps}
             className="text-lg text-primary-text dark:text-slate-300 max-w-2xl mx-auto"
           >
             Everything you need to streamline your invoicing process and get
@@ -132,15 +156,17 @@ export default function Features() {
 
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          variants={gridVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
+          {...gridMotionProps}
         >
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              variants={featureCardVariants}
+              variants={simplifyMotion ? undefined : featureCardVariants}
+              initial={simplifyMotion ? false : undefined}
+              whileInView={simplifyMotion ? undefined : "visible"}
+              viewport={
+                simplifyMotion ? undefined : { once: true, amount: 0.2 }
+              }
               className="bg-white dark:bg-slate-800 rounded-xl p-8 shadow-md border border-neutral-200 dark:border-slate-700 transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg"
             >
               <div className="mb-4">{feature.icon}</div>
