@@ -8,6 +8,7 @@ import {
   FileText,
   PlusIcon,
   SettingsIcon,
+  Trash2,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -19,6 +20,8 @@ import { UpdateBusiness } from "./Forms/UpdateBusiness";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import type { BusinessStatistics } from "@/types";
 import { normalizeCurrencyCode, getCurrencySymbol } from "@/lib/utils";
+import DeleteBusiness from "./DeleteBusiness";
+import { Button } from "@/components/ui/button";
 
 type MetricRow = {
   text: string;
@@ -246,6 +249,25 @@ export default function BusinessDashboard({
                 btnIcon={SettingsIcon}
               >
                 <UpdateBusiness businessId={business.id} />
+              </CustomModal>
+              <CustomModal
+                heading={"Delete company"}
+                description={`Removing ${businessName} will permanently delete its invoices, clients, and activity.`}
+                customTrigger={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full md:w-auto border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-900/20"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </Button>
+                }
+              >
+                <DeleteBusiness
+                  businessId={Number(business.id)}
+                  businessName={businessName}
+                />
               </CustomModal>
               {userPlan === "free_user" && (
                 <CustomButton

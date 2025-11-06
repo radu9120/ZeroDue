@@ -1,6 +1,9 @@
 "use server";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { createSupabaseClient } from "@/lib/supabase";
+import {
+  createSupabaseClient,
+  createSupabaseAdminClient,
+} from "@/lib/supabase";
 import { CreateBusiness } from "@/schemas/invoiceSchema";
 import { redirect } from "next/navigation";
 import {
@@ -11,6 +14,8 @@ import {
 import { createActivity } from "./userActivity.actions";
 import { type AppPlan } from "@/lib/utils";
 import { getCurrentPlan } from "@/lib/plan";
+import { revalidatePath } from "next/cache";
+import { deleteFileFromBucket } from "./logo.action";
 
 // Simple module-level timestamp to throttle repeated network error logs for dashboard
 let lastDashboardNetworkLog: number | null = null;
@@ -18,6 +23,8 @@ let lastDashboardNetworkLog: number | null = null;
 export type CreateBusinessResult =
   | { ok: true; business: BusinessType }
   | { ok: false; error: string; transient?: boolean; details?: any };
+
+export type DeleteBusinessResult = { ok: true } | { ok: false; error: string };
 
 export const createBusiness = async (
   formData: CreateBusiness
@@ -285,18 +292,142 @@ export const updateBusiness = async (
   return data;
 };
 
-export const getBusiness = async ({
-  business_id,
-}: BusinessDashboardPageProps) => {
+export const deleteBusiness = async (
+  businessId: number
+): Promise<DeleteBusinessResult> => {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
+  const numericId = Number(businessId);
+  if (!numericId || Number.isNaN(numericId) || numericId <= 0) {
+    return { ok: false, error: "Invalid business identifier." };
+  }
+
   const supabase = createSupabaseClient();
 
-  let query = supabase
+  try {
+    const { data: businessRecord, error: fetchError } = await supabase
+      .from("Businesses")
+      .select("id, author, logo, name")
+      .eq("id", numericId)
+      .single();
+
+    if (fetchError || !businessRecord) {
+      return { ok: false, error: "Business not found." };
+    }
+
+    if (businessRecord.author !== userId) {
+      return {
+        ok: false,
+        error: "You are not allowed to delete this business.",
+      };
+    }
+
+    const adminSupabase = createSupabaseAdminClient();
+
+    const relatedCleanupTargets: Array<{
+      table: string;
+      column: string;
+    }> = [
+      { table: "Invoices", column: "business_id" },
+      { table: "Clients", column: "business_id" },
+      { table: "UserActivityLog", column: "business_id" },
+    ];
+
+    for (const target of relatedCleanupTargets) {
+      const { error: cleanupError } = await adminSupabase
+        .from(target.table)
+        .delete()
+        .eq(target.column, numericId);
+      if (cleanupError) {
+        throw new Error(
+          cleanupError.message ||
+            `Failed to remove related records from ${target.table}.`
+        );
+      }
+    }
+
+    const { error: deleteError } = await adminSupabase
+      .from("Businesses")
+      .delete()
+      .eq("id", numericId)
+      .eq("author", userId);
+
+    if (deleteError) {
+      throw new Error(deleteError.message || "Failed to delete business.");
+    }
+
+    const logoUrl =
+      typeof businessRecord.logo === "string" && businessRecord.logo.trim()
+        ? businessRecord.logo
+        : null;
+
+    if (logoUrl) {
+      try {
+        await deleteFileFromBucket(logoUrl);
+      } catch (logoError) {
+        console.warn(
+          "Failed to remove business logo from storage",
+          JSON.stringify(
+            {
+              business_id: numericId,
+              message: String(
+                logoError instanceof Error ? logoError.message : logoError
+              ),
+            },
+            null,
+            2
+          )
+        );
+      }
+    }
+
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/business");
+    revalidatePath("/dashboard/clients");
+    revalidatePath("/dashboard/invoices");
+
+    return { ok: true };
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to delete business. Please try again.";
+    try {
+      console.error(
+        "deleteBusiness failed",
+        JSON.stringify(
+          {
+            businessId: numericId,
+            message,
+          },
+          null,
+          2
+        )
+      );
+    } catch (_) {}
+    return { ok: false, error: message };
+  }
+};
+
+export const getBusiness = async ({
+  business_id,
+}: BusinessDashboardPageProps): Promise<Pick<
+  BusinessType,
+  "id" | "name" | "email" | "currency"
+> | null> => {
+  const { userId: author } = await auth();
+  if (!author) redirect("/sign-in");
+
+  const supabase = createSupabaseClient();
+
+  const { data: business, error } = await supabase
     .from("Businesses")
     .select("id, name, email, currency")
     .eq("id", business_id)
-    .single();
-
-  const { data: business, error } = await query;
+    .eq("author", author)
+    .limit(1)
+    .maybeSingle<Pick<BusinessType, "id" | "name" | "email" | "currency">>();
 
   if (error) throw new Error(error.message);
 
