@@ -32,35 +32,30 @@ export default async function Page({
   const searchVars = await searchParams;
   const {
     business_id,
-    name,
     page = "1",
     searchTerm = "",
     filter = "",
   } = await searchVars;
 
+  const businessId = Number(business_id);
+
   // const business_id = searchVars.business_id
   // const name = searchVars.name
 
-  if (!business_id || !name) return notFound();
+  if (!businessId || Number.isNaN(businessId)) return notFound();
 
   let business;
   try {
-    business = await getBusiness({ business_id: Number(business_id) });
+    business = await getBusiness({ business_id: businessId });
   } catch (err) {
     console.error("Error fetching business:", err);
     return notFound();
   }
 
-  if (
-    business.name.toLowerCase().replace(/\s+/g, "%") !==
-    name.toLowerCase().replace(/\s+/g, "%")
-  )
-    return notFound();
-
   let businessStats;
   try {
     businessStats = await getBusinessStats({
-      business_id: Number(business_id),
+      business_id: businessId,
     });
   } catch (err) {
     console.error("Error fetching stats:", err);
@@ -71,7 +66,7 @@ export default async function Page({
 
   try {
     invoices = await getInvoicesList({
-      business_id: Number(business_id),
+      business_id: businessId,
       page: Number(page),
       searchTerm,
       filter,
@@ -87,16 +82,14 @@ export default async function Page({
   try {
     const countOnly = await (
       await import("@/lib/actions/invoice.actions")
-    ).getInvoices(Number(business_id), {
+    ).getInvoices(businessId, {
       search: "",
       status: "all",
       page: 1,
       limit: 1,
     });
     totalInvoicesAll = countOnly?.totalCount || 0;
-    monthCount = await getCurrentMonthInvoiceCountForBusiness(
-      Number(business_id)
-    );
+    monthCount = await getCurrentMonthInvoiceCountForBusiness(businessId);
   } catch (e) {
     totalInvoicesAll = Array.isArray(invoices) ? invoices.length : 0; // fallback
   }
@@ -105,7 +98,7 @@ export default async function Page({
 
   try {
     recentActivities = await getRecentBusinessActivity({
-      business_id: business_id,
+      business_id: businessId,
     });
   } catch (error) {
     console.error("Failed to load activity log:", error);
@@ -124,7 +117,7 @@ export default async function Page({
             (userPlan === "professional" && monthCount >= 15)
           }
         />
-        <QuickActions companyId={business_id} />
+        <QuickActions companyId={businessId} />
         <InvoiceAvailability
           userPlan={userPlan}
           invoicesLength={totalInvoicesAll}
@@ -132,7 +125,7 @@ export default async function Page({
         />
         <InvoiceTable
           invoices={invoices}
-          business_id={business_id}
+          business_id={businessId}
           userPlan={userPlan}
         />
         {recentActivities.length > 0 && (

@@ -3,8 +3,11 @@ import { z } from "zod";
 
 const phoneType = z
   .string()
-  .regex(/^\+?[0-9\s-]{7,15}$/, "Invalid phone number")
-  .optional();
+  .trim()
+  .optional()
+  .refine((val) => !val || /^\+?[0-9\s-]{7,15}$/.test(val), {
+    message: "Invalid phone number",
+  });
 
 const itemSchema = z.object({
   description: z.string().min(1, { message: "Item description is required" }),
@@ -23,7 +26,7 @@ export const billToSchema = z.object({
     .min(3, { message: "Name must be between 3 and 100 characters" })
     .max(100, { message: "Name must be between 3 and 100 characters" }),
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
-  address: z.string().min(1, { message: "Quantity is required" }),
+  address: z.string().min(1, { message: "Address is required" }),
   phone: phoneType,
   business_id: z.coerce.number().min(1, { message: "Business is required" }),
 });

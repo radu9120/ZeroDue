@@ -40,7 +40,7 @@ export default function BusinessDashboard({
   stats,
   createDisabled = false,
 }: {
-  business: { id: any; name: any; email: any; currency?: string | null };
+  business: { id: any; name: any; email?: any; currency?: string | null };
   userPlan: "free_user" | "professional" | "enterprise";
   stats?: BusinessStatistics["statistic"] | null;
   createDisabled?: boolean;
@@ -92,6 +92,25 @@ export default function BusinessDashboard({
       return null;
     }
   }, [currencyCode]);
+
+  const businessName = React.useMemo(() => {
+    const raw = typeof business.name === "string" ? business.name.trim() : "";
+    return raw.length > 0 ? raw : "Untitled company";
+  }, [business.name]);
+
+  const businessEmail = React.useMemo(() => {
+    const raw = typeof business.email === "string" ? business.email.trim() : "";
+    return raw.length > 0 ? raw : null;
+  }, [business.email]);
+
+  const currencyLine = React.useMemo(() => {
+    const hasExplicitCurrency = Boolean(
+      typeof business.currency === "string" && business.currency.trim()
+    );
+    return hasExplicitCurrency
+      ? `Default currency: ${currencyCode} (${currencySymbol})`
+      : `Default currency: ${currencyCode} (${currencySymbol}) - set a different default in Settings when you are ready.`;
+  }, [business.currency, currencyCode, currencySymbol]);
 
   const formatCurrencyValue = React.useCallback(
     (raw: string | number) => {
@@ -200,13 +219,14 @@ export default function BusinessDashboard({
               </div>
               <div className="space-y-1 md:space-y-2">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-header-text dark:text-slate-100">
-                  {business.name}
+                  {businessName}
                 </h1>
                 <p className="text-sm md:text-base text-secondary-text dark:text-slate-400">
-                  {business.email}
+                  {businessEmail ||
+                    "Add a company email in Settings so clients know how to reach you."}
                 </p>
                 <p className="text-xs md:text-sm text-secondary-text dark:text-slate-500">
-                  Default currency: {currencyCode} ({currencySymbol})
+                  {currencyLine}
                 </p>
               </div>
             </div>

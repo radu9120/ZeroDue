@@ -135,6 +135,11 @@ export default function BusinessForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-8">
+        {form.formState.errors.root?.message && (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {form.formState.errors.root.message}
+          </div>
+        )}
         {/* Company Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
@@ -274,6 +279,9 @@ export default function BusinessForm({
                   rows={3}
                 />
               </FormControl>
+              <FormDescription className="text-xs text-secondary-text dark:text-slate-400">
+                Clients will see this address on each invoice.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
