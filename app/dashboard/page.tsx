@@ -31,6 +31,10 @@ export default async function Page() {
   const userPlan: AppPlan = await getCurrentPlan();
 
   const monthlyInvoices = await getCurrentMonthInvoiceCountForUser();
+  const totalInvoices = dashboardData.reduce(
+    (acc, item) => acc + Number(item.totalinvoices),
+    0
+  );
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-slate-800 transition-colors">
@@ -40,15 +44,16 @@ export default async function Page() {
           totalBusinesses={dashboardData.length}
         />
         <BusinessGrid dashboardData={dashboardData} />
-        <BusinessAvailabilty
-          userPlan={userPlan}
-          companiesLengh={dashboardData.length}
-          totalInvoices={dashboardData.reduce(
-            (acc, item) => acc + Number(item.totalinvoices),
-            0
-          )}
-          monthlyInvoices={monthlyInvoices}
-        />
+        {(dashboardData.length > 0 ||
+          totalInvoices > 0 ||
+          monthlyInvoices > 0) && (
+          <BusinessAvailabilty
+            userPlan={userPlan}
+            companiesLengh={dashboardData.length}
+            totalInvoices={totalInvoices}
+            monthlyInvoices={monthlyInvoices}
+          />
+        )}
       </Bounded>
       {/* Watches plan changes via /api/plan and refreshes the page when it changes */}
       <PlanWatcher initialPlan={userPlan} />

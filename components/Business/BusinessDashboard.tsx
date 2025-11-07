@@ -8,8 +8,10 @@ import {
   FileText,
   PlusIcon,
   SettingsIcon,
+  Sparkles,
   Trash2,
   TrendingUp,
+  User,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -43,7 +45,13 @@ export default function BusinessDashboard({
   stats,
   createDisabled = false,
 }: {
-  business: { id: any; name: any; email?: any; currency?: string | null };
+  business: {
+    id: any;
+    name: any;
+    email?: any;
+    currency?: string | null;
+    profile_type?: "company" | "freelancer" | "exploring";
+  };
   userPlan: "free_user" | "professional" | "enterprise";
   stats?: BusinessStatistics["statistic"] | null;
   createDisabled?: boolean;
@@ -96,10 +104,49 @@ export default function BusinessDashboard({
     }
   }, [currencyCode]);
 
+  const profileType: "company" | "freelancer" | "exploring" =
+    business.profile_type ?? "company";
+
+  const profileCopy = React.useMemo(() => {
+    if (profileType === "freelancer") {
+      return {
+        untitledLabel: "Untitled profile",
+        emailFallback:
+          "Add a contact email in Settings so clients know how to reach you.",
+        detailsHeading: "Profile details",
+        deleteHeading: "Delete profile",
+        badgeLabel: "Freelancer profile",
+        profileIcon: User,
+      } as const;
+    }
+    if (profileType === "exploring") {
+      return {
+        untitledLabel: "Untitled profile",
+        emailFallback:
+          "Add a contact email when you're ready so clients know how to reach you.",
+        detailsHeading: "Profile details",
+        deleteHeading: "Delete profile",
+        badgeLabel: "Exploring profile",
+        profileIcon: Sparkles,
+      } as const;
+    }
+    return {
+      untitledLabel: "Untitled company",
+      emailFallback:
+        "Add a company email in Settings so clients know how to reach you.",
+      detailsHeading: "Business details",
+      deleteHeading: "Delete company",
+      badgeLabel: "Company profile",
+      profileIcon: Building,
+    } as const;
+  }, [profileType]);
+
+  const ProfileIcon = profileCopy.profileIcon;
+
   const businessName = React.useMemo(() => {
     const raw = typeof business.name === "string" ? business.name.trim() : "";
-    return raw.length > 0 ? raw : "Untitled company";
-  }, [business.name]);
+    return raw.length > 0 ? raw : profileCopy.untitledLabel;
+  }, [business.name, profileCopy.untitledLabel]);
 
   const businessEmail = React.useMemo(() => {
     const raw = typeof business.email === "string" ? business.email.trim() : "";
@@ -211,22 +258,24 @@ export default function BusinessDashboard({
         className="inline-flex items-center text-primary hover:text-primary-dark mb-4 transition-colors"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Companies
+        Back to business profiles
       </Link>
       <Card className="shadow-md">
         <CardHeader className="space-y-4 pb-4">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center flex-shrink-0">
-                <Building className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                <ProfileIcon className="h-6 w-6 md:h-8 md:w-8 text-white" />
               </div>
               <div className="space-y-1 md:space-y-2">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-header-text dark:text-slate-100">
                   {businessName}
                 </h1>
+                <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                  {profileCopy.badgeLabel}
+                </span>
                 <p className="text-sm md:text-base text-secondary-text dark:text-slate-400">
-                  {businessEmail ||
-                    "Add a company email in Settings so clients know how to reach you."}
+                  {businessEmail || profileCopy.emailFallback}
                 </p>
                 <p className="text-xs md:text-sm text-secondary-text dark:text-slate-500">
                   {currencyLine}
@@ -242,7 +291,7 @@ export default function BusinessDashboard({
                 disabled={createDisabled}
               />
               <CustomModal
-                heading={"Business details"}
+                heading={profileCopy.detailsHeading}
                 description={"Update content"}
                 openBtnLabel={"Settings"}
                 btnVariant={"ghost"}
@@ -251,7 +300,7 @@ export default function BusinessDashboard({
                 <UpdateBusiness businessId={business.id} />
               </CustomModal>
               <CustomModal
-                heading={"Delete company"}
+                heading={profileCopy.deleteHeading}
                 description={`Removing ${businessName} will permanently delete its invoices, clients, and activity.`}
                 customTrigger={
                   <Button
@@ -267,6 +316,7 @@ export default function BusinessDashboard({
                 <DeleteBusiness
                   businessId={Number(business.id)}
                   businessName={businessName}
+                  profileType={profileType}
                 />
               </CustomModal>
               {userPlan === "free_user" && (

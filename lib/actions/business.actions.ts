@@ -414,7 +414,7 @@ export const getBusiness = async ({
   business_id,
 }: BusinessDashboardPageProps): Promise<Pick<
   BusinessType,
-  "id" | "name" | "email" | "currency"
+  "id" | "name" | "email" | "currency" | "profile_type"
 > | null> => {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
@@ -423,11 +423,13 @@ export const getBusiness = async ({
 
   const { data: business, error } = await supabase
     .from("Businesses")
-    .select("id, name, email, currency")
+    .select("id, name, email, currency, profile_type")
     .eq("id", business_id)
     .eq("author", author)
     .limit(1)
-    .maybeSingle<Pick<BusinessType, "id" | "name" | "email" | "currency">>();
+    .maybeSingle<
+      Pick<BusinessType, "id" | "name" | "email" | "currency" | "profile_type">
+    >();
 
   if (error) throw new Error(error.message);
 
@@ -473,7 +475,7 @@ export const getDashboardStats = async (): Promise<
       // Fetch user's businesses first
       const { data: businesses, error: bizErr } = await supabase
         .from("Businesses")
-        .select("id, name, created_at")
+        .select("id, name, created_at, profile_type")
         .eq("author", author)
         .order("created_at", { ascending: false });
       if (bizErr) throw bizErr;
@@ -521,6 +523,10 @@ export const getDashboardStats = async (): Promise<
             totalrevenue: totalRevenue,
             totalclients: clientCount,
             created_on: b.created_at,
+            profile_type: (b.profile_type ?? "company") as
+              | "company"
+              | "freelancer"
+              | "exploring",
           } as DashboardBusinessStats;
         })
       );
@@ -564,7 +570,14 @@ export const getDashboardStats = async (): Promise<
     }
 
     if (rpcError) throw rpcError;
-    return rpcData ?? [];
+    const stats = Array.isArray(rpcData) ? rpcData : [];
+    return stats.map((row: any) => ({
+      ...row,
+      profile_type: (row?.profile_type ?? "company") as
+        | "company"
+        | "freelancer"
+        | "exploring",
+    }));
   } catch (e: any) {
     const message = String(e?.message || e);
     const isNetwork =

@@ -760,7 +760,7 @@ export default function InvoiceTable({
   /**
    * NOTE: Invoice Editing is intentionally restricted to maintain plan limit integrity.
    *
-   * REASON: Invoice creation counts against plan limits (Free: 1 invoice, Pro: 10/month).
+   * REASON: Invoice creation counts against plan limits (Free: 2/month, Pro: 10/month).
    * Full editing would allow users to create unlimited invoices by repeatedly editing
    * the same one, bypassing plan restrictions.
    *

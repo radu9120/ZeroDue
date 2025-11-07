@@ -7,8 +7,9 @@ import {
   Building,
   DollarSign,
   FileText,
-  Settings,
   SettingsIcon,
+  Sparkles,
+  User,
   Users,
 } from "lucide-react";
 import CustomModal from "../ModalsForms/CustomModal";
@@ -20,6 +21,20 @@ export default function BusinessCard({
 }: {
   company: DashboardBusinessStats;
 }) {
+  const profileType = company.profile_type ?? "company";
+  const ProfileIcon =
+    profileType === "company"
+      ? Building
+      : profileType === "freelancer"
+        ? User
+        : Sparkles;
+  const profileLabel =
+    profileType === "company"
+      ? "Company profile"
+      : profileType === "freelancer"
+        ? "Freelancer profile"
+        : "Exploring profile";
+
   const handleVisitBusiness = () => {
     try {
       localStorage.setItem("activeBusinessId", String(company.id));
@@ -46,13 +61,16 @@ export default function BusinessCard({
                 {/* isJustCreated
                 ? "bg-gradient-to-br from-green-500 to-green-600"
                 : "bg-gradient-to-br from-primary to-accent" */}
-                <Building className="h-6 w-6 text-white" />
+                <ProfileIcon className="h-6 w-6 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-header-text dark:text-slate-100 text-lg">
                     {company.name}
                   </h3>
+                  <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                    {profileLabel}
+                  </span>
                 </div>
               </div>
             </div>

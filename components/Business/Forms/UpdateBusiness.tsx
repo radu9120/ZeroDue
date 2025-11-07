@@ -72,6 +72,7 @@ export const UpdateBusiness = ({
       vat: undefined,
       currency: "GBP",
       logo: "",
+      profile_type: "company",
     },
     values: business
       ? {
@@ -82,6 +83,7 @@ export const UpdateBusiness = ({
           vat: business.vat,
           currency: business.currency || "GBP",
           logo: business.logo || "",
+          profile_type: business.profile_type || "company",
         }
       : undefined,
     mode: "onChange",
@@ -97,6 +99,7 @@ export const UpdateBusiness = ({
         vat: business.vat,
         currency: business.currency || "GBP",
         logo: business.logo || "",
+        profile_type: business.profile_type || "company",
       });
     }
   }, [business, form]);
@@ -299,6 +302,7 @@ export const UpdateBusiness = ({
       existingLogoUrl={business.logo}
       isSubmitting={isSubmitting}
       onCancel={closeModal}
+      mode={business.profile_type || "company"}
     />
   );
 };

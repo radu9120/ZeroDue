@@ -18,18 +18,7 @@ export const createInvoice = async (formData: CreateInvoice) => {
   try {
     const plan: AppPlan = await getCurrentPlan();
     if (plan === "free_user") {
-      // Total invoices created by this author, any time
-      const { count } = await supabase
-        .from("Invoices")
-        .select("id", { count: "exact", head: true })
-        .eq("author", author);
-      if ((count || 0) >= 1) {
-        throw new Error(
-          "Free plan limit: only 2 invoice allowed. Upgrade to create more."
-        );
-      }
-    } else if (plan === "professional") {
-      // Invoices created in current calendar month
+      // Free plan: 2 invoices per month
       const now = new Date();
       const firstDayISO = new Date(
         now.getFullYear(),
@@ -47,9 +36,33 @@ export const createInvoice = async (formData: CreateInvoice) => {
         .eq("author", author)
         .gte("created_at", firstDayISO)
         .lt("created_at", nextMonthISO);
-      if ((count || 0) >= 15) {
+      if ((count || 0) >= 2) {
         throw new Error(
-          "Professional plan limit: 15 invoices per month reached. Upgrade to Enterprise for unlimited."
+          "Free plan limit: 2 invoices per month. Upgrade to create more."
+        );
+      }
+    } else if (plan === "professional") {
+      // Professional plan: 10 invoices per month
+      const now = new Date();
+      const firstDayISO = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+      ).toISOString();
+      const nextMonthISO = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        1
+      ).toISOString();
+      const { count } = await supabase
+        .from("Invoices")
+        .select("id", { count: "exact", head: true })
+        .eq("author", author)
+        .gte("created_at", firstDayISO)
+        .lt("created_at", nextMonthISO);
+      if ((count || 0) >= 10) {
+        throw new Error(
+          "Professional plan limit: 10 invoices per month. Upgrade to Enterprise for unlimited."
         );
       }
     }

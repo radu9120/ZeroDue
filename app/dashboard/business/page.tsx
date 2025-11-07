@@ -122,11 +122,6 @@ export default async function Page({
           }
         />
         <QuickActions companyId={businessId} />
-        <InvoiceAvailability
-          userPlan={userPlan}
-          invoicesLength={totalInvoicesAll}
-          companiesLength={1}
-        />
         <InvoiceTable
           invoices={invoices}
           business_id={businessId}
@@ -135,6 +130,11 @@ export default async function Page({
         {recentActivities.length > 0 && (
           <RecentActivity recentActivities={recentActivities} />
         )}
+        <InvoiceAvailability
+          userPlan={userPlan}
+          invoicesLength={monthCount}
+          companiesLength={1}
+        />
       </Bounded>
       <PlanWatcher initialPlan={userPlan} />
     </main>
