@@ -23,13 +23,49 @@ export default function ContactPage() {
     subject: "",
     message: "",
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState<
+    { type: "success" | "error"; message: string } | null
+  >(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
-    // Reset form
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    setSubmitting(true);
+    setFeedback(null);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: `${formData.subject}\n\n${formData.message}`,
+        }),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.error || "We couldn't send your message." );
+      }
+
+      setFeedback({
+        type: "success",
+        message: "Thanks! We received your message and will respond soon.",
+      });
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      console.error("Contact form submission failed", error);
+      setFeedback({
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -253,10 +289,23 @@ export default function ContactPage() {
                   <Button
                     type="submit"
                     className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-cyan-500 text-white"
+                    disabled={submitting}
                   >
                     <Send className="h-4 w-4 mr-2" />
-                    Send Message
+                    {submitting ? "Sending…" : "Send Message"}
                   </Button>
+
+                  {feedback && (
+                    <p
+                      className={`text-sm ${
+                        feedback.type === "success"
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
+                      }`}
+                    >
+                      {feedback.message}
+                    </p>
+                  )}
                 </form>
 
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">
