@@ -35,16 +35,20 @@ export default function DashboardHeader({
     window.location.href = "/upgrade";
   };
 
+  if (totalBusinesses === 0) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 justify-between py-4 mb-6">
       <div>
         <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100 mb-1 sm:mb-2">
-          Your Companies
+          Your Business Profiles
         </h1>
         <p className="text-secondary-text dark:text-slate-400">
           {totalBusinesses === 0
-            ? "Get started by creating your first company."
-            : "Select a company to manage invoices, clients, and view analytics."}
+            ? "Get started by creating your first business profile."
+            : "Select a profile to manage invoices, clients, and view analytics."}
         </p>
       </div>
 
@@ -83,9 +87,9 @@ export default function DashboardHeader({
           {/* Show "New Company" button if conditions are met and upgrade elements are not shown (upgrade takes precedence) */}
           {showNewCompanyButtonInHeader && !showUpgradeElements && (
             <CustomModal
-              heading={"Create new company"}
+              heading={"Create new business profile"}
               description={"Add another business profile to your account."}
-              openBtnLabel={"New Company"}
+              openBtnLabel={"New Profile"}
               btnVariant={"primary"}
               btnIcon={PlusIcon}
             >

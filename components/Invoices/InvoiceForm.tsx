@@ -214,6 +214,7 @@ const InvoiceForm = ({
       vat: company_data.vat,
       logo: company_data.logo ?? "",
       currency: defaultCurrency,
+      profile_type: company_data.profile_type ?? "company",
     }),
     [company_data, defaultCurrency]
   );
@@ -574,6 +575,7 @@ const InvoiceForm = ({
                       asChild
                       className="bg-amber-600 hover:bg-amber-700 text-white"
                     >
+                      dsaffdas{" "}
                       <Link
                         href={`/dashboard/clients?business_id=${company_data.id}`}
                       >

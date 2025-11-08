@@ -10,23 +10,33 @@ interface DeleteBusinessProps {
   businessId: number;
   businessName?: string | null;
   closeModal?: () => void;
+  profileType?: "company" | "freelancer" | "exploring";
 }
 
 export default function DeleteBusiness({
   businessId,
   businessName,
   closeModal,
+  profileType = "company",
 }: DeleteBusinessProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const nouns = useMemo(() => {
+    const isCompany = profileType === "company";
+    return {
+      noun: isCompany ? "business" : "profile",
+      fallback: isCompany ? "this business" : "this profile",
+    } as const;
+  }, [profileType]);
+
   const resolvedName = useMemo(() => {
     if (typeof businessName === "string" && businessName.trim().length > 0) {
       return businessName.trim();
     }
-    return "this business";
-  }, [businessName]);
+    return nouns.fallback;
+  }, [businessName, nouns.fallback]);
 
   const handleDelete = () => {
     setError(null);
@@ -63,7 +73,7 @@ export default function DeleteBusiness({
           Permanently delete {resolvedName}
         </p>
         <p className="mt-2 leading-relaxed">
-          This action will remove the business, its invoices, clients, and
+          This action will remove the {nouns.noun}, its invoices, clients, and
           activity history. Deleted data cannot be recovered.
         </p>
       </div>
@@ -94,7 +104,7 @@ export default function DeleteBusiness({
             ) : (
               <Trash2 className="h-4 w-4" />
             )}
-            {isPending ? "Deleting..." : "Delete business"}
+            {isPending ? "Deleting..." : `Delete ${nouns.noun}`}
           </span>
         </Button>
       </div>

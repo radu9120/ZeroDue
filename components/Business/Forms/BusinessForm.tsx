@@ -34,13 +34,14 @@ type CurrencyOption = {
 };
 
 interface BusinessFormProps {
-  form: UseFormReturn<z.infer<typeof companySchema>>;
+  form: UseFormReturn<z.infer<typeof companySchema>, any>;
   onSubmit: (values: z.infer<typeof companySchema>) => Promise<void>;
   submitButtonText?: string;
   onFileChange: (file: File | null) => void;
   existingLogoUrl?: string | null;
   isSubmitting?: boolean;
   onCancel?: () => void;
+  mode?: "company" | "freelancer" | "exploring";
 }
 
 export default function BusinessForm({
@@ -51,6 +52,7 @@ export default function BusinessForm({
   existingLogoUrl,
   isSubmitting = false,
   onCancel,
+  mode = "company",
 }: BusinessFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<AppPlan>("free_user");
@@ -87,6 +89,10 @@ export default function BusinessForm({
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    form.register("profile_type");
+  }, [form]);
 
   useEffect(() => {
     // More robust validation
@@ -132,6 +138,9 @@ export default function BusinessForm({
     }
   };
 
+  const profileType = form.watch("profile_type") ?? mode;
+  const isFreelancer = profileType !== "company";
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-8">
@@ -148,11 +157,15 @@ export default function BusinessForm({
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
-                  Company/Name *
+                  {isFreelancer ? "Your name or brand *" : "Company name *"}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter company name"
+                    placeholder={
+                      isFreelancer
+                        ? "e.g. Jordan Smith Design"
+                        : "e.g. Acme Ltd"
+                    }
                     {...field}
                     disabled={isSubmitting}
                   />
@@ -273,7 +286,11 @@ export default function BusinessForm({
               </FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter company address"
+                  placeholder={
+                    isFreelancer
+                      ? "Enter the address you want shown on invoices"
+                      : "Enter company registered address"
+                  }
                   {...field}
                   disabled={isSubmitting}
                   rows={3}
@@ -295,7 +312,7 @@ export default function BusinessForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
-                  Company Logo
+                  {isFreelancer ? "Logo or avatar" : "Company logo"}
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -307,7 +324,9 @@ export default function BusinessForm({
                   />
                 </FormControl>
                 <FormDescription className="text-xs text-secondary-text dark:text-slate-400">
-                  Upload a logo for your company (PNG, JPG, JPEG - Max 5MB)
+                  {isFreelancer
+                    ? "Optional: add a personal logo, portrait, or leave blank."
+                    : "Upload a logo for your company (PNG, JPG, JPEG - Max 5MB)"}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -345,27 +364,31 @@ export default function BusinessForm({
           <ul className="text-sm text-secondary-text dark:text-slate-400 space-y-1">
             {userPlan === "enterprise" && (
               <>
-                <li>• Unlimited companies</li>
+                <li>• Unlimited business profiles</li>
                 <li>• Unlimited invoices</li>
-                <li>• Advanced client management</li>
+                <li>• Unlimited clients plus bulk import</li>
+                <li>• Customizable invoice templates</li>
                 <li>• Priority support</li>
-                <li>• Custom branding</li>
                 <li>• Advanced reporting</li>
               </>
             )}
             {userPlan === "professional" && (
               <>
-                <li>• Up to 3 companies</li>
-                <li>• Up to 15 invoices per month</li>
-                <li>• Advanced client management</li>
+                <li>• Up to 3 business profiles</li>
+                <li>• Up to 10 invoices per month</li>
+                <li>• Unlimited clients plus bulk import</li>
+                <li>• Full dashboard analytics</li>
                 <li>• Priority email support</li>
               </>
             )}
             {userPlan === "free_user" && (
               <>
-                <li>• 1 company</li>
-                <li>• Up to 1 invoice</li>
-                <li>• Basic client management</li>
+                <li>
+                  • 1 {mode === "company" ? "business profile" : "profile"}
+                </li>
+                <li>• Up to 2 invoices per month</li>
+                <li>• Unlimited clients</li>
+                <li>• Essential invoice template</li>
                 <li>• Email support</li>
               </>
             )}

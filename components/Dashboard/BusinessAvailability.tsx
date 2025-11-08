@@ -19,16 +19,23 @@ export default function BusinessAvailabilty({
 }: PlanLimitationsProps) {
   const router = useRouter(); // Initialize router
 
-  // Show banner for all plans; for Enterprise, we only show an info message (no counts/limits)
+  const companyLimit =
+    userPlan === "free_user" ? 1 : userPlan === "professional" ? 3 : Infinity;
+  const monthlyInvoiceLimit =
+    userPlan === "free_user" ? 2 : userPlan === "professional" ? 10 : Infinity;
+
+  const reachedCompanyLimit =
+    companyLimit !== Infinity && companiesLengh >= companyLimit;
+  const reachedMonthlyLimit =
+    monthlyInvoiceLimit !== Infinity && monthlyInvoices >= monthlyInvoiceLimit;
+
+  const hasHitLimit = Boolean(reachedCompanyLimit || reachedMonthlyLimit);
 
   const getCompanyLimitText = () => {
-    if (userPlan === "free_user") {
-      return `${companiesLengh}/1`;
+    if (companyLimit === Infinity) {
+      return `${companiesLengh}/∞`;
     }
-    if (userPlan === "professional") {
-      return `${companiesLengh}/3`;
-    }
-    return `${companiesLengh}/∞`;
+    return `${companiesLengh}/${companyLimit}`;
   };
 
   const handleUpgradeClick = () => {
@@ -44,16 +51,24 @@ export default function BusinessAvailabilty({
         <div className="flex-1 space-y-4">
           <h3 className="font-semibold text-yellow-800 dark:text-yellow-300 mb-2">
             {userPlan === "free_user"
-              ? "Free Plan Limitations Reached"
+              ? hasHitLimit
+                ? "Free plan limits reached"
+                : "You're on the Free plan"
               : userPlan === "professional"
-                ? "Professional Plan"
-                : "Enterprise Plan"}
+                ? hasHitLimit
+                  ? "Professional plan limits reached"
+                  : "You're on the Professional plan"
+                : "Enterprise plan overview"}
           </h3>
           <p className="text-yellow-700 dark:text-yellow-400">
             {userPlan === "free_user"
-              ? "You're currently on the Free plan. Upgrade to unlock unlimited invoices and manage more companies."
+              ? hasHitLimit
+                ? "You've hit the Free plan limits. Upgrade to unlock more invoices and manage more businesses."
+                : "You're on the Free plan — 1 business profile, 2 invoices per month, unlimited clients."
               : userPlan === "professional"
-                ? "Perfect for freelancers and small businesses — up to 3 companies and 15 invoices per month."
+                ? hasHitLimit
+                  ? "You've reached the Professional plan limits. Upgrade to Enterprise for unlimited growth."
+                  : "Perfect for growing teams — up to 3 business profiles and 10 invoices per month."
                 : "You have unlimited access to all features."}
           </p>
           {userPlan !== "enterprise" && (
@@ -62,8 +77,7 @@ export default function BusinessAvailabilty({
                 <span className="font-medium">Companies: </span>
                 <span
                   className={
-                    (userPlan === "free_user" && companiesLengh >= 1) ||
-                    (userPlan === "professional" && companiesLengh >= 3)
+                    reachedCompanyLimit
                       ? "text-red-600 dark:text-red-400 font-semibold"
                       : ""
                   }
@@ -72,36 +86,18 @@ export default function BusinessAvailabilty({
                 </span>
               </div>
               <div>
-                <span className="font-medium">Total Invoices: </span>
+                <span className="font-medium">Invoices this month: </span>
                 <span
                   className={
-                    userPlan === "free_user" && totalInvoices >= 1
+                    reachedMonthlyLimit
                       ? "text-red-600 dark:text-red-400 font-semibold"
                       : ""
                   }
                 >
-                  {totalInvoices}/
-                  {userPlan === "free_user"
-                    ? 1
-                    : userPlan === "professional"
-                      ? "∞"
-                      : "∞"}
+                  {monthlyInvoices}/
+                  {monthlyInvoiceLimit === Infinity ? "∞" : monthlyInvoiceLimit}
                 </span>
               </div>
-              {userPlan === "professional" && (
-                <div>
-                  <span className="font-medium">Invoices this month: </span>
-                  <span
-                    className={
-                      monthlyInvoices >= 15
-                        ? "text-red-600 dark:text-red-400 font-semibold"
-                        : ""
-                    }
-                  >
-                    {monthlyInvoices}/15
-                  </span>
-                </div>
-              )}
             </div>
           )}
           {userPlan === "free_user" && (
@@ -119,7 +115,7 @@ export default function BusinessAvailabilty({
               className="w-full bg-gradient-to-r from-primary to-accent text-white sm:w-auto"
             >
               <Crown className="h-4 w-4 mr-2" />
-              Manage Plan
+              {hasHitLimit ? "Upgrade Plan" : "Manage Plan"}
             </Button>
           )}
         </div>

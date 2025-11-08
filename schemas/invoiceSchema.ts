@@ -49,6 +49,9 @@ export const companySchema = z.object({
     .refine((val) => /^[A-Z]{3}$/.test(val), {
       message: "Currency must be a 3-letter ISO code",
     }),
+  profile_type: z.enum(["company", "freelancer", "exploring"], {
+    errorMap: () => ({ message: "Select a valid profile type" }),
+  }),
   logo: z.string().optional() || undefined,
 });
 

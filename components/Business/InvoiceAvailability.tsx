@@ -11,7 +11,7 @@ interface PlanLimitationsProps {
 }
 
 // Define limits for the free plan
-const FREE_PLAN_INVOICE_LIMIT = 1;
+const FREE_PLAN_INVOICE_LIMIT = 2;
 const FREE_PLAN_COMPANY_LIMIT = 1;
 
 export default function InvoiceAvailability({
@@ -41,15 +41,17 @@ export default function InvoiceAvailability({
         </div>
         <div className="flex-1">
           <h3 className="font-semibold text-yellow-800 mb-1">
-            Free Plan Limitations Reached
+            Free Plan Limitations
           </h3>
           <p className="text-sm text-yellow-700 mb-4">
-            You're currently on the Free plan. Upgrade to unlock unlimited
-            invoices and manage more companies.
+            You're on the Free plan — 1 business profile, 2 invoices per month,
+            unlimited clients. Upgrade for more capacity.
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2 mb-4 text-sm">
             <div>
-              <span className="font-medium text-yellow-700">Invoices: </span>
+              <span className="font-medium text-yellow-700">
+                Invoices this month:{" "}
+              </span>
               <span
                 className={
                   hasReachedInvoiceLimit
@@ -61,7 +63,9 @@ export default function InvoiceAvailability({
               </span>
             </div>
             <div>
-              <span className="font-medium text-yellow-700">Companies: </span>
+              <span className="font-medium text-yellow-700">
+                Business profiles:{" "}
+              </span>
               <span
                 className={
                   hasReachedCompanyLimit

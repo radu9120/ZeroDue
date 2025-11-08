@@ -17,6 +17,7 @@ interface DashboardBusinessStats {
   totalrevenue: number;
   totalclients: number;
   created_on: string;
+  profile_type?: "company" | "freelancer" | "exploring";
 }
 
 interface GetAllClientsParams {
@@ -57,6 +58,7 @@ interface BusinessType {
   vat?: number;
   logo?: url | "";
   currency?: string | null;
+  profile_type?: "company" | "freelancer" | "exploring";
 }
 
 interface NewInvoicePageProps {

@@ -1,29 +1,41 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
+import { useForm, type UseFormReturn } from "react-hook-form";
 import { companySchema } from "@/schemas/invoiceSchema"; // Adjust path as needed
 import BusinessForm from "./BusinessForm"; // Adjust path as needed
 import {
   createBusiness as createBusinessAction,
   type CreateBusinessResult,
 } from "@/lib/actions/business.actions"; // Adjust path
-import { useState } from "react";
 import { uploadFileAndGetUrl } from "@/lib/actions/logo.action"; // Adjust path
 
 interface CreateBusinessProps {
   closeModal?: () => void; // Optional prop to close the modal
   onSuccess?: () => void; // Optional generic success callback
+  mode?: "company" | "freelancer" | "exploring";
 }
 
 export const CreateBusiness = ({
   closeModal,
   onSuccess,
+  mode = "company",
 }: CreateBusinessProps) => {
+  type BusinessFormValues = z.infer<typeof companySchema>;
+  type ProfileType = BusinessFormValues["profile_type"];
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false); // For loading state
 
-  const form = useForm<z.infer<typeof companySchema>>({
+  const resolvedProfileType = useMemo<ProfileType>(() => {
+    if (mode === "freelancer" || mode === "exploring") {
+      return mode;
+    }
+    return "company";
+  }, [mode]);
+
+  const form = useForm<BusinessFormValues>({
     resolver: zodResolver(companySchema),
     defaultValues: {
       name: "",
@@ -33,8 +45,13 @@ export const CreateBusiness = ({
       vat: undefined,
       currency: "GBP",
       logo: "", // Initialize as empty string
+      profile_type: resolvedProfileType,
     },
-  });
+  }) as UseFormReturn<BusinessFormValues>;
+
+  useEffect(() => {
+    form.setValue("profile_type", resolvedProfileType);
+  }, [form, resolvedProfileType]);
 
   const handleCreateSubmit = async (values: z.infer<typeof companySchema>) => {
     setIsSubmitting(true);
@@ -46,8 +63,9 @@ export const CreateBusiness = ({
       }
       // No need to check values.logo here for create, as it's for new entities
 
-      const finalValues = {
+      const finalValues: BusinessFormValues = {
         ...values,
+        profile_type: resolvedProfileType,
         logo: logoUrl,
       };
 
@@ -93,6 +111,7 @@ export const CreateBusiness = ({
       isSubmitting={isSubmitting} // Pass submitting state to the form
       // If BusinessForm has an onCancel that should also close the modal:
       onCancel={closeModal}
+      mode={mode}
     />
   );
 };
