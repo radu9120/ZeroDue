@@ -24,9 +24,10 @@ export default function ContactPage() {
     message: "",
   });
   const [submitting, setSubmitting] = useState(false);
-  const [feedback, setFeedback] = useState<
-    { type: "success" | "error"; message: string } | null
-  >(null);
+  const [feedback, setFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +47,7 @@ export default function ContactPage() {
 
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
-        throw new Error(payload.error || "We couldn't send your message." );
+        throw new Error(payload.error || "We couldn't send your message.");
       }
 
       setFeedback({
