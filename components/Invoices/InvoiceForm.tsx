@@ -214,6 +214,7 @@ const InvoiceForm = ({
       vat: company_data.vat,
       logo: company_data.logo ?? "",
       currency: defaultCurrency,
+      profile_type: company_data.profile_type ?? "company",
     }),
     [company_data, defaultCurrency]
   );
