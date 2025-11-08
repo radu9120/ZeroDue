@@ -212,6 +212,7 @@ const InvoiceForm = ({
       address: company_data.address,
       phone: company_data.phone ?? "",
       vat: company_data.vat,
+      tax_label: company_data.tax_label ?? "VAT",
       logo: company_data.logo ?? "",
       currency: defaultCurrency,
       profile_type: company_data.profile_type ?? "company",
@@ -575,7 +576,6 @@ const InvoiceForm = ({
                       asChild
                       className="bg-amber-600 hover:bg-amber-700 text-white"
                     >
-                      dsaffdas{" "}
                       <Link
                         href={`/dashboard/clients?business_id=${company_data.id}`}
                       >
@@ -744,7 +744,7 @@ const InvoiceForm = ({
               render={() => (
                 <FormItem>
                   <FormControl>
-                    <InvoiceItems />
+                    <InvoiceItems taxLabel={company_data.tax_label || "VAT"} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

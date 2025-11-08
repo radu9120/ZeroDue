@@ -883,6 +883,7 @@ export default function InvoiceSuccessView({
                 invoiceCurrency={normalizedInvoiceCurrency}
                 getCurrencySymbol={getCurrencySymbol}
                 isCompactLayout={isCompactLayout}
+                taxLabel={company.tax_label || "VAT"}
               />
 
               <div

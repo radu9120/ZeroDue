@@ -14,6 +14,7 @@ interface InvoiceItemsMobileListProps {
   currency: string;
   invoiceCurrency: string;
   getCurrencySymbol: (code?: string) => string;
+  taxLabel?: string;
 }
 
 const formatCurrency = (
@@ -36,6 +37,7 @@ export function InvoiceItemsMobileList({
   currency,
   invoiceCurrency,
   getCurrencySymbol,
+  taxLabel = "VAT",
 }: InvoiceItemsMobileListProps) {
   const renderEditableItems = () => {
     if (!itemRows.length) {
@@ -118,7 +120,7 @@ export function InvoiceItemsMobileList({
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Tax (%)
+              {taxLabel} (%)
               <input
                 type="number"
                 min={0}

@@ -93,6 +93,7 @@ function generateInvoiceHTML(invoice: any, business: any): string {
   const currency = invoice.currency || "GBP";
   const currencySymbol =
     currency === "USD" ? "$" : currency === "EUR" ? "€" : "£";
+  const taxLabel = business.tax_label || companyDetails?.tax_label || "VAT";
 
   return `
 <!DOCTYPE html>
@@ -289,7 +290,7 @@ function generateInvoiceHTML(invoice: any, business: any): string {
           <p>${companyDetails.email || business.email}</p>
           ${companyDetails.phone ? `<p>${companyDetails.phone}</p>` : ""}
           ${companyDetails.address ? `<p>${companyDetails.address}</p>` : ""}
-          ${companyDetails.vat ? `<p><span class="label">VAT:</span> ${companyDetails.vat}</p>` : ""}
+          ${companyDetails.vat ? `<p><span class="label">${taxLabel}:</span> ${companyDetails.vat}</p>` : ""}
         `
             : `
           <p><strong>${business.name}</strong></p>
@@ -343,7 +344,7 @@ function generateInvoiceHTML(invoice: any, business: any): string {
           <th>Description</th>
           <th style="text-align: center; width: 80px;">Qty</th>
           <th style="text-align: right; width: 120px;">Unit Price</th>
-          <th style="text-align: center; width: 80px;">Tax %</th>
+          <th style="text-align: center; width: 80px;">${taxLabel} %</th>
           <th style="text-align: right; width: 120px;">Amount</th>
         </tr>
       </thead>

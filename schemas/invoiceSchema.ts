@@ -42,6 +42,7 @@ export const companySchema = z.object({
   address: z.string().min(1, { message: "Quantity is required" }),
   phone: phoneType,
   vat: z.coerce.number().optional(),
+  tax_label: z.string().optional(),
   currency: z
     .string()
     .trim()

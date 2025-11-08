@@ -1,0 +1,87 @@
+[
+  {
+    "code": "VAT",
+    "name": "Value Added Tax",
+    "countries": ["UK", "EU", "Australia", "New Zealand"]
+  },
+  {
+    "code": "GST",
+    "name": "Goods and Services Tax",
+    "countries": ["Canada", "India", "Singapore", "Australia"]
+  },
+  {
+    "code": "HST",
+    "name": "Harmonized Sales Tax",
+    "countries": ["Canada"]
+  },
+  {
+    "code": "PST",
+    "name": "Provincial Sales Tax",
+    "countries": ["Canada"]
+  },
+  {
+    "code": "QST",
+    "name": "Quebec Sales Tax",
+    "countries": ["Canada"]
+  },
+  {
+    "code": "IVA",
+    "name": "Impuesto sobre el Valor Añadido",
+    "countries": ["Spain", "Latin America"]
+  },
+  {
+    "code": "TVA",
+    "name": "Taxe sur la Valeur Ajoutée",
+    "countries": ["France", "French-speaking countries"]
+  },
+  {
+    "code": "MwSt",
+    "name": "Mehrwertsteuer",
+    "countries": ["Germany", "Austria", "Switzerland"]
+  },
+  {
+    "code": "BTW",
+    "name": "Belasting Toegevoegde Waarde",
+    "countries": ["Netherlands", "Belgium"]
+  },
+  {
+    "code": "Sales Tax",
+    "name": "Sales Tax",
+    "countries": ["USA"]
+  },
+  {
+    "code": "Tax",
+    "name": "Tax",
+    "countries": ["Global"]
+  },
+  {
+    "code": "IGST",
+    "name": "Integrated Goods and Services Tax",
+    "countries": ["India"]
+  },
+  {
+    "code": "CGST",
+    "name": "Central Goods and Services Tax",
+    "countries": ["India"]
+  },
+  {
+    "code": "SGST",
+    "name": "State Goods and Services Tax",
+    "countries": ["India"]
+  },
+  {
+    "code": "SST",
+    "name": "Sales and Service Tax",
+    "countries": ["Malaysia"]
+  },
+  {
+    "code": "JCT",
+    "name": "Japanese Consumption Tax",
+    "countries": ["Japan"]
+  },
+  {
+    "code": "None",
+    "name": "No Tax",
+    "countries": ["Global"]
+  }
+]

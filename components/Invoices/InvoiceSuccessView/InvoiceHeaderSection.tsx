@@ -139,7 +139,9 @@ export function InvoiceHeaderSection({
             <p style={{ marginBottom: "2px" }}>{company.phone}</p>
           )}
           {company.vat && (
-            <p style={{ marginBottom: "2px" }}>VAT: {company.vat}</p>
+            <p style={{ marginBottom: "2px" }}>
+              {company.tax_label || "VAT"}: {company.vat}
+            </p>
           )}
         </div>
       </div>

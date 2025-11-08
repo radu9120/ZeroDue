@@ -56,6 +56,7 @@ interface BusinessType {
   address: string;
   phone?: string;
   vat?: number;
+  tax_label?: string;
   logo?: url | "";
   currency?: string | null;
   profile_type?: "company" | "freelancer" | "exploring";

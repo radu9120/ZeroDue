@@ -16,6 +16,7 @@ interface InvoiceItemsTableProps {
   invoiceCurrency: string;
   getCurrencySymbol: (code?: string) => string;
   isCompactLayout: boolean;
+  taxLabel?: string;
 }
 
 export function InvoiceItemsTable({
@@ -31,6 +32,7 @@ export function InvoiceItemsTable({
   invoiceCurrency,
   getCurrencySymbol,
   isCompactLayout,
+  taxLabel = "VAT",
 }: InvoiceItemsTableProps) {
   if (isCompactLayout) {
     return (
@@ -46,6 +48,7 @@ export function InvoiceItemsTable({
         currency={currency}
         invoiceCurrency={invoiceCurrency}
         getCurrencySymbol={getCurrencySymbol}
+        taxLabel={taxLabel}
       />
     );
   }
@@ -130,7 +133,7 @@ export function InvoiceItemsTable({
                     width: "80px",
                   }}
                 >
-                  Tax
+                  {taxLabel}
                 </th>
                 <th
                   className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wide w-32"

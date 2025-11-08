@@ -26,11 +26,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import currencies from "@/lib/currencies.json";
+import taxTypes from "@/lib/tax-types.json";
 
 type CurrencyOption = {
   code: string;
   name: string;
   symbol?: string;
+};
+
+type TaxTypeOption = {
+  code: string;
+  name: string;
+  countries: string[];
 };
 
 interface BusinessFormProps {
@@ -56,6 +63,7 @@ export default function BusinessForm({
 }: BusinessFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<AppPlan>("free_user");
+
   const currencyOptions = useMemo(() => {
     return (currencies as CurrencyOption[]).map((currency) => {
       const hasSymbol =
@@ -69,6 +77,14 @@ export default function BusinessForm({
         label,
       };
     });
+  }, []);
+
+  const taxTypeOptions = useMemo(() => {
+    return (taxTypes as TaxTypeOption[]).map((tax) => ({
+      code: tax.code,
+      label: `${tax.code} — ${tax.name}`,
+      countries: tax.countries,
+    }));
   }, []);
 
   // Fetch current plan dynamically so the modal shows accurate limits
@@ -223,17 +239,52 @@ export default function BusinessForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
-                  VAT Number
+                  {form.watch("tax_label") || "VAT"} Number
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter VAT number"
+                    placeholder={`Enter ${form.watch("tax_label") || "VAT"} number`}
                     type="number"
                     {...field}
                     value={field.value ?? ""}
                     disabled={isSubmitting}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="tax_label"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
+                  Tax ID Type
+                </FormLabel>
+                <Select
+                  value={field.value || "VAT"}
+                  onValueChange={field.onChange}
+                  disabled={isSubmitting}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                      <SelectValue placeholder="Select tax type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="max-h-64">
+                    {taxTypeOptions.map((option) => (
+                      <SelectItem key={option.code} value={option.code}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormDescription className="text-secondary-text dark:text-slate-300">
+                  Choose the tax identification type for your region (e.g., VAT,
+                  GST, EIN).
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
