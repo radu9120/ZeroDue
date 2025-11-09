@@ -273,19 +273,19 @@ export default function BusinessDashboard({
         <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 md:p-8 border-b border-gray-200 dark:border-slate-800">
           <div className="flex items-start gap-4 sm:gap-5">
             {businessLogo ? (
-              <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg ring-4 ring-blue-50 dark:ring-slate-800 bg-white dark:bg-slate-900">
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex-shrink-0">
                 <Image
                   src={businessLogo}
                   alt={`${businessName} logo`}
                   fill
                   sizes="(max-width: 768px) 80px, 96px"
-                  className="object-contain p-2"
+                  className="object-contain"
                   priority
                 />
               </div>
             ) : (
-              <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-blue-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg ring-4 ring-blue-50 dark:ring-slate-800">
-                <ProfileIcon className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-slate-200/70 dark:bg-slate-800 rounded-2xl flex items-center justify-center flex-shrink-0 border border-gray-200 dark:border-slate-700">
+                <ProfileIcon className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-slate-600 dark:text-slate-200" />
               </div>
             )}
             <div className="flex-1 min-w-0">

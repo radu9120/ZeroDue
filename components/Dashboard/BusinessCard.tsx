@@ -62,18 +62,18 @@ export default function BusinessCard({
           <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 border-b border-gray-100 dark:border-slate-800">
             <div className="flex items-center gap-4">
               {companyLogo ? (
-                <div className="relative w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-2xl overflow-hidden shadow-md ring-2 ring-gray-100 dark:ring-slate-700 bg-white dark:bg-slate-900">
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-2xl overflow-hidden">
                   <Image
                     src={companyLogo}
                     alt={`${company.name} logo`}
                     fill
                     sizes="(max-width: 640px) 56px, 64px"
-                    className="object-contain p-2"
+                    className="object-contain"
                   />
                 </div>
               ) : (
-                <div className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-2xl flex items-center justify-center bg-gradient-to-br from-primary to-accent shadow-md">
-                  <ProfileIcon className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
+                <div className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-2xl flex items-center justify-center bg-slate-200/70 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
+                  <ProfileIcon className="h-7 w-7 sm:h-8 sm:w-8 text-slate-600 dark:text-slate-200" />
                 </div>
               )}
               <div className="min-w-0 flex-1">
