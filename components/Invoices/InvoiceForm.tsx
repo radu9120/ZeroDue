@@ -111,8 +111,8 @@ const CalendarPicker = ({
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg p-4 w-80">
-      <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100 dark:border-slate-700">
+    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg p-3 sm:p-4 w-full max-w-sm sm:w-80">
+      <div className="flex items-center justify-between mb-3 sm:mb-4 pb-2 border-b border-gray-100 dark:border-slate-700">
         <button
           type="button"
           onClick={() => setViewDate(new Date(year, month - 1, 1))}
@@ -307,7 +307,7 @@ const InvoiceForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="p-8 space-y-12 text-gray-900 dark:text-slate-100"
+          className="p-4 sm:p-6 md:p-8 space-y-8 sm:space-y-12 text-gray-900 dark:text-slate-100"
         >
           {/* Company & Client Information */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

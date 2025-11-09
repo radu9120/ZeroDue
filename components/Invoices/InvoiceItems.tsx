@@ -42,17 +42,18 @@ const InvoiceItemRow = ({
   return (
     <div
       key={index}
-      className="border-t py-3 space-y-3 pl-2 pr-4 border-blue-100 "
+      className="border-t py-3 space-y-3 pl-2 pr-2 sm:pr-4 border-blue-100"
     >
-      {/* Description */}
-      <div className="grid grid-cols-2 gap-4 py-3">
-        <div className="flex gap-4 items-center">
-          <div className="w-6">
+      {/* Mobile: Stack all fields vertically, Desktop: Grid layout */}
+      <div className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-4 py-3">
+        {/* Description with Delete Button */}
+        <div className="flex gap-2 sm:gap-4 items-center">
+          <div className="w-8 flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={onRemove}
-              className="text-red-600 hover:bg-red-50"
+              className="text-red-600 hover:bg-red-50 p-1"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -73,13 +74,17 @@ const InvoiceItemRow = ({
             )}
           />
         </div>
-        <div className="flex gap-4 w-full items-center">
+        {/* Quantity, Price, Tax - Responsive Grid */}
+        <div className="grid grid-cols-3 gap-2 w-full items-center">
           {/* Quantity */}
-          <div className="w-[26%] ">
+          <div className="">
             <FormField
               name={`items.${index}.quantity`}
               render={() => (
                 <FormItem>
+                  <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
+                    Qty
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -97,11 +102,14 @@ const InvoiceItemRow = ({
             />
           </div>
           {/* Unit Price */}
-          <div className=" flex-1">
+          <div className="">
             <FormField
               name={`items.${index}.unit_price`}
               render={() => (
                 <FormItem>
+                  <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
+                    Rate
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -120,12 +128,15 @@ const InvoiceItemRow = ({
             />
           </div>
 
-          <div className="w-[30%]">
+          <div className="">
             {/* Tax (%) */}
             <FormField
               name={`items.${index}.tax`}
               render={() => (
                 <FormItem className="relative ">
+                  <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
+                    {taxLabel}
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -217,25 +228,27 @@ const InvoiceItems = ({ taxLabel = "VAT" }: { taxLabel?: string }) => {
       </div>
       <div className="bg-white dark:bg-slate-800 border border-blue-100 rounded-lg overflow-hidden">
         <div className="w-full">
-          <div className="bg-blue-50 pl-2 pr-4">
+          {/* Desktop Header - Hidden on mobile */}
+          <div className="hidden md:block bg-blue-50 pl-2 pr-2 sm:pr-4">
             <div className="grid grid-cols-2 gap-4 py-3">
-              <div className=" flex text-left gap-4 text-sm font-medium text-secondary-text dark:text-slate-400">
-                <div className="w-6"></div>
+              <div className="flex text-left gap-2 sm:gap-4 text-sm font-medium text-secondary-text dark:text-slate-400">
+                <div className="w-8"></div>
                 <p>Description</p>
               </div>
-              <div className="flex gap-4 w-full">
-                <div className="text-center w-[26%] text-sm font-medium text-secondary-text dark:text-slate-400">
+              <div className="grid grid-cols-3 gap-2 w-full">
+                <div className="text-center text-sm font-medium text-secondary-text dark:text-slate-400">
                   <p>Qty</p>
                 </div>
-                <div className="text-center flex-1 text-sm font-medium text-secondary-text dark:text-slate-400">
+                <div className="text-center text-sm font-medium text-secondary-text dark:text-slate-400">
                   <p>Rate</p>
                 </div>
-                <div className="text-center w-[30%] text-sm font-medium text-secondary-text dark:text-slate-400">
+                <div className="text-center text-sm font-medium text-secondary-text dark:text-slate-400">
                   <p>{taxLabel}</p>
                 </div>
               </div>
             </div>
           </div>
+          {/* Mobile: No header - fields are stacked */}
           <div>
             {fields.map((field, index) => (
               <InvoiceItemRow
