@@ -10,25 +10,35 @@ import {
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { normalizeCurrencyCode } from "@/lib/utils";
 
-const formatCurrency = (amount?: number, currency?: string | null) => {
-  if (!amount || Number.isNaN(amount)) {
-    const symbol = currency && typeof currency === "string" ? currency : "USD";
-    return `${symbol} 0.00`;
+const formatCurrency = (amount?: number | null, currency?: string | null) => {
+  const currencyCode = normalizeCurrencyCode(
+    currency && typeof currency === "string" ? currency : "USD"
+  );
+
+  if (amount === undefined || amount === null || Number.isNaN(amount)) {
+    try {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: currencyCode,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(0);
+    } catch {
+      return `${currencyCode} 0.00`;
+    }
   }
-
-  const safeCurrency =
-    currency && typeof currency === "string" ? currency : "USD";
 
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: safeCurrency,
+      currency: currencyCode,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
   } catch {
-    return `${safeCurrency} ${amount.toFixed(2)}`;
+    return `${currencyCode} ${amount.toFixed(2)}`;
   }
 };
 

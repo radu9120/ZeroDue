@@ -15,19 +15,26 @@ import ClientCard from "@/components/Clients/ClientCard";
 import { ClientType } from "@/types";
 import CustomButton from "../ui/CustomButton";
 import { useRouter } from "next/navigation";
+import { normalizeCurrencyCode } from "@/lib/utils";
 
-const formatCurrency = (amount?: number, currency?: string | null) => {
-  if (!amount || Number.isNaN(amount)) {
-    return "$0.00";
+const formatCurrency = (amount?: number | null, currency?: string | null) => {
+  const currencyCode = normalizeCurrencyCode(
+    currency && typeof currency === "string" ? currency : "USD"
+  );
+
+  if (amount === undefined || amount === null || Number.isNaN(amount)) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currencyCode,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(0);
   }
-
-  const safeCurrency =
-    currency && typeof currency === "string" ? currency : "USD";
 
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: safeCurrency,
+      currency: currencyCode,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
@@ -78,7 +85,9 @@ export default function ClientManagement({
       }
 
       if (!representativeCurrency && client.invoice_currency) {
-        representativeCurrency = client.invoice_currency;
+        representativeCurrency = normalizeCurrencyCode(
+          client.invoice_currency
+        );
       }
     }
 
@@ -86,7 +95,7 @@ export default function ClientManagement({
       totalInvoices,
       activeClients,
       totalRevenue,
-      representativeCurrency: representativeCurrency || "USD",
+  representativeCurrency: normalizeCurrencyCode(representativeCurrency || "USD"),
     };
   }, [clients]);
 

@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { createActivity } from "./userActivity.actions";
 import z from "zod";
 import { revalidatePath } from "next/cache";
+import { normalizeCurrencyCode } from "@/lib/utils";
 
 export const createClient = async (formData: CreateClient) => {
   const { userId: author } = await auth();
@@ -144,7 +145,7 @@ export const getAllClients = async ({
     }
 
     if (!current.currency && row.currency) {
-      current.currency = row.currency as string;
+      current.currency = normalizeCurrencyCode(row.currency as string);
     }
 
     aggregates.set(clientId, current);
@@ -161,7 +162,9 @@ export const getAllClients = async ({
       ...client,
       invoice_count: stats.count,
       invoice_total: Number(stats.amount.toFixed(2)),
-      invoice_currency: stats.currency,
+      invoice_currency: stats.currency
+        ? normalizeCurrencyCode(stats.currency)
+        : null,
     };
   });
 };
