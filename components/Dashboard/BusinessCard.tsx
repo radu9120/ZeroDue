@@ -45,6 +45,11 @@ export default function BusinessCard({
     }
   };
 
+  const companyLogo =
+    typeof company.logo === "string" && company.logo.trim().length > 0
+      ? company.logo.trim()
+      : null;
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 border-gray-200 dark:border-slate-700">
       <CardContent className="p-0">
@@ -56,12 +61,14 @@ export default function BusinessCard({
           {/* Header Section - Clean White */}
           <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 border-b border-gray-100 dark:border-slate-800">
             <div className="flex items-center gap-4">
-              {company.logo ? (
-                <div className="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-2xl overflow-hidden shadow-md ring-2 ring-gray-100 dark:ring-slate-700">
-                  <img
-                    src={company.logo}
+              {companyLogo ? (
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 rounded-2xl overflow-hidden shadow-md ring-2 ring-gray-100 dark:ring-slate-700 bg-white dark:bg-slate-900">
+                  <Image
+                    src={companyLogo}
                     alt={`${company.name} logo`}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 56px, 64px"
+                    className="object-contain p-2"
                   />
                 </div>
               ) : (

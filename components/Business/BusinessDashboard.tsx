@@ -19,11 +19,12 @@ import * as React from "react";
 import CustomButton from "../ui/CustomButton";
 import CustomModal from "../ModalsForms/CustomModal";
 import { UpdateBusiness } from "./Forms/UpdateBusiness";
-import { Card, CardContent, CardHeader } from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import type { BusinessStatistics } from "@/types";
 import { normalizeCurrencyCode, getCurrencySymbol } from "@/lib/utils";
 import DeleteBusiness from "./DeleteBusiness";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 type MetricRow = {
   text: string;
@@ -143,6 +144,11 @@ export default function BusinessDashboard({
   }, [profileType]);
 
   const ProfileIcon = profileCopy.profileIcon;
+  const businessLogo = React.useMemo(() => {
+    if (typeof business.logo !== "string") return null;
+    const trimmed = business.logo.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }, [business.logo]);
 
   const businessName = React.useMemo(() => {
     const raw = typeof business.name === "string" ? business.name.trim() : "";
@@ -266,12 +272,15 @@ export default function BusinessDashboard({
         {/* Clean Header Section */}
         <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 md:p-8 border-b border-gray-200 dark:border-slate-800">
           <div className="flex items-start gap-4 sm:gap-5">
-            {business.logo ? (
-              <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg ring-4 ring-blue-50 dark:ring-slate-800">
-                <img
-                  src={business.logo}
+            {businessLogo ? (
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg ring-4 ring-blue-50 dark:ring-slate-800 bg-white dark:bg-slate-900">
+                <Image
+                  src={businessLogo}
                   alt={`${businessName} logo`}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 80px, 96px"
+                  className="object-contain p-2"
+                  priority
                 />
               </div>
             ) : (
