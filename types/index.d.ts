@@ -45,6 +45,8 @@ interface ClientType {
   address: string;
   phone?: string;
   business_id: number;
+  logo_url?: string | null;
+  logo?: string | null;
   invoice_count?: number;
   invoice_total?: number;
   invoice_currency?: string | null;

@@ -414,7 +414,7 @@ export const getBusiness = async ({
   business_id,
 }: BusinessDashboardPageProps): Promise<Pick<
   BusinessType,
-  "id" | "name" | "email" | "currency" | "profile_type"
+  "id" | "name" | "email" | "currency" | "profile_type" | "logo"
 > | null> => {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
@@ -423,12 +423,15 @@ export const getBusiness = async ({
 
   const { data: business, error } = await supabase
     .from("Businesses")
-    .select("id, name, email, currency, profile_type")
+    .select("id, name, email, currency, profile_type, logo")
     .eq("id", business_id)
     .eq("author", author)
     .limit(1)
     .maybeSingle<
-      Pick<BusinessType, "id" | "name" | "email" | "currency" | "profile_type">
+      Pick<
+        BusinessType,
+        "id" | "name" | "email" | "currency" | "profile_type" | "logo"
+      >
     >();
 
   if (error) throw new Error(error.message);
@@ -475,7 +478,7 @@ export const getDashboardStats = async (): Promise<
       // Fetch user's businesses first
       const { data: businesses, error: bizErr } = await supabase
         .from("Businesses")
-        .select("id, name, created_at, profile_type")
+        .select("id, name, created_at, profile_type, logo")
         .eq("author", author)
         .order("created_at", { ascending: false });
       if (bizErr) throw bizErr;
@@ -527,6 +530,7 @@ export const getDashboardStats = async (): Promise<
               | "company"
               | "freelancer"
               | "exploring",
+            logo: typeof b.logo === "string" ? b.logo : null,
           } as DashboardBusinessStats;
         })
       );
@@ -571,13 +575,73 @@ export const getDashboardStats = async (): Promise<
 
     if (rpcError) throw rpcError;
     const stats = Array.isArray(rpcData) ? rpcData : [];
-    return stats.map((row: any) => ({
+    const mapped = stats.map((row: any) => ({
       ...row,
       profile_type: (row?.profile_type ?? "company") as
         | "company"
         | "freelancer"
         | "exploring",
+      logo:
+        typeof row?.logo === "string" && row.logo.trim().length > 0
+          ? row.logo.trim()
+          : null,
     }));
+
+    const missingLogoIds = mapped
+      .filter((row) => !row.logo)
+      .map((row) => row.id)
+      .filter((id) => typeof id === "number" && !Number.isNaN(id));
+
+    if (missingLogoIds.length > 0) {
+      try {
+        const { data: logoRows, error: logoError } = await supabase
+          .from("Businesses")
+          .select("id, logo")
+          .in("id", missingLogoIds);
+
+        if (!logoError && Array.isArray(logoRows)) {
+          const logoMap = new Map<number, string>();
+          logoRows.forEach((row: any) => {
+            const id =
+              typeof row?.id === "number"
+                ? row.id
+                : Number.parseInt(row?.id, 10);
+            if (!id || Number.isNaN(id)) return;
+            const logoVal =
+              typeof row?.logo === "string" && row.logo.trim().length > 0
+                ? row.logo.trim()
+                : null;
+            if (logoVal) {
+              logoMap.set(id, logoVal);
+            }
+          });
+
+          mapped.forEach((row) => {
+            if (!row.logo && logoMap.has(row.id)) {
+              row.logo = logoMap.get(row.id) ?? null;
+            }
+          });
+        }
+      } catch (logoFetchError) {
+        console.warn(
+          "[dashboard] failed to backfill business logos",
+          JSON.stringify(
+            {
+              message: String(
+                logoFetchError instanceof Error
+                  ? logoFetchError.message
+                  : logoFetchError
+              ),
+              count: missingLogoIds.length,
+            },
+            null,
+            2
+          )
+        );
+      }
+    }
+
+    return mapped;
   } catch (e: any) {
     const message = String(e?.message || e);
     const isNetwork =

@@ -104,6 +104,9 @@ export const getAllClients = async ({
   }
 
   const clientIds = clients.map((client) => client.id).filter(Boolean);
+  const businessIds = Array.from(
+    new Set(clients.map((client) => client.business_id).filter(Boolean))
+  );
 
   if (clientIds.length === 0) {
     return clients;
@@ -151,12 +154,36 @@ export const getAllClients = async ({
     aggregates.set(clientId, current);
   });
 
+  const businessLogos = new Map<number, string | null>();
+
+  if (businessIds.length > 0) {
+    const { data: businesses, error: businessError } = await supabase
+      .from("Businesses")
+      .select("id, logo")
+      .in("id", businessIds);
+
+    if (!businessError && businesses) {
+      businesses.forEach((biz: any) => {
+        const id =
+          typeof biz.id === "number" ? biz.id : Number.parseInt(biz.id, 10);
+        if (!id || Number.isNaN(id)) return;
+        const logoValue =
+          typeof biz.logo === "string" && biz.logo.trim().length > 0
+            ? biz.logo.trim()
+            : null;
+        businessLogos.set(id, logoValue);
+      });
+    }
+  }
+
   return clients.map((client) => {
     const stats = aggregates.get(client.id) ?? {
       count: 0,
       amount: 0,
       currency: null,
     };
+
+    const logoUrl = businessLogos.get(client.business_id) ?? null;
 
     return {
       ...client,
@@ -165,6 +192,8 @@ export const getAllClients = async ({
       invoice_currency: stats.currency
         ? normalizeCurrencyCode(stats.currency)
         : null,
+      logo: logoUrl,
+      logo_url: logoUrl,
     };
   });
 };
