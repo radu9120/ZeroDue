@@ -67,6 +67,9 @@ export default function CookieBanner() {
     localStorage.setItem("cookie-consent", JSON.stringify(prefs));
     localStorage.setItem("cookie-consent-date", new Date().toISOString());
 
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent("cookiePreferencesUpdated"));
+
     // Here you would typically initialize your analytics/marketing scripts
     // based on the user's preferences
     if (prefs.analytics) {

@@ -28,11 +28,41 @@ export default function CookiesPage() {
     // Mark as mounted to avoid hydration issues
     setMounted(true);
 
-    // Get current cookie preferences
-    const consent = localStorage.getItem("cookie-consent");
-    if (consent) {
-      setCookieConsent(JSON.parse(consent));
-    }
+    // Function to update cookie preferences from localStorage
+    const updateConsent = () => {
+      const consent = localStorage.getItem("cookie-consent");
+      if (consent) {
+        setCookieConsent(JSON.parse(consent));
+      } else {
+        setCookieConsent(null);
+      }
+    };
+
+    // Get initial cookie preferences
+    updateConsent();
+
+    // Listen for storage changes (when preferences are updated in cookie banner)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "cookie-consent") {
+        updateConsent();
+      }
+    };
+
+    // Listen for custom event (for same-window updates)
+    const handleCookieUpdate = () => {
+      updateConsent();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("cookiePreferencesUpdated", handleCookieUpdate);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(
+        "cookiePreferencesUpdated",
+        handleCookieUpdate
+      );
+    };
   }, []);
 
   const reopenCookieBanner = () => {

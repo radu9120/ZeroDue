@@ -261,28 +261,36 @@ export default function BusinessDashboard({
         Back to business profiles
       </Link>
       <Card className="shadow-md">
-        <CardHeader className="space-y-4 pb-4">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
-            <div className="flex items-center gap-3 md:gap-4">
-              <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center flex-shrink-0">
-                <ProfileIcon className="h-6 w-6 md:h-8 md:w-8 text-white" />
+        <CardHeader className="space-y-4 pb-4 p-4 sm:p-6">
+          {/* Mobile-First Header Layout */}
+          <div className="flex flex-col gap-4">
+            {/* Top Row: Icon + Name + Badge */}
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center flex-shrink-0">
+                <ProfileIcon className="h-6 w-6 text-white" />
               </div>
-              <div className="space-y-1 md:space-y-2">
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-header-text dark:text-slate-100">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-header-text dark:text-slate-100 truncate">
                   {businessName}
                 </h1>
-                <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 mt-1">
                   {profileCopy.badgeLabel}
                 </span>
-                <p className="text-sm md:text-base text-secondary-text dark:text-slate-400">
-                  {businessEmail || profileCopy.emailFallback}
-                </p>
-                <p className="text-xs md:text-sm text-secondary-text dark:text-slate-500">
-                  {currencyLine}
-                </p>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto">
+
+            {/* Contact Info */}
+            <div className="space-y-1">
+              <p className="text-sm text-secondary-text dark:text-slate-400">
+                {businessEmail || profileCopy.emailFallback}
+              </p>
+              <p className="text-xs text-secondary-text dark:text-slate-500">
+                {currencyLine}
+              </p>
+            </div>
+
+            {/* Action Buttons - Mobile Stack */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
               <CustomButton
                 label={"Create Invoice"}
                 icon={PlusIcon}
@@ -290,35 +298,37 @@ export default function BusinessDashboard({
                 href={`/dashboard/invoices/new?business_id=${business.id}`}
                 disabled={createDisabled}
               />
-              <CustomModal
-                heading={profileCopy.detailsHeading}
-                description={"Update content"}
-                openBtnLabel={"Settings"}
-                btnVariant={"ghost"}
-                btnIcon={SettingsIcon}
-              >
-                <UpdateBusiness businessId={business.id} />
-              </CustomModal>
-              <CustomModal
-                heading={profileCopy.deleteHeading}
-                description={`Removing ${businessName} will permanently delete its invoices, clients, and activity.`}
-                customTrigger={
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="w-full md:w-auto border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-900/20"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </Button>
-                }
-              >
-                <DeleteBusiness
-                  businessId={Number(business.id)}
-                  businessName={businessName}
-                  profileType={profileType}
-                />
-              </CustomModal>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <CustomModal
+                  heading={profileCopy.detailsHeading}
+                  description={"Update content"}
+                  openBtnLabel={"Settings"}
+                  btnVariant={"ghost"}
+                  btnIcon={SettingsIcon}
+                >
+                  <UpdateBusiness businessId={business.id} />
+                </CustomModal>
+                <CustomModal
+                  heading={profileCopy.deleteHeading}
+                  description={`Removing ${businessName} will permanently delete its invoices, clients, and activity.`}
+                  customTrigger={
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="flex-1 sm:flex-initial border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-900/20"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  }
+                >
+                  <DeleteBusiness
+                    businessId={Number(business.id)}
+                    businessName={businessName}
+                    profileType={profileType}
+                  />
+                </CustomModal>
+              </div>
               {userPlan === "free_user" && (
                 <CustomButton
                   variant="primary"

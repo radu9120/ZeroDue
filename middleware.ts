@@ -6,9 +6,13 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/pricing(.*)",
+  "/upgrade(.*)",
   "/help(.*)",
   "/contact(.*)",
   "/privacy-policy(.*)",
+  "/cookies(.*)",
+  "/sitemap(.*)",
+  "/blog(.*)",
   "/api/health(.*)",
   "/api/clerk/webhooks(.*)",
   "/api/webhooks/resend(.*)",
@@ -19,17 +23,6 @@ const isPublicRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
   const url = req.nextUrl;
-
-  // If signed in and visiting home or auth pages, send to dashboard
-  if (
-    userId &&
-    (url.pathname === "/" ||
-      url.pathname.startsWith("/sign-in") ||
-      url.pathname.startsWith("/sign-up"))
-  ) {
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
-  }
 
   // If signed out and attempting a protected route (not public), send to sign-in
   if (!userId && !isPublicRoute(req)) {

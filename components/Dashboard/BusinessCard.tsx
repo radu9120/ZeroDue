@@ -45,86 +45,76 @@ export default function BusinessCard({
   };
 
   return (
-    <Card>
-      {/* isJustCreated
-          ? "border-green-300 bg-green-50/50 shadow-green-200"
-          : "border-blue-100 hover:shadow-xl" */}
-      <CardContent>
+    <Card className="overflow-hidden">
+      <CardContent className="p-4 sm:p-6">
         <Link
           href={`/dashboard/business?business_id=${company.id}&name=${company.name}`}
           className="w-full space-y-4"
           onClick={handleVisitBusiness}
         >
-          <div className="flex items-start justify-between ">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary to-accent">
-                {/* isJustCreated
-                ? "bg-gradient-to-br from-green-500 to-green-600"
-                : "bg-gradient-to-br from-primary to-accent" */}
+          {/* Header - Mobile Optimized */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="w-12 h-12 flex-shrink-0 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary to-accent">
                 <ProfileIcon className="h-6 w-6 text-white" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-header-text dark:text-slate-100 text-lg">
-                    {company.name}
-                  </h3>
-                  <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
-                    {profileLabel}
-                  </span>
-                </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-header-text dark:text-slate-100 text-base sm:text-lg truncate">
+                  {company.name}
+                </h3>
+                <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 mt-1">
+                  {profileLabel}
+                </span>
               </div>
             </div>
-            <ArrowRight
-              className="h-5 w-5 transition-colors text-secondary-text dark:text-slate-400 group-hover:text-primary"
-              //                 isJustCreated
-              //   ? "text-green-600"
-              //   : "text-secondary-text dark:text-slate-400 group-hover:text-primary"
-            />
+            <ArrowRight className="h-5 w-5 flex-shrink-0 transition-colors text-secondary-text dark:text-slate-400 group-hover:text-primary" />
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-6">
+
+          {/* Stats Grid - Mobile Optimized */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-4">
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <FileText className="h-4 w-4 text-primary" />
+                <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
               </div>
-              <span className="text-sm font-medium text-secondary-text dark:text-slate-400">
+              <span className="text-xs sm:text-sm font-medium text-secondary-text dark:text-slate-400 block mb-1">
                 Invoices
               </span>
-              <div className="text-lg font-bold text-header-text dark:text-slate-100">
+              <div className="text-lg sm:text-xl font-bold text-header-text dark:text-slate-100">
                 <p>{company.totalinvoices}</p>
               </div>
             </div>
 
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <Users className="h-4 w-4 text-purple-600" />
+                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-purple-600" />
               </div>
-              <span className="text-sm font-medium text-secondary-text dark:text-slate-400">
+              <span className="text-xs sm:text-sm font-medium text-secondary-text dark:text-slate-400 block mb-1">
                 Clients
               </span>
-              <div className="text-lg font-bold text-header-text dark:text-slate-100">
+              <div className="text-lg sm:text-xl font-bold text-header-text dark:text-slate-100">
                 <p>{company.totalclients}</p>
               </div>
             </div>
 
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <DollarSign className="h-4 w-4 text-green-600" />
+                <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600" />
               </div>
-              <span className="text-sm font-medium text-secondary-text dark:text-slate-400">
+              <span className="text-xs sm:text-sm font-medium text-secondary-text dark:text-slate-400 block mb-1">
                 Revenue
               </span>
-              <div className="text-lg font-bold text-green-600">
+              <div className="text-lg sm:text-xl font-bold text-green-600">
                 <p>{company.totalrevenue}</p>
               </div>
             </div>
           </div>
         </Link>
       </CardContent>
-      <CardFooter className="flex items-center justify-between pt-4 border-t border-blue-100">
-        <span className="text-sm text-secondary-text dark:text-slate-400">
+      <CardFooter className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-blue-100 dark:border-slate-700">
+        <span className="text-xs sm:text-sm text-secondary-text dark:text-slate-400">
           Created on {timestamptzConvert(company.created_on)}
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           <CustomModal
             heading={"Business details"}
             description={"Update content"}
