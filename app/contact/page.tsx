@@ -138,22 +138,6 @@ export default function ContactPage() {
                   </div>
 
                   <div className="flex items-start group">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <MapPin className="h-5 w-5 text-green-600" />
-                    </div>
-                    <div className="ml-4">
-                      <h3 className="font-semibold text-header-text dark:text-slate-100">
-                        Address
-                      </h3>
-                      <p className="text-secondary-text dark:text-slate-400">
-                        123 Business Street, Suite 100
-                        <br />
-                        London, EC1A 1BB, United Kingdom
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start group">
                     <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                       <Clock className="h-5 w-5 text-purple-600" />
                     </div>
