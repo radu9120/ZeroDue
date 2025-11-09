@@ -1,8 +1,26 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { blogPosts } from "./posts";
 
+const POSTS_PER_PAGE = 6;
+
 export default function BlogPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(blogPosts.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const endIndex = startIndex + POSTS_PER_PAGE;
+  const currentPosts = blogPosts.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-white dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
       <section className="px-4 pt-24 pb-16 md:px-8 lg:px-16 xl:px-32">
@@ -22,9 +40,9 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <section className="px-4 pb-20 md:px-8 lg:px-16 xl:px-32">
+      <section className="px-4 pb-12 md:px-8 lg:px-16 xl:px-32">
         <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {blogPosts.map((post) => (
+          {currentPosts.map((post) => (
             <article
               key={post.slug}
               className="group flex h-full flex-col rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900/70"
@@ -41,7 +59,6 @@ export default function BlogPage() {
               </p>
               <div className="mt-6 flex flex-col gap-2 text-sm text-gray-500 dark:text-slate-400">
                 <span>{post.publishedAt}</span>
-                <span>{post.description}</span>
               </div>
               <div className="mt-auto pt-6">
                 <Link
@@ -54,6 +71,53 @@ export default function BlogPage() {
               </div>
             </article>
           ))}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-12 flex items-center justify-center gap-2">
+            <button
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:border-gray-400 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:text-white"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </button>
+
+            <div className="flex items-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => goToPage(page)}
+                    className={`min-w-[40px] h-10 rounded-full px-4 text-sm font-semibold transition ${
+                      currentPage === page
+                        ? "bg-green-600 text-white shadow-lg"
+                        : "border border-gray-300 text-gray-700 hover:border-gray-400 hover:text-gray-900 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:text-white"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+            </div>
+
+            <button
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:border-gray-400 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:text-white"
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Post count info */}
+        <div className="mt-6 text-center text-sm text-gray-600 dark:text-slate-400">
+          Showing {startIndex + 1}–{Math.min(endIndex, blogPosts.length)} of{" "}
+          {blogPosts.length} articles
         </div>
       </section>
 

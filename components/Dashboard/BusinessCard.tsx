@@ -49,82 +49,78 @@ export default function BusinessCard({
       <CardContent className="p-4 sm:p-6">
         <Link
           href={`/dashboard/business?business_id=${company.id}&name=${company.name}`}
-          className="w-full space-y-4"
+          className="w-full space-y-3 sm:space-y-4"
           onClick={handleVisitBusiness}
         >
           {/* Header - Mobile Optimized */}
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <div className="w-12 h-12 flex-shrink-0 rounded-xl flex items-center justify-center bg-gradient-to-br from-primary to-accent">
-                <ProfileIcon className="h-6 w-6 text-white" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-header-text dark:text-slate-100 text-base sm:text-lg truncate">
-                  {company.name}
-                </h3>
-                <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 mt-1">
-                  {profileLabel}
-                </span>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 rounded-lg sm:rounded-xl flex items-center justify-center bg-gradient-to-br from-primary to-accent">
+              <ProfileIcon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
-            <ArrowRight className="h-5 w-5 flex-shrink-0 transition-colors text-secondary-text dark:text-slate-400 group-hover:text-primary" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-header-text dark:text-slate-100 text-sm sm:text-base md:text-lg truncate mb-1">
+                {company.name}
+              </h3>
+              <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-[10px] sm:text-xs font-medium text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                {profileLabel}
+              </span>
+            </div>
+            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 transition-colors text-secondary-text dark:text-slate-400 hover:text-primary" />
           </div>
 
           {/* Stats Grid - Mobile Optimized */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-4">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-2 sm:pt-4 border-t border-gray-100 dark:border-slate-800">
+            <div className="flex flex-col items-center">
+              <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-50 dark:bg-slate-800 mb-2">
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
-              <span className="text-xs sm:text-sm font-medium text-secondary-text dark:text-slate-400 block mb-1">
+              <span className="text-[10px] sm:text-xs font-medium text-secondary-text dark:text-slate-400 mb-1">
                 Invoices
               </span>
-              <div className="text-lg sm:text-xl font-bold text-header-text dark:text-slate-100">
-                <p>{company.totalinvoices}</p>
+              <div className="text-base sm:text-lg md:text-xl font-bold text-header-text dark:text-slate-100">
+                {company.totalinvoices}
               </div>
             </div>
 
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-purple-600" />
+            <div className="flex flex-col items-center">
+              <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-purple-50 dark:bg-slate-800 mb-2">
+                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
               </div>
-              <span className="text-xs sm:text-sm font-medium text-secondary-text dark:text-slate-400 block mb-1">
+              <span className="text-[10px] sm:text-xs font-medium text-secondary-text dark:text-slate-400 mb-1">
                 Clients
               </span>
-              <div className="text-lg sm:text-xl font-bold text-header-text dark:text-slate-100">
-                <p>{company.totalclients}</p>
+              <div className="text-base sm:text-lg md:text-xl font-bold text-header-text dark:text-slate-100">
+                {company.totalclients}
               </div>
             </div>
 
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600" />
+            <div className="flex flex-col items-center">
+              <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-green-50 dark:bg-slate-800 mb-2">
+                <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
               </div>
-              <span className="text-xs sm:text-sm font-medium text-secondary-text dark:text-slate-400 block mb-1">
+              <span className="text-[10px] sm:text-xs font-medium text-secondary-text dark:text-slate-400 mb-1">
                 Revenue
               </span>
-              <div className="text-lg sm:text-xl font-bold text-green-600">
-                <p>{company.totalrevenue}</p>
+              <div className="text-base sm:text-lg md:text-xl font-bold text-green-600">
+                {company.totalrevenue}
               </div>
             </div>
           </div>
         </Link>
       </CardContent>
-      <CardFooter className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-blue-100 dark:border-slate-700">
-        <span className="text-xs sm:text-sm text-secondary-text dark:text-slate-400">
-          Created on {timestamptzConvert(company.created_on)}
+      <CardFooter className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 p-3 sm:p-4 md:p-6 border-t border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50">
+        <span className="text-[10px] sm:text-xs md:text-sm text-secondary-text dark:text-slate-400 text-center sm:text-left">
+          Created {timestamptzConvert(company.created_on)}
         </span>
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <CustomModal
-            heading={"Business details"}
-            description={"Update content"}
-            openBtnLabel={""}
-            btnVariant={"ghost"}
-            btnIcon={SettingsIcon}
-          >
-            <UpdateBusiness businessId={company.id} />
-          </CustomModal>
-        </div>
+        <CustomModal
+          heading={"Business details"}
+          description={"Update content"}
+          openBtnLabel={""}
+          btnVariant={"ghost"}
+          btnIcon={SettingsIcon}
+        >
+          <UpdateBusiness businessId={company.id} />
+        </CustomModal>
       </CardFooter>
     </Card>
   );
