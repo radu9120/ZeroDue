@@ -51,6 +51,7 @@ export default function BusinessDashboard({
     email?: any;
     currency?: string | null;
     profile_type?: "company" | "freelancer" | "exploring";
+    logo?: string | null;
   };
   userPlan: "free_user" | "professional" | "enterprise";
   stats?: BusinessStatistics["statistic"] | null;
@@ -255,136 +256,147 @@ export default function BusinessDashboard({
     <div className="space-y-6">
       <Link
         href="/dashboard"
-        className="inline-flex items-center text-primary hover:text-primary-dark mb-4 transition-colors"
+        className="inline-flex items-center text-primary hover:text-primary-dark mb-4 transition-colors text-sm sm:text-base"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to business profiles
       </Link>
-      <Card className="shadow-md">
-        <CardHeader className="space-y-4 pb-4 p-4 sm:p-6">
-          {/* Mobile-First Header Layout */}
-          <div className="flex flex-col gap-4">
-            {/* Top Row: Icon + Name + Badge */}
-            <div className="flex items-start gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center flex-shrink-0">
-                <ProfileIcon className="h-6 w-6 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-header-text dark:text-slate-100 truncate">
-                  {businessName}
-                </h1>
-                <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 mt-1">
-                  {profileCopy.badgeLabel}
-                </span>
-              </div>
-            </div>
 
-            {/* Contact Info */}
-            <div className="space-y-1">
-              <p className="text-sm text-secondary-text dark:text-slate-400">
-                {businessEmail || profileCopy.emailFallback}
-              </p>
-              <p className="text-xs text-secondary-text dark:text-slate-500">
-                {currencyLine}
-              </p>
-            </div>
-
-            {/* Action Buttons - Mobile Stack */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
-              <CustomButton
-                label={"Create Invoice"}
-                icon={PlusIcon}
-                variant={"primary"}
-                href={`/dashboard/invoices/new?business_id=${business.id}`}
-                disabled={createDisabled}
-              />
-              <div className="flex gap-2 w-full sm:w-auto">
-                <CustomModal
-                  heading={profileCopy.detailsHeading}
-                  description={"Update content"}
-                  openBtnLabel={"Settings"}
-                  btnVariant={"ghost"}
-                  btnIcon={SettingsIcon}
-                >
-                  <UpdateBusiness businessId={business.id} />
-                </CustomModal>
-                <CustomModal
-                  heading={profileCopy.deleteHeading}
-                  description={`Removing ${businessName} will permanently delete its invoices, clients, and activity.`}
-                  customTrigger={
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      className="flex-1 sm:flex-initial border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-900/20"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
-                  }
-                >
-                  <DeleteBusiness
-                    businessId={Number(business.id)}
-                    businessName={businessName}
-                    profileType={profileType}
+      <Card className="shadow-lg overflow-hidden border-gray-200 dark:border-slate-700">
+        {/* Clean Header Section */}
+        <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 md:p-8 border-b border-gray-200 dark:border-slate-800">
+          <div className="flex items-start gap-4 sm:gap-5">
+            {business.logo ? (
+              <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg ring-4 ring-blue-50 dark:ring-slate-800">
+                <img
+                  src={business.logo}
+                  alt={`${businessName} logo`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-blue-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg ring-4 ring-blue-50 dark:ring-slate-800">
+                <ProfileIcon className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white" />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div className="min-w-0">
+                  <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white truncate">
+                      {businessName}
+                    </h1>
+                    <span className="inline-flex items-center rounded-full bg-blue-50 dark:bg-slate-800 px-4 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-slate-700">
+                      {profileCopy.badgeLabel}
+                    </span>
+                  </div>
+                  <div className="space-y-1.5 mt-2">
+                    <p className="text-sm sm:text-base text-gray-700 dark:text-slate-300">
+                      {businessEmail || profileCopy.emailFallback}
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-slate-400">
+                      {currencyLine}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 md:justify-end md:flex-none">
+                  <CustomButton
+                    label={"Create Invoice"}
+                    icon={PlusIcon}
+                    variant={"primary"}
+                    href={`/dashboard/invoices/new?business_id=${business.id}`}
+                    disabled={createDisabled}
                   />
-                </CustomModal>
+                  <CustomModal
+                    heading={profileCopy.detailsHeading}
+                    description={"Update content"}
+                    openBtnLabel={"Settings"}
+                    btnVariant={"ghost"}
+                    btnIcon={SettingsIcon}
+                  >
+                    <UpdateBusiness businessId={business.id} />
+                  </CustomModal>
+                  <CustomModal
+                    heading={profileCopy.deleteHeading}
+                    description={`Removing ${businessName} will permanently delete its invoices, clients, and activity.`}
+                    customTrigger={
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="w-full sm:w-auto border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-900/20"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </Button>
+                    }
+                  >
+                    <DeleteBusiness
+                      businessId={Number(business.id)}
+                      businessName={businessName}
+                      profileType={profileType}
+                    />
+                  </CustomModal>
+                  {userPlan === "free_user" && (
+                    <CustomButton
+                      variant="primary"
+                      label="Upgrade"
+                      icon={CrownIcon}
+                      href="/upgrade"
+                    />
+                  )}
+                  {userPlan !== "free_user" && createDisabled && (
+                    <CustomButton
+                      variant="primary"
+                      label="Manage Plan"
+                      icon={CrownIcon}
+                      href="/upgrade"
+                    />
+                  )}
+                </div>
               </div>
-              {userPlan === "free_user" && (
-                <CustomButton
-                  variant="primary"
-                  label="Upgrade"
-                  icon={CrownIcon}
-                  href="/upgrade"
-                />
-              )}
-              {userPlan !== "free_user" && createDisabled && (
-                <CustomButton
-                  variant="primary"
-                  label="Manage Plan"
-                  icon={CrownIcon}
-                  href="/upgrade"
-                />
-              )}
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        </div>
+        {/* Stats Cards Section */}
+        <CardContent className="p-4 sm:p-6 md:p-8 bg-gray-50 dark:bg-slate-900">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             {metricCards.map((metric: MetricCard, index: number) => (
               <div
                 key={metric.title}
-                className="rounded-xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm space-y-3"
+                className="rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm hover:shadow-md transition-shadow space-y-3"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between gap-3">
                   <div
-                    className={`${metric.iconBg} rounded-lg w-10 h-10 flex items-center justify-center`}
+                    className={`${metric.iconBg} rounded-xl w-12 h-12 flex items-center justify-center flex-shrink-0 ring-1 ring-gray-200 dark:ring-slate-700`}
                   >
                     {metric.icon}
                   </div>
-                  <span className="text-2xl font-bold text-header-text dark:text-slate-100">
+                  <span className="text-3xl font-bold text-gray-900 dark:text-white">
                     {metric.value}
                   </span>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="font-semibold text-header-text dark:text-slate-100">
+                <div className="space-y-2">
+                  <h3 className="font-bold text-base text-gray-900 dark:text-white">
                     {metric.title}
                   </h3>
-                  {metric.subRows.map((row: MetricRow) => (
-                    <div key={row.text} className={row.className}>
-                      {row.prefixIcon && (
-                        <span className="inline-flex items-center gap-1">
-                          {row.prefixIcon}
-                          <span>{row.text}</span>
-                        </span>
-                      )}
-                      {!row.prefixIcon && <span>{row.text}</span>}
-                    </div>
-                  ))}
-                  {metric.subRows.length === 0 && index === 2 && (
-                    <p className="text-sm text-secondary-text dark:text-slate-400">
-                      Keep growing your client list.
-                    </p>
-                  )}
+                  <div className="space-y-1">
+                    {metric.subRows.map((row: MetricRow) => (
+                      <div key={row.text} className={row.className}>
+                        {row.prefixIcon && (
+                          <span className="inline-flex items-center gap-1.5">
+                            {row.prefixIcon}
+                            <span>{row.text}</span>
+                          </span>
+                        )}
+                        {!row.prefixIcon && <span>{row.text}</span>}
+                      </div>
+                    ))}
+                    {metric.subRows.length === 0 && index === 2 && (
+                      <p className="text-sm text-gray-600 dark:text-slate-400">
+                        Keep growing your client list.
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

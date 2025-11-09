@@ -18,6 +18,7 @@ interface DashboardBusinessStats {
   totalclients: number;
   created_on: string;
   profile_type?: "company" | "freelancer" | "exploring";
+  logo?: string | null;
 }
 
 interface GetAllClientsParams {
