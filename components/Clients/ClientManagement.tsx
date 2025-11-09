@@ -85,9 +85,7 @@ export default function ClientManagement({
       }
 
       if (!representativeCurrency && client.invoice_currency) {
-        representativeCurrency = normalizeCurrencyCode(
-          client.invoice_currency
-        );
+        representativeCurrency = normalizeCurrencyCode(client.invoice_currency);
       }
     }
 
@@ -95,7 +93,9 @@ export default function ClientManagement({
       totalInvoices,
       activeClients,
       totalRevenue,
-  representativeCurrency: normalizeCurrencyCode(representativeCurrency || "USD"),
+      representativeCurrency: normalizeCurrencyCode(
+        representativeCurrency || "USD"
+      ),
     };
   }, [clients]);
 
