@@ -42,7 +42,7 @@ export const createInvoice = async (formData: CreateInvoice) => {
         );
       }
     } else if (plan === "professional") {
-      // Professional plan: 10 invoices per month
+      // Professional plan: 15 invoices per month
       const now = new Date();
       const firstDayISO = new Date(
         now.getFullYear(),
@@ -60,9 +60,9 @@ export const createInvoice = async (formData: CreateInvoice) => {
         .eq("author", author)
         .gte("created_at", firstDayISO)
         .lt("created_at", nextMonthISO);
-      if ((count || 0) >= 10) {
+      if ((count || 0) >= 15) {
         throw new Error(
-          "Professional plan limit: 10 invoices per month. Upgrade to Enterprise for unlimited."
+          "Professional plan limit: 15 invoices per month. Upgrade to Enterprise for unlimited."
         );
       }
     }

@@ -6,7 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import { getBusinessStats } from "../../../lib/actions/business.actions";
 import {
-  getCurrentMonthInvoiceCountForBusiness,
+  getCurrentMonthInvoiceCountForUser,
   getInvoicesList,
 } from "@/lib/actions/invoice.actions";
 import QuickActions from "@/components/Business/QuickActions";
@@ -93,7 +93,7 @@ export default async function Page({
       limit: 1,
     });
     totalInvoicesAll = countOnly?.totalCount || 0;
-    monthCount = await getCurrentMonthInvoiceCountForBusiness(businessId);
+    monthCount = await getCurrentMonthInvoiceCountForUser();
   } catch (e) {
     totalInvoicesAll = Array.isArray(invoices) ? invoices.length : 0; // fallback
   }

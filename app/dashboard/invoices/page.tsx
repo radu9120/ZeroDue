@@ -5,7 +5,7 @@ import { getCurrentPlan } from "@/lib/plan";
 import { redirect } from "next/navigation";
 import { normalizePlan, type AppPlan } from "@/lib/utils";
 import {
-  getCurrentMonthInvoiceCountForBusiness,
+  getCurrentMonthInvoiceCountForUser,
   getInvoices,
 } from "@/lib/actions/invoice.actions";
 import { getBusiness } from "@/lib/actions/business.actions";
@@ -76,7 +76,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
         page: 1,
         limit: 1,
       }),
-      getCurrentMonthInvoiceCountForBusiness(parseInt(businessId)),
+      getCurrentMonthInvoiceCountForUser(),
     ]);
 
   if (!business) {
@@ -89,7 +89,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
   const plan: AppPlan = await getCurrentPlan();
   const isFreePlan = plan === "free_user";
   const isProPlan = plan === "professional";
-  const proMonthlyInvoiceLimit = 10;
+  const proMonthlyInvoiceLimit = 15;
   const reachedProMonthlyLimit =
     isProPlan && (monthCount || 0) >= proMonthlyInvoiceLimit;
 

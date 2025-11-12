@@ -426,7 +426,7 @@ export default function BusinessForm({
             {userPlan === "professional" && (
               <>
                 <li>• Up to 3 business profiles</li>
-                <li>• Up to 10 invoices per month</li>
+                <li>• Up to 15 invoices per month</li>
                 <li>• Unlimited clients plus bulk import</li>
                 <li>• Full dashboard analytics</li>
                 <li>• Priority email support</li>

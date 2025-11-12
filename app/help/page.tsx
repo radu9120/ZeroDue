@@ -65,7 +65,7 @@ export default function HelpCenterPage() {
         {
           question: "What limits apply to each plan?",
           answer:
-            "Free users can manage one business profile and create up to 2 invoices per month with unlimited clients. Professional users can manage up to three business profiles and send up to 10 invoices per month. Enterprise removes all limits and unlocks customizable templates.",
+            "Free users can manage one business profile and create up to 2 invoices per month with unlimited clients. Professional users can manage up to three business profiles and send up to 15 invoices per month. Enterprise removes all limits and unlocks customizable templates.",
         },
         {
           question: "What happens when I hit my plan limits?",

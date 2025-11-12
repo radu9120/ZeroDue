@@ -22,7 +22,7 @@ export default function BusinessAvailabilty({
   const companyLimit =
     userPlan === "free_user" ? 1 : userPlan === "professional" ? 3 : Infinity;
   const monthlyInvoiceLimit =
-    userPlan === "free_user" ? 2 : userPlan === "professional" ? 10 : Infinity;
+    userPlan === "free_user" ? 2 : userPlan === "professional" ? 15 : Infinity;
 
   const reachedCompanyLimit =
     companyLimit !== Infinity && companiesLengh >= companyLimit;
@@ -68,7 +68,7 @@ export default function BusinessAvailabilty({
               : userPlan === "professional"
                 ? hasHitLimit
                   ? "You've reached the Professional plan limits. Upgrade to Enterprise for unlimited growth."
-                  : "Perfect for growing teams — up to 3 business profiles and 10 invoices per month."
+                  : "Perfect for growing teams — up to 3 business profiles and 15 invoices per month."
                 : "You have unlimited access to all features."}
           </p>
           {userPlan !== "enterprise" && (
