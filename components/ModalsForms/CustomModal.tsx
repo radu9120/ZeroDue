@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useState } from "react"; // Import React
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  useState,
+  type ReactNode,
+  type ReactElement,
+} from "react";
 import { Button } from "../ui/button";
 import { LucideIcon, X } from "lucide-react"; // Removed Plus as it's an icon prop
 import ModalPortal from "../ui/ModalPortal";
@@ -19,13 +26,13 @@ export default function CustomModal({
 }: {
   heading: string;
   description: string;
-  children: React.ReactNode;
+  children: ReactNode;
   openBtnLabel?: string;
   btnVariant?: "primary" | "secondary" | "ghost"; // Made optional if customTrigger is used
   btnIcon?: LucideIcon; // Made optional
   className?: string;
   disabled?: boolean;
-  customTrigger?: React.ReactNode; // For cases where an external element opens the modal
+  customTrigger?: ReactNode; // For cases where an external element opens the modal
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false); // Renamed for clarity
 
@@ -38,19 +45,19 @@ export default function CustomModal({
   };
 
   // Clone children and pass closeModal prop only to React components, not DOM elements
-  const childrenWithProps = React.Children.map(children, (child) => {
-    if (!React.isValidElement(child)) return child;
+  const childrenWithProps = Children.map(children, (child) => {
+    if (!isValidElement(child)) return child;
     const childType: any = child.type as any;
     const isDOMElement = typeof childType === "string"; // e.g. 'div', 'section'
     if (isDOMElement) return child; // don't inject unknown props into DOM
     // @ts-ignore allow passing closeModal to custom components
-    return React.cloneElement(child, { closeModal });
+    return cloneElement(child as ReactElement, { closeModal });
   });
 
   return (
     <div className={className}>
       {customTrigger ? (
-        React.cloneElement(customTrigger as React.ReactElement<any>, {
+        cloneElement(customTrigger as ReactElement, {
           onClick: openModal,
         })
       ) : (

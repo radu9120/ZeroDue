@@ -380,7 +380,7 @@ export default function BusinessDashboard({
           </div>
         </div>
         {/* Stats Cards Section */}
-        <CardContent className="p-4 sm:p-6 md:p-8 bg-gray-50 dark:bg-slate-900">
+        <CardContent className="p-4 sm:p-6 md:p-8 bg-gray-50 dark:bg-slate-900 dark:rounded-b-3xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             {metricCards.map((metric: MetricCard, index: number) => (
               <div

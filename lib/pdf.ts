@@ -49,6 +49,25 @@ export async function downloadElementAsPDF(
   };
 
   // Helper: inline images as data URIs to avoid cross-origin tainting
+  const buildFetchConfig = (src: string): RequestInit => {
+    try {
+      const url = new URL(src, window.location.href);
+      const sameOrigin = url.origin === window.location.origin;
+      if (sameOrigin) {
+        return {
+          mode: "same-origin",
+          credentials: "include",
+        } satisfies RequestInit;
+      }
+    } catch {
+      // fall through to cross-origin defaults
+    }
+    return {
+      mode: "cors",
+      credentials: "omit",
+    } satisfies RequestInit;
+  };
+
   const inlineImages = async (root: HTMLElement) => {
     const imgs = Array.from(root.querySelectorAll("img"));
     await Promise.all(
@@ -56,7 +75,7 @@ export async function downloadElementAsPDF(
         try {
           const src = img.currentSrc || img.src;
           if (!src || src.startsWith("data:")) return;
-          const res = await fetch(src, { mode: "cors", credentials: "omit" });
+          const res = await fetch(src, buildFetchConfig(src));
           if (!res.ok) return;
           const blob = await res.blob();
           const reader = new FileReader();
@@ -201,7 +220,17 @@ export async function downloadElementAsPDF(
       img.setAttribute("loading", "eager");
       // Allow CORS fetching when possible
       // @ts-ignore - HTMLImageElement supports crossOrigin
-      if (!img.crossOrigin) img.crossOrigin = "anonymous";
+      if (!img.crossOrigin) {
+        try {
+          const imgUrl = new URL(img.src || "", window.location.href);
+          const isSameOrigin = imgUrl.origin === window.location.origin;
+          if (!isSameOrigin) {
+            img.crossOrigin = "anonymous";
+          }
+        } catch {
+          img.crossOrigin = "anonymous";
+        }
+      }
       // Some Next.js images use data URIs or same-origin; leave src as-is.
       // If using srcset, prefer current src for stability
       if (img.currentSrc) {
