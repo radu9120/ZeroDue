@@ -5,6 +5,7 @@ import {
   cloneElement,
   isValidElement,
   useState,
+  type MouseEvent,
   type ReactNode,
   type ReactElement,
 } from "react";
@@ -32,7 +33,7 @@ export default function CustomModal({
   btnIcon?: LucideIcon; // Made optional
   className?: string;
   disabled?: boolean;
-  customTrigger?: ReactNode; // For cases where an external element opens the modal
+  customTrigger?: ReactElement; // For cases where an external element opens the modal
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false); // Renamed for clarity
 
@@ -54,11 +55,25 @@ export default function CustomModal({
     return cloneElement(child as ReactElement, { closeModal });
   });
 
+  const triggerElement =
+    customTrigger && isValidElement(customTrigger)
+      ? (customTrigger as ReactElement<{
+          onClick?: (event: MouseEvent<Element>) => void;
+        }>)
+      : null;
+
   return (
     <div className={className}>
-      {customTrigger ? (
-        cloneElement(customTrigger as ReactElement, {
-          onClick: openModal,
+      {triggerElement ? (
+        cloneElement(triggerElement, {
+          onClick: (event: MouseEvent<Element>) => {
+            if (typeof triggerElement.props.onClick === "function") {
+              triggerElement.props.onClick(event);
+            }
+            if (!event.defaultPrevented) {
+              openModal();
+            }
+          },
         })
       ) : (
         <CustomButton
