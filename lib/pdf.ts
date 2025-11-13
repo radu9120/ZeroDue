@@ -102,9 +102,20 @@ export async function downloadElementAsPDF(
   wrapper.style.pointerEvents = "none";
 
   const clone = element.cloneNode(true) as HTMLElement;
-  // Normalize width to A4/Letter printable width to minimize downscaling blurriness
-  clone.style.width = `${targetContentWidthPx}px`;
-  clone.style.maxWidth = `${targetContentWidthPx}px`;
+  // Determine a render width that preserves mobile layouts while still fitting on the page
+  const naturalWidth = (() => {
+    try {
+      const intrinsic = element.scrollWidth || element.clientWidth;
+      return Number.isFinite(intrinsic) && intrinsic > 0
+        ? intrinsic
+        : targetContentWidthPx;
+    } catch {
+      return targetContentWidthPx;
+    }
+  })();
+  const renderWidthPx = Math.min(targetContentWidthPx, naturalWidth);
+  clone.style.width = `${renderWidthPx}px`;
+  clone.style.maxWidth = "none";
   clone.style.boxShadow = "none";
   clone.style.transform = "none";
   clone.style.filter = "none";
@@ -254,7 +265,7 @@ export async function downloadElementAsPDF(
       scrollY: 0,
       backgroundColor: "#ffffff",
       foreignObjectRendering: false,
-      windowWidth: targetContentWidthPx,
+      windowWidth: renderWidthPx,
       windowHeight: Math.max(
         window.innerHeight,
         clone.scrollHeight || window.innerHeight
@@ -306,7 +317,7 @@ export async function downloadElementAsPDF(
         scrollY: 0,
         backgroundColor: "#ffffff",
         foreignObjectRendering: true,
-        windowWidth: targetContentWidthPx,
+        windowWidth: renderWidthPx,
         imageTimeout: 5000,
         logging: process.env.NODE_ENV !== "production",
       });

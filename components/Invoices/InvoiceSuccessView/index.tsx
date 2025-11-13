@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -148,10 +148,10 @@ export default function InvoiceSuccessView({
 }: InvoiceSuccessViewProps) {
   const isEnterprise = userPlan === "enterprise";
   const isPublicView = publicView;
-  const [isEditing, setIsEditing] = React.useState(editMode);
-  const [status, setStatus] = React.useState<string>(invoice.status || "draft");
-  const [saving, setSaving] = React.useState(false);
-  const [emailStatus, setEmailStatus] = React.useState<EmailStatusState>(() =>
+  const [isEditing, setIsEditing] = useState(editMode);
+  const [status, setStatus] = useState<string>(invoice.status || "draft");
+  const [saving, setSaving] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<EmailStatusState>(() =>
     toEmailStatusState({
       status: invoice.status,
       email_id: invoice.email_id,
@@ -170,7 +170,7 @@ export default function InvoiceSuccessView({
       email_complained_at: invoice.email_complained_at,
     })
   );
-  const pollingStateRef = React.useRef<{
+  const pollingStateRef = useRef<{
     active: boolean;
     timeoutId: ReturnType<typeof setTimeout> | null;
   }>({
@@ -178,7 +178,7 @@ export default function InvoiceSuccessView({
     timeoutId: null,
   });
 
-  const mergeEmailStatus = React.useCallback((patch: EmailStatusPatch) => {
+  const mergeEmailStatus = useCallback((patch: EmailStatusPatch) => {
     if (!patch) {
       return;
     }
@@ -193,7 +193,7 @@ export default function InvoiceSuccessView({
     }
   }, []);
 
-  const fetchLatestEmailStatus = React.useCallback(async () => {
+  const fetchLatestEmailStatus = useCallback(async () => {
     try {
       const res = await fetch(`/api/invoices/${invoice.id}/status`, {
         method: "GET",
@@ -220,7 +220,7 @@ export default function InvoiceSuccessView({
     return null;
   }, [invoice.id, mergeEmailStatus]);
 
-  const stopStatusPolling = React.useCallback(() => {
+  const stopStatusPolling = useCallback(() => {
     const controller = pollingStateRef.current;
     controller.active = false;
     if (controller.timeoutId) {
@@ -229,7 +229,7 @@ export default function InvoiceSuccessView({
     }
   }, []);
 
-  const startStatusPolling = React.useCallback(() => {
+  const startStatusPolling = useCallback(() => {
     stopStatusPolling();
 
     const controller = pollingStateRef.current;
@@ -264,9 +264,9 @@ export default function InvoiceSuccessView({
     void poll();
   }, [fetchLatestEmailStatus, stopStatusPolling]);
 
-  React.useEffect(() => () => stopStatusPolling(), [stopStatusPolling]);
+  useEffect(() => () => stopStatusPolling(), [stopStatusPolling]);
 
-  const initialBankDetails = React.useMemo(() => {
+  const initialBankDetails = useMemo(() => {
     if (!invoice.bank_details) {
       return "";
     }
@@ -286,17 +286,16 @@ export default function InvoiceSuccessView({
     return "";
   }, [invoice.bank_details]);
 
-  const [bankAccountName, setBankAccountName] =
-    React.useState(initialBankDetails);
-  const [notes, setNotes] = React.useState<string>(invoice.notes || "");
-  const [isCompactLayout, setIsCompactLayout] = React.useState(false);
+  const [bankAccountName, setBankAccountName] = useState(initialBankDetails);
+  const [notes, setNotes] = useState<string>(invoice.notes || "");
+  const [isCompactLayout, setIsCompactLayout] = useState(false);
 
-  const normalizedInvoiceCurrency = React.useMemo(
+  const normalizedInvoiceCurrency = useMemo(
     () => normalizeCurrencyCode(invoice.currency),
     [invoice.currency]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const updateLayout = () => {
       if (typeof window === "undefined") {
         return;
@@ -309,25 +308,25 @@ export default function InvoiceSuccessView({
     return () => window.removeEventListener("resize", updateLayout);
   }, []);
 
-  const [desc, setDesc] = React.useState<string>(invoice.description || "");
-  const [issueDate, setIssueDate] = React.useState<string>(
+  const [desc, setDesc] = useState<string>(invoice.description || "");
+  const [issueDate, setIssueDate] = useState<string>(
     invoice.issue_date || ""
   );
-  const [dueDate, setDueDate] = React.useState<string>(invoice.due_date || "");
-  const [currency, setCurrency] = React.useState<string>(
+  const [dueDate, setDueDate] = useState<string>(invoice.due_date || "");
+  const [currency, setCurrency] = useState<string>(
     normalizedInvoiceCurrency
   );
-  const [discount, setDiscount] = React.useState<number>(
+  const [discount, setDiscount] = useState<number>(
     Number(invoice.discount || 0)
   );
-  const [shipping, setShipping] = React.useState<number>(
+  const [shipping, setShipping] = useState<number>(
     Number(invoice.shipping || 0)
   );
-  const [itemRows, setItemRows] = React.useState<InvoiceItemRow[]>(() =>
+  const [itemRows, setItemRows] = useState<InvoiceItemRow[]>(() =>
     parseInvoiceItems(invoice.items)
   );
 
-  const updateItem = React.useCallback(
+  const updateItem = useCallback(
     (index: number, patch: Partial<InvoiceItemRow>) => {
       setItemRows((prev) =>
         prev.map((item, current) =>
@@ -338,18 +337,18 @@ export default function InvoiceSuccessView({
     []
   );
 
-  const addItem = React.useCallback(() => {
+  const addItem = useCallback(() => {
     setItemRows((prev) => [
       ...prev,
       { description: "", quantity: 1, unit_price: 0, tax: 0, amount: 0 },
     ]);
   }, []);
 
-  const removeItem = React.useCallback((index: number) => {
+  const removeItem = useCallback((index: number) => {
     setItemRows((prev) => prev.filter((_, current) => current !== index));
   }, []);
 
-  const recalcAmounts = React.useCallback(() => {
+  const recalcAmounts = useCallback(() => {
     setItemRows((prev) =>
       prev.map((item) => {
         const qty = Number(item.quantity || 0);
@@ -362,7 +361,7 @@ export default function InvoiceSuccessView({
     );
   }, []);
 
-  const resetFieldsFromInvoice = React.useCallback(() => {
+  const resetFieldsFromInvoice = useCallback(() => {
     setStatus(invoice.status || "draft");
     let bankText = "";
     if (invoice.bank_details) {
@@ -390,11 +389,11 @@ export default function InvoiceSuccessView({
     setItemRows(parseInvoiceItems(invoice.items));
   }, [invoice, normalizedInvoiceCurrency]);
 
-  const handleCurrencyChange = React.useCallback((value: string) => {
+  const handleCurrencyChange = useCallback((value: string) => {
     setCurrency(normalizeCurrencyCode(value));
   }, []);
 
-  const enterEditMode = React.useCallback(() => {
+  const enterEditMode = useCallback(() => {
     setIsEditing(true);
     try {
       const url = new URL(window.location.href);
@@ -405,7 +404,7 @@ export default function InvoiceSuccessView({
     }
   }, []);
 
-  const cancelEdit = React.useCallback(() => {
+  const cancelEdit = useCallback(() => {
     resetFieldsFromInvoice();
     setIsEditing(false);
     try {
@@ -417,7 +416,7 @@ export default function InvoiceSuccessView({
     }
   }, [resetFieldsFromInvoice]);
 
-  const saveChanges = React.useCallback(async () => {
+  const saveChanges = useCallback(async () => {
     try {
       setSaving(true);
       const payload: Record<string, unknown> = {
@@ -470,20 +469,20 @@ export default function InvoiceSuccessView({
     status,
   ]);
 
-  const [showSuccess, setShowSuccess] = React.useState(!isPublicView);
-  const [downloading, setDownloading] = React.useState(false);
-  const [sending, setSending] = React.useState(false);
+  const [showSuccess, setShowSuccess] = useState(!isPublicView);
+  const [downloading, setDownloading] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const items = React.useMemo(
+  const items = useMemo(
     () => parseInvoiceItems(invoice.items),
     [invoice.items]
   );
-  const billTo = React.useMemo(
+  const billTo = useMemo(
     () => parseBillTo(invoice.bill_to),
     [invoice.bill_to]
   );
 
-  const copyPublicLink = React.useCallback(() => {
+  const copyPublicLink = useCallback(() => {
     if (!invoice.public_token) {
       toast.error("Public link unavailable. Try sending the invoice first.");
       return;
@@ -499,7 +498,7 @@ export default function InvoiceSuccessView({
       });
   }, [invoice.public_token]);
 
-  const downloadPDF = React.useCallback(async () => {
+  const downloadPDF = useCallback(async () => {
     try {
       setDownloading(true);
       const container = document.getElementById(
@@ -629,7 +628,7 @@ export default function InvoiceSuccessView({
     }
   }, [invoice.id, invoice.invoice_number, isPublicView]);
 
-  const sendToClient = React.useCallback(async () => {
+  const sendToClient = useCallback(async () => {
     try {
       setSending(true);
 
@@ -689,7 +688,7 @@ export default function InvoiceSuccessView({
     startStatusPolling,
   ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       const url = new URL(window.location.href);
       if (url.searchParams.get("download") === "1") {
@@ -704,7 +703,7 @@ export default function InvoiceSuccessView({
     }
   }, [downloadPDF]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isPublicView) {
       setShowSuccess(false);
       return;
@@ -739,16 +738,16 @@ export default function InvoiceSuccessView({
     (isEditing && isEnterprise) ||
     (!isDefaultDescription && currentDescription.length > 0);
 
-  const bankDetailsDisplay = React.useMemo<BankDetailsDisplay>(
+  const bankDetailsDisplay = useMemo<BankDetailsDisplay>(
     () => buildBankDetailsDisplay(bankAccountName),
     [bankAccountName]
   );
 
-  const emailBadges = React.useMemo(
+  const emailBadges = useMemo(
     () => buildEmailStatusBadges(emailStatus),
     [emailStatus]
   );
-  const emailTimeline = React.useMemo<EmailStatusTimelineEntry[]>(
+  const emailTimeline = useMemo<EmailStatusTimelineEntry[]>(
     () => [
       { label: "Sent", value: formatDateTime(emailStatus.email_sent_at) },
       {
