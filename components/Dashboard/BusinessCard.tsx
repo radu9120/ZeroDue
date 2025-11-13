@@ -79,7 +79,7 @@ export default function BusinessCard({
       <CardContent className="p-0">
         <Link
           href={`/dashboard/business?business_id=${company.id}&name=${company.name}`}
-          className="block h-full"
+          className="group relative block h-full"
           onClick={handleVisitBusiness}
         >
           {/* Header Section - Clean White */}
@@ -110,7 +110,7 @@ export default function BusinessCard({
                   </span>
                 </div>
               </div>
-              <ArrowRight className="h-5 w-5 self-end rounded-full border border-transparent p-1 text-gray-400 transition-transform group-hover:translate-x-1 group-hover:text-primary sm:h-6 sm:w-6 sm:self-center dark:text-slate-500" />
+              <ArrowRight className="h-6 w-6 self-end rounded-full border border-transparent p-1 text-gray-400 transition-all duration-200 group-hover:translate-x-1 group-hover:text-primary group-hover:shadow-sm sm:h-7 sm:w-7 sm:self-center dark:text-slate-200" />
             </div>
           </div>
 
