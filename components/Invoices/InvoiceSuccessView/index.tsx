@@ -309,13 +309,9 @@ export default function InvoiceSuccessView({
   }, []);
 
   const [desc, setDesc] = useState<string>(invoice.description || "");
-  const [issueDate, setIssueDate] = useState<string>(
-    invoice.issue_date || ""
-  );
+  const [issueDate, setIssueDate] = useState<string>(invoice.issue_date || "");
   const [dueDate, setDueDate] = useState<string>(invoice.due_date || "");
-  const [currency, setCurrency] = useState<string>(
-    normalizedInvoiceCurrency
-  );
+  const [currency, setCurrency] = useState<string>(normalizedInvoiceCurrency);
   const [discount, setDiscount] = useState<number>(
     Number(invoice.discount || 0)
   );
@@ -477,10 +473,7 @@ export default function InvoiceSuccessView({
     () => parseInvoiceItems(invoice.items),
     [invoice.items]
   );
-  const billTo = useMemo(
-    () => parseBillTo(invoice.bill_to),
-    [invoice.bill_to]
-  );
+  const billTo = useMemo(() => parseBillTo(invoice.bill_to), [invoice.bill_to]);
 
   const copyPublicLink = useCallback(() => {
     if (!invoice.public_token) {
