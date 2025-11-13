@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { normalizeCurrencyCode } from "@/lib/utils";
-import Image from "next/image";
 
 const formatCurrency = (amount?: number | null, currency?: string | null) => {
   const currencyCode = normalizeCurrencyCode(
@@ -45,32 +44,13 @@ const formatCurrency = (amount?: number | null, currency?: string | null) => {
 
 export default function ClientCard({ client }: { client: any }) {
   const router = useRouter();
-  const logoSrc = (() => {
-    if (typeof client?.logo_url === "string" && client.logo_url.trim()) {
-      return client.logo_url.trim();
-    }
-    if (typeof client?.logo === "string" && client.logo.trim()) {
-      return client.logo.trim();
-    }
-    return null;
-  })();
 
   return (
     <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700 hover:shadow-xl transition-all">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center overflow-hidden">
-            {logoSrc ? (
-              <Image
-                src={logoSrc}
-                alt={`${client.name} logo`}
-                width={40}
-                height={40}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-            )}
+          <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+            <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
           </div>
           <div>
             <h3 className="font-semibold text-header-text dark:text-slate-100">

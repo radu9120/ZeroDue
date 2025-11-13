@@ -156,6 +156,8 @@ export default function BusinessForm({
 
   const profileType = form.watch("profile_type") ?? mode;
   const isFreelancer = profileType !== "company";
+  const fieldInputClass =
+    "text-slate-900 dark:text-slate-100 dark:bg-slate-900/40 dark:border-slate-700";
 
   return (
     <Form {...form}>
@@ -184,6 +186,7 @@ export default function BusinessForm({
                     }
                     {...field}
                     disabled={isSubmitting}
+                    className={fieldInputClass}
                   />
                 </FormControl>
                 <FormMessage />
@@ -205,6 +208,7 @@ export default function BusinessForm({
                     placeholder="Enter email address"
                     {...field}
                     disabled={isSubmitting}
+                    className={fieldInputClass}
                   />
                 </FormControl>
                 <FormMessage />
@@ -226,6 +230,7 @@ export default function BusinessForm({
                     placeholder="Enter phone number"
                     {...field}
                     disabled={isSubmitting}
+                    className={fieldInputClass}
                   />
                 </FormControl>
                 <FormMessage />
@@ -248,6 +253,7 @@ export default function BusinessForm({
                     {...field}
                     value={field.value ?? ""}
                     disabled={isSubmitting}
+                    className={fieldInputClass}
                   />
                 </FormControl>
                 <FormMessage />
@@ -345,6 +351,7 @@ export default function BusinessForm({
                   {...field}
                   disabled={isSubmitting}
                   rows={3}
+                  className={fieldInputClass}
                 />
               </FormControl>
               <FormDescription className="text-xs text-secondary-text dark:text-slate-400">

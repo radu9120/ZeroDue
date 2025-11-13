@@ -130,7 +130,9 @@ export const ClientForm = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Company/Name</FormLabel>
+                <FormLabel className="text-secondary-text dark:text-slate-300">
+                  Company/Name
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Company/Name"
@@ -147,7 +149,9 @@ export const ClientForm = ({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel className="text-secondary-text dark:text-slate-300">
+                  Email
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Email"
@@ -166,7 +170,9 @@ export const ClientForm = ({
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone</FormLabel>
+              <FormLabel className="text-secondary-text dark:text-slate-300">
+                Phone
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Phone" {...field} disabled={isSubmitting} />
               </FormControl>
@@ -180,7 +186,9 @@ export const ClientForm = ({
           name="address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Address</FormLabel>
+              <FormLabel className="text-secondary-text dark:text-slate-300">
+                Address
+              </FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Address"
