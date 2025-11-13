@@ -85,7 +85,7 @@ export default function BusinessCard({
           {/* Header Section - Clean White */}
           <div className="rounded-t-2xl bg-white p-5 sm:px-6 sm:py-6 dark:bg-slate-900">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-              <div className="flex items-center gap-4 sm:gap-6">
+              <div className="flex items-start gap-4 sm:gap-6">
                 {companyLogo ? (
                   <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-2xl sm:h-20 sm:w-20">
                     <Image
@@ -102,37 +102,49 @@ export default function BusinessCard({
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <h3 className="mb-2 truncate text-lg font-bold text-gray-900 sm:text-xl md:text-2xl dark:text-white">
-                    {company.name}
-                  </h3>
-                  <span className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:border-slate-700 dark:bg-slate-800/70 dark:text-blue-400">
-                    {profileLabel}
-                  </span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="mb-2 truncate text-lg font-bold text-gray-900 sm:text-xl md:text-2xl dark:text-white">
+                        {company.name}
+                      </h3>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:border-slate-700 dark:bg-slate-800/70 dark:text-blue-400">
+                        {profileLabel}
+                      </span>
+                    </div>
+                    <ArrowRight className="mt-1 h-6 w-6 rounded-full border border-transparent p-1 text-gray-400 transition-all duration-200 group-hover:translate-x-1 group-hover:text-primary group-hover:shadow-sm sm:h-7 sm:w-7 dark:text-slate-200" />
+                  </div>
                 </div>
               </div>
-              <ArrowRight className="h-6 w-6 self-end rounded-full border border-transparent p-1 text-gray-400 transition-all duration-200 group-hover:translate-x-1 group-hover:text-primary group-hover:shadow-sm sm:h-7 sm:w-7 sm:self-center dark:text-slate-200" />
             </div>
           </div>
 
           {/* Stats Tiles */}
           <div className="bg-white px-5 pb-5 sm:px-6 sm:pb-6 dark:bg-slate-900">
-            <div className="grid gap-3 sm:grid-cols-3">
-              {statTiles.map((tile) => {
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+              {statTiles.map((tile, index) => {
                 const Icon = tile.icon;
                 return (
                   <div
                     key={tile.label}
-                    className="flex h-full flex-col items-center justify-center gap-2 rounded-xl border border-gray-100 bg-white px-4 py-5 text-center dark:border-slate-800 dark:bg-slate-900"
+                    className={`flex min-w-[10rem] flex-1 items-center gap-3 rounded-xl border border-gray-100 bg-white px-4 py-4 dark:border-slate-800 dark:bg-slate-900 ${
+                      index > 0
+                        ? "sm:border-l sm:border-l-gray-200 sm:pl-6 dark:sm:border-l-slate-700"
+                        : ""
+                    }`}
                   >
-                    <Icon className={`h-6 w-6 ${tile.iconClass}`} />
-                    <div
-                      className={`text-2xl font-bold sm:text-[28px] ${tile.valueClass}`}
-                    >
-                      {tile.value}
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-50 dark:bg-slate-800">
+                      <Icon className={`h-5 w-5 ${tile.iconClass}`} />
                     </div>
-                    <span className="text-xs font-medium text-gray-600 sm:text-sm dark:text-slate-400">
-                      {tile.label}
-                    </span>
+                    <div className="flex flex-col gap-1 text-left">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
+                        {tile.label}
+                      </span>
+                      <span
+                        className={`text-lg font-semibold sm:text-xl ${tile.valueClass}`}
+                      >
+                        {tile.value}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
