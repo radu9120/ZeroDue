@@ -289,6 +289,7 @@ export default function InvoiceSuccessView({
   const [bankAccountName, setBankAccountName] = useState(initialBankDetails);
   const [notes, setNotes] = useState<string>(invoice.notes || "");
   const [isCompactLayout, setIsCompactLayout] = useState(false);
+  const [forceDesktopLayout, setForceDesktopLayout] = useState(false);
 
   const normalizedInvoiceCurrency = useMemo(
     () => normalizeCurrencyCode(invoice.currency),
@@ -307,6 +308,8 @@ export default function InvoiceSuccessView({
     window.addEventListener("resize", updateLayout);
     return () => window.removeEventListener("resize", updateLayout);
   }, []);
+
+  const isCompact = forceDesktopLayout ? false : isCompactLayout;
 
   const [desc, setDesc] = useState<string>(invoice.description || "");
   const [issueDate, setIssueDate] = useState<string>(invoice.issue_date || "");
@@ -492,6 +495,22 @@ export default function InvoiceSuccessView({
   }, [invoice.public_token]);
 
   const downloadPDF = useCallback(async () => {
+    setForceDesktopLayout(true);
+    const waitForNextFrame = () =>
+      new Promise<void>((resolve) => {
+        if (
+          typeof window !== "undefined" &&
+          typeof window.requestAnimationFrame === "function"
+        ) {
+          window.requestAnimationFrame(() => resolve());
+        } else {
+          setTimeout(() => resolve(), 16);
+        }
+      });
+
+    await waitForNextFrame();
+    await waitForNextFrame();
+
     try {
       setDownloading(true);
       const container = document.getElementById(
@@ -523,12 +542,42 @@ export default function InvoiceSuccessView({
       const originalBodyColor = body.style.color;
       const originalContainerBg = container.style.backgroundColor;
       const originalContainerColor = container.style.color;
+      const originalContainerWidth = container.style.width;
+      const originalContainerMaxWidth = container.style.maxWidth;
+      const originalContainerMinWidth = container.style.minWidth;
+      const originalContainerMargin = container.style.margin;
+      const originalContainerPadding = container.style.padding;
+
+      const restoreContainerDimensions = () => {
+        container.style.width = originalContainerWidth;
+        container.style.maxWidth = originalContainerMaxWidth;
+        if (originalContainerMinWidth) {
+          container.style.minWidth = originalContainerMinWidth;
+        } else {
+          container.style.removeProperty("min-width");
+        }
+        if (originalContainerMargin) {
+          container.style.margin = originalContainerMargin;
+        } else {
+          container.style.removeProperty("margin");
+        }
+        if (originalContainerPadding) {
+          container.style.padding = originalContainerPadding;
+        } else {
+          container.style.removeProperty("padding");
+        }
+      };
 
       html.classList.remove("dark");
       body.style.backgroundColor = "#ffffff";
       body.style.color = "#000000";
       container.style.backgroundColor = "#ffffff";
       container.style.color = "#000000";
+      container.style.width = "794px";
+      container.style.maxWidth = "794px";
+      container.style.minWidth = "794px";
+      container.style.margin = "0 auto";
+      container.style.padding = "48px";
 
       const allElements = container.querySelectorAll("*");
       const originalStyles: Array<{
@@ -557,18 +606,14 @@ export default function InvoiceSuccessView({
         const originalBorder = container.style.border;
         const originalShadow = container.style.boxShadow;
         const originalBackground = container.style.background;
-        const originalPadding = container.style.padding;
         container.style.border = "none";
         container.style.boxShadow = "none";
         container.style.background = "#ffffff";
-        if (!originalPadding) {
-          container.style.padding = "48px";
-        }
 
         try {
           await downloadElementAsPDF(container, {
             filename: `Invoice-${invoice.invoice_number || "unnamed"}.pdf`,
-            margin: 40,
+            margin: 0,
             scale: 3,
             format: "a4",
           });
@@ -577,11 +622,7 @@ export default function InvoiceSuccessView({
           container.style.border = originalBorder;
           container.style.boxShadow = originalShadow;
           container.style.background = originalBackground;
-          if (!originalPadding) {
-            container.style.removeProperty("padding");
-          } else {
-            container.style.padding = originalPadding;
-          }
+          restoreContainerDimensions();
           html.className = originalHtmlClass;
           body.style.backgroundColor = originalBodyBg;
           body.style.color = originalBodyColor;
@@ -596,12 +637,13 @@ export default function InvoiceSuccessView({
         try {
           await downloadElementAsPDF(container, {
             filename: `Invoice-${invoice.invoice_number || "unnamed"}.pdf`,
-            margin: 8,
+            margin: 0,
             scale: 3,
             format: "a4",
           });
           toast.success("PDF downloaded");
         } finally {
+          restoreContainerDimensions();
           html.className = originalHtmlClass;
           body.style.backgroundColor = originalBodyBg;
           body.style.color = originalBodyColor;
@@ -618,6 +660,7 @@ export default function InvoiceSuccessView({
       toast.error(`Failed to generate PDF: ${message}`);
     } finally {
       setDownloading(false);
+      setForceDesktopLayout(false);
     }
   }, [invoice.id, invoice.invoice_number, isPublicView]);
 
@@ -715,12 +758,12 @@ export default function InvoiceSuccessView({
     }
   }, [invoice?.id, isPublicView]);
 
-  const baseInvoiceContainerClass = isCompactLayout
+  const baseInvoiceContainerClass = isCompact
     ? "w-full max-w-none bg-white px-4 py-6 sm:px-6 sm:py-8 rounded-xl"
     : "mx-auto w-full max-w-[794px] bg-white px-8 py-10 sm:px-12 sm:py-12 rounded-2xl";
   const invoiceContainerClass = isPublicView
-    ? `${baseInvoiceContainerClass} ${isCompactLayout ? "shadow-md" : "shadow-lg"}`
-    : `${baseInvoiceContainerClass} ${isCompactLayout ? "shadow-lg" : "shadow-xl"}`;
+    ? `${baseInvoiceContainerClass} ${isCompact ? "shadow-md" : "shadow-lg"}`
+    : `${baseInvoiceContainerClass} ${isCompact ? "shadow-lg" : "shadow-xl"}`;
 
   const rawDescription = (invoice.description || "").trim();
   const isDefaultDescription =
@@ -817,7 +860,7 @@ export default function InvoiceSuccessView({
             style={{
               backgroundColor: "#ffffff",
               color: "#000000",
-              padding: isCompactLayout ? "16px" : "24px",
+              padding: isCompact ? "16px" : "24px",
             }}
           >
             {isPublicView && (
@@ -848,7 +891,7 @@ export default function InvoiceSuccessView({
                 currency={currency}
                 onCurrencyChange={handleCurrencyChange}
                 currencies={currencies}
-                isCompactLayout={isCompactLayout}
+                isCompactLayout={isCompact}
               />
 
               <BillToSection billTo={billTo} />
@@ -874,7 +917,7 @@ export default function InvoiceSuccessView({
                 currency={currency}
                 invoiceCurrency={normalizedInvoiceCurrency}
                 getCurrencySymbol={getCurrencySymbol}
-                isCompactLayout={isCompactLayout}
+                isCompactLayout={isCompact}
                 taxLabel={company.tax_label || "VAT"}
               />
 
@@ -882,8 +925,8 @@ export default function InvoiceSuccessView({
                 className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6"
                 style={{
                   display: "grid",
-                  gridTemplateColumns: isCompactLayout ? "1fr" : "1fr 1fr",
-                  gap: isCompactLayout ? "20px" : "24px",
+                  gridTemplateColumns: isCompact ? "1fr" : "1fr 1fr",
+                  gap: isCompact ? "20px" : "24px",
                   paddingTop: "24px",
                 }}
               >
@@ -908,7 +951,7 @@ export default function InvoiceSuccessView({
                   currency={currency}
                   invoice={invoice}
                   getCurrencySymbol={getCurrencySymbol}
-                  isCompactLayout={isCompactLayout}
+                  isCompactLayout={isCompact}
                 />
               </div>
             </div>

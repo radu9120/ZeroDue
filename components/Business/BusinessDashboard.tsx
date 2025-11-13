@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
+import type { ReactNode } from "react";
 import CustomButton from "../ui/CustomButton";
 import CustomModal from "../ModalsForms/CustomModal";
 import { UpdateBusiness } from "./Forms/UpdateBusiness";
@@ -29,16 +30,18 @@ import Image from "next/image";
 type MetricRow = {
   text: string;
   className: string;
-  prefixIcon?: React.ReactNode;
+  prefixIcon?: ReactNode;
 };
 
 type MetricCard = {
   title: string;
   value: string | number;
-  icon: React.ReactNode;
+  icon: ReactNode;
   iconBg: string;
   subRows: MetricRow[];
 };
+
+const { useCallback, useEffect, useMemo } = React;
 
 export default function BusinessDashboard({
   business,
@@ -58,7 +61,7 @@ export default function BusinessDashboard({
   stats?: BusinessStatistics["statistic"] | null;
   createDisabled?: boolean;
 }) {
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       localStorage.setItem("activeBusinessId", String(business.id));
       localStorage.setItem("activeBusinessName", business.name ?? "");
@@ -67,7 +70,7 @@ export default function BusinessDashboard({
     }
   }, [business.id, business.name]);
 
-  const computedStats = React.useMemo(() => {
+  const computedStats = useMemo(() => {
     const fallback = {
       total_invoices: 0,
       total_paid_amount: "0",
@@ -85,15 +88,15 @@ export default function BusinessDashboard({
     };
   }, [stats]);
 
-  const currencyCode = React.useMemo(
+  const currencyCode = useMemo(
     () => normalizeCurrencyCode(business.currency),
     [business.currency]
   );
-  const currencySymbol = React.useMemo(
+  const currencySymbol = useMemo(
     () => getCurrencySymbol(currencyCode),
     [currencyCode]
   );
-  const currencyFormatter = React.useMemo(() => {
+  const currencyFormatter = useMemo(() => {
     try {
       return new Intl.NumberFormat("en-GB", {
         style: "currency",
@@ -109,7 +112,7 @@ export default function BusinessDashboard({
   const profileType: "company" | "freelancer" | "exploring" =
     business.profile_type ?? "company";
 
-  const profileCopy = React.useMemo(() => {
+  const profileCopy = useMemo(() => {
     if (profileType === "freelancer") {
       return {
         untitledLabel: "Untitled profile",
@@ -117,7 +120,6 @@ export default function BusinessDashboard({
           "Add a contact email in Settings so clients know how to reach you.",
         detailsHeading: "Profile details",
         deleteHeading: "Delete profile",
-        badgeLabel: "Freelancer profile",
         profileIcon: User,
       } as const;
     }
@@ -128,7 +130,6 @@ export default function BusinessDashboard({
           "Add a contact email when you're ready so clients know how to reach you.",
         detailsHeading: "Profile details",
         deleteHeading: "Delete profile",
-        badgeLabel: "Exploring profile",
         profileIcon: Sparkles,
       } as const;
     }
@@ -138,29 +139,28 @@ export default function BusinessDashboard({
         "Add a company email in Settings so clients know how to reach you.",
       detailsHeading: "Business details",
       deleteHeading: "Delete company",
-      badgeLabel: "Company profile",
       profileIcon: Building,
     } as const;
   }, [profileType]);
 
   const ProfileIcon = profileCopy.profileIcon;
-  const businessLogo = React.useMemo(() => {
+  const businessLogo = useMemo(() => {
     if (typeof business.logo !== "string") return null;
     const trimmed = business.logo.trim();
     return trimmed.length > 0 ? trimmed : null;
   }, [business.logo]);
 
-  const businessName = React.useMemo(() => {
+  const businessName = useMemo(() => {
     const raw = typeof business.name === "string" ? business.name.trim() : "";
     return raw.length > 0 ? raw : profileCopy.untitledLabel;
   }, [business.name, profileCopy.untitledLabel]);
 
-  const businessEmail = React.useMemo(() => {
+  const businessEmail = useMemo(() => {
     const raw = typeof business.email === "string" ? business.email.trim() : "";
     return raw.length > 0 ? raw : null;
   }, [business.email]);
 
-  const currencyLine = React.useMemo(() => {
+  const currencyLine = useMemo(() => {
     const hasExplicitCurrency = Boolean(
       typeof business.currency === "string" && business.currency.trim()
     );
@@ -169,7 +169,7 @@ export default function BusinessDashboard({
       : `Default currency: ${currencyCode} (${currencySymbol}) - set a different default in Settings when you are ready.`;
   }, [business.currency, currencyCode, currencySymbol]);
 
-  const formatCurrencyValue = React.useCallback(
+  const formatCurrencyValue = useCallback(
     (raw: string | number) => {
       if (typeof raw === "string") {
         const trimmed = raw.trim();
@@ -195,7 +195,7 @@ export default function BusinessDashboard({
     [currencyCode, currencyFormatter, currencySymbol]
   );
 
-  const metricCards = React.useMemo<MetricCard[]>(
+  const metricCards = useMemo<MetricCard[]>(
     () => [
       {
         title: "Total Invoices",
@@ -271,7 +271,7 @@ export default function BusinessDashboard({
       <Card className="shadow-lg overflow-hidden border-gray-200 dark:border-slate-700">
         {/* Clean Header Section */}
         <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 md:p-8 border-b border-gray-200 dark:border-slate-800">
-          <div className="flex items-start gap-4 sm:gap-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
             {businessLogo ? (
               <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex-shrink-0">
                 <Image
@@ -289,17 +289,32 @@ export default function BusinessDashboard({
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                <div className="min-w-0">
-                  <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white truncate">
+              <div className="flex flex-col gap-4 lg:gap-6 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 space-y-3 sm:flex-1">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <h1 className="flex-1 min-w-0 text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white truncate">
                       {businessName}
                     </h1>
-                    <span className="inline-flex items-center rounded-full bg-blue-50 dark:bg-slate-800 px-4 py-1.5 text-sm font-medium text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-slate-700">
-                      {profileCopy.badgeLabel}
-                    </span>
+                    <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3">
+                      <CustomModal
+                        heading={profileCopy.detailsHeading}
+                        description={"Update content"}
+                        customTrigger={
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                          >
+                            <SettingsIcon className="h-4 w-4" />
+                            <span>Settings</span>
+                          </Button>
+                        }
+                      >
+                        <UpdateBusiness businessId={business.id} />
+                      </CustomModal>
+                    </div>
                   </div>
-                  <div className="space-y-1.5 mt-2">
+                  <div className="space-y-1.5">
                     <p className="text-sm sm:text-base text-gray-700 dark:text-slate-300">
                       {businessEmail || profileCopy.emailFallback}
                     </p>
@@ -308,58 +323,57 @@ export default function BusinessDashboard({
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 md:justify-end md:flex-none">
-                  <CustomButton
-                    label={"Create Invoice"}
-                    icon={PlusIcon}
-                    variant={"primary"}
-                    href={`/dashboard/invoices/new?business_id=${business.id}`}
-                    disabled={createDisabled}
-                  />
-                  <CustomModal
-                    heading={profileCopy.detailsHeading}
-                    description={"Update content"}
-                    openBtnLabel={"Settings"}
-                    btnVariant={"ghost"}
-                    btnIcon={SettingsIcon}
-                  >
-                    <UpdateBusiness businessId={business.id} />
-                  </CustomModal>
-                  <CustomModal
-                    heading={profileCopy.deleteHeading}
-                    description={`Removing ${businessName} will permanently delete its invoices, clients, and activity.`}
-                    customTrigger={
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        className="w-full sm:w-auto border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-900/20"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </Button>
-                    }
-                  >
-                    <DeleteBusiness
-                      businessId={Number(business.id)}
-                      businessName={businessName}
-                      profileType={profileType}
-                    />
-                  </CustomModal>
-                  {userPlan === "free_user" && (
+                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3 md:justify-end md:flex-none">
+                  <div className="w-full sm:w-auto">
                     <CustomButton
-                      variant="primary"
-                      label="Upgrade"
-                      icon={CrownIcon}
-                      href="/upgrade"
+                      label={"Create Invoice"}
+                      icon={PlusIcon}
+                      variant={"primary"}
+                      href={`/dashboard/invoices/new?business_id=${business.id}`}
+                      disabled={createDisabled}
                     />
+                  </div>
+                  <div className="w-full sm:w-auto">
+                    <CustomModal
+                      heading={profileCopy.deleteHeading}
+                      description={`Removing ${businessName} will permanently delete its invoices, clients, and activity.`}
+                      customTrigger={
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="w-full sm:w-auto border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-900/20"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </Button>
+                      }
+                    >
+                      <DeleteBusiness
+                        businessId={Number(business.id)}
+                        businessName={businessName}
+                        profileType={profileType}
+                      />
+                    </CustomModal>
+                  </div>
+                  {userPlan === "free_user" && (
+                    <div className="w-full sm:w-auto">
+                      <CustomButton
+                        variant="primary"
+                        label="Upgrade"
+                        icon={CrownIcon}
+                        href="/upgrade"
+                      />
+                    </div>
                   )}
                   {userPlan !== "free_user" && createDisabled && (
-                    <CustomButton
-                      variant="primary"
-                      label="Manage Plan"
-                      icon={CrownIcon}
-                      href="/upgrade"
-                    />
+                    <div className="w-full sm:w-auto">
+                      <CustomButton
+                        variant="primary"
+                        label="Manage Plan"
+                        icon={CrownIcon}
+                        href="/upgrade"
+                      />
+                    </div>
                   )}
                 </div>
               </div>

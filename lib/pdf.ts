@@ -113,7 +113,7 @@ export async function downloadElementAsPDF(
       return targetContentWidthPx;
     }
   })();
-  const renderWidthPx = Math.min(targetContentWidthPx, naturalWidth);
+  const renderWidthPx = Math.max(targetContentWidthPx, naturalWidth);
   clone.style.width = `${renderWidthPx}px`;
   clone.style.maxWidth = "none";
   clone.style.boxShadow = "none";
@@ -458,9 +458,9 @@ export async function downloadElementAsPDF(
   const targetWidth = imgWidthMm * finalScale;
   const targetHeight = imgHeightMm * finalScale;
 
-  // Center vertically
+  // Center horizontally, align content to the top margin
   const posX = (pageWidth - targetWidth) / 2;
-  const posY = (pageHeight - targetHeight) / 2;
+  const posY = mmMargin;
 
   // Use PNG to preserve transparency (logo transparency won't be forced to white)
   const fullImg = canvas.toDataURL("image/png");
