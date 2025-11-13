@@ -561,6 +561,7 @@ export default function InvoiceTable({
   const searchParams = useSearchParams();
   const [isSending, setIsSending] = useState<number | null>(null);
   const [invoiceRows, setInvoiceRows] = useState<InvoiceListItem[]>(invoices);
+  const [visibleCount, setVisibleCount] = useState(3);
   const pollingMapRef = useRef(
     new Map<
       number,
@@ -574,6 +575,7 @@ export default function InvoiceTable({
 
   useEffect(() => {
     setInvoiceRows(invoices);
+    setVisibleCount(3);
   }, [invoices]);
 
   const mergeInvoiceStatus = useCallback(
@@ -854,12 +856,12 @@ export default function InvoiceTable({
 
           {invoiceRows.length > 0 ? (
             <div className="space-y-4 md:space-y-0 md:divide-y md:divide-blue-100 dark:md:divide-slate-700">
-              {invoiceRows.map((invoice) => (
+              {invoiceRows.slice(0, visibleCount).map((invoice) => (
                 <div
                   key={invoice.id}
-                  className="flex w-full flex-col gap-4 rounded-2xl border border-blue-100 bg-white px-4 py-4 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-800 md:grid md:grid-cols-7 md:gap-2 md:rounded-none md:border-0 md:bg-transparent md:px-4 md:py-3 md:shadow-none md:hover:bg-blue-50/50 dark:md:hover:bg-slate-800"
+                  className="grid w-full grid-cols-2 gap-x-4 gap-y-3 rounded-2xl border border-blue-100 bg-white px-4 py-4 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-800 md:grid-cols-7 md:gap-2 md:rounded-none md:border-0 md:bg-transparent md:px-4 md:py-3 md:shadow-none md:hover:bg-blue-50/50 dark:md:hover:bg-slate-800"
                 >
-                  <div className="min-w-0">
+                  <div className="col-span-2 min-w-0 md:col-span-1">
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Invoice
                     </span>
@@ -870,7 +872,7 @@ export default function InvoiceTable({
                       {invoice.description || "No description"}
                     </p>
                   </div>
-                  <div>
+                  <div className="col-span-1 md:col-span-1">
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Amount
                     </span>
@@ -878,7 +880,7 @@ export default function InvoiceTable({
                       {formatInvoiceAmount(invoice.total, invoice.currency)}
                     </p>
                   </div>
-                  <div>
+                  <div className="col-span-1 md:col-span-1">
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Status
                     </span>
@@ -886,7 +888,7 @@ export default function InvoiceTable({
                       {getStatusBadge(invoice?.status || "draft")}
                     </div>
                   </div>
-                  <div>
+                  <div className="col-span-1 md:col-span-1">
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Issue Date
                     </span>
@@ -896,7 +898,7 @@ export default function InvoiceTable({
                         : "N/A"}
                     </p>
                   </div>
-                  <div>
+                  <div className="col-span-1 md:col-span-1">
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Due Date
                     </span>
@@ -906,7 +908,7 @@ export default function InvoiceTable({
                   </div>
 
                   {/* Email Status Column */}
-                  <div>
+                  <div className="col-span-2 md:col-span-1">
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Email Status
                     </span>
@@ -938,7 +940,7 @@ export default function InvoiceTable({
                     </div>
                   </div>
 
-                  <div className="border-t border-blue-100 pt-3 md:border-none md:pt-0 md:text-right dark:border-slate-700">
+                  <div className="col-span-2 border-t border-blue-100 pt-3 md:col-span-1 md:border-none md:pt-0 md:text-right dark:border-slate-700">
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Actions
                     </span>
@@ -1034,6 +1036,17 @@ export default function InvoiceTable({
                   </div>
                 </div>
               ))}
+              {invoiceRows.length > visibleCount && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    variant="secondary"
+                    onClick={() => setVisibleCount((prev) => prev + 3)}
+                    className="px-6"
+                  >
+                    Load More
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-12">

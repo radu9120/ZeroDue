@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { LucideIcon, Loader } from "lucide-react"; // Import Loader icon
 import { Button } from "./button";
+import { cn } from "@/lib/utils";
 
 type ButtonProps = {
   label?: string;
@@ -14,6 +15,7 @@ type ButtonProps = {
   disabled?: boolean;
   icon?: LucideIcon;
   isSubmitting?: boolean; // Added isSubmitting prop
+  className?: string;
 };
 
 const CustomButton: React.FC<ButtonProps> = ({
@@ -27,6 +29,7 @@ const CustomButton: React.FC<ButtonProps> = ({
   icon: Icon,
   disabled,
   isSubmitting,
+  className,
 }) => {
   // Define styles for each button variation
   const buttonStyles: Record<ButtonProps["variant"], string> = {
@@ -46,15 +49,17 @@ const CustomButton: React.FC<ButtonProps> = ({
 
   if (href) {
     return (
-      <Button variant={variant} disabled={disabled}>
+      <Button variant={variant} disabled={disabled} className={cn(className)}>
         <Link
           href={href}
           target={target}
           aria-disabled={disabled ? true : undefined}
           tabIndex={disabled ? -1 : undefined}
-          className={`flex flex-row items-center gap-2 ${styles} ${
+          className={cn(
+            "flex w-full flex-row items-center justify-center gap-2",
+            styles,
             disabled ? "pointer-events-none" : ""
-          }`}
+          )}
           passHref
         >
           {children}
@@ -68,7 +73,7 @@ const CustomButton: React.FC<ButtonProps> = ({
       <Button
         variant={variant}
         type={type}
-        className={`flex flex-row items-center gap-2 ${styles}`}
+        className={cn("flex flex-row items-center gap-2", styles, className)}
         onClick={onClick}
         disabled={disabled}
       >
@@ -83,7 +88,7 @@ const CustomButton: React.FC<ButtonProps> = ({
     <Button
       variant={variant}
       onClick={onClick}
-      className={`flex flex-row items-center gap-2 ${styles}`}
+      className={cn("flex flex-row items-center gap-2", styles, className)}
       disabled={disabled}
     >
       {isSubmitting && <Loader className="animate-spin h-5 w-5 mr-3 " />}
