@@ -18,19 +18,42 @@ export async function downloadElementAsPDF(
     format = "a4",
   }: PdfOptions = {}
 ) {
+  const sleep = (ms: number) =>
+    new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+  const ensureFontsLoaded = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const docWithFonts = document as any;
+    const fonts: FontFaceSet | undefined = docWithFonts?.fonts;
+    if (!fonts) {
+      await sleep(150);
+      return;
+    }
+
+    const samples = [
+      "400 14px Inter",
+      "500 16px Inter",
+      "600 20px Inter",
+      "400 14px 'Space Grotesk'",
+    ];
+
+    const loaders = samples.map((sample) =>
+      fonts
+        .load(sample)
+        .then(() => undefined)
+        .catch(() => undefined)
+    );
+
+    if (fonts.ready) {
+      loaders.push(fonts.ready.then(() => undefined).catch(() => undefined));
+    }
+
+    await Promise.race([Promise.all(loaders), sleep(1200)]);
+  };
+
   // Clamp scale to safe bounds
   const effectiveScale = Math.min(3.5, Math.max(1.5, Number(scale) || 2));
-  // Ensure fonts are loaded for accurate rendering
-  try {
-    // Optional chaining for environments without FontFaceSet API
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const anyDoc: any = document as any;
-    if (anyDoc?.fonts?.ready) {
-      await anyDoc.fonts.ready;
-    }
-  } catch {
-    // ignore font readiness errors
-  }
+  await ensureFontsLoaded();
 
   // Helper: wait for all images within a node to be fully loaded
   const waitForImages = async (root: HTMLElement) => {
@@ -38,7 +61,12 @@ export async function downloadElementAsPDF(
     await Promise.all(
       imgs.map((img) =>
         img.complete && img.naturalWidth > 0
-          ? Promise.resolve()
+          ? typeof img.decode === "function"
+            ? img
+                .decode()
+                .catch(() => undefined)
+                .then(() => undefined)
+            : Promise.resolve()
           : new Promise<void>((resolve) => {
               const done = () => resolve();
               img.addEventListener("load", done, { once: true });
@@ -121,6 +149,19 @@ export async function downloadElementAsPDF(
   wrapper.style.pointerEvents = "none";
 
   const clone = element.cloneNode(true) as HTMLElement;
+  const computedFontFamily = (() => {
+    try {
+      return (
+        window.getComputedStyle(element).fontFamily ||
+        "Inter, 'Space Grotesk', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+      );
+    } catch {
+      return "Inter, 'Space Grotesk', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+    }
+  })();
+
+  clone.style.fontFamily = computedFontFamily;
+  wrapper.style.fontFamily = computedFontFamily;
   // Determine a render width that preserves mobile layouts while still fitting on the page
   const naturalWidth = (() => {
     try {
@@ -255,9 +296,9 @@ export async function downloadElementAsPDF(
     }
   } catch {}
 
-  // Inline images to prevent CORS-tainted canvas
-  await inlineImages(clone);
+  // Ensure images are fully loaded and inlined to prevent Safari from dropping them
   await waitForImages(clone);
+  await inlineImages(clone);
 
   // Additional cleanup: strip any remaining Tailwind dark utilities
   try {

@@ -817,7 +817,7 @@ export default function InvoiceSuccessView({
         </>
       )}
 
-      <div className="relative z-10 max-w-6xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
+      <div className="relative z-10 max-w-6xl mx-auto lg:p-4  space-y-6 md:space-y-8">
         {!isPublicView && (
           <SuccessBanner
             invoiceNumber={invoice.invoice_number}

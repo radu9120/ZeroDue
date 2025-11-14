@@ -1,4 +1,3 @@
-import Image from "next/image";
 import * as React from "react";
 import type { BusinessType, InvoiceListItem } from "@/types";
 
@@ -89,17 +88,20 @@ export function InvoiceHeaderSection({
             className="mb-4 flex items-start"
             style={{ marginBottom: "16px" }}
           >
-            <Image
+            <img
               src={company.logo}
-              alt="Company Logo"
-              width={220}
-              height={100}
-              className="object-contain object-left"
+              alt={`${company.name || "Company"} logo`}
+              loading="eager"
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
+              decoding="sync"
               style={{
+                width: "auto",
                 maxWidth: "220px",
                 maxHeight: "100px",
                 objectFit: "contain",
                 objectPosition: "left center",
+                display: "block",
               }}
             />
           </div>
