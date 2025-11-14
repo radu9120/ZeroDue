@@ -5,7 +5,7 @@ import Navbar from "@/components/navbar";
 import Pricing from "@/components/pricing";
 import Testimonials from "@/components/testimonials";
 import HowItWorks from "@/components/how-it-works";
-import FAQ from "@/components/faq";
+import RecentBlogs from "@/components/recent-blogs";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
@@ -21,7 +21,7 @@ export default async function Home() {
       <Features />
       <Pricing />
       <Testimonials />
-      <FAQ />
+      <RecentBlogs />
     </main>
   );
 }
