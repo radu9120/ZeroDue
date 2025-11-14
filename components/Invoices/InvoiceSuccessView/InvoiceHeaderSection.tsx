@@ -77,6 +77,26 @@ export function InvoiceHeaderSection({
     [isCompactLayout]
   );
 
+  const labelTextStyle: React.CSSProperties = React.useMemo(
+    () => ({
+      fontWeight: 600,
+      color: "#374151",
+      whiteSpace: isCompactLayout ? "normal" : "nowrap",
+    }),
+    [isCompactLayout]
+  );
+
+  const valueTextStyle: React.CSSProperties = React.useMemo(
+    () => ({
+      color: "#111827",
+      whiteSpace: isCompactLayout ? "normal" : "nowrap",
+      textAlign: isCompactLayout ? "left" : "right",
+      display: "inline-flex",
+      justifyContent: isCompactLayout ? "flex-start" : "flex-end",
+    }),
+    [isCompactLayout]
+  );
+
   return (
     <div
       className="mb-6 pb-6 border-b-2 border-gray-200"
@@ -176,13 +196,16 @@ export function InvoiceHeaderSection({
           <div className="flex justify-between items-center" style={rowStyle}>
             <span
               className="font-semibold text-gray-700"
-              style={{ fontWeight: 600, color: "#374151" }}
+              style={labelTextStyle}
             >
               Invoice #
             </span>
             <span
               className="font-bold text-gray-900"
-              style={{ fontWeight: "bold", color: "#111827" }}
+              style={{
+                ...valueTextStyle,
+                fontWeight: "bold",
+              }}
             >
               {invoice.invoice_number || "N/A"}
             </span>
@@ -198,7 +221,7 @@ export function InvoiceHeaderSection({
           <div className="flex justify-between items-center" style={rowStyle}>
             <span
               className="font-semibold text-gray-700"
-              style={{ fontWeight: 600, color: "#374151" }}
+              style={labelTextStyle}
             >
               Date
             </span>
@@ -210,7 +233,7 @@ export function InvoiceHeaderSection({
                 className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
               />
             ) : (
-              <span className="text-gray-900" style={{ color: "#111827" }}>
+              <span className="text-gray-900" style={valueTextStyle}>
                 {formatDate(invoice.issue_date)}
               </span>
             )}
@@ -218,7 +241,7 @@ export function InvoiceHeaderSection({
           <div className="flex justify-between items-center" style={rowStyle}>
             <span
               className="font-semibold text-gray-700"
-              style={{ fontWeight: 600, color: "#374151" }}
+              style={labelTextStyle}
             >
               Due Date
             </span>
@@ -230,7 +253,7 @@ export function InvoiceHeaderSection({
                 className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
               />
             ) : (
-              <span className="text-gray-900" style={{ color: "#111827" }}>
+              <span className="text-gray-900" style={valueTextStyle}>
                 {formatDate(invoice.due_date)}
               </span>
             )}
