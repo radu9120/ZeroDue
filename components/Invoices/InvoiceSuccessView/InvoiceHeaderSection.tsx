@@ -67,12 +67,13 @@ export function InvoiceHeaderSection({
 
   const rowStyle: React.CSSProperties = React.useMemo(
     () => ({
-      display: "flex",
-      justifyContent: "space-between",
+      display: "grid",
+      gridTemplateColumns: isCompactLayout
+        ? "minmax(0, 1fr) minmax(0, auto)"
+        : "auto minmax(0, 1fr)",
+      columnGap: "16px",
       alignItems: "center",
       marginBottom: "8px",
-      flexWrap: isCompactLayout ? "wrap" : "nowrap",
-      gap: "8px",
     }),
     [isCompactLayout]
   );
@@ -82,6 +83,8 @@ export function InvoiceHeaderSection({
       fontWeight: 600,
       color: "#374151",
       whiteSpace: isCompactLayout ? "normal" : "nowrap",
+      justifySelf: "start",
+      textAlign: "left",
     }),
     [isCompactLayout]
   );
@@ -91,8 +94,8 @@ export function InvoiceHeaderSection({
       color: "#111827",
       whiteSpace: isCompactLayout ? "normal" : "nowrap",
       textAlign: isCompactLayout ? "left" : "right",
-      display: "inline-flex",
-      justifyContent: isCompactLayout ? "flex-start" : "flex-end",
+      display: "block",
+      justifySelf: isCompactLayout ? "start" : "end",
     }),
     [isCompactLayout]
   );
@@ -231,6 +234,10 @@ export function InvoiceHeaderSection({
                 value={(issueDate || "").slice(0, 10)}
                 onChange={(event) => onIssueDateChange(event.target.value)}
                 className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+                style={{
+                  justifySelf: isCompactLayout ? "start" : "end",
+                  textAlign: "right",
+                }}
               />
             ) : (
               <span className="text-gray-900" style={valueTextStyle}>
@@ -251,6 +258,10 @@ export function InvoiceHeaderSection({
                 value={(dueDate || "").slice(0, 10)}
                 onChange={(event) => onDueDateChange(event.target.value)}
                 className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+                style={{
+                  justifySelf: isCompactLayout ? "start" : "end",
+                  textAlign: "right",
+                }}
               />
             ) : (
               <span className="text-gray-900" style={valueTextStyle}>
@@ -275,6 +286,7 @@ export function InvoiceHeaderSection({
                   value={currency}
                   onChange={(event) => onCurrencyChange(event.target.value)}
                   className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+                  style={{ justifySelf: isCompactLayout ? "start" : "end" }}
                 >
                   {currencies.map((curr) => (
                     <option key={curr.code} value={curr.code}>
