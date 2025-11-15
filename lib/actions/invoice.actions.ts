@@ -318,13 +318,24 @@ export const getCurrentMonthInvoiceCountForBusiness = async (
 };
 
 // Update only bank details, notes, and status (no plan limit impact)
+export type InvoiceUpdatePayload = {
+  status?: string;
+  bank_details?: string;
+  notes?: string;
+  invoice_number?: string;
+  description?: string;
+  issue_date?: string;
+  due_date?: string;
+  currency?: string;
+  subtotal?: number;
+  discount?: number;
+  shipping?: number;
+  total?: number;
+};
+
 export const updateInvoiceBankDetailsAndNotes = async (
   invoiceId: number,
-  updates: {
-    bank_details?: string;
-    notes?: string;
-    status?: string;
-  }
+  updates: InvoiceUpdatePayload
 ) => {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
@@ -346,10 +357,48 @@ export const updateInvoiceBankDetailsAndNotes = async (
     throw new Error("Unauthorized: You don't own this invoice");
   }
 
-  // Update only the allowed fields
+  const plan = await getCurrentPlan();
+  const freeFields = ["status", "bank_details", "notes"] as const;
+  const proFields = [
+    ...freeFields,
+    "invoice_number",
+    "description",
+    "issue_date",
+    "due_date",
+    "currency",
+    "subtotal",
+    "discount",
+    "shipping",
+    "total",
+  ] as const;
+
+  const allowedFields = plan === "free_user" ? freeFields : proFields;
+
+  const filteredUpdates: InvoiceUpdatePayload = {};
+  let hasValidUpdate = false;
+
+  for (const key of Object.keys(updates) as Array<keyof InvoiceUpdatePayload>) {
+    const value = updates[key];
+    if (value === undefined) continue;
+    if (!allowedFields.includes(key as any)) {
+      if (plan === "free_user") {
+        throw new Error(
+          "Free plan can only edit status, bank details, and notes."
+        );
+      }
+      continue;
+    }
+    (filteredUpdates as any)[key] = value;
+    hasValidUpdate = true;
+  }
+
+  if (!hasValidUpdate) {
+    throw new Error("No editable fields provided.");
+  }
+
   const { data, error } = await supabase
     .from("Invoices")
-    .update(updates)
+    .update(filteredUpdates)
     .eq("id", invoiceId)
     .select()
     .single();
@@ -362,7 +411,7 @@ export const updateInvoiceBankDetailsAndNotes = async (
   await createActivity({
     user_id: author,
     business_id: invoice.business_id,
-    action: "Updated invoice status",
+    action: "Updated invoice",
     target_type: "invoice",
     target_name: invoice.invoice_number,
     metadata: updates.status ? { from: "", to: updates.status } : undefined,

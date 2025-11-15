@@ -754,7 +754,7 @@ const InvoiceForm = ({
 
           {/* Additional Details & Summary */}
           <div className="border-t border-gray-100 dark:border-slate-700 pt-12">
-            <div className="flex w-full gap-12">
+            <div className="flex w-full flex-col gap-8 lg:flex-row lg:gap-12">
               <div className="flex-1 space-y-8">
                 <FormField
                   control={form.control}
@@ -797,8 +797,8 @@ const InvoiceForm = ({
                 />
               </div>
 
-              <div className="w-80">
-                <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 border border-gray-100 dark:border-slate-700">
+              <div className="w-full lg:w-80 lg:flex-shrink-0">
+                <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-5 sm:p-6 border border-gray-100 dark:border-slate-700">
                   <h4 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-6">
                     Invoice Summary
                   </h4>

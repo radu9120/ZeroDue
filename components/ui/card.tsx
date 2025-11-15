@@ -7,7 +7,7 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card"
       className={cn(
-        "bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700 space-y-4",
+        "bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 shadow-lg border border-blue-100 dark:border-slate-700 space-y-4 w-full max-w-full overflow-hidden",
         className
       )}
       {...props}
@@ -71,7 +71,10 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-footer"
-      className={cn("flex items-center ", className)}
+      className={cn(
+        "flex flex-wrap items-center justify-between gap-3",
+        className
+      )}
       {...props}
     />
   );

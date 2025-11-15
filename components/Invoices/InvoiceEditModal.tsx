@@ -12,7 +12,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { updateInvoiceBankDetailsAndNotes } from "@/lib/actions/invoice.actions";
+import {
+  InvoiceUpdatePayload,
+  updateInvoiceBankDetailsAndNotes,
+} from "@/lib/actions/invoice.actions";
 import { InvoiceListItem } from "@/types";
 import { Loader2 } from "lucide-react";
 
@@ -29,8 +32,6 @@ export default function InvoiceEditModal({
   onSuccess,
   onClose,
 }: InvoiceEditModalProps) {
-  const isEnterprise = userPlan === "enterprise";
-
   // Parse bank details - handle JSON, object, or plain text
   let initialBankType: "uk" | "international" = "international";
   let initialBankText = "";
@@ -87,6 +88,26 @@ export default function InvoiceEditModal({
   const [accountNumber, setAccountNumber] = useState(initialAccountNumber);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [invoiceNumber, setInvoiceNumber] = useState(
+    invoice.invoice_number || ""
+  );
+  const [descriptionText, setDescriptionText] = useState(
+    invoice.description || ""
+  );
+  const [issueDate, setIssueDate] = useState(() =>
+    invoice.issue_date
+      ? new Date(invoice.issue_date).toISOString().split("T")[0]
+      : ""
+  );
+  const [dueDate, setDueDate] = useState(() =>
+    invoice.due_date
+      ? new Date(invoice.due_date).toISOString().split("T")[0]
+      : ""
+  );
+  const [invoiceCurrency, setInvoiceCurrency] = useState(
+    invoice.currency || "GBP"
+  );
+  const canEditMetadata = userPlan !== "free_user";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,11 +130,24 @@ export default function InvoiceEditModal({
         bankDetailsToSave = bankDetails.trim();
       }
 
-      await updateInvoiceBankDetailsAndNotes(invoice.id, {
+      const payload: InvoiceUpdatePayload = {
         bank_details: bankDetailsToSave,
         notes: notes.trim(),
         status,
-      });
+      };
+
+      if (canEditMetadata) {
+        payload.invoice_number = invoiceNumber.trim() || undefined;
+        payload.description = descriptionText.trim();
+        payload.issue_date = issueDate || undefined;
+        payload.due_date = dueDate || undefined;
+        payload.currency = invoiceCurrency.trim() || undefined;
+      }
+
+      const { data, error } = await updateInvoiceBankDetailsAndNotes(
+        invoice.id,
+        payload
+      );
 
       onSuccess();
       onClose();
@@ -144,6 +178,63 @@ export default function InvoiceEditModal({
           </SelectContent>
         </Select>
       </div>
+      {canEditMetadata && (
+        <div className="space-y-4 border-t border-gray-200 dark:border-slate-600 pt-4">
+          <h3 className="font-semibold text-gray-900 dark:text-slate-100">
+            Invoice Details
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="dark:text-slate-200">Invoice Number</Label>
+              <Input
+                value={invoiceNumber}
+                onChange={(e) => setInvoiceNumber(e.target.value)}
+                placeholder="INV-1234"
+                className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="dark:text-slate-200">Currency</Label>
+              <Input
+                value={invoiceCurrency}
+                onChange={(e) => setInvoiceCurrency(e.target.value)}
+                placeholder="GBP"
+                className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label className="dark:text-slate-200">Description</Label>
+            <Textarea
+              value={descriptionText}
+              onChange={(e) => setDescriptionText(e.target.value)}
+              placeholder="Add a short memo or description"
+              rows={3}
+              className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="dark:text-slate-200">Issue Date</Label>
+              <Input
+                type="date"
+                value={issueDate}
+                onChange={(e) => setIssueDate(e.target.value)}
+                className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="dark:text-slate-200">Due Date</Label>
+              <Input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="dark:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bank Details Section */}
       <div className="space-y-4 border-t border-gray-200 dark:border-slate-600 pt-4">
@@ -303,19 +394,20 @@ export default function InvoiceEditModal({
       </div>
 
       {/* Information Notice */}
-      {isEnterprise ? (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 px-4 py-3 rounded-lg text-sm text-green-800 dark:text-green-300">
-          <strong>Enterprise Plan:</strong> You have unlimited invoices!
-          However, for audit and integrity purposes, we recommend only modifying
-          status, bank details, and notes. For significant changes, consider
-          creating a new invoice.
-        </div>
-      ) : (
+      {userPlan === "free_user" ? (
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 px-4 py-3 rounded-lg text-sm text-blue-800 dark:text-blue-300">
           <strong>Plan Restriction:</strong> You can only modify status, bank
           details, and notes. Invoice items, amounts, and client info cannot be
-          changed to maintain plan limit integrity. Upgrade to Enterprise for
-          unlimited invoices.
+          changed to maintain plan limit integrity. Upgrade to Professional or
+          Enterprise for broader editing.
+        </div>
+      ) : (
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 px-4 py-3 rounded-lg text-sm text-green-800 dark:text-green-300">
+          <strong>
+            {userPlan === "professional" ? "Professional" : "Enterprise"} Plan:
+          </strong>{" "}
+          You can edit invoice metadata, issue/due dates, and banking details
+          directly here for full control over your documents.
         </div>
       )}
     </form>
