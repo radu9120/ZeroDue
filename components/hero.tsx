@@ -141,25 +141,35 @@ export default function Hero() {
             {/* Mobile: better button sizing, desktop unchanged */}
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-6 md:mb-10">
               <Button
-                className="rounded-xl px-6 md:px-8 py-4 md:py-7 text-base md:text-lg font-medium
-                  bg-gradient-to-r from-blue-600 to-accent hover:from-primary-dark hover:to-cyan-600
+                size="lg"
+                className="flex-none w-full sm:w-auto rounded-xl px-6 md:px-7 text-base md:text-lg font-semibold
+                  bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600
                   text-white shadow-md hover:shadow-lg hover:shadow-primary/20"
                 asChild
               >
-                <Link href="/sign-up" className="flex items-center">
+                <Link
+                  href="/sign-up"
+                  className="flex w-full items-center justify-center gap-2"
+                >
                   Get Started
-                  <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
+                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
                 </Link>
               </Button>
 
               <Button
+                size="lg"
                 variant="secondary"
-                className="rounded-xl px-6 md:px-8 py-4 md:py-7 text-base md:text-lg font-medium
+                className="flex-none w-full sm:w-auto rounded-xl px-6 md:px-7 text-base md:text-lg font-semibold
                   border border-neutral-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 bg-white dark:bg-slate-800
                   text-primary-text dark:text-slate-300 hover:bg-blue-50/50 dark:hover:bg-slate-700"
                 asChild
               >
-                <a href="#features">Learn More</a>
+                <a
+                  href="#features"
+                  className="flex w-full items-center justify-center"
+                >
+                  Learn More
+                </a>
               </Button>
             </div>
           </motion.div>
