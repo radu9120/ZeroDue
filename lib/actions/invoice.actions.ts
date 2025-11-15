@@ -411,7 +411,7 @@ export const updateInvoiceBankDetailsAndNotes = async (
   await createActivity({
     user_id: author,
     business_id: invoice.business_id,
-    action: "Updated invoice",
+    action: "Updated invoice content",
     target_type: "invoice",
     target_name: invoice.invoice_number,
     metadata: updates.status ? { from: "", to: updates.status } : undefined,
