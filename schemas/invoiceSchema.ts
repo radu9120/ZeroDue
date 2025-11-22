@@ -41,7 +41,14 @@ export const companySchema = z.object({
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
   address: z.string().min(1, { message: "Quantity is required" }),
   phone: phoneType,
-  vat: z.coerce.number().optional(),
+  vat: z.preprocess(
+    (val) => {
+      if (val === undefined || val === null) return undefined;
+      const str = String(val).trim();
+      return str.length ? str : undefined;
+    },
+    z.string().max(64, { message: "Tax number is too long" }).optional()
+  ),
   tax_label: z.string().optional(),
   currency: z
     .string()
@@ -68,10 +75,21 @@ export const formSchema = z.object({
   issue_date: z.coerce.date({ required_error: "Invoice date is required." }),
   due_date: z.coerce.date({ required_error: "Due date is required." }),
   items: z.array(itemSchema).min(1, { message: "Min 1 item is required." }),
-  subtotal: z.coerce.number(),
-  discount: z.coerce.number().optional(),
-  shipping: z.coerce.number().optional(),
-  total: z.coerce.number(),
+  subtotal: z.coerce.number().min(0, {
+    message: "Subtotal cannot be negative.",
+  }),
+  discount: z.coerce
+    .number()
+    .min(0, { message: "Discount must be between 0 and 100%." })
+    .max(100, { message: "Discount must be between 0 and 100%." })
+    .optional(),
+  shipping: z.coerce
+    .number()
+    .min(0, { message: "Shipping cannot be negative." })
+    .optional(),
+  total: z.coerce.number().min(0, {
+    message: "Total cannot be negative.",
+  }),
   notes: z.string().optional(),
   bank_details: z.string().optional(),
   currency: z.string().min(1, { message: "Logo is required." }),

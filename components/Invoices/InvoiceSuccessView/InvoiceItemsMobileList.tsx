@@ -4,7 +4,7 @@ import type { InvoiceItemRow } from "./types";
 
 interface InvoiceItemsMobileListProps {
   isEditing: boolean;
-  isEnterprise: boolean;
+  canEditFullInvoice: boolean;
   itemRows: InvoiceItemRow[];
   items: InvoiceItemRow[];
   onItemChange: (index: number, patch: Partial<InvoiceItemRow>) => void;
@@ -27,7 +27,7 @@ const formatCurrency = (
 
 export function InvoiceItemsMobileList({
   isEditing,
-  isEnterprise,
+  canEditFullInvoice,
   itemRows,
   items,
   onItemChange,
@@ -206,7 +206,7 @@ export function InvoiceItemsMobileList({
     ));
   };
 
-  const showEditor = isEditing && isEnterprise;
+  const showEditor = isEditing && canEditFullInvoice;
 
   return (
     <div className="space-y-4" style={{ marginBottom: "24px" }}>

@@ -43,7 +43,7 @@ export const CreateBusiness = ({
       address: "",
       phone: "",
       vat: undefined,
-      tax_label: "VAT",
+      tax_label: mode === "company" ? "VAT" : "Tax number",
       currency: "GBP",
       logo: "", // Initialize as empty string
       profile_type: resolvedProfileType,

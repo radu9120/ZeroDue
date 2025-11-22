@@ -69,7 +69,7 @@ export const UpdateBusiness = ({
       email: "",
       address: "",
       phone: "",
-      vat: undefined,
+      vat: "",
       tax_label: "VAT",
       currency: "GBP",
       logo: "",
@@ -81,7 +81,7 @@ export const UpdateBusiness = ({
           email: business.email,
           address: business.address,
           phone: business.phone || "",
-          vat: business.vat,
+          vat: business.vat || "",
           tax_label: business.tax_label || "VAT",
           currency: business.currency || "GBP",
           logo: business.logo || "",
@@ -98,7 +98,7 @@ export const UpdateBusiness = ({
         email: business.email,
         address: business.address,
         phone: business.phone || "",
-        vat: business.vat,
+        vat: business.vat || "",
         currency: business.currency || "GBP",
         logo: business.logo || "",
         profile_type: business.profile_type || "company",
@@ -199,12 +199,15 @@ export const UpdateBusiness = ({
           validatedValues[typedKey] !== originalValue
         ) {
           if (typedKey === "vat") {
-            payload.vat =
-              validatedValues.vat === null ||
-              validatedValues.vat === undefined ||
-              String(validatedValues.vat) === ""
+            const raw = validatedValues.vat;
+            const normalized =
+              raw === null || raw === undefined
                 ? undefined
-                : Number(validatedValues.vat);
+                : typeof raw === "string"
+                  ? raw.trim()
+                  : String(raw).trim();
+            payload.vat =
+              normalized && normalized.length ? normalized : undefined;
           } else {
             // @ts-ignore
             payload[typedKey] = validatedValues[typedKey];

@@ -5,7 +5,7 @@ import { InvoiceItemsMobileList } from "./InvoiceItemsMobileList";
 
 interface InvoiceItemsTableProps {
   isEditing: boolean;
-  isEnterprise: boolean;
+  canEditFullInvoice: boolean;
   itemRows: InvoiceItemRow[];
   items: InvoiceItemRow[];
   onItemChange: (index: number, patch: Partial<InvoiceItemRow>) => void;
@@ -21,7 +21,7 @@ interface InvoiceItemsTableProps {
 
 export function InvoiceItemsTable({
   isEditing,
-  isEnterprise,
+  canEditFullInvoice,
   itemRows,
   items,
   onItemChange,
@@ -38,7 +38,7 @@ export function InvoiceItemsTable({
     return (
       <InvoiceItemsMobileList
         isEditing={isEditing}
-        isEnterprise={isEnterprise}
+        canEditFullInvoice={canEditFullInvoice}
         itemRows={itemRows}
         items={items}
         onItemChange={onItemChange}
@@ -152,7 +152,7 @@ export function InvoiceItemsTable({
               </tr>
             </thead>
             <tbody className="bg-white" style={{ backgroundColor: "#fff" }}>
-              {isEditing && isEnterprise ? (
+              {isEditing && canEditFullInvoice ? (
                 itemRows.length > 0 ? (
                   itemRows.map((item, index) => (
                     <tr
@@ -287,7 +287,7 @@ export function InvoiceItemsTable({
           </table>
         </div>
       </div>
-      {isEditing && isEnterprise && (
+      {isEditing && canEditFullInvoice && (
         <div className="mt-3">
           <Button size="sm" variant="secondary" onClick={onAddItem}>
             <Plus className="h-4 w-4 mr-1" />

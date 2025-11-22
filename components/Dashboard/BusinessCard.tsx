@@ -104,14 +104,14 @@ export default function BusinessCard({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h3 className="mb-2 truncate text-lg font-bold text-gray-900 sm:text-xl md:text-2xl dark:text-white">
+                      <h3 className="mb-2 text-lg font-bold leading-tight text-gray-900 break-words sm:text-xl md:text-2xl dark:text-white">
                         {company.name}
                       </h3>
                       <span className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:border-slate-700 dark:bg-slate-800/70 dark:text-blue-400">
                         {profileLabel}
                       </span>
                     </div>
-                    <ArrowRight className="mt-1 h-6 w-6 rounded-full border border-transparent p-1 text-gray-400 transition-all duration-200 group-hover:translate-x-1 group-hover:text-primary group-hover:shadow-sm sm:h-7 sm:w-7 dark:text-slate-200" />
+                    <ArrowRight className="mt-1 h-6 w-6 flex-shrink-0 rounded-full border border-transparent p-1 text-gray-400 transition-all duration-200 group-hover:translate-x-1 group-hover:text-primary group-hover:shadow-sm sm:h-7 sm:w-7 dark:text-slate-200" />
                   </div>
                 </div>
               </div>

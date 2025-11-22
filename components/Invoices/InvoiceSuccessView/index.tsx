@@ -146,7 +146,7 @@ export default function InvoiceSuccessView({
   userPlan = "free",
   publicView = false,
 }: InvoiceSuccessViewProps) {
-  const isEnterprise = userPlan === "enterprise";
+  const canEditFullInvoice = userPlan !== "free_user";
   const isPublicView = publicView;
   const [isEditing, setIsEditing] = useState(editMode);
   const [status, setStatus] = useState<string>(invoice.status || "draft");
@@ -424,7 +424,7 @@ export default function InvoiceSuccessView({
         notes: notes.trim(),
         status,
       };
-      if (isEnterprise) {
+      if (canEditFullInvoice) {
         payload.description = desc;
         payload.issue_date = issueDate;
         payload.due_date = dueDate;
@@ -460,7 +460,7 @@ export default function InvoiceSuccessView({
     discount,
     dueDate,
     invoice.id,
-    isEnterprise,
+    canEditFullInvoice,
     issueDate,
     itemRows,
     notes,
@@ -771,7 +771,7 @@ export default function InvoiceSuccessView({
     rawDescription.toLowerCase() === "new invoice";
   const currentDescription = (isEditing ? desc : rawDescription).trim();
   const shouldRenderDescription =
-    (isEditing && isEnterprise) ||
+    (isEditing && canEditFullInvoice) ||
     (!isDefaultDescription && currentDescription.length > 0);
 
   const bankDetailsDisplay = useMemo<BankDetailsDisplay>(
@@ -883,7 +883,7 @@ export default function InvoiceSuccessView({
                 company={company}
                 invoice={invoice}
                 isEditing={isEditing}
-                isEnterprise={isEnterprise}
+                canEditFullInvoice={canEditFullInvoice}
                 issueDate={issueDate}
                 onIssueDateChange={setIssueDate}
                 dueDate={dueDate}
@@ -898,7 +898,7 @@ export default function InvoiceSuccessView({
 
               <InvoiceDescriptionSection
                 isEditing={isEditing}
-                isEnterprise={isEnterprise}
+                canEditFullInvoice={canEditFullInvoice}
                 description={isEditing ? desc : currentDescription}
                 onChange={setDesc}
                 shouldRender={shouldRenderDescription}
@@ -907,7 +907,7 @@ export default function InvoiceSuccessView({
 
               <InvoiceItemsTable
                 isEditing={isEditing}
-                isEnterprise={isEnterprise}
+                canEditFullInvoice={canEditFullInvoice}
                 itemRows={itemRows}
                 items={items}
                 onItemChange={updateItem}
@@ -942,7 +942,7 @@ export default function InvoiceSuccessView({
 
                 <InvoiceSummarySection
                   isEditing={isEditing}
-                  isEnterprise={isEnterprise}
+                  canEditFullInvoice={canEditFullInvoice}
                   itemRows={itemRows}
                   shipping={shipping}
                   onShippingChange={setShipping}

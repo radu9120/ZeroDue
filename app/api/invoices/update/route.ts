@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     if (typeof notes === "string") updates.notes = notes;
     if (typeof status === "string") updates.status = status;
 
-    if (plan === "enterprise") {
+    if (plan !== "free_user") {
       if (typeof description === "string") updates.description = description;
       if (typeof issue_date === "string") updates.issue_date = issue_date;
       if (typeof due_date === "string") updates.due_date = due_date;

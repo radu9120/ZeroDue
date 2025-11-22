@@ -17,7 +17,7 @@ import { Textarea } from "../ui/textarea";
 import { createInvoice } from "@/lib/actions/invoice.actions";
 import { formSchema } from "@/schemas/invoiceSchema";
 import { redirect } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { BusinessType, ClientType } from "@/types";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 import Link from "next/link";
@@ -174,7 +174,7 @@ const CalendarPicker = ({
             type="button"
             onClick={() => onSelect(calDay.date)}
             className={cn(
-              "h-10 w-10 text-sm rounded-lg font-medium transition-all duration-200 flex items-center justify-center",
+              "h-10 w-10 text-sm rounded-lg font-medium transition-all duration-200 flex items-center justify-center text-gray-700 dark:text-slate-200",
               "hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-700 dark:hover:text-blue-400",
               !calDay.isCurrentMonth &&
                 "text-gray-300 dark:text-slate-600 hover:text-gray-400 dark:hover:text-slate-500 hover:bg-gray-50 dark:hover:bg-slate-800",
@@ -250,6 +250,8 @@ const InvoiceForm = ({
     },
   });
 
+  const hasCustomInvoiceNumber = useRef(false);
+
   useEffect(() => {
     form.setValue("company_details", defaultCompanyDetails, {
       shouldDirty: false,
@@ -258,6 +260,44 @@ const InvoiceForm = ({
       shouldDirty: false,
     });
   }, [defaultCompanyDetails, defaultCurrency, form]);
+
+  useEffect(() => {
+    if (!company_data.id) return;
+    let cancelled = false;
+    hasCustomInvoiceNumber.current = false;
+
+    const fetchNextInvoiceNumber = async () => {
+      try {
+        const response = await fetch(
+          `/api/invoices/next-number?business_id=${company_data.id}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch next invoice number");
+        }
+        const payload = (await response.json()) as {
+          invoice_number?: string;
+        };
+
+        if (
+          !cancelled &&
+          payload?.invoice_number &&
+          !hasCustomInvoiceNumber.current
+        ) {
+          form.setValue("invoice_number", payload.invoice_number, {
+            shouldDirty: false,
+          });
+        }
+      } catch (error) {
+        console.error("Unable to fetch invoice number", error);
+      }
+    };
+
+    void fetchNextInvoiceNumber();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [company_data.id, form]);
 
   const items = useWatch({ control: form.control, name: "items" });
   const discount =
@@ -275,12 +315,25 @@ const InvoiceForm = ({
         return sum + quantity;
       }, 0) || 0;
 
-    const discountAmount = subtotal * (discount / 100);
-    const total = subtotal - discountAmount + shipping;
+    const clampedDiscount = Math.min(Math.max(discount, 0), 100);
+    if (clampedDiscount !== discount) {
+      form.setValue("discount", clampedDiscount, { shouldDirty: true });
+    }
+
+    const sanitizedShipping = shipping < 0 ? 0 : shipping;
+    if (sanitizedShipping !== shipping) {
+      form.setValue("shipping", sanitizedShipping, { shouldDirty: true });
+    }
+
+    const discountAmount = subtotal * (clampedDiscount / 100);
+    const calculatedTotal = Math.max(
+      subtotal - discountAmount + sanitizedShipping,
+      0
+    );
 
     form.setValue("subtotal", subtotal);
-    form.setValue("total", total);
-  }, [items, discount, shipping]);
+    form.setValue("total", calculatedTotal);
+  }, [form, items, discount, shipping]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Add status field before sending to backend
@@ -617,6 +670,10 @@ const InvoiceForm = ({
                       <Input
                         placeholder="INV001"
                         {...field}
+                        onChange={(event) => {
+                          hasCustomInvoiceNumber.current = true;
+                          field.onChange(event);
+                        }}
                         className="h-12 font-mono border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl"
                       />
                     </FormControl>

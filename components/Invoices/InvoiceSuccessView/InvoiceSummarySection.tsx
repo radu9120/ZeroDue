@@ -5,7 +5,7 @@ import { normalizeCurrencyCode } from "@/lib/utils";
 
 interface InvoiceSummarySectionProps {
   isEditing: boolean;
-  isEnterprise: boolean;
+  canEditFullInvoice: boolean;
   itemRows: InvoiceItemRow[];
   shipping: number;
   onShippingChange: (value: number) => void;
@@ -19,7 +19,7 @@ interface InvoiceSummarySectionProps {
 
 export function InvoiceSummarySection({
   isEditing,
-  isEnterprise,
+  canEditFullInvoice,
   itemRows,
   shipping,
   onShippingChange,
@@ -31,19 +31,19 @@ export function InvoiceSummarySection({
   isCompactLayout,
 }: InvoiceSummarySectionProps) {
   const symbol =
-    isEditing && isEnterprise
+    isEditing && canEditFullInvoice
       ? getCurrencySymbol(currency)
       : getCurrencySymbol(normalizeCurrencyCode(invoice.currency));
   const subtotal =
-    isEditing && isEnterprise
+    isEditing && canEditFullInvoice
       ? itemRows.reduce((sum, item) => sum + Number(item.amount || 0), 0)
       : Number(invoice.subtotal || 0);
   const shippingValue =
-    isEditing && isEnterprise
+    isEditing && canEditFullInvoice
       ? Number(shipping || 0)
       : Number(invoice.shipping || 0);
   const discountValue =
-    isEditing && isEnterprise
+    isEditing && canEditFullInvoice
       ? Number(discount || 0)
       : Number(invoice.discount || 0);
   const total = subtotal + shippingValue - (subtotal * discountValue) / 100;
@@ -142,7 +142,7 @@ export function InvoiceSummarySection({
             >
               Shipping
             </span>
-            {isEditing && isEnterprise ? (
+            {isEditing && canEditFullInvoice ? (
               <input
                 type="number"
                 step={0.01}
@@ -189,7 +189,7 @@ export function InvoiceSummarySection({
             >
               Discount
             </span>
-            {isEditing && isEnterprise ? (
+            {isEditing && canEditFullInvoice ? (
               <div className="flex items-center gap-1">
                 <input
                   type="number"

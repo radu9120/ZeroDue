@@ -33,6 +33,8 @@ import {
 } from "@/lib/email-status";
 import { getCurrencySymbol, normalizeCurrencyCode } from "@/lib/utils";
 
+const PAGE_SIZE = 5; // Keep in sync with getInvoicesList default limit
+
 const formatInvoiceAmount = (value: unknown, currency?: string) => {
   const currencyCode = normalizeCurrencyCode(currency);
   const currencySymbol = getCurrencySymbol(currencyCode);
@@ -562,6 +564,9 @@ export default function InvoiceTable({
   const [isSending, setIsSending] = useState<number | null>(null);
   const [invoiceRows, setInvoiceRows] = useState<InvoiceListItem[]>(invoices);
   const [visibleCount, setVisibleCount] = useState(3);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(invoices.length === PAGE_SIZE);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const pollingMapRef = useRef(
     new Map<
       number,
@@ -575,7 +580,9 @@ export default function InvoiceTable({
 
   useEffect(() => {
     setInvoiceRows(invoices);
-    setVisibleCount(3);
+    setVisibleCount(Math.min(3, invoices.length));
+    setCurrentPage(1);
+    setHasMore(invoices.length === PAGE_SIZE);
   }, [invoices]);
 
   const mergeInvoiceStatus = useCallback(
@@ -709,6 +716,60 @@ export default function InvoiceTable({
     router.push(`?${params.toString()}`);
   };
 
+  const loadMoreInvoicesFromServer = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return [] as InvoiceListItem[];
+    setIsLoadingMore(true);
+    const nextPage = currentPage + 1;
+
+    try {
+      const params = new URLSearchParams({
+        business_id: String(business_id),
+        page: String(nextPage),
+        limit: String(PAGE_SIZE),
+      });
+
+      if (search) params.set("searchTerm", search);
+      if (filter) params.set("filter", filter);
+
+      const response = await fetch(`/api/invoices/list?${params.toString()}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to load more invoices");
+      }
+
+      const payload = (await response.json()) as {
+        invoices?: InvoiceListItem[];
+      };
+
+      const nextInvoices = payload?.invoices ?? [];
+
+      setInvoiceRows((prev) => [...prev, ...nextInvoices]);
+      setCurrentPage(nextPage);
+      setHasMore(nextInvoices.length === PAGE_SIZE);
+
+      return nextInvoices;
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to load more invoices. Please try again.");
+      return [];
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [business_id, currentPage, filter, hasMore, isLoadingMore, search]);
+
+  const handleLoadMore = async () => {
+    if (visibleCount < invoiceRows.length) {
+      setVisibleCount((prev) => Math.min(prev + 3, invoiceRows.length));
+      return;
+    }
+
+    const newlyFetched = await loadMoreInvoicesFromServer();
+
+    if (newlyFetched.length > 0) {
+      setVisibleCount((prev) => prev + newlyFetched.length);
+    }
+  };
+
   const handleSendToClient = async (invoice: InvoiceListItem) => {
     setIsSending(invoice.id);
 
@@ -759,34 +820,45 @@ export default function InvoiceTable({
     }
   };
 
+  const handleDeleteInvoice = async (
+    invoiceId: number,
+    invoiceNumber: string
+  ) => {
+    const confirmed = confirm(
+      `Are you sure you want to delete invoice ${invoiceNumber}? This action cannot be undone.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/invoices/${invoiceId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to delete invoice");
+      }
+
+      toast.success(`Invoice ${invoiceNumber} deleted`);
+      setInvoiceRows((prev) =>
+        prev.filter((invoice) => invoice.id !== invoiceId)
+      );
+    } catch (error) {
+      console.error("Error deleting invoice", error);
+      const message =
+        error instanceof Error ? error.message : "Failed to delete invoice";
+      toast.error(message);
+    }
+  };
+
   /**
-   * NOTE: Invoice Editing is intentionally restricted to maintain plan limit integrity.
-   *
-   * REASON: Invoice creation counts against plan limits (Free: 2/month, Pro: 10/month).
-   * Full editing would allow users to create unlimited invoices by repeatedly editing
-   * the same one, bypassing plan restrictions.
-   *
-   * ALLOWED MODIFICATIONS:
-   * - Status changes (draft → sent → paid → overdue → cancelled)
-   * - Bank details (account type, name, sort code, account number)
-   * - Internal notes & terms
-   *
-   * RESTRICTED (to maintain invoice integrity):
-   * - Invoice items (description, price, quantity)
-   * - Client information
-   * - Invoice date/number
-   * - Amounts/totals (subtotal, discount, shipping, total)
-   * - Company details
-   *
-   * RATIONALE:
-   * - Bank details: Often need updates for payment instructions without changing invoice
-   * - Notes: Need to add payment terms, late fees, or special instructions
-   * - Status: Required for invoice lifecycle management
-   * - Everything else: Changing would essentially create a "new" invoice, bypassing limits
-   *
-   * If client needs to change invoice content, they should:
-   * 1. Delete the incorrect invoice (frees up the slot)
-   * 2. Create a new corrected invoice
+   * Editing rules by plan:
+   * - Free plan users can update status, bank details, and notes from the edit modal / success view.
+   * - Professional & Enterprise plans unlock full editing (items, totals, dates, currency, etc.) directly inside InvoiceSuccessView.
+   * - Any plan can delete an invoice entirely and recreate it if that is easier.
    */
 
   // Safe date formatter that tolerates null/invalid inputs
@@ -993,9 +1065,9 @@ export default function InvoiceTable({
                               className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
                             >
                               <Edit className="h-4 w-4 mr-2" />
-                              {userPlan === "enterprise"
-                                ? "Edit Invoice"
-                                : "Modify Status/Notes"}
+                              {userPlan === "free_user"
+                                ? "Modify Status/Notes"
+                                : "Edit Invoice"}
                             </Button>
                           </Link>
 
@@ -1015,16 +1087,12 @@ export default function InvoiceTable({
                             <Button
                               variant="secondary"
                               className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:bg-slate-700 dark:hover:bg-red-900/20"
-                              onClick={() => {
-                                // TODO: Implement delete with confirmation
-                                if (
-                                  confirm(
-                                    `Are you sure you want to delete invoice ${invoice.invoice_number}? This action cannot be undone.`
-                                  )
-                                ) {
-                                  alert("Delete functionality coming soon");
-                                }
-                              }}
+                              onClick={() =>
+                                handleDeleteInvoice(
+                                  invoice.id,
+                                  invoice.invoice_number
+                                )
+                              }
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete Invoice
@@ -1036,14 +1104,15 @@ export default function InvoiceTable({
                   </div>
                 </div>
               ))}
-              {invoiceRows.length > visibleCount && (
+              {(invoiceRows.length > visibleCount || hasMore) && (
                 <div className="flex justify-center pt-4">
                   <Button
                     variant="secondary"
-                    onClick={() => setVisibleCount((prev) => prev + 3)}
+                    onClick={handleLoadMore}
                     className="px-6"
+                    disabled={isLoadingMore}
                   >
-                    Load More
+                    {isLoadingMore ? "Loading..." : "Load More"}
                   </Button>
                 </div>
               )}

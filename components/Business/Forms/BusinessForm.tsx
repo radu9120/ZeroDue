@@ -155,7 +155,14 @@ export default function BusinessForm({
   };
 
   const profileType = form.watch("profile_type") ?? mode;
-  const isFreelancer = profileType !== "company";
+  const isPersonalProfile = profileType !== "company";
+  useEffect(() => {
+    if (isPersonalProfile) {
+      form.setValue("tax_label", "Tax number");
+    } else if (!form.getValues("tax_label")) {
+      form.setValue("tax_label", "VAT");
+    }
+  }, [form, isPersonalProfile]);
   const fieldInputClass =
     "text-slate-900 dark:text-slate-100 dark:bg-slate-900/40 dark:border-slate-700";
 
@@ -175,12 +182,14 @@ export default function BusinessForm({
             render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
-                  {isFreelancer ? "Your name or brand *" : "Company name *"}
+                  {isPersonalProfile
+                    ? "Your name or brand *"
+                    : "Company name *"}
                 </FormLabel>
                 <FormControl>
                   <Input
                     placeholder={
-                      isFreelancer
+                      isPersonalProfile
                         ? "e.g. Jordan Smith Design"
                         : "e.g. Acme Ltd"
                     }
@@ -244,12 +253,18 @@ export default function BusinessForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
-                  {form.watch("tax_label") || "VAT"} Number
+                  {isPersonalProfile
+                    ? "Tax number (NINO or UTR)"
+                    : `${form.watch("tax_label") || "VAT"} Number`}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={`Enter ${form.watch("tax_label") || "VAT"} number`}
-                    type="number"
+                    placeholder={
+                      isPersonalProfile
+                        ? "e.g. QQ 12 34 56 C or UTR 1234567890"
+                        : `Enter ${form.watch("tax_label") || "VAT"} number`
+                    }
+                    type="text"
                     {...field}
                     value={field.value ?? ""}
                     disabled={isSubmitting}
@@ -260,41 +275,42 @@ export default function BusinessForm({
               </FormItem>
             )}
           />
-
-          <FormField
-            control={form.control}
-            name="tax_label"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
-                  Tax ID Type
-                </FormLabel>
-                <Select
-                  value={field.value || "VAT"}
-                  onValueChange={field.onChange}
-                  disabled={isSubmitting}
-                >
-                  <FormControl>
-                    <SelectTrigger className="w-full border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                      <SelectValue placeholder="Select tax type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent className="max-h-64">
-                    {taxTypeOptions.map((option) => (
-                      <SelectItem key={option.code} value={option.code}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormDescription className="text-secondary-text dark:text-slate-300">
-                  Choose the tax identification type for your region (e.g., VAT,
-                  GST, EIN).
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {!isPersonalProfile && (
+            <FormField
+              control={form.control}
+              name="tax_label"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
+                    Tax ID Type
+                  </FormLabel>
+                  <Select
+                    value={field.value || "VAT"}
+                    onValueChange={field.onChange}
+                    disabled={isSubmitting}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                        <SelectValue placeholder="Select tax type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-64">
+                      {taxTypeOptions.map((option) => (
+                        <SelectItem key={option.code} value={option.code}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription className="text-secondary-text dark:text-slate-300">
+                    Choose the tax identification type for your region (e.g.,
+                    VAT, GST, EIN).
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           <FormField
             control={form.control}
@@ -344,7 +360,7 @@ export default function BusinessForm({
               <FormControl>
                 <Textarea
                   placeholder={
-                    isFreelancer
+                    isPersonalProfile
                       ? "Enter the address you want shown on invoices"
                       : "Enter company registered address"
                   }
@@ -370,7 +386,7 @@ export default function BusinessForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="block text-sm font-medium text-secondary-text dark:text-slate-400">
-                  {isFreelancer ? "Logo or avatar" : "Company logo"}
+                  {isPersonalProfile ? "Logo or avatar" : "Company logo"}
                 </FormLabel>
                 <FormControl>
                   <Input
@@ -382,7 +398,7 @@ export default function BusinessForm({
                   />
                 </FormControl>
                 <FormDescription className="text-xs text-secondary-text dark:text-slate-400">
-                  {isFreelancer
+                  {isPersonalProfile
                     ? "Optional: add a personal logo, portrait, or leave blank."
                     : "Upload a logo for your company (PNG, JPG, JPEG - Max 5MB)"}
                 </FormDescription>

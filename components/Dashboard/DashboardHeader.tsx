@@ -1,7 +1,7 @@
 "use client";
 import { AlertTriangle, PlusIcon, Crown } from "lucide-react";
 import CustomModal from "../ModalsForms/CustomModal"; // Ensure this path is correct
-import { CreateBusiness } from "../Business/Forms/CreateBusiness";
+import ProfileSetupFlow from "../Business/ProfileSetupFlow";
 
 export default function DashboardHeader({
   userPlan,
@@ -87,13 +87,15 @@ export default function DashboardHeader({
           {/* Show "New Company" button if conditions are met and upgrade elements are not shown (upgrade takes precedence) */}
           {showNewCompanyButtonInHeader && !showUpgradeElements && (
             <CustomModal
-              heading={"Create new business profile"}
-              description={"Add another business profile to your account."}
+              heading={"Create or switch profile type"}
+              description={
+                "Pick company, freelancer, or exploring before entering details."
+              }
               openBtnLabel={"New Profile"}
               btnVariant={"primary"}
               btnIcon={PlusIcon}
             >
-              <CreateBusiness />
+              <ProfileSetupFlow variant="modal" />
             </CustomModal>
           )}
         </div>

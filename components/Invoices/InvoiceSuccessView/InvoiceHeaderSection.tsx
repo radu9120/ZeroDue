@@ -5,7 +5,7 @@ interface InvoiceHeaderSectionProps {
   company: BusinessType;
   invoice: InvoiceListItem;
   isEditing: boolean;
-  isEnterprise: boolean;
+  canEditFullInvoice: boolean;
   issueDate: string;
   onIssueDateChange: (value: string) => void;
   dueDate: string;
@@ -31,7 +31,7 @@ export function InvoiceHeaderSection({
   company,
   invoice,
   isEditing,
-  isEnterprise,
+  canEditFullInvoice,
   issueDate,
   onIssueDateChange,
   dueDate,
@@ -228,7 +228,7 @@ export function InvoiceHeaderSection({
             >
               Date
             </span>
-            {isEditing && isEnterprise ? (
+            {isEditing && canEditFullInvoice ? (
               <input
                 type="date"
                 value={(issueDate || "").slice(0, 10)}
@@ -252,7 +252,7 @@ export function InvoiceHeaderSection({
             >
               Due Date
             </span>
-            {isEditing && isEnterprise ? (
+            {isEditing && canEditFullInvoice ? (
               <input
                 type="date"
                 value={(dueDate || "").slice(0, 10)}
@@ -269,7 +269,7 @@ export function InvoiceHeaderSection({
               </span>
             )}
           </div>
-          {isEditing && isEnterprise && (
+          {isEditing && canEditFullInvoice && (
             <>
               <div className="h-px bg-gray-200"></div>
               <div

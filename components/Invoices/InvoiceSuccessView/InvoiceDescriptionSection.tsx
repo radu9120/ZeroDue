@@ -1,6 +1,6 @@
 interface InvoiceDescriptionSectionProps {
   isEditing: boolean;
-  isEnterprise: boolean;
+  canEditFullInvoice: boolean;
   description: string;
   onChange: (value: string) => void;
   shouldRender: boolean;
@@ -9,7 +9,7 @@ interface InvoiceDescriptionSectionProps {
 
 export function InvoiceDescriptionSection({
   isEditing,
-  isEnterprise,
+  canEditFullInvoice,
   description,
   onChange,
   shouldRender,
@@ -24,7 +24,7 @@ export function InvoiceDescriptionSection({
       <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
         Description
       </h4>
-      {isEditing && isEnterprise ? (
+      {isEditing && canEditFullInvoice ? (
         <textarea
           value={description}
           onChange={(event) => onChange(event.target.value)}

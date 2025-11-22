@@ -58,7 +58,7 @@ interface BusinessType {
   email: string;
   address: string;
   phone?: string;
-  vat?: number;
+  vat?: string | null;
   tax_label?: string;
   logo?: url | "";
   currency?: string | null;
@@ -159,6 +159,7 @@ interface UserActivityLog {
     | "Created invoice"
     | "Updated invoice content"
     | "Updated invoice status"
+    | "Deleted invoice"
     | "Sent invoice"
     | "Invoice email delivered"
     | "Invoice email opened"

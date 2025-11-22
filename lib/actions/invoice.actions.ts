@@ -8,6 +8,22 @@ import { redirect } from "next/navigation";
 import { type AppPlan } from "@/lib/utils";
 import { getCurrentPlan } from "@/lib/plan";
 
+const DEFAULT_INVOICE_PREFIX = "INV";
+const DEFAULT_PADDING = 4;
+
+const formatInvoiceNumber = (sequence: number) => {
+  const padded = String(Math.max(sequence, 1)).padStart(DEFAULT_PADDING, "0");
+  return `${DEFAULT_INVOICE_PREFIX}${padded}`;
+};
+
+const extractInvoiceSequence = (invoiceNumber?: string | null) => {
+  if (!invoiceNumber) return 0;
+  const match = invoiceNumber.match(/(\d+)$/);
+  if (!match) return 0;
+  const parsed = parseInt(match[1], 10);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
 export const createInvoice = async (formData: CreateInvoice) => {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
@@ -315,6 +331,31 @@ export const getCurrentMonthInvoiceCountForBusiness = async (
 
   if (error) return 0;
   return count || 0;
+};
+
+export const getNextInvoiceNumber = async (business_id: number) => {
+  if (!business_id) {
+    throw new Error("Business id is required to generate invoice numbers");
+  }
+
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("Invoices")
+    .select("invoice_number")
+    .eq("business_id", business_id)
+    .order("created_at", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    console.error("Failed to fetch latest invoice number", error);
+    throw new Error("Unable to determine next invoice number");
+  }
+
+  const latest = data && data.length ? data[0].invoice_number : undefined;
+  const nextSequence = extractInvoiceSequence(latest) + 1;
+
+  return formatInvoiceNumber(nextSequence || 1);
 };
 
 // Update only bank details, notes, and status (no plan limit impact)
