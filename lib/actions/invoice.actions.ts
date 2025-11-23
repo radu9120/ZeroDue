@@ -34,7 +34,7 @@ export const createInvoice = async (formData: CreateInvoice) => {
   try {
     const plan: AppPlan = await getCurrentPlan();
     if (plan === "free_user") {
-      // Free plan: 2 invoices per month
+      // Free plan: 3 invoices per month
       const now = new Date();
       const firstDayISO = new Date(
         now.getFullYear(),
@@ -52,9 +52,9 @@ export const createInvoice = async (formData: CreateInvoice) => {
         .eq("author", author)
         .gte("created_at", firstDayISO)
         .lt("created_at", nextMonthISO);
-      if ((count || 0) >= 2) {
+      if ((count || 0) >= 3) {
         throw new Error(
-          "Free plan limit: 2 invoices per month. Upgrade to create more."
+          "Free plan limit: 3 invoices per month. Upgrade to create more."
         );
       }
     } else if (plan === "professional") {

@@ -94,6 +94,7 @@ export default function DashboardHeader({
               openBtnLabel={"New Profile"}
               btnVariant={"primary"}
               btnIcon={PlusIcon}
+              maxWidth="max-w-5xl"
             >
               <ProfileSetupFlow variant="modal" />
             </CustomModal>

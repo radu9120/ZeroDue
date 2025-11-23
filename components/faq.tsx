@@ -8,7 +8,7 @@ const faqs = [
   {
     question: "How does the free plan work?",
     answer:
-      "Our free plan includes 2 invoices per month, basic templates, and essential features. Perfect for testing the platform or very small businesses. You can upgrade anytime as your needs grow.",
+      "Our free plan includes 3 invoices per month, basic templates, and essential features. Perfect for testing the platform or very small businesses. You can upgrade anytime as your needs grow.",
   },
   {
     question: "Can I cancel my subscription anytime?",
@@ -87,7 +87,11 @@ function FAQItem({ faq, index }: { faq: FAQ; index: number }) {
           transition={{ duration: 0.2 }}
           className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-slate-700 flex items-center justify-center text-blue-600 dark:text-blue-400"
         >
-          {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+          {isOpen ? (
+            <Minus className="h-4 w-4" />
+          ) : (
+            <Plus className="h-4 w-4" />
+          )}
         </motion.div>
       </button>
 

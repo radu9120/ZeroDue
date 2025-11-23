@@ -37,6 +37,8 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn, normalizeCurrencyCode } from "@/lib/utils";
+import CustomModal from "../ModalsForms/CustomModal";
+import { ClientForm } from "../Clients/ClientForm";
 
 // Custom Calendar Component
 const CalendarPicker = ({
@@ -623,18 +625,21 @@ const InvoiceForm = ({
                     <p className="text-amber-700 dark:text-amber-400 text-sm mb-4">
                       Create your first client to get started with invoicing
                     </p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      asChild
-                      className="bg-amber-600 hover:bg-amber-700 text-white"
+                    <CustomModal
+                      heading="Create New Client"
+                      description="Add a new client to your business"
+                      customTrigger={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="bg-amber-600 hover:bg-amber-700 text-white"
+                        >
+                          Create New Client
+                        </Button>
+                      }
                     >
-                      <Link
-                        href={`/dashboard/clients?business_id=${company_data.id}`}
-                      >
-                        Create New Client
-                      </Link>
-                    </Button>
+                      <ClientForm business_id={company_data.id} />
+                    </CustomModal>
                   </div>
                 </div>
               )}

@@ -24,6 +24,7 @@ export default function CustomModal({
   className,
   disabled,
   customTrigger, // Added from previous context, assuming it might be needed
+  maxWidth = "max-w-3xl",
 }: {
   heading: string;
   description: string;
@@ -34,6 +35,7 @@ export default function CustomModal({
   className?: string;
   disabled?: boolean;
   customTrigger?: ReactElement; // For cases where an external element opens the modal
+  maxWidth?: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false); // Renamed for clarity
 
@@ -87,7 +89,9 @@ export default function CustomModal({
       {isModalOpen && (
         <ModalPortal>
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
+            <div
+              className={`bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-h-[90vh] flex flex-col ${maxWidth}`}
+            >
               <div className="flex items-start sm:items-center justify-between p-4 md:p-6 border-b border-gray-200 dark:border-slate-700">
                 <div className="flex-1 min-w-0 pr-2">
                   <h2 className="text-xl md:text-2xl font-bold text-header-text dark:text-slate-100">

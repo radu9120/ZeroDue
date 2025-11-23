@@ -64,7 +64,7 @@ export default function BusinessAvailabilty({
             {userPlan === "free_user"
               ? hasHitLimit
                 ? "You've hit the Free plan limits. Upgrade to unlock more invoices and manage more businesses."
-                : "You're on the Free plan — 1 business profile, 2 invoices per month, unlimited clients."
+                : "You're on the Free plan — 1 business profile, 3 invoices per month, unlimited clients."
               : userPlan === "professional"
                 ? hasHitLimit
                   ? "You've reached the Professional plan limits. Upgrade to Enterprise for unlimited growth."

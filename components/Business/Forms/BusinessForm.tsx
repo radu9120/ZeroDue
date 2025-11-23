@@ -460,7 +460,7 @@ export default function BusinessForm({
                 <li>
                   • 1 {mode === "company" ? "business profile" : "profile"}
                 </li>
-                <li>• Up to 2 invoices per month</li>
+                <li>• Up to 3 invoices per month</li>
                 <li>• Unlimited clients</li>
                 <li>• Essential invoice template</li>
                 <li>• Email support</li>

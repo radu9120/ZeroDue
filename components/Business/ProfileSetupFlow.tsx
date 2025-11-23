@@ -67,7 +67,7 @@ export default function ProfileSetupFlow({
             </p>
           </div>
 
-          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 sm:gap-5 md:grid-cols-3">
             <OnboardingCard
               icon={Building}
               title="Registered business"
@@ -148,35 +148,25 @@ function OnboardingCard({
   actionLabel: string;
   onClick?: () => void;
 }) {
-  const content = (
-    <div className="h-full rounded-3xl border border-blue-100/70 bg-white/95 shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-xl dark:border-slate-700/70 dark:bg-slate-900/90">
-      <div className="flex h-full flex-col p-6 sm:p-7 text-left">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-900/40">
-            <Icon className="h-6 w-6 text-blue-600 dark:text-blue-300" />
-          </div>
-          <h3 className="text-xl font-semibold text-header-text dark:text-slate-100">
-            {title}
-          </h3>
-        </div>
-        <p className="text-secondary-text dark:text-slate-400 flex-1 mb-6 leading-relaxed">
-          {description}
-        </p>
-        <div className="mt-auto flex items-center justify-between text-sm font-semibold text-blue-600 dark:text-blue-300">
-          <span>{actionLabel}</span>
-          <ArrowRight className="h-4 w-4" />
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <button
       type="button"
       onClick={onClick}
-      className="text-left block w-full rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900"
+      className="group relative flex h-full w-full flex-col items-start rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition-all hover:border-blue-500 hover:shadow-md dark:border-slate-800 dark:bg-slate-950 dark:hover:border-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
     >
-      {content}
+      <div className="mb-4 rounded-xl bg-blue-50 p-3 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
+        <Icon className="h-6 w-6" />
+      </div>
+      <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        {title}
+      </h3>
+      <p className="mb-6 flex-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+        {description}
+      </p>
+      <div className="mt-auto flex items-center text-sm font-medium text-blue-600 dark:text-blue-400">
+        {actionLabel}
+        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+      </div>
     </button>
   );
 }

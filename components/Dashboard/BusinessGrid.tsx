@@ -67,3 +67,4 @@ export default function BusinessGrid({
     </div>
   );
 }
+//update fetch to use server insted of client

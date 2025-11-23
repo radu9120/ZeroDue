@@ -11,7 +11,7 @@ interface PlanLimitationsProps {
 }
 
 // Define limits for the free plan
-const FREE_PLAN_INVOICE_LIMIT = 2;
+const FREE_PLAN_INVOICE_LIMIT = 3;
 const FREE_PLAN_COMPANY_LIMIT = 1;
 
 export default function InvoiceAvailability({
@@ -44,7 +44,7 @@ export default function InvoiceAvailability({
             Free Plan Limitations
           </h3>
           <p className="text-sm text-yellow-700 mb-4">
-            You're on the Free plan — 1 business profile, 2 invoices per month,
+            You're on the Free plan — 1 business profile, 3 invoices per month,
             unlimited clients. Upgrade for more capacity.
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2 mb-4 text-sm">
