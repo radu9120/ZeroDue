@@ -117,7 +117,7 @@ export default async function Page({
           userPlan={userPlan}
           stats={businessStats}
           createDisabled={
-            (userPlan === "free_user" && totalInvoicesAll >= 1) ||
+            (userPlan === "free_user" && monthCount >= 3) ||
             (userPlan === "professional" && monthCount >= 15)
           }
         />

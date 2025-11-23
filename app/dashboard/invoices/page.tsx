@@ -142,7 +142,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
             variant="primary"
             href={`/dashboard/invoices/new?business_id=${businessId}`}
             disabled={
-              (isFreePlan && totalInvoicesAll >= 1) || reachedProMonthlyLimit
+              (isFreePlan && (monthCount || 0) >= 3) || reachedProMonthlyLimit
             }
           />
         </div>
