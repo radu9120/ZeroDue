@@ -819,6 +819,17 @@ export default function InvoiceSuccessView({
 
       <div className="relative z-10 max-w-6xl mx-auto lg:p-4  space-y-6 md:space-y-8">
         {!isPublicView && (
+          <div className="mb-2">
+            <Link
+              href={`/dashboard/invoices?business_id=${company.id}`}
+              className="inline-flex items-center text-primary hover:text-primary-dark transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" /> Back to Invoices
+            </Link>
+          </div>
+        )}
+
+        {!isPublicView && (
           <SuccessBanner
             invoiceNumber={invoice.invoice_number}
             visible={showSuccess}

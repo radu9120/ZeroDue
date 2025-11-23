@@ -79,30 +79,60 @@ export default function Navbar() {
       <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <motion.div
-              initial={{ rotate: -10, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden"
-            >
-              <Image
-                src="/logo.png"
-                alt="InvoiceFlow logo"
-                height={24}
-                width={24}
-                className="object-contain"
-              />
-            </motion.div>
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-xl font-bold text-header-text dark:text-slate-100"
-            >
-              InvoiceFlow
-            </motion.span>
-          </Link>
+          <div className="flex items-center space-x-2">
+            <SignedOut>
+              <Link href="/" className="flex items-center space-x-2">
+                <motion.div
+                  initial={{ rotate: -10, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden"
+                >
+                  <Image
+                    src="/logo.png"
+                    alt="InvoiceFlow logo"
+                    height={24}
+                    width={24}
+                    className="object-contain"
+                  />
+                </motion.div>
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="text-xl font-bold text-header-text dark:text-slate-100"
+                >
+                  InvoiceFlow
+                </motion.span>
+              </Link>
+            </SignedOut>
+            <SignedIn>
+              <Link href="/dashboard" className="flex items-center space-x-2">
+                <motion.div
+                  initial={{ rotate: -10, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden"
+                >
+                  <Image
+                    src="/logo.png"
+                    alt="InvoiceFlow logo"
+                    height={24}
+                    width={24}
+                    className="object-contain"
+                  />
+                </motion.div>
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="text-xl font-bold text-header-text dark:text-slate-100"
+                >
+                  InvoiceFlow
+                </motion.span>
+              </Link>
+            </SignedIn>
+          </div>
 
           {/* Desktop Navigation */}
           <motion.div

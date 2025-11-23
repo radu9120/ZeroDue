@@ -16,7 +16,7 @@ import InvoiceItems from "./InvoiceItems";
 import { Textarea } from "../ui/textarea";
 import { createInvoice } from "@/lib/actions/invoice.actions";
 import { formSchema } from "@/schemas/invoiceSchema";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { BusinessType, ClientType } from "@/types";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
@@ -203,6 +203,7 @@ const InvoiceForm = ({
   client_data?: ClientType;
   clients?: ClientType[];
 }) => {
+  const router = useRouter();
   const defaultCurrency = useMemo(
     () => normalizeCurrencyCode(company_data.currency),
     [company_data.currency]
@@ -933,7 +934,15 @@ const InvoiceForm = ({
 
           {/* Submit Button */}
           <div className="border-t border-gray-100 dark:border-slate-700 pt-8">
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-4">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => router.back()}
+                className="text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-200"
+              >
+                Cancel
+              </Button>
               <CustomButton
                 type="submit"
                 label="Create Invoice"

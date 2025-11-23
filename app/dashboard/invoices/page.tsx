@@ -24,6 +24,7 @@ import {
   Eye,
   Download,
   MoreVertical,
+  ArrowLeft,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -121,6 +122,15 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
       <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/30 dark:bg-blue-900/20 mix-blend-multiply blur-3xl"></div>
 
       <div className="relative z-10 max-w-7xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
+        <div className="mb-2">
+          <Link
+            href={`/dashboard/business?business_id=${businessId}`}
+            className="inline-flex items-center text-primary hover:text-primary-dark transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" /> Back to Business Dashboard
+          </Link>
+        </div>
+
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-3 md:space-x-4">
