@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import { getDashboardStats } from "@/lib/actions/business.actions";
 import { DashboardBusinessStats } from "@/types";
-import Bounded from "@/components/ui/bounded";
+import Bounded from "@/components/ui/BoundedSection";
 import DashboardHeader from "@/components/Dashboard/DashboardHeader";
 import BusinessGrid from "@/components/Dashboard/BusinessGrid";
 import BusinessAvailabilty from "@/components/Dashboard/BusinessAvailability";

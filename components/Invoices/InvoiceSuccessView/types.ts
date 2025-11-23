@@ -4,6 +4,9 @@ export interface InvoiceItemRow {
   unit_price?: number;
   tax?: number;
   amount?: number;
+  start_time?: string;
+  end_time?: string;
+  date?: string;
   [key: string]: unknown;
 }
 

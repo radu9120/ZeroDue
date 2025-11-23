@@ -13,10 +13,20 @@ const itemSchema = z.object({
   description: z.string().min(1, { message: "Item description is required" }),
   unit_price: z.coerce
     .number()
-    .min(1, { message: "Price per unit is required" }),
-  quantity: z.coerce.number().min(1, { message: "Quantity is required" }),
-  tax: z.coerce.number().optional(),
-  amount: z.coerce.number().min(1, { message: "Ammount is required" }),
+    .min(0, { message: "Price must be 0 or greater" }),
+  quantity: z.coerce
+    .number()
+    .min(0, { message: "Quantity must be at least 0" }), // Changed min to 0 to allow 0 hours/days if needed
+  tax: z.coerce
+    .number()
+    .min(0)
+    .max(100, { message: "Tax must be between 0 and 100%" })
+    .optional(),
+  amount: z.coerce.number().min(0, { message: "Amount is required" }),
+  // Optional fields for Timesheet template
+  date: z.string().optional(),
+  start_time: z.string().optional(),
+  end_time: z.string().optional(),
 });
 
 export const billToSchema = z.object({
@@ -39,7 +49,7 @@ export const companySchema = z.object({
     .min(3, { message: "Name must be between 3 and 100 characters" })
     .max(100, { message: "Name must be between 3 and 100 characters" }),
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
-  address: z.string().min(1, { message: "Quantity is required" }),
+  address: z.string().min(1, { message: "Address is required" }),
   phone: phoneType,
   vat: z
     .string()
@@ -57,7 +67,7 @@ export const companySchema = z.object({
   profile_type: z.enum(["company", "freelancer", "exploring"], {
     errorMap: () => ({ message: "Select a valid profile type" }),
   }),
-  logo: z.string().optional() || undefined,
+  logo: z.string().optional(),
 });
 
 export type CreateBusiness = z.infer<typeof companySchema>;
@@ -89,9 +99,11 @@ export const formSchema = z.object({
   }),
   notes: z.string().optional(),
   bank_details: z.string().optional(),
-  currency: z.string().min(1, { message: "Logo is required." }),
-  client_id: z.number(),
-  business_id: z.number(),
+  currency: z.string().min(1, { message: "Currency is required." }),
+  client_id: z.coerce.number().min(1, { message: "Client is required." }),
+  business_id: z.coerce.number().min(1, { message: "Business is required." }),
+  invoice_template: z.string().optional(),
+  meta_data: z.record(z.any()).optional(),
 });
 
 export type CreateInvoice = z.infer<typeof formSchema>;

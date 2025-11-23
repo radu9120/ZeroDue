@@ -7,6 +7,12 @@ import { createActivity } from "./userActivity.actions";
 import { redirect } from "next/navigation";
 import { type AppPlan } from "@/lib/utils";
 import { getCurrentPlan } from "@/lib/plan";
+import { revalidatePath } from "next/cache";
+import { Resend } from "resend";
+import { getBusinessById } from "./business.actions";
+import { createSupabaseAdminClient } from "@/lib/supabase";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const DEFAULT_INVOICE_PREFIX = "INV";
 const DEFAULT_PADDING = 4;
@@ -129,8 +135,6 @@ export const getInvoicesByAuthor = async () => {
   return data;
 };
 
-// ...existing code...
-
 export const getInvoicesList = async ({
   business_id,
   limit = 5,
@@ -163,6 +167,7 @@ export const getInvoicesList = async ({
     description,
     currency,
     public_token,
+    invoice_template,
     email_id,
     email_sent_at,
     email_delivered,
@@ -176,7 +181,8 @@ export const getInvoicesList = async ({
     email_bounced,
     email_bounced_at,
     email_complained,
-    email_complained_at
+    email_complained_at,
+    meta_data
   `
     )
     .eq("business_id", business_id);
@@ -238,6 +244,7 @@ export const getInvoices = async (
       description,
       currency,
       public_token,
+      invoice_template,
       email_id,
       email_sent_at,
       email_delivered,
@@ -480,4 +487,176 @@ export const getInvoiceById = async (invoiceId: number) => {
   }
 
   return data;
+};
+
+export const deleteInvoiceAction = async (invoiceId: number) => {
+  const { userId: author } = await auth();
+  if (!author) redirect("/sign-in");
+
+  const supabase = createSupabaseClient();
+
+  // Verify ownership
+  const { data: invoice, error: fetchError } = await supabase
+    .from("Invoices")
+    .select("id, invoice_number, business_id")
+    .eq("id", invoiceId)
+    .eq("author", author)
+    .single();
+
+  if (fetchError || !invoice) {
+    throw new Error("Invoice not found or access denied");
+  }
+
+  const { error: deleteError } = await supabase
+    .from("Invoices")
+    .delete()
+    .eq("id", invoiceId);
+
+  if (deleteError) {
+    throw new Error(deleteError.message || "Failed to delete invoice");
+  }
+
+  // Log activity
+  await createActivity({
+    user_id: author,
+    business_id: invoice.business_id,
+    action: "Deleted invoice",
+    target_type: "invoice",
+    target_name: invoice.invoice_number,
+  });
+
+  revalidatePath("/dashboard");
+  return { success: true };
+};
+
+export const sendInvoiceEmailAction = async (
+  invoiceId: number,
+  businessId: number
+) => {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
+  const supabaseAdmin = createSupabaseAdminClient();
+
+  // Load invoice by id (admin client) and verify ownership
+  const { data: invoice, error: invErr } = await supabaseAdmin
+    .from("Invoices")
+    .select(
+      "id, author, invoice_number, bill_to, description, issue_date, due_date, total, currency, notes, bank_details, public_token, email_id"
+    )
+    .eq("id", invoiceId)
+    .single();
+
+  if (invErr || !invoice) {
+    throw new Error("Invoice not found");
+  }
+  if (invoice.author !== userId) {
+    throw new Error("Forbidden");
+  }
+
+  // Generate public token if it doesn't exist
+  let publicToken = invoice.public_token;
+  if (!publicToken) {
+    publicToken = crypto.randomUUID().replace(/-/g, "");
+    await supabaseAdmin
+      .from("Invoices")
+      .update({ public_token: publicToken })
+      .eq("id", invoice.id);
+  }
+
+  // Fetch business details
+  const business = await getBusinessById(businessId);
+  if (!business) {
+    throw new Error("Business not found");
+  }
+
+  // Parse client details
+  let clientEmail = "";
+  let clientName = "";
+
+  if (invoice.bill_to) {
+    if (typeof invoice.bill_to === "string") {
+      try {
+        const parsed = JSON.parse(invoice.bill_to);
+        clientEmail = parsed.email || "";
+        clientName = parsed.name || "";
+      } catch {
+        // Handle legacy format if needed
+      }
+    } else if (typeof invoice.bill_to === "object") {
+      clientEmail = (invoice.bill_to as any).email || "";
+      clientName = (invoice.bill_to as any).name || "";
+    }
+  }
+
+  if (!clientEmail) {
+    throw new Error("Client email not found");
+  }
+
+  // Calculate total
+  const total = Number(invoice.total || 0).toFixed(2);
+  const currency = (invoice as any).currency || "GBP";
+  const currencySymbol =
+    currency === "USD" ? "$" : currency === "EUR" ? "€" : "£";
+
+  // Create public invoice URL
+  const invoiceUrl = `${
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+  }/invoice/${publicToken}`;
+
+  // Send email via Resend
+  const { data: emailData, error: emailError } = await resend.emails.send({
+    from: "InvoiceFlow <noreply@invoiceflow.net>",
+    to: [clientEmail],
+    subject: `Invoice #${invoice.invoice_number} from ${business.name}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>New Invoice from ${business.name}</h2>
+        <p>Hi ${clientName},</p>
+        <p>Please find attached invoice #${invoice.invoice_number} for ${currencySymbol}${total}.</p>
+        <p><strong>Due Date:</strong> ${new Date(
+          invoice.due_date
+        ).toLocaleDateString()}</p>
+        <div style="margin: 30px 0;">
+          <a href="${invoiceUrl}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">View & Pay Invoice</a>
+        </div>
+        <p>Or copy this link: <a href="${invoiceUrl}">${invoiceUrl}</a></p>
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;" />
+        <p style="color: #666; font-size: 12px;">Powered by InvoiceFlow</p>
+      </div>
+    `,
+    tags: [
+      { name: "category", value: "invoice" },
+      { name: "invoice_id", value: invoice.id.toString() },
+    ],
+  });
+
+  if (emailError) {
+    console.error("Resend Error:", emailError);
+    throw new Error("Failed to send email via provider");
+  }
+
+  // Update invoice status
+  const { data: updatedInvoice, error: updateError } = await supabaseAdmin
+    .from("Invoices")
+    .update({
+      status: "sent",
+      email_id: emailData?.id || null,
+      email_sent_at: new Date().toISOString(),
+    })
+    .eq("id", invoiceId)
+    .select()
+    .single();
+
+  if (updateError) {
+    throw new Error("Email sent but failed to update invoice status");
+  }
+
+  revalidatePath("/dashboard");
+  return {
+    success: true,
+    message: "Invoice sent successfully!",
+    updatedStatus: "sent",
+    emailId: emailData?.id,
+  };
 };

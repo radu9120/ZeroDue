@@ -1,4 +1,4 @@
-import Bounded from "@/components/ui/bounded";
+import Bounded from "@/components/ui/BoundedSection";
 import { SignUp } from "@clerk/nextjs";
 
 export default function Page() {

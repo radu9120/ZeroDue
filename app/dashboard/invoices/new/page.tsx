@@ -1,5 +1,5 @@
 import InvoiceForm from "@/components/Invoices/InvoiceForm";
-import Bounded from "@/components/ui/bounded";
+import Bounded from "@/components/ui/BoundedSection";
 import { getBusinessById } from "@/lib/actions/business.actions";
 import { getClient, getClients } from "@/lib/actions/client.actions";
 import { ClientType, NewInvoicePageProps } from "@/types";

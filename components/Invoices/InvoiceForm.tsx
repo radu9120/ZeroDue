@@ -28,6 +28,9 @@ import {
   Calendar,
   FileText,
   CalendarIcon,
+  Truck,
+  Hammer,
+  Code,
 } from "lucide-react";
 import Image from "next/image";
 import {
@@ -39,160 +42,14 @@ import { format } from "date-fns";
 import { cn, normalizeCurrencyCode } from "@/lib/utils";
 import CustomModal from "../ModalsForms/CustomModal";
 import { ClientForm } from "../Clients/ClientForm";
+import {
+  InvoiceTemplateSelector,
+  InvoiceTemplateType,
+} from "./InvoiceTemplateSelector";
+import { CalendarPicker } from "../ui/calendar-picker";
 
 // Custom Calendar Component
-const CalendarPicker = ({
-  date,
-  onSelect,
-}: {
-  date?: Date;
-  onSelect: (date: Date) => void;
-}) => {
-  const [viewDate, setViewDate] = useState(date || new Date());
-
-  const today = new Date();
-  const year = viewDate.getFullYear();
-  const month = viewDate.getMonth();
-
-  // Get first day of month and number of days
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const daysInPrevMonth = new Date(year, month, 0).getDate();
-
-  // Create calendar grid
-  const calendarDays = [];
-
-  // Previous month days
-  for (let i = firstDay - 1; i >= 0; i--) {
-    calendarDays.push({
-      day: daysInPrevMonth - i,
-      isCurrentMonth: false,
-      isToday: false,
-      date: new Date(year, month - 1, daysInPrevMonth - i),
-    });
-  }
-
-  // Current month days
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dayDate = new Date(year, month, day);
-    calendarDays.push({
-      day,
-      isCurrentMonth: true,
-      isToday: dayDate.toDateString() === today.toDateString(),
-      isSelected: date && dayDate.toDateString() === date.toDateString(),
-      date: dayDate,
-    });
-  }
-
-  // Next month days to fill grid
-  const remainingDays = 42 - calendarDays.length;
-  for (let day = 1; day <= remainingDays; day++) {
-    calendarDays.push({
-      day,
-      isCurrentMonth: false,
-      isToday: false,
-      date: new Date(year, month + 1, day),
-    });
-  }
-
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  return (
-    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg p-3 sm:p-4 w-full max-w-sm sm:w-80">
-      <div className="flex items-center justify-between mb-3 sm:mb-4 pb-2 border-b border-gray-100 dark:border-slate-700">
-        <button
-          type="button"
-          onClick={() => setViewDate(new Date(year, month - 1, 1))}
-          className="p-2 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-full transition-colors duration-200 text-blue-600 dark:text-blue-300"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <div className="text-lg font-semibold text-gray-800 dark:text-slate-100">
-          {months[month]} {year}
-        </div>
-        <button
-          type="button"
-          onClick={() => setViewDate(new Date(year, month + 1, 1))}
-          className="p-2 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-full transition-colors duration-200 text-blue-600 dark:text-blue-300"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </div>
-
-      <div className="grid grid-cols-7 gap-1 mb-3">
-        {weekDays.map((day, index) => (
-          <div
-            key={`${day}-${index}`}
-            className="text-center text-sm font-semibold text-gray-500 dark:text-slate-500 py-2"
-          >
-            {day}
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-7 gap-1">
-        {calendarDays.map((calDay, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => onSelect(calDay.date)}
-            className={cn(
-              "h-10 w-10 text-sm rounded-lg font-medium transition-all duration-200 flex items-center justify-center text-gray-700 dark:text-slate-200",
-              "hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-700 dark:hover:text-blue-400",
-              !calDay.isCurrentMonth &&
-                "text-gray-300 dark:text-slate-600 hover:text-gray-400 dark:hover:text-slate-500 hover:bg-gray-50 dark:hover:bg-slate-800",
-              calDay.isToday &&
-                "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold ring-2 ring-blue-200 dark:ring-blue-700",
-              calDay.isSelected &&
-                "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
-            )}
-          >
-            {calDay.day}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
+// Removed local definition
 
 const InvoiceForm = ({
   company_data,
@@ -223,8 +80,12 @@ const InvoiceForm = ({
     [company_data, defaultCurrency]
   );
 
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<InvoiceTemplateType>("standard");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onSubmit",
     defaultValues: {
       invoice_number: "INV0001",
       company_details: defaultCompanyDetails,
@@ -250,8 +111,122 @@ const InvoiceForm = ({
       currency: defaultCurrency,
       client_id: client_data?.id || undefined,
       business_id: company_data.id,
+      invoice_template: "standard",
+      meta_data: {},
     },
   });
+
+  // Update form when template changes
+  useEffect(() => {
+    form.setValue("invoice_template", selectedTemplate);
+
+    // Pre-populate items based on template
+    const currentItems = form.getValues("items");
+
+    // Helper to check if items match a specific template's defaults
+    const isTemplateDefaults = (items: any[], descriptions: string[]) => {
+      if (items.length !== descriptions.length) return false;
+      return items.every(
+        (item, i) => item.description === descriptions[i] && item.amount === 0
+      );
+    };
+
+    const isStandardDefault =
+      currentItems.length === 1 &&
+      currentItems[0].description === "" &&
+      currentItems[0].amount === 0;
+    const isTruckingDefault = isTemplateDefaults(currentItems, [
+      "Freight Charge",
+      "Fuel Surcharge",
+    ]);
+    const isConstructionDefault = isTemplateDefaults(currentItems, [
+      "Labor",
+      "Materials",
+    ]);
+    const isFreelanceDefault = isTemplateDefaults(currentItems, [
+      "Development Services",
+    ]);
+    const isHourlyDefault = isTemplateDefaults(currentItems, [
+      "Consulting Hours",
+    ]);
+
+    // If the current items are just defaults from ANY template (including standard empty),
+    // then we can safely switch them to the new template's defaults.
+    if (
+      isStandardDefault ||
+      isTruckingDefault ||
+      isConstructionDefault ||
+      isFreelanceDefault ||
+      isHourlyDefault
+    ) {
+      if (selectedTemplate === "trucking") {
+        form.setValue("items", [
+          {
+            description: "Freight Charge",
+            unit_price: 0,
+            quantity: 1,
+            tax: 0,
+            amount: 0,
+          },
+          {
+            description: "Fuel Surcharge",
+            unit_price: 0,
+            quantity: 1,
+            tax: 0,
+            amount: 0,
+          },
+        ]);
+      } else if (selectedTemplate === "construction") {
+        form.setValue("items", [
+          {
+            description: "Labor",
+            unit_price: 0,
+            quantity: 1,
+            tax: 0,
+            amount: 0,
+          },
+          {
+            description: "Materials",
+            unit_price: 0,
+            quantity: 1,
+            tax: 0,
+            amount: 0,
+          },
+        ]);
+      } else if (selectedTemplate === "freelance") {
+        form.setValue("items", [
+          {
+            description: "Development Services",
+            unit_price: 0,
+            quantity: 1,
+            tax: 0,
+            amount: 0,
+          },
+        ]);
+      } else if (selectedTemplate === "hourly") {
+        form.setValue("items", [
+          {
+            description: "Consulting Hours",
+            unit_price: 0,
+            quantity: 1,
+            tax: 0,
+            amount: 0,
+          },
+        ]);
+      } else {
+        // Reset to standard empty if switching back to standard
+        form.setValue("items", [
+          {
+            description: "",
+            unit_price: 0,
+            quantity: 0,
+            tax: 0,
+            amount: 0,
+          },
+        ]);
+      }
+    }
+  }, [selectedTemplate, form]);
 
   const hasCustomInvoiceNumber = useRef(false);
 
@@ -344,6 +319,8 @@ const InvoiceForm = ({
       ...values,
       status: "draft" as const,
       currency: normalizeCurrencyCode(values.currency),
+      invoice_template: selectedTemplate,
+      meta_data: values.meta_data || {},
     };
     const invoice = await createInvoice(invoiceData as any);
     if (invoice && invoice.id) {
@@ -359,12 +336,192 @@ const InvoiceForm = ({
 
   return (
     <div className="bg-white dark:bg-slate-800">
+      <div className="p-4 sm:p-6 md:p-8 pb-0">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-4">
+          Select Invoice Type
+        </h2>
+        <InvoiceTemplateSelector
+          selectedTemplate={selectedTemplate}
+          onSelect={setSelectedTemplate}
+        />
+      </div>
+
       {/* @ts-ignore - Form control type mismatch with resolver, functionally correct */}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="p-4 sm:p-6 md:p-8 space-y-8 sm:space-y-12 text-gray-900 dark:text-slate-100"
         >
+          {/* Template Specific Fields */}
+          {selectedTemplate === "trucking" && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl border border-blue-100 dark:border-blue-800 space-y-4">
+              <h3 className="font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                <Truck className="h-5 w-5" />
+                Logistics Details
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="meta_data.origin"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Origin</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="City, State"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="meta_data.destination"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Destination</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="City, State"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="meta_data.bol_number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bill of Lading #</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="BOL-12345"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="meta_data.truck_number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Truck / Trailer #</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Truck 101"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          )}
+
+          {selectedTemplate === "construction" && (
+            <div className="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-xl border border-orange-100 dark:border-orange-800 space-y-4">
+              <h3 className="font-semibold text-orange-900 dark:text-orange-100 flex items-center gap-2">
+                <Hammer className="h-5 w-5" />
+                Project Details
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="meta_data.project_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="e.g. Downtown Office Reno"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="meta_data.site_address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Site Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="123 Construction Way"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          )}
+
+          {selectedTemplate === "freelance" && (
+            <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-xl border border-purple-100 dark:border-purple-800 space-y-4">
+              <h3 className="font-semibold text-purple-900 dark:text-purple-100 flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                Project Details
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="meta_data.project_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="e.g. Website Redesign"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="meta_data.po_number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>PO Number</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Optional"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Company & Client Information */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* From - Company Information */}
@@ -537,7 +694,9 @@ const InvoiceForm = ({
                               }
                               field.onChange(Number(value));
                             }}
-                            defaultValue={String(field.value)}
+                            defaultValue={
+                              field.value ? String(field.value) : undefined
+                            }
                           >
                             <SelectTrigger className="w-full h-12 border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl">
                               <span className="text-gray-600 dark:text-slate-300">
@@ -676,6 +835,7 @@ const InvoiceForm = ({
                       <Input
                         placeholder="INV001"
                         {...field}
+                        value={field.value || ""}
                         onChange={(event) => {
                           hasCustomInvoiceNumber.current = true;
                           field.onChange(event);
@@ -807,7 +967,10 @@ const InvoiceForm = ({
               render={() => (
                 <FormItem>
                   <FormControl>
-                    <InvoiceItems taxLabel={company_data.tax_label || "VAT"} />
+                    <InvoiceItems
+                      taxLabel={company_data.tax_label || "VAT"}
+                      template={selectedTemplate}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

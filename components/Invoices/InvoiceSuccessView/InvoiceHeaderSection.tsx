@@ -41,6 +41,8 @@ export function InvoiceHeaderSection({
   currencies,
   isCompactLayout,
 }: InvoiceHeaderSectionProps) {
+  const metaData = (invoice as any).meta_data || {};
+
   const containerStyle: React.CSSProperties = React.useMemo(
     () => ({
       display: "flex",
@@ -165,7 +167,10 @@ export function InvoiceHeaderSection({
           )}
           {company.vat && (
             <p style={{ marginBottom: "2px" }}>
-              {company.tax_label || "VAT"}: {company.vat}
+              {company.tax_label === "Tax number"
+                ? "TAX"
+                : company.tax_label || "VAT"}
+              : {company.vat}
             </p>
           )}
         </div>
@@ -255,8 +260,10 @@ export function InvoiceHeaderSection({
             {isEditing && canEditFullInvoice ? (
               <input
                 type="date"
-                value={(dueDate || "").slice(0, 10)}
-                onChange={(event) => onDueDateChange(event.target.value)}
+                value={
+                  dueDate ? new Date(dueDate).toISOString().split("T")[0] : ""
+                }
+                onChange={(e) => onDueDateChange(e.target.value)}
                 className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
                 style={{
                   justifySelf: isCompactLayout ? "start" : "end",
@@ -265,37 +272,76 @@ export function InvoiceHeaderSection({
               />
             ) : (
               <span className="text-gray-900" style={valueTextStyle}>
-                {formatDate(invoice.due_date)}
+                {formatDate(dueDate)}
               </span>
             )}
           </div>
+
+          {/* Dynamic Metadata Fields */}
+          {metaData.origin && (
+            <div style={rowStyle}>
+              <span style={labelTextStyle}>Origin:</span>
+              <span style={valueTextStyle}>{metaData.origin}</span>
+            </div>
+          )}
+          {metaData.destination && (
+            <div style={rowStyle}>
+              <span style={labelTextStyle}>Destination:</span>
+              <span style={valueTextStyle}>{metaData.destination}</span>
+            </div>
+          )}
+          {metaData.bol_number && (
+            <div style={rowStyle}>
+              <span style={labelTextStyle}>BOL #:</span>
+              <span style={valueTextStyle}>{metaData.bol_number}</span>
+            </div>
+          )}
+          {metaData.truck_number && (
+            <div style={rowStyle}>
+              <span style={labelTextStyle}>Truck #:</span>
+              <span style={valueTextStyle}>{metaData.truck_number}</span>
+            </div>
+          )}
+          {metaData.project_name && (
+            <div style={rowStyle}>
+              <span style={labelTextStyle}>Project:</span>
+              <span style={valueTextStyle}>{metaData.project_name}</span>
+            </div>
+          )}
+          {metaData.site_address && (
+            <div style={rowStyle}>
+              <span style={labelTextStyle}>Site:</span>
+              <span style={valueTextStyle}>{metaData.site_address}</span>
+            </div>
+          )}
+          {metaData.po_number && (
+            <div style={rowStyle}>
+              <span style={labelTextStyle}>PO #:</span>
+              <span style={valueTextStyle}>{metaData.po_number}</span>
+            </div>
+          )}
+
           {isEditing && canEditFullInvoice && (
-            <>
-              <div className="h-px bg-gray-200"></div>
-              <div
-                className="flex justify-between items-center"
-                style={rowStyle}
+            <div style={rowStyle}>
+              <span
+                className="font-semibold text-gray-700"
+                style={{ fontWeight: 600, color: "#374151" }}
               >
-                <span
-                  className="font-semibold text-gray-700"
-                  style={{ fontWeight: 600, color: "#374151" }}
-                >
-                  Currency
-                </span>
-                <select
-                  value={currency}
-                  onChange={(event) => onCurrencyChange(event.target.value)}
-                  className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
-                  style={{ justifySelf: isCompactLayout ? "start" : "end" }}
-                >
-                  {currencies.map((curr) => (
-                    <option key={curr.code} value={curr.code}>
-                      {curr.code}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </>
+                Currency
+              </span>
+              <select
+                value={currency}
+                onChange={(event) => onCurrencyChange(event.target.value)}
+                className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+                style={{ justifySelf: isCompactLayout ? "start" : "end" }}
+              >
+                {currencies.map((curr) => (
+                  <option key={curr.code} value={curr.code}>
+                    {curr.code}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
         </div>
       </div>

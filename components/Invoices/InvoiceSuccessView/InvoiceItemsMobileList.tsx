@@ -15,6 +15,7 @@ interface InvoiceItemsMobileListProps {
   invoiceCurrency: string;
   getCurrencySymbol: (code?: string) => string;
   taxLabel?: string;
+  template?: string;
 }
 
 const formatCurrency = (
@@ -38,7 +39,13 @@ export function InvoiceItemsMobileList({
   invoiceCurrency,
   getCurrencySymbol,
   taxLabel = "VAT",
+  template,
 }: InvoiceItemsMobileListProps) {
+  const isHourly = template === "hourly" || template === "freelance";
+  const isTimesheet = template === "timesheet";
+  const qtyLabel = isHourly ? "Hours" : "Quantity";
+  const priceLabel = isHourly ? "Rate/Hr" : "Unit Price";
+
   const renderEditableItems = () => {
     if (!itemRows.length) {
       return (
@@ -69,28 +76,68 @@ export function InvoiceItemsMobileList({
         </div>
 
         <div className="space-y-3">
-          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
-            Description
-            <input
-              value={item.description || ""}
-              onChange={(event) =>
-                onItemChange(index, { description: event.target.value })
-              }
-              placeholder="Item description"
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-            />
-          </label>
+          {isTimesheet ? (
+            <>
+              <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Date
+                <input
+                  type="date"
+                  value={item.description || ""}
+                  onChange={(event) =>
+                    onItemChange(index, { description: event.target.value })
+                  }
+                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                />
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Start Time
+                  <input
+                    type="time"
+                    value={item.start_time || ""}
+                    onChange={(event) =>
+                      onItemChange(index, { start_time: event.target.value })
+                    }
+                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  />
+                </label>
+                <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  End Time
+                  <input
+                    type="time"
+                    value={item.end_time || ""}
+                    onChange={(event) =>
+                      onItemChange(index, { end_time: event.target.value })
+                    }
+                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  />
+                </label>
+              </div>
+            </>
+          ) : (
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Description
+              <input
+                value={item.description || ""}
+                onChange={(event) =>
+                  onItemChange(index, { description: event.target.value })
+                }
+                placeholder="Item description"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              />
+            </label>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Quantity
+              {qtyLabel}
               <input
                 type="number"
                 min={0}
-                step={1}
+                step={isTimesheet ? 0.1 : 1}
                 value={Number(item.quantity ?? 0)}
                 onChange={(event) => {
-                  const next = parseInt(event.target.value || "0", 10);
+                  const next = parseFloat(event.target.value || "0");
                   onItemChange(index, {
                     quantity: Number.isFinite(next) ? next : 0,
                   });
@@ -100,7 +147,7 @@ export function InvoiceItemsMobileList({
               />
             </label>
             <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Unit Price
+              {priceLabel}
               <input
                 type="number"
                 min={0}
@@ -181,14 +228,48 @@ export function InvoiceItemsMobileList({
           </span>
         </div>
         <div className="space-y-2 text-sm text-gray-700">
-          <div>
-            <span className="block text-xs uppercase tracking-wide text-gray-500">
-              Description
-            </span>
-            <span>{item.description || "No description"}</span>
-          </div>
+          {isTimesheet ? (
+            <>
+              <div>
+                <span className="block text-xs uppercase tracking-wide text-gray-500">
+                  Date
+                </span>
+                <span>
+                  {item.description
+                    ? new Date(item.description).toLocaleDateString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "-"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <div>
+                  <span className="block text-xs uppercase tracking-wide text-gray-500">
+                    Start
+                  </span>
+                  <span>{item.start_time || "-"}</span>
+                </div>
+                <div>
+                  <span className="block text-xs uppercase tracking-wide text-gray-500">
+                    End
+                  </span>
+                  <span>{item.end_time || "-"}</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div>
+              <span className="block text-xs uppercase tracking-wide text-gray-500">
+                Description
+              </span>
+              <span>{item.description || "No description"}</span>
+            </div>
+          )}
           <div className="flex justify-between text-gray-600">
-            <span>Tax</span>
+            <span>{taxLabel}</span>
             <span>{Number(item.tax || 0)}%</span>
           </div>
           <div className="flex justify-between text-gray-900 font-semibold text-base">

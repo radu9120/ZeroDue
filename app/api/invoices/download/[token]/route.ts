@@ -93,7 +93,12 @@ function generateInvoiceHTML(invoice: any, business: any): string {
   const currency = invoice.currency || "GBP";
   const currencySymbol =
     currency === "USD" ? "$" : currency === "EUR" ? "€" : "£";
-  const taxLabel = business.tax_label || companyDetails?.tax_label || "VAT";
+  let taxLabel = business.tax_label || companyDetails?.tax_label || "VAT";
+  if (taxLabel === "Tax number") {
+    taxLabel = "TAX";
+  }
+
+  const metaData = invoice.meta_data || {};
 
   return `
 <!DOCTYPE html>
@@ -333,6 +338,41 @@ function generateInvoiceHTML(invoice: any, business: any): string {
         ${
           invoice.description
             ? `<p><span class="label">Description:</span> ${invoice.description}</p>`
+            : ""
+        }
+        ${
+          metaData.origin
+            ? `<p><span class="label">Origin:</span> ${metaData.origin}</p>`
+            : ""
+        }
+        ${
+          metaData.destination
+            ? `<p><span class="label">Destination:</span> ${metaData.destination}</p>`
+            : ""
+        }
+        ${
+          metaData.bol_number
+            ? `<p><span class="label">BOL #:</span> ${metaData.bol_number}</p>`
+            : ""
+        }
+        ${
+          metaData.truck_number
+            ? `<p><span class="label">Truck #:</span> ${metaData.truck_number}</p>`
+            : ""
+        }
+        ${
+          metaData.project_name
+            ? `<p><span class="label">Project:</span> ${metaData.project_name}</p>`
+            : ""
+        }
+        ${
+          metaData.site_address
+            ? `<p><span class="label">Site:</span> ${metaData.site_address}</p>`
+            : ""
+        }
+        ${
+          metaData.po_number
+            ? `<p><span class="label">PO #:</span> ${metaData.po_number}</p>`
             : ""
         }
       </div>

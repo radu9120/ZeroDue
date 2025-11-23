@@ -1,5 +1,5 @@
 import ClientManagement from "@/components/Clients/ClientManagement";
-import Bounded from "@/components/ui/bounded";
+import Bounded from "@/components/ui/BoundedSection";
 import { getAllClients } from "@/lib/actions/client.actions";
 import { SearchParams } from "@/types";
 import { redirect } from "next/navigation";

@@ -1,7 +1,7 @@
 import { getBusinessById } from "@/lib/actions/business.actions";
 import { SearchParams } from "@/types";
 import { redirect } from "next/navigation";
-import Bounded from "@/components/ui/bounded";
+import Bounded from "@/components/ui/BoundedSection";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { ClientForm } from "@/components/Clients/ClientForm";

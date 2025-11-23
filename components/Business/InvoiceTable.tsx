@@ -17,6 +17,8 @@ import {
   Send,
   X,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import getStatusBadge from "../ui/getStatusBadge";
 import { Button } from "../ui/button";
@@ -32,6 +34,19 @@ import {
   toEmailStatusState,
 } from "@/lib/email-status";
 import { getCurrencySymbol, normalizeCurrencyCode } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { format } from "date-fns";
+import {
+  deleteInvoiceAction,
+  sendInvoiceEmailAction,
+} from "@/lib/actions/invoice.actions";
 
 const PAGE_SIZE = 5; // Keep in sync with getInvoicesList default limit
 
@@ -149,6 +164,12 @@ function InvoicePreview({
 
   const currencyCode = normalizeCurrencyCode(invoice.currency);
   const currencySymbol = getCurrencySymbol(currencyCode);
+
+  const isHourly =
+    invoice.invoice_template === "hourly" ||
+    invoice.invoice_template === "freelance";
+  const qtyLabel = isHourly ? "Hours" : "Qty";
+  const priceLabel = isHourly ? "Rate/Hr" : "Unit Price";
 
   return (
     <div className="space-y-6 max-h-[80vh] overflow-y-auto">
@@ -385,10 +406,10 @@ function InvoicePreview({
                   Description
                 </th>
                 <th className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-center font-semibold">
-                  Qty
+                  {qtyLabel}
                 </th>
                 <th className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-right font-semibold">
-                  Unit Price
+                  {priceLabel}
                 </th>
                 <th className="border border-gray-300 dark:border-slate-600 px-4 py-3 text-center font-semibold">
                   Tax %
@@ -563,10 +584,10 @@ export default function InvoiceTable({
   const searchParams = useSearchParams();
   const [isSending, setIsSending] = useState<number | null>(null);
   const [invoiceRows, setInvoiceRows] = useState<InvoiceListItem[]>(invoices);
-  const [visibleCount, setVisibleCount] = useState(3);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(invoices.length === PAGE_SIZE);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const currentPage = Number(searchParams.get("page") || "1");
+  const [invoiceToDelete, setInvoiceToDelete] =
+    useState<InvoiceListItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const pollingMapRef = useRef(
     new Map<
       number,
@@ -580,9 +601,6 @@ export default function InvoiceTable({
 
   useEffect(() => {
     setInvoiceRows(invoices);
-    setVisibleCount(Math.min(3, invoices.length));
-    setCurrentPage(1);
-    setHasMore(invoices.length === PAGE_SIZE);
   }, [invoices]);
 
   const mergeInvoiceStatus = useCallback(
@@ -716,80 +734,20 @@ export default function InvoiceTable({
     router.push(`?${params.toString()}`);
   };
 
-  const loadMoreInvoicesFromServer = useCallback(async () => {
-    if (isLoadingMore || !hasMore) return [] as InvoiceListItem[];
-    setIsLoadingMore(true);
-    const nextPage = currentPage + 1;
-
-    try {
-      const params = new URLSearchParams({
-        business_id: String(business_id),
-        page: String(nextPage),
-        limit: String(PAGE_SIZE),
-      });
-
-      if (search) params.set("searchTerm", search);
-      if (filter) params.set("filter", filter);
-
-      const response = await fetch(`/api/invoices/list?${params.toString()}`);
-
-      if (!response.ok) {
-        throw new Error("Failed to load more invoices");
-      }
-
-      const payload = (await response.json()) as {
-        invoices?: InvoiceListItem[];
-      };
-
-      const nextInvoices = payload?.invoices ?? [];
-
-      setInvoiceRows((prev) => [...prev, ...nextInvoices]);
-      setCurrentPage(nextPage);
-      setHasMore(nextInvoices.length === PAGE_SIZE);
-
-      return nextInvoices;
-    } catch (error) {
-      console.error(error);
-      toast.error("Unable to load more invoices. Please try again.");
-      return [];
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, [business_id, currentPage, filter, hasMore, isLoadingMore, search]);
-
-  const handleLoadMore = async () => {
-    if (visibleCount < invoiceRows.length) {
-      setVisibleCount((prev) => Math.min(prev + 3, invoiceRows.length));
-      return;
-    }
-
-    const newlyFetched = await loadMoreInvoicesFromServer();
-
-    if (newlyFetched.length > 0) {
-      setVisibleCount((prev) => prev + newlyFetched.length);
-    }
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", String(newPage));
+    router.push(`?${params.toString()}`);
   };
 
   const handleSendToClient = async (invoice: InvoiceListItem) => {
     setIsSending(invoice.id);
 
     try {
-      const response = await fetch("/api/invoices/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          invoiceId: invoice.id,
-          businessId: business_id,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to send invoice");
-      }
+      const data = await sendInvoiceEmailAction(
+        invoice.id,
+        Number(business_id)
+      );
 
       toast.success(data.message || "Invoice sent successfully!");
 
@@ -820,37 +778,30 @@ export default function InvoiceTable({
     }
   };
 
-  const handleDeleteInvoice = async (
-    invoiceId: number,
-    invoiceNumber: string
-  ) => {
-    const confirmed = confirm(
-      `Are you sure you want to delete invoice ${invoiceNumber}? This action cannot be undone.`
-    );
+  const handleDeleteInvoice = (invoice: InvoiceListItem) => {
+    setInvoiceToDelete(invoice);
+  };
 
-    if (!confirmed) {
-      return;
-    }
+  const confirmDeleteInvoice = async () => {
+    if (!invoiceToDelete) return;
 
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/invoices/${invoiceId}`, {
-        method: "DELETE",
-      });
+      await deleteInvoiceAction(invoiceToDelete.id);
 
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || "Failed to delete invoice");
-      }
-
-      toast.success(`Invoice ${invoiceNumber} deleted`);
+      toast.success(`Invoice ${invoiceToDelete.invoice_number} deleted`);
+      // Optimistic update
       setInvoiceRows((prev) =>
-        prev.filter((invoice) => invoice.id !== invoiceId)
+        prev.filter((invoice) => invoice.id !== invoiceToDelete.id)
       );
+      setInvoiceToDelete(null);
     } catch (error) {
       console.error("Error deleting invoice", error);
       const message =
         error instanceof Error ? error.message : "Failed to delete invoice";
       toast.error(message);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -928,7 +879,7 @@ export default function InvoiceTable({
 
           {invoiceRows.length > 0 ? (
             <div className="space-y-4 md:space-y-0 md:divide-y md:divide-blue-100 dark:md:divide-slate-700">
-              {invoiceRows.slice(0, visibleCount).map((invoice) => (
+              {invoiceRows.map((invoice) => (
                 <div
                   key={invoice.id}
                   className="grid w-full grid-cols-2 gap-x-4 gap-y-3 rounded-2xl border border-blue-100 bg-white px-4 py-4 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-800 md:grid-cols-7 md:gap-2 md:rounded-none md:border-0 md:bg-transparent md:px-4 md:py-3 md:shadow-none md:hover:bg-blue-50/50 dark:md:hover:bg-slate-800"
@@ -1087,12 +1038,7 @@ export default function InvoiceTable({
                             <Button
                               variant="secondary"
                               className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:bg-slate-700 dark:hover:bg-red-900/20"
-                              onClick={() =>
-                                handleDeleteInvoice(
-                                  invoice.id,
-                                  invoice.invoice_number
-                                )
-                              }
+                              onClick={() => handleDeleteInvoice(invoice)}
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete Invoice
@@ -1104,18 +1050,30 @@ export default function InvoiceTable({
                   </div>
                 </div>
               ))}
-              {(invoiceRows.length > visibleCount || hasMore) && (
-                <div className="flex justify-center pt-4">
-                  <Button
-                    variant="secondary"
-                    onClick={handleLoadMore}
-                    className="px-6"
-                    disabled={isLoadingMore}
-                  >
-                    {isLoadingMore ? "Loading..." : "Load More"}
-                  </Button>
-                </div>
-              )}
+              {/* Pagination Controls */}
+              <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-slate-700">
+                <Button
+                  variant="neutralOutline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                >
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  Previous
+                </Button>
+                <span className="text-sm text-gray-600 dark:text-slate-400">
+                  Page {currentPage}
+                </span>
+                <Button
+                  variant="neutralOutline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={invoiceRows.length < PAGE_SIZE}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="text-center py-12">
@@ -1136,6 +1094,81 @@ export default function InvoiceTable({
             </div>
           )}
         </div>
+
+        {/* Delete Invoice Dialog */}
+        <Dialog
+          open={!!invoiceToDelete}
+          onOpenChange={(open) => !open && setInvoiceToDelete(null)}
+        >
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="text-red-600 flex items-center gap-2">
+                <AlertCircle className="h-5 w-5" />
+                Delete Invoice
+              </DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this invoice? This action cannot
+                be undone.
+              </DialogDescription>
+            </DialogHeader>
+            {invoiceToDelete && (
+              <div className="py-4 space-y-4">
+                <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-100 dark:border-red-900/50">
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <span className="text-gray-500 dark:text-slate-400">
+                      Invoice Number:
+                    </span>
+                    <span className="font-medium text-gray-900 dark:text-slate-200 text-right">
+                      {invoiceToDelete.invoice_number}
+                    </span>
+
+                    <span className="text-gray-500 dark:text-slate-400">
+                      Client:
+                    </span>
+                    <span className="font-medium text-gray-900 dark:text-slate-200 text-right">
+                      {invoiceToDelete.bill_to?.name || "Unknown Client"}
+                    </span>
+
+                    <span className="text-gray-500 dark:text-slate-400">
+                      Amount:
+                    </span>
+                    <span className="font-medium text-gray-900 dark:text-slate-200 text-right">
+                      {formatInvoiceAmount(
+                        invoiceToDelete.total,
+                        invoiceToDelete.currency
+                      )}
+                    </span>
+
+                    <span className="text-gray-500 dark:text-slate-400">
+                      Date:
+                    </span>
+                    <span className="font-medium text-gray-900 dark:text-slate-200 text-right">
+                      {invoiceToDelete.issue_date
+                        ? format(new Date(invoiceToDelete.issue_date), "PPP")
+                        : "N/A"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+            <DialogFooter>
+              <Button
+                variant="neutralOutline"
+                onClick={() => setInvoiceToDelete(null)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDeleteInvoice}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700 text-white bg-none border-none"
+              >
+                {isDeleting ? "Deleting..." : "Delete Invoice"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );

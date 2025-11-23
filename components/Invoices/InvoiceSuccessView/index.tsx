@@ -23,6 +23,7 @@ import { InvoiceActionsBar } from "./InvoiceActionsBar";
 import { InvoiceEmailStatus } from "./InvoiceEmailStatus";
 import { InvoiceHeaderSection } from "./InvoiceHeaderSection";
 import { BillToSection } from "./BillToSection";
+import { InvoiceMetaDetailsSection } from "./InvoiceMetaDetailsSection";
 import { InvoiceDescriptionSection } from "./InvoiceDescriptionSection";
 import { InvoiceItemsTable } from "./InvoiceItemsTable";
 import { InvoiceNotesSection } from "./InvoiceNotesSection";
@@ -907,6 +908,11 @@ export default function InvoiceSuccessView({
 
               <BillToSection billTo={billTo} />
 
+              <InvoiceMetaDetailsSection
+                invoice={invoice}
+                isCompactLayout={isCompact}
+              />
+
               <InvoiceDescriptionSection
                 isEditing={isEditing}
                 canEditFullInvoice={canEditFullInvoice}
@@ -929,7 +935,12 @@ export default function InvoiceSuccessView({
                 invoiceCurrency={normalizedInvoiceCurrency}
                 getCurrencySymbol={getCurrencySymbol}
                 isCompactLayout={isCompact}
-                taxLabel={company.tax_label || "VAT"}
+                taxLabel={
+                  company.tax_label === "Tax number"
+                    ? "TAX"
+                    : company.tax_label || "VAT"
+                }
+                template={invoice.invoice_template}
               />
 
               <div

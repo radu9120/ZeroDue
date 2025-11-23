@@ -150,6 +150,7 @@ export interface InvoiceListItem {
   email_bounced_at?: string | null;
   email_complained?: boolean | null;
   email_complained_at?: string | null;
+  invoice_template?: string;
 }
 
 interface UserActivityLog {
