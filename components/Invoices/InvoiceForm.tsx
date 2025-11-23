@@ -211,7 +211,7 @@ const InvoiceForm = ({
       email: company_data.email,
       address: company_data.address,
       phone: company_data.phone ?? "",
-      vat: company_data.vat,
+      vat: company_data.vat ?? undefined,
       tax_label: company_data.tax_label ?? "VAT",
       logo: company_data.logo ?? "",
       currency: defaultCurrency,

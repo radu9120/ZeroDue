@@ -35,7 +35,7 @@ export const CreateBusiness = ({
     return "company";
   }, [mode]);
 
-  const form = useForm<BusinessFormValues>({
+  const form = useForm({
     resolver: zodResolver(companySchema),
     defaultValues: {
       name: "",
@@ -48,7 +48,7 @@ export const CreateBusiness = ({
       logo: "", // Initialize as empty string
       profile_type: resolvedProfileType,
     },
-  }) as UseFormReturn<BusinessFormValues>;
+  });
 
   useEffect(() => {
     form.setValue("profile_type", resolvedProfileType);

@@ -41,14 +41,11 @@ export const companySchema = z.object({
   email: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format"),
   address: z.string().min(1, { message: "Quantity is required" }),
   phone: phoneType,
-  vat: z.preprocess(
-    (val) => {
-      if (val === undefined || val === null) return undefined;
-      const str = String(val).trim();
-      return str.length ? str : undefined;
-    },
-    z.string().max(64, { message: "Tax number is too long" }).optional()
-  ),
+  vat: z
+    .string()
+    .max(64, { message: "Tax number is too long" })
+    .optional()
+    .transform((val) => (val === "" ? undefined : val)),
   tax_label: z.string().optional(),
   currency: z
     .string()

@@ -5,7 +5,7 @@ import { createActivity } from "@/lib/actions/userActivity.actions";
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -13,7 +13,8 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const invoiceId = Number(params.id);
+    const { id } = await params;
+    const invoiceId = Number(id);
     if (!invoiceId || Number.isNaN(invoiceId)) {
       return NextResponse.json(
         { error: "Invalid invoice id" },
