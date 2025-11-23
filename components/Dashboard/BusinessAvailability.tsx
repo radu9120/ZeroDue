@@ -22,7 +22,7 @@ export default function BusinessAvailabilty({
   const companyLimit =
     userPlan === "free_user" ? 1 : userPlan === "professional" ? 3 : Infinity;
   const monthlyInvoiceLimit =
-    userPlan === "free_user" ? 2 : userPlan === "professional" ? 15 : Infinity;
+    userPlan === "free_user" ? 3 : userPlan === "professional" ? 15 : Infinity;
 
   const reachedCompanyLimit =
     companyLimit !== Infinity && companiesLengh >= companyLimit;
