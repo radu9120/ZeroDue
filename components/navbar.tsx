@@ -311,7 +311,7 @@ export default function Navbar() {
                     <div className="pt-4 mt-2 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-3">
                       <SignInButton>
                         <Button
-                          variant="outline"
+                          variant="neutralOutline"
                           className="w-full h-12 text-base font-medium border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl"
                           onClick={closeMenu}
                         >

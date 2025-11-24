@@ -83,7 +83,7 @@ export default function Hero() {
             </Button>
             <Button
               size="lg"
-              variant="outline"
+              variant="neutralOutline"
               className="hidden sm:inline-flex h-12 px-8 rounded-full text-lg border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
               asChild
             >
