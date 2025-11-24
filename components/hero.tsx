@@ -35,7 +35,7 @@ export default function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden"
+      className="relative pt-24 pb-16 md:pt-48 md:pb-32 overflow-hidden"
     >
       {/* Background */}
       <div className="absolute inset-0 -z-10">
@@ -57,7 +57,7 @@ export default function Hero() {
           </div> */}
 
           {/* Headline */}
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
             Invoicing made <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
               beautifully simple.
@@ -71,20 +71,28 @@ export default function Hero() {
           </p>
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full sm:w-auto">
             <Button
               size="lg"
-              className="h-12 px-8 rounded-full text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all"
+              className="h-12 px-8 rounded-full text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all w-full sm:w-auto"
               asChild
             >
               <Link href="/sign-up">
                 Start for free <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="hidden sm:inline-flex h-12 px-8 rounded-full text-lg border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+              asChild
+            >
+              <Link href="/blog/simplify-service-billing">Learn more</Link>
+            </Button>
           </div>
 
           {/* Trust Badges */}
-          <div className="pt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-slate-500 dark:text-slate-400">
+          <div className="pt-8 flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 gap-y-4 text-sm text-slate-500 dark:text-slate-400">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-blue-500" /> No credit card
               required
@@ -105,7 +113,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, type: "spring" }}
           style={{ y }}
-          className="mt-20 relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
+          className="mt-12 md:mt-20 relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
         >
           <div className="relative rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl dark:border-slate-800 dark:bg-slate-950 ring-1 ring-slate-900/5">
             {/* The Mockup Content */}
@@ -198,9 +206,9 @@ export default function Hero() {
                 </div>
 
                 {/* Main Content Area */}
-                <div className="flex-1 bg-slate-50/50 dark:bg-slate-950/50 p-6 overflow-hidden flex flex-col gap-6">
+                <div className="flex-1 bg-slate-50/50 dark:bg-slate-950/50 p-4 sm:p-6 overflow-hidden flex flex-col gap-6">
                   {/* Stats Row */}
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {[
                       {
                         label: "Total Revenue",
@@ -271,7 +279,7 @@ export default function Hero() {
                             >
                               {stat.change}
                             </span>
-                            <span className="text-slate-400">
+                            <span className="text-slate-400 hidden sm:inline">
                               vs last month
                             </span>
                           </div>

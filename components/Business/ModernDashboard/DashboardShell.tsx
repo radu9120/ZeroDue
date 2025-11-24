@@ -110,7 +110,7 @@ export function DashboardShell({
     <div className="flex min-h-screen bg-gray-50 dark:bg-[#0B1120] text-slate-900 dark:text-white font-sans selection:bg-blue-500/30">
       {/* Modals */}
       {isUpgradeOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white dark:bg-slate-950 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto relative border border-slate-800">
             <button
               onClick={() => setIsUpgradeOpen(false)}
@@ -147,17 +147,19 @@ export function DashboardShell({
       )}
 
       {/* Mobile Sidebar Overlay */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+      <div
+        className={`fixed inset-0 bg-black/50 z-[90] md:hidden transition-opacity duration-300 ${
+          isSidebarOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setIsSidebarOpen(false)}
+      />
 
       {/* Sidebar */}
       <aside
         className={`
-          fixed md:sticky top-0 left-0 z-50 h-screen w-64 flex flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 gap-6 transition-transform duration-300 ease-in-out
+          fixed md:sticky top-0 left-0 z-[100] h-[100dvh] w-[80vw] sm:w-80 md:w-72 flex flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 gap-6 transition-transform duration-300 ease-in-out overflow-y-auto
           ${
             isSidebarOpen
               ? "translate-x-0"
@@ -203,7 +205,7 @@ export function DashboardShell({
               </button>
             </PopoverTrigger>
             <PopoverContent
-              className="w-60 p-2 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-slate-900 dark:text-white"
+              className="w-60 p-2 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-slate-900 dark:text-white z-[110]"
               side="bottom"
               align="start"
               sideOffset={8}
@@ -339,6 +341,30 @@ export function DashboardShell({
               <Menu className="w-5 h-5" />
             </Button>
 
+            {/* Mobile Business Name */}
+            <div className="flex items-center gap-2 md:hidden">
+              {business.logo ? (
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center overflow-hidden border border-gray-200 dark:border-slate-700">
+                  <Image
+                    src={business.logo}
+                    alt={business.name}
+                    height={32}
+                    width={32}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center border border-blue-500 shadow-sm">
+                  <span className="text-xs font-bold text-white">
+                    {business.name.substring(0, 2).toUpperCase()}
+                  </span>
+                </div>
+              )}
+              <span className="text-sm font-semibold text-slate-900 dark:text-white truncate max-w-[120px]">
+                {business.name}
+              </span>
+            </div>
+
             {/* Breadcrumbs */}
             <nav className="hidden md:flex items-center text-sm font-medium">
               <ol className="flex items-center gap-2">
@@ -417,24 +443,28 @@ export function DashboardShell({
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-slate-800 z-50 px-4 py-2">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-t border-gray-200 dark:border-slate-800 z-50 px-6 py-3 pb-6 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)]">
         <div className="flex justify-between items-center">
           {navItems.map((item) => (
             <Link
               key={item.id}
               href={item.href}
-              className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200 ${
                 activePage === item.id
-                  ? "text-blue-600 dark:text-blue-400"
+                  ? "text-blue-600 dark:text-blue-400 scale-105"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
               <item.icon
-                className={`w-5 h-5 ${
-                  activePage === item.id ? "stroke-[2.5px]" : "stroke-2"
+                className={`w-6 h-6 ${
+                  activePage === item.id
+                    ? "stroke-[2.5px] fill-blue-600/10"
+                    : "stroke-2"
                 }`}
               />
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="text-[10px] font-bold tracking-wide">
+                {item.label}
+              </span>
             </Link>
           ))}
         </div>

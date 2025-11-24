@@ -23,7 +23,8 @@ export default function RecentBlogs() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
             className="text-3xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white"
           >
             Latest{" "}
@@ -31,20 +32,30 @@ export default function RecentBlogs() {
               Stories
             </span>
           </motion.h2>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto"
+          >
             Fresh playbooks, templates, and customer wins from the InvoiceFlow
             team.
-          </p>
+          </motion.p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {highlightedPosts.map((post, index) => (
             <motion.article
               key={post.slug}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{
+                duration: 0.5,
+                delay: index * 0.1,
+                ease: "easeOut",
+              }}
               className="group relative flex flex-col h-full bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300"
             >
               <div className="p-6 flex flex-col flex-grow">

@@ -103,14 +103,14 @@ export default function Footer() {
                 href="mailto:support@invoiceflow.com"
                 className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800 transition-colors group"
               >
-                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform shrink-0">
                   <Mail className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <div className="text-xs text-slate-500 dark:text-slate-400">
                     Email us at
                   </div>
-                  <div className="font-medium text-slate-900 dark:text-white">
+                  <div className="font-medium text-slate-900 dark:text-white truncate">
                     support@invoiceflow.com
                   </div>
                 </div>
