@@ -12,6 +12,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.20.0",
     "@hookform/resolvers": "^5.0.1",
+    "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-popover": "^1.1.14",
@@ -36,6 +37,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.4",
+    "recharts": "^3.5.0",
     "resend": "^6.2.1",
     "sonner": "^2.0.4",
     "svix": "^1.77.0",

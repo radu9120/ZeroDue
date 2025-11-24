@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 import { blogPosts, findBlogPost } from "../posts";
 
@@ -45,72 +46,104 @@ export default async function BlogPostPage({ params }: PageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-white dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
-      <section className="px-4 pb-10 pt-24 md:px-8 lg:px-16 xl:px-32">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <section className="relative px-4 pb-16 pt-32 md:px-8 lg:px-16 xl:px-32 overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl -z-10">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-40 right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+        </div>
+
         <div className="mx-auto max-w-4xl">
-          <Link
-            href="/blog"
-            className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-green-700 transition hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
-          >
-            <span aria-hidden="true">←</span>
-            Back to all stories
-          </Link>
-          <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-green-700 dark:bg-green-900/30 dark:text-green-300">
-            {post.category}
-          </span>
-          <h1 className="mt-8 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
+          <div className="mb-8">
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors dark:text-slate-400 dark:hover:text-blue-400"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to all stories
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-4 mb-6">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20">
+              {post.category}
+            </span>
+            <span className="text-sm text-slate-500 dark:text-slate-400">
+              •
+            </span>
+            <span className="text-sm text-slate-500 dark:text-slate-400">
+              {post.readTime}
+            </span>
+          </div>
+
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-white tracking-tight mb-6 leading-tight">
             {post.title}
           </h1>
-          <p className="mt-4 text-base text-gray-600 dark:text-slate-300 md:text-lg">
+
+          <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl">
             {post.description}
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-slate-400">
-            <span>{post.publishedAt}</span>
-            <span>•</span>
-            <span>{post.readTime}</span>
+
+          <div className="mt-8 flex items-center gap-4">
+            <div className="text-sm font-medium text-slate-900 dark:text-white">
+              InvoiceFlow Team
+            </div>
+            <div className="text-sm text-slate-500 dark:text-slate-400">
+              {post.publishedAt}
+            </div>
           </div>
         </div>
       </section>
 
-      <article className="px-4 pb-16 md:px-8 lg:px-16 xl:px-32">
-        <div className="mx-auto max-w-3xl space-y-12 rounded-3xl border border-gray-100 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900/70 md:p-12">
-          <p className="text-base text-gray-700 dark:text-slate-200">
-            {post.preview}
-          </p>
-          <div className="space-y-12">
-            {post.sections.map((section) => (
-              <section key={section.heading}>
-                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-                  {section.heading}
-                </h2>
-                <p className="mt-4 text-base leading-relaxed text-gray-700 dark:text-slate-200">
-                  {section.body}
-                </p>
-              </section>
-            ))}
-          </div>
-          <div className="rounded-2xl bg-green-50 px-6 py-8 text-gray-800 dark:bg-green-900/30 dark:text-green-100">
-            <h3 className="text-xl font-semibold">
-              Keep momentum after every invoice
-            </h3>
-            <p className="mt-3 text-sm text-gray-700 dark:text-green-100/80">
-              InvoiceFlow automates approvals, nudges clients when payments
-              slip, and surfaces the metrics you need to stay cash-flow
-              positive.
+      <article className="px-4 pb-24 md:px-8 lg:px-16 xl:px-32">
+        <div className="mx-auto max-w-3xl">
+          <div className="prose prose-lg prose-slate dark:prose-invert max-w-none">
+            <p className="lead text-xl text-slate-600 dark:text-slate-300 mb-12">
+              {post.preview}
             </p>
-            <div className="mt-5 flex flex-col gap-3 text-sm font-semibold sm:flex-row">
-              <Link
-                href="/sign-up"
-                className="inline-flex items-center justify-center rounded-full bg-green-600 px-6 py-3 text-white shadow-lg transition hover:bg-green-700"
-              >
-                Start your free trial
-              </Link>
-              <Link
-                href="/pricing"
-                className="inline-flex items-center justify-center rounded-full border border-green-300 px-6 py-3 text-green-700 transition hover:border-green-400 hover:text-green-800 dark:border-green-700 dark:text-green-300 dark:hover:border-green-600 dark:hover:text-green-200"
-              >
-                Explore pricing
-              </Link>
+
+            <div className="space-y-16">
+              {post.sections.map((section) => (
+                <section key={section.heading} className="scroll-mt-20">
+                  <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-6">
+                    {section.heading}
+                  </h2>
+                  <div className="text-lg leading-relaxed text-slate-700 dark:text-slate-300 space-y-6">
+                    {section.body.split("\n\n").map((paragraph, idx) => (
+                      <p key={idx}>{paragraph}</p>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-16 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-600 p-8 md:p-12 text-white shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+
+            <div className="relative z-10">
+              <h3 className="text-2xl md:text-3xl font-bold mb-4">
+                Ready to streamline your invoicing?
+              </h3>
+              <p className="text-blue-100 text-lg mb-8 max-w-xl">
+                Join thousands of businesses using InvoiceFlow to get paid
+                faster and save time on admin work.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  href="/sign-up"
+                  className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-blue-600 font-semibold shadow-lg transition hover:bg-blue-50"
+                >
+                  Start for free
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center justify-center rounded-full border border-blue-400 bg-blue-600/50 px-8 py-4 text-white font-semibold transition hover:bg-blue-600"
+                >
+                  View pricing
+                </Link>
+              </div>
             </div>
           </div>
         </div>

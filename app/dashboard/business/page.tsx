@@ -1,6 +1,6 @@
 import BusinessDashboard from "@/components/Business/BusinessDashboard";
 import Bounded from "@/components/ui/BoundedSection";
-import { getBusiness } from "@/lib/actions/business.actions";
+import { getBusiness, getUserBusinesses } from "@/lib/actions/business.actions";
 import { BusinessDashboardPageProps, UserActivityLog } from "@/types";
 import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
@@ -8,6 +8,7 @@ import { getBusinessStats } from "../../../lib/actions/business.actions";
 import {
   getCurrentMonthInvoiceCountForUser,
   getInvoicesList,
+  getMonthlyRevenue,
 } from "@/lib/actions/invoice.actions";
 import QuickActions from "@/components/Business/QuickActions";
 import InvoiceTable from "@/components/Business/InvoiceTable";
@@ -17,6 +18,7 @@ import InvoiceAvailability from "@/components/Business/InvoiceAvailability";
 import { type AppPlan } from "@/lib/utils";
 import PlanWatcher from "../../../components/PlanWatcher";
 import { getCurrentPlan } from "@/lib/plan";
+import ModernDashboard from "@/components/Business/ModernDashboard";
 
 export const revalidate = 0;
 
@@ -45,18 +47,20 @@ export default async function Page({
   if (!businessId || Number.isNaN(businessId)) return notFound();
 
   let business: Awaited<ReturnType<typeof getBusiness>> = null;
+  let allBusinesses: Awaited<ReturnType<typeof getUserBusinesses>> = [];
   try {
-    business = await getBusiness({ business_id: businessId });
-  } catch (err) {
-    console.error("Error fetching business:", err);
+    [business, allBusinesses] = await Promise.all([
+      getBusiness({ business_id: businessId }),
+      getUserBusinesses(),
+    ]);
+  } catch (error) {
+    console.error("Error loading business:", error);
     return notFound();
   }
 
-  if (!business) {
-    return notFound();
-  }
+  if (!business) return notFound();
 
-  let businessStats;
+  let businessStats = null;
   try {
     businessStats = await getBusinessStats({
       business_id: businessId,
@@ -78,6 +82,13 @@ export default async function Page({
   } catch (err) {
     console.error("Error fetching invoices:", err);
     return notFound();
+  }
+
+  let monthlyRevenue: { name: string; total: number }[] = [];
+  try {
+    monthlyRevenue = await getMonthlyRevenue(businessId);
+  } catch (err) {
+    console.error("Error fetching monthly revenue:", err);
   }
 
   // Fetch counts to enforce plan limits (free total and pro monthly)
@@ -110,32 +121,16 @@ export default async function Page({
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-slate-800 transition-colors">
-      <Bounded>
-        <BusinessDashboard
-          business={business}
-          userPlan={userPlan}
-          stats={businessStats}
-          createDisabled={
-            (userPlan === "free_user" && monthCount >= 3) ||
-            (userPlan === "professional" && monthCount >= 15)
-          }
-        />
-        <QuickActions companyId={businessId} />
-        <InvoiceTable
-          invoices={invoices}
-          business_id={businessId}
-          userPlan={userPlan}
-        />
-        {recentActivities.length > 0 && (
-          <RecentActivity recentActivities={recentActivities} />
-        )}
-        <InvoiceAvailability
-          userPlan={userPlan}
-          invoicesLength={monthCount}
-          companiesLength={1}
-        />
-      </Bounded>
+    <main className="min-h-screen bg-slate-950 transition-colors">
+      <ModernDashboard
+        business={business}
+        stats={businessStats}
+        monthlyRevenue={monthlyRevenue}
+        invoices={invoices}
+        allBusinesses={allBusinesses}
+        recentActivities={recentActivities}
+        userPlan={userPlan}
+      />
       <PlanWatcher initialPlan={userPlan} />
     </main>
   );

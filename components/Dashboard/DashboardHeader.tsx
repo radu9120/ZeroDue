@@ -1,7 +1,6 @@
 "use client";
 import { AlertTriangle, PlusIcon, Crown } from "lucide-react";
-import CustomModal from "../ModalsForms/CustomModal"; // Ensure this path is correct
-import ProfileSetupFlow from "../Business/ProfileSetupFlow";
+import Link from "next/link";
 
 export default function DashboardHeader({
   userPlan,
@@ -29,10 +28,6 @@ export default function DashboardHeader({
   const handleBusinessCreated = () => {
     // Refresh will be handled by the modal closing and re-rendering
     window.location.reload();
-  };
-
-  const handleUpgradeClick = () => {
-    window.location.href = "/upgrade";
   };
 
   if (totalBusinesses === 0) {
@@ -63,41 +58,36 @@ export default function DashboardHeader({
                   Free plan limit reached – contact support for options
                 </span>
               </div>
-              <button
-                onClick={handleUpgradeClick}
+              <Link
+                href="/upgrade"
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-medium text-white transition-all hover:from-primary/90 hover:to-accent/90 sm:w-auto"
               >
                 <Crown className="h-4 w-4" />
                 <span>Upgrade Plan</span>
-              </button>
+              </Link>
             </>
           )}
 
           {/* Manage Plan for paid users */}
-          {isPaidPlan && (
-            <button
-              onClick={() => (window.location.href = "/upgrade")}
+          {!showUpgradeElements && (
+            <Link
+              href="/upgrade"
               className="hidden w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-primary to-accent px-4 py-2 text-sm font-medium text-white transition-all hover:from-primary/90 hover:to-accent/90 sm:flex sm:w-auto"
             >
               <Crown className="h-4 w-4" />
               <span>Manage Plan</span>
-            </button>
+            </Link>
           )}
 
           {/* Show "New Company" button if conditions are met and upgrade elements are not shown (upgrade takes precedence) */}
           {showNewCompanyButtonInHeader && !showUpgradeElements && (
-            <CustomModal
-              heading={"Create or switch profile type"}
-              description={
-                "Pick company, freelancer, or exploring before entering details."
-              }
-              openBtnLabel={"New Profile"}
-              btnVariant={"primary"}
-              btnIcon={PlusIcon}
-              maxWidth="max-w-5xl"
+            <Link
+              href="/dashboard/business/new"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-blue-700 sm:w-auto"
             >
-              <ProfileSetupFlow variant="modal" />
-            </CustomModal>
+              <PlusIcon className="h-4 w-4" />
+              <span>New Profile</span>
+            </Link>
           )}
         </div>
       )}

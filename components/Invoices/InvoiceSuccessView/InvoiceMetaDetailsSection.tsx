@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Truck, Hammer, Code, MapPin, FileText, Hash } from "lucide-react";
+import { Truck, Hammer, Code } from "lucide-react";
 import type { InvoiceListItem } from "@/types";
+import { cn } from "@/lib/utils";
 
 interface InvoiceMetaDetailsSectionProps {
   invoice: InvoiceListItem;
@@ -18,79 +19,50 @@ export function InvoiceMetaDetailsSection({
     return null;
   }
 
-  const containerStyle: React.CSSProperties = {
-    marginBottom: isCompactLayout ? "20px" : "24px",
-    padding: isCompactLayout ? "16px" : "20px",
-    backgroundColor: "#f8fafc", // slate-50
-    borderRadius: "12px",
-    border: "1px solid #e2e8f0", // slate-200
-  };
+  const containerClass = cn(
+    "mb-6 p-4 sm:p-5 bg-slate-50 rounded-xl border border-slate-200",
+    isCompactLayout && "mb-5 p-4"
+  );
 
-  const gridStyle: React.CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: isCompactLayout ? "1fr" : "repeat(2, 1fr)",
-    gap: "16px",
-  };
+  const gridClass = cn(
+    "grid gap-4",
+    isCompactLayout ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
+  );
 
-  const itemStyle: React.CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: "12px",
-    fontWeight: 600,
-    color: "#64748b", // slate-500
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
-  };
-
-  const valueStyle: React.CSSProperties = {
-    fontSize: "14px",
-    fontWeight: 500,
-    color: "#0f172a", // slate-900
-  };
+  const itemClass = "flex flex-col gap-1";
+  const labelClass =
+    "text-xs font-semibold text-slate-500 uppercase tracking-wide";
+  const valueClass = "text-sm font-medium text-slate-900";
 
   const renderTruckingDetails = () => (
-    <div style={containerStyle}>
-      <div
-        style={{
-          ...itemStyle,
-          marginBottom: "16px",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        <Truck size={18} color="#3b82f6" />
-        <span style={{ fontWeight: 600, color: "#1e293b" }}>
-          Logistics Details
-        </span>
+    <div className={containerClass}>
+      <div className="flex items-center gap-2 mb-4">
+        <Truck className="h-[18px] w-[18px] text-blue-500" />
+        <span className="font-semibold text-slate-800">Logistics Details</span>
       </div>
-      <div style={gridStyle}>
+      <div className={gridClass}>
         {metaData.origin && (
-          <div style={itemStyle}>
-            <span style={labelStyle}>Origin</span>
-            <span style={valueStyle}>{metaData.origin}</span>
+          <div className={itemClass}>
+            <span className={labelClass}>Origin</span>
+            <span className={valueClass}>{metaData.origin}</span>
           </div>
         )}
         {metaData.destination && (
-          <div style={itemStyle}>
-            <span style={labelStyle}>Destination</span>
-            <span style={valueStyle}>{metaData.destination}</span>
+          <div className={itemClass}>
+            <span className={labelClass}>Destination</span>
+            <span className={valueClass}>{metaData.destination}</span>
           </div>
         )}
         {metaData.bol_number && (
-          <div style={itemStyle}>
-            <span style={labelStyle}>Bill of Lading #</span>
-            <span style={valueStyle}>{metaData.bol_number}</span>
+          <div className={itemClass}>
+            <span className={labelClass}>Bill of Lading #</span>
+            <span className={valueClass}>{metaData.bol_number}</span>
           </div>
         )}
         {metaData.truck_number && (
-          <div style={itemStyle}>
-            <span style={labelStyle}>Truck / Trailer #</span>
-            <span style={valueStyle}>{metaData.truck_number}</span>
+          <div className={itemClass}>
+            <span className={labelClass}>Truck / Trailer #</span>
+            <span className={valueClass}>{metaData.truck_number}</span>
           </div>
         )}
       </div>
@@ -98,32 +70,22 @@ export function InvoiceMetaDetailsSection({
   );
 
   const renderConstructionDetails = () => (
-    <div style={containerStyle}>
-      <div
-        style={{
-          ...itemStyle,
-          marginBottom: "16px",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        <Hammer size={18} color="#f97316" />
-        <span style={{ fontWeight: 600, color: "#1e293b" }}>
-          Project Details
-        </span>
+    <div className={containerClass}>
+      <div className="flex items-center gap-2 mb-4">
+        <Hammer className="h-[18px] w-[18px] text-orange-500" />
+        <span className="font-semibold text-slate-800">Project Details</span>
       </div>
-      <div style={gridStyle}>
+      <div className={gridClass}>
         {metaData.project_name && (
-          <div style={itemStyle}>
-            <span style={labelStyle}>Project Name</span>
-            <span style={valueStyle}>{metaData.project_name}</span>
+          <div className={itemClass}>
+            <span className={labelClass}>Project Name</span>
+            <span className={valueClass}>{metaData.project_name}</span>
           </div>
         )}
         {metaData.site_address && (
-          <div style={itemStyle}>
-            <span style={labelStyle}>Site Address</span>
-            <span style={valueStyle}>{metaData.site_address}</span>
+          <div className={itemClass}>
+            <span className={labelClass}>Site Address</span>
+            <span className={valueClass}>{metaData.site_address}</span>
           </div>
         )}
       </div>
@@ -131,32 +93,22 @@ export function InvoiceMetaDetailsSection({
   );
 
   const renderFreelanceDetails = () => (
-    <div style={containerStyle}>
-      <div
-        style={{
-          ...itemStyle,
-          marginBottom: "16px",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        <Code size={18} color="#a855f7" />
-        <span style={{ fontWeight: 600, color: "#1e293b" }}>
-          Project Details
-        </span>
+    <div className={containerClass}>
+      <div className="flex items-center gap-2 mb-4">
+        <Code className="h-[18px] w-[18px] text-purple-500" />
+        <span className="font-semibold text-slate-800">Project Details</span>
       </div>
-      <div style={gridStyle}>
+      <div className={gridClass}>
         {metaData.project_name && (
-          <div style={itemStyle}>
-            <span style={labelStyle}>Project Name</span>
-            <span style={valueStyle}>{metaData.project_name}</span>
+          <div className={itemClass}>
+            <span className={labelClass}>Project Name</span>
+            <span className={valueClass}>{metaData.project_name}</span>
           </div>
         )}
         {metaData.po_number && (
-          <div style={itemStyle}>
-            <span style={labelStyle}>PO Number</span>
-            <span style={valueStyle}>{metaData.po_number}</span>
+          <div className={itemClass}>
+            <span className={labelClass}>PO Number</span>
+            <span className={valueClass}>{metaData.po_number}</span>
           </div>
         )}
       </div>

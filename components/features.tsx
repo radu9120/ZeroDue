@@ -9,43 +9,44 @@ import {
   Globe,
   Shield,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const features = [
   {
-    icon: <FileText className="h-10 w-10 text-primary dark:text-blue-400" />,
+    icon: FileText,
     title: "Professional Invoices",
     description:
-      "Create beautiful, customizable invoices in seconds with our intuitive template system.",
+      "Create beautiful, customizable invoices in seconds. Choose from professional themes that match your brand.",
   },
   {
-    icon: <CreditCard className="h-10 w-10 text-primary dark:text-blue-400" />,
+    icon: CreditCard,
     title: "Multiple Payment Options",
     description:
-      "Accept payments via credit card, bank transfer, PayPal, and more with integrated payment processing.",
+      "Accept credit cards, bank transfers, and PayPal directly on your invoices.",
   },
   {
-    icon: <BarChart4 className="h-10 w-10 text-primary dark:text-blue-400" />,
+    icon: BarChart4,
     title: "Financial Insights",
     description:
-      "Track your business performance with detailed reports and analytics dashboards.",
+      "Track revenue, outstanding invoices, and business growth with detailed analytics.",
   },
   {
-    icon: <Clock className="h-10 w-10 text-primary dark:text-blue-400" />,
+    icon: Clock,
     title: "Automated Reminders",
     description:
-      "Set up automatic payment reminders to reduce late payments and improve cash flow.",
+      "Set up automatic payment reminders. Let the system chase payments for you while you focus on work.",
   },
   {
-    icon: <Globe className="h-10 w-10 text-primary dark:text-blue-400" />,
-    title: "Multi-Currency Support",
+    icon: Globe,
+    title: "Multi-Currency",
     description:
       "Invoice clients in their local currency with automatic exchange rate calculations.",
   },
   {
-    icon: <Shield className="h-10 w-10 text-primary dark:text-blue-400" />,
+    icon: Shield,
     title: "Secure & Compliant",
     description:
-      "Bank-level security and compliance with global tax regulations for peace of mind.",
+      "Bank-level security and compliance with global tax regulations. Your data is encrypted and backed up daily.",
   },
 ];
 
@@ -100,7 +101,7 @@ export default function Features() {
   return (
     <section
       id="features"
-      className="relative py-24 bg-neutral-50 dark:bg-slate-800"
+      className="relative py-24 bg-white dark:bg-slate-950 overflow-hidden"
     >
       <BackgroundDecoration />
       <div className="container relative z-10 mx-auto px-4 md:px-6">
@@ -110,10 +111,10 @@ export default function Features() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.4 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-neutral-900 dark:text-slate-100"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-slate-900 dark:text-white"
           >
             Powerful Features for{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-[#569cd6] dark:to-[#4ec9b0]">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
               Modern Businesses
             </span>
           </motion.h2>
@@ -123,36 +124,37 @@ export default function Features() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.4 }}
-            className="text-lg text-primary-text dark:text-slate-300 max-w-2xl mx-auto"
+            className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto"
           >
             Everything you need to streamline your invoicing process and get
-            paid faster
+            paid faster.
           </motion.p>
         </div>
 
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
           variants={gridVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
+          viewport={{ once: true, amount: 0.2 }}
         >
           {features.map((feature, index) => (
             <motion.div
               key={index}
               variants={featureCardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              className="bg-white dark:bg-slate-800 rounded-xl p-8 shadow-md border border-neutral-200 dark:border-slate-700 transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg"
+              className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-800 group flex flex-col h-full"
             >
-              <div className="mb-4">{feature.icon}</div>
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                  <feature.icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                </div>
+              </div>
 
-              <h3 className="text-xl font-bold mb-3 text-neutral-900 dark:text-slate-100">
+              <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">
                 {feature.title}
               </h3>
 
-              <p className="text-primary-text dark:text-slate-300">
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
                 {feature.description}
               </p>
             </motion.div>

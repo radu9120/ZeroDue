@@ -75,11 +75,12 @@ export const CreateBusiness = ({
 
       if (result.ok) {
         console.log("Success, created business:", result.business);
-        window.location.reload(); // Refresh page data
 
         if (onSuccess) {
           // Call generic onSuccess if provided
           onSuccess();
+        } else {
+          window.location.reload(); // Refresh page data
         }
 
         if (closeModal) {

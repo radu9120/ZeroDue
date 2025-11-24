@@ -82,155 +82,170 @@ const InvoiceItemRow = ({
         className="border-t py-3 space-y-3 pl-2 pr-2 sm:pr-4 border-blue-100"
       >
         <div className="flex flex-col gap-4 md:grid md:grid-cols-12 md:gap-4 py-3 items-center">
-          {/* Delete Button */}
-          <div className="w-8 flex-shrink-0 md:col-span-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRemove}
-              className="text-red-600 hover:bg-red-50 p-1"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+          {/* Mobile: Date & Delete Row */}
+          <div className="flex gap-2 items-end w-full md:contents">
+            {/* Delete Button */}
+            <div className="w-8 flex-shrink-0 md:col-span-1 mb-1 md:mb-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onRemove}
+                className="text-red-600 hover:bg-red-50 p-1"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Date (mapped to description) */}
+            <div className="flex-1 md:col-span-3 w-full">
+              <FormField
+                name={`items.${index}.description`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
+                      Date
+                    </FormLabel>
+                    <FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className={cn(
+                              "w-full h-11 justify-start text-left font-normal border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 rounded-lg pl-3",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            <Calendar className="mr-2 h-4 w-4 text-slate-400" />
+                            {field.value ? (
+                              format(
+                                new Date(field.value + "T00:00:00"),
+                                "MMM dd, yyyy"
+                              )
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <CalendarPicker
+                            date={
+                              field.value
+                                ? new Date(field.value + "T00:00:00")
+                                : undefined
+                            }
+                            onSelect={(date) => {
+                              const formatted = format(date, "yyyy-MM-dd");
+                              field.onChange(formatted);
+                            }}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
-          {/* Date (mapped to description) */}
-          <div className="md:col-span-3 w-full">
-            <FormField
-              name={`items.${index}.description`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
-                    Date
-                  </FormLabel>
-                  <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className={cn(
-                            "w-full h-11 justify-start text-left font-normal border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 rounded-lg pl-3",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          <Calendar className="mr-2 h-4 w-4 text-slate-400" />
-                          {field.value ? (
-                            format(
-                              new Date(field.value + "T00:00:00"),
-                              "MMM dd, yyyy"
-                            )
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <CalendarPicker
-                          date={
-                            field.value
-                              ? new Date(field.value + "T00:00:00")
-                              : undefined
-                          }
-                          onSelect={(date) => {
-                            const formatted = format(date, "yyyy-MM-dd");
-                            field.onChange(formatted);
-                          }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* Mobile: Start & End Time Row */}
+          <div className="grid grid-cols-2 gap-4 w-full md:contents">
+            {/* Start Time */}
+            <div className="md:col-span-2 w-full">
+              <FormField
+                name={`items.${index}.start_time`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
+                      Start
+                    </FormLabel>
+                    <FormControl>
+                      <TimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* End Time */}
+            <div className="md:col-span-2 w-full">
+              <FormField
+                name={`items.${index}.end_time`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
+                      Finish
+                    </FormLabel>
+                    <FormControl>
+                      <TimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
-          {/* Start Time */}
-          <div className="md:col-span-2 w-full">
-            <FormField
-              name={`items.${index}.start_time`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
-                    Start
-                  </FormLabel>
-                  <FormControl>
-                    <TimePicker value={field.value} onChange={field.onChange} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          {/* Mobile: Hours & Rate Row */}
+          <div className="grid grid-cols-2 gap-4 w-full md:contents">
+            {/* Hours (Quantity) */}
+            <div className="md:col-span-2 w-full">
+              <FormField
+                name={`items.${index}.quantity`}
+                render={() => (
+                  <FormItem>
+                    <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
+                      Hours
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        placeholder="0"
+                        className="h-11 rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 text-center font-medium"
+                        {...register(`items.${index}.quantity`, {
+                          valueAsNumber: true,
+                        })}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-          {/* End Time */}
-          <div className="md:col-span-2 w-full">
-            <FormField
-              name={`items.${index}.end_time`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
-                    Finish
-                  </FormLabel>
-                  <FormControl>
-                    <TimePicker value={field.value} onChange={field.onChange} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Hours (Quantity) */}
-          <div className="md:col-span-2 w-full">
-            <FormField
-              name={`items.${index}.quantity`}
-              render={() => (
-                <FormItem>
-                  <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
-                    Hours
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      placeholder="0"
-                      className="h-11 rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 text-center font-medium"
-                      {...register(`items.${index}.quantity`, {
-                        valueAsNumber: true,
-                      })}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Rate (Unit Price) */}
-          <div className="md:col-span-2 w-full">
-            <FormField
-              name={`items.${index}.unit_price`}
-              render={() => (
-                <FormItem>
-                  <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
-                    Rate
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="0"
-                      className="h-11 rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 text-center font-medium"
-                      {...register(`items.${index}.unit_price`, {
-                        valueAsNumber: true,
-                      })}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Rate (Unit Price) */}
+            <div className="md:col-span-2 w-full">
+              <FormField
+                name={`items.${index}.unit_price`}
+                render={() => (
+                  <FormItem>
+                    <FormLabel className="md:hidden block text-xs text-secondary-text dark:text-slate-400 mb-1">
+                      Rate
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0"
+                        className="h-11 rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 text-center font-medium"
+                        {...register(`items.${index}.unit_price`, {
+                          valueAsNumber: true,
+                        })}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
         </div>
 

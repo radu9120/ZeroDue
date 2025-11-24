@@ -1,75 +1,98 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowRight, Calendar, Clock, Tag } from "lucide-react";
 import { blogPosts } from "@/app/blog/posts";
-import { SectionTitle } from "./ui/SectionTitle";
+import { cn } from "@/lib/utils";
 
 const highlightedPosts = blogPosts.slice(0, 3);
 
 export default function RecentBlogs() {
   return (
-    <section
-      id="recent-blogs"
-      className="py-24 bg-gradient-to-b from-white via-slate-50 to-white dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 transition-colors"
-    >
-      <div className="container mx-auto px-4 md:px-6">
-        <SectionTitle
-          regularText="Latest"
-          highlightedText="Stories"
-          description="Fresh playbooks, templates, and customer wins from the InvoiceFlow team."
-        />
+    <section id="recent-blogs" className="py-24 relative overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute inset-0 -z-10 bg-slate-50/50 dark:bg-slate-900/50" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-200/20 dark:bg-cyan-900/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="text-center mb-16">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white"
+          >
+            Latest{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
+              Stories
+            </span>
+          </motion.h2>
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            Fresh playbooks, templates, and customer wins from the InvoiceFlow
+            team.
+          </p>
+        </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {highlightedPosts.map((post) => (
-            <article
+          {highlightedPosts.map((post, index) => (
+            <motion.article
               key={post.slug}
-              className="group flex h-full flex-col rounded-2xl border border-gray-100 bg-white/90 p-6 shadow-sm ring-1 ring-transparent transition hover:-translate-y-1 hover:border-blue-200 hover:ring-blue-100 dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-slate-700"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="group relative flex flex-col h-full bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300"
             >
-              <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
-                <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-blue-700 dark:bg-blue-400/10 dark:text-blue-200">
-                  {post.category}
-                </span>
-                <span>{post.readTime}</span>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="flex items-center justify-between text-xs font-medium mb-4">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300">
+                    <Tag className="w-3 h-3" />
+                    {post.category}
+                  </span>
+                  <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+                    <Clock className="w-3 h-3" />
+                    {post.readTime}
+                  </span>
+                </div>
+
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="focus:outline-none"
+                  >
+                    <span className="absolute inset-0" aria-hidden="true" />
+                    {post.title}
+                  </Link>
+                </h3>
+
+                <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 mb-6 flex-grow">
+                  {post.preview}
+                </p>
+
+                <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-700 mt-auto">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <Calendar className="w-3 h-3" />
+                    {post.publishedAt}
+                  </div>
+                  <span className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform">
+                    Read Article <ArrowRight className="w-4 h-4" />
+                  </span>
+                </div>
               </div>
-              <h3 className="mt-5 text-2xl font-semibold text-gray-900 transition group-hover:text-blue-700 dark:text-slate-50">
-                {post.title}
-              </h3>
-              <p className="mt-3 flex-1 text-sm text-gray-600 dark:text-slate-300">
-                {post.preview}
-              </p>
-              <div className="mt-6 text-sm text-gray-500 dark:text-slate-400">
-                {post.publishedAt}
-              </div>
-              <div className="mt-6">
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 transition hover:text-blue-900 dark:text-blue-300 dark:hover:text-blue-200"
-                >
-                  Read article <span aria-hidden="true">→</span>
-                </Link>
-              </div>
-            </article>
+            </motion.article>
           ))}
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-4 text-center">
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/blog"
-            className="inline-flex items-center rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-800 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:text-slate-100 dark:hover:border-blue-500 dark:hover:text-blue-200"
+            className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
           >
-            Browse the blog{" "}
-            <span aria-hidden="true" className="ml-2">
-              →
-            </span>
-          </Link>
-          <Link
-            href="/faq"
-            className="inline-flex items-center rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-blue-700"
-          >
-            Visit the FAQ{" "}
-            <span aria-hidden="true" className="ml-2">
-              →
-            </span>
+            Browse all articles
           </Link>
         </div>
       </div>

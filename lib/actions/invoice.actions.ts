@@ -150,6 +150,7 @@ export const getInvoicesList = async ({
     .select(
       `
     id,
+    business_id,
     invoice_number,
     total,
     status,
@@ -227,6 +228,7 @@ export const getInvoices = async (
     .select(
       `
       id,
+      business_id,
       invoice_number,
       total,
       status,
@@ -659,4 +661,86 @@ export const sendInvoiceEmailAction = async (
     updatedStatus: "sent",
     emailId: emailData?.id,
   };
+};
+
+export const getMonthlyRevenue = async (businessId: number) => {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
+  const supabase = createSupabaseClient();
+
+  // Get invoices for the last 12 months
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  oneYearAgo.setMonth(oneYearAgo.getMonth() + 1);
+  oneYearAgo.setDate(1);
+
+  const { data: invoices, error } = await supabase
+    .from("Invoices")
+    .select("issue_date, total, status")
+    .eq("business_id", businessId)
+    .eq("status", "paid")
+    .gte("issue_date", oneYearAgo.toISOString());
+
+  if (error) {
+    console.error(
+      "Error fetching monthly revenue:",
+      JSON.stringify(error, null, 2)
+    );
+    return [];
+  }
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const today = new Date();
+  const result = [];
+
+  // Initialize last 12 months
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const monthName = months[d.getMonth()];
+    result.push({ name: monthName, total: 0 });
+  }
+
+  // Map for quick lookup (handling potential duplicate month names if we span > 1 year? No, logic ensures 12 distinct months usually, but if we wrap around, month names repeat.
+  // Actually, with 12 months, names are unique unless we span more.
+  // But wait, if I go back 11 months from Nov, I get Dec, Jan... Nov. Unique.
+  // However, using a Map by name might be risky if I had multiple years, but here it's strictly last 12 months.
+  // A better way is to key by "Year-Month".
+
+  const resultMap = new Map();
+  result.forEach((item) => resultMap.set(item.name, item));
+
+  invoices.forEach((inv) => {
+    if (!inv.issue_date) return;
+    const date = new Date(inv.issue_date);
+    const monthName = months[date.getMonth()];
+
+    // We need to make sure this invoice falls into one of our buckets.
+    // Since we filtered by gte oneYearAgo, it should be fine, but let's be safe.
+    // The issue is if we have same month name (e.g. Nov 2024 and Nov 2025).
+    // My loop generates 12 buckets. If today is Nov 23, 2025.
+    // i=11 -> Dec 2024. i=0 -> Nov 2025.
+    // So names are unique: Dec, Jan, Feb... Nov.
+
+    const item = resultMap.get(monthName);
+    if (item) {
+      item.total += Number(inv.total);
+    }
+  });
+
+  return result;
 };

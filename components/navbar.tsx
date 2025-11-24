@@ -19,12 +19,14 @@ import { ThemeToggle } from "@/components/theme-toggle";
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const businessId = searchParams?.get("business_id");
   const [storedBusinessId, setStoredBusinessId] = useState<string | null>(null);
 
   useEffect(() => {
+    setMounted(true);
     if (typeof window === "undefined") {
       return;
     }
@@ -67,71 +69,33 @@ export default function Navbar() {
 
   return (
     <motion.nav
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+      className={`fixed w-full top-0 z-50 transition-all duration-300 border-b ${
         scrolled
-          ? "backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 shadow-md"
-          : "bg-transparent"
-      } border-b border-gray-200/50 dark:border-slate-700/50`}
+          ? "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-slate-200/50 dark:border-slate-800/50 shadow-sm"
+          : "bg-transparent border-transparent"
+      }`}
     >
-      <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <SignedOut>
-              <Link href="/" className="flex items-center space-x-2">
-                <motion.div
-                  initial={{ rotate: -10, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden"
-                >
-                  <Image
-                    src="/logo.png"
-                    alt="InvoiceFlow logo"
-                    height={24}
-                    width={24}
-                    className="object-contain"
-                  />
-                </motion.div>
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="text-xl font-bold text-header-text dark:text-slate-100"
-                >
-                  InvoiceFlow
-                </motion.span>
-              </Link>
-            </SignedOut>
-            <SignedIn>
-              <Link href="/dashboard" className="flex items-center space-x-2">
-                <motion.div
-                  initial={{ rotate: -10, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center overflow-hidden"
-                >
-                  <Image
-                    src="/logo.png"
-                    alt="InvoiceFlow logo"
-                    height={24}
-                    width={24}
-                    className="object-contain"
-                  />
-                </motion.div>
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="text-xl font-bold text-header-text dark:text-slate-100"
-                >
-                  InvoiceFlow
-                </motion.span>
-              </Link>
-            </SignedIn>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 transition-transform group-hover:scale-105">
+                <Image
+                  src="/logo.png"
+                  alt="InvoiceFlow logo"
+                  height={20}
+                  width={20}
+                  className="object-contain invert brightness-0"
+                />
+              </div>
+              <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+                InvoiceFlow
+              </span>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
@@ -142,63 +106,67 @@ export default function Navbar() {
             className="hidden md:flex items-center space-x-8"
           >
             {/* Show different links based on authentication status */}
-            <SignedOut>
-              <Link
-                href="#features"
-                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
-              >
-                Features
-              </Link>
-              <Link
-                href="/upgrade"
-                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
-              >
-                Pricing
-              </Link>
-              <Link
-                href="#testimonials"
-                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
-              >
-                Testimonials
-              </Link>
-              <Link
-                href="/contact"
-                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
-              >
-                Contact
-              </Link>
-            </SignedOut>
-
-            <SignedIn>
-              <Link
-                href="/dashboard"
-                className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
-              >
-                Dashboard
-              </Link>
+            {mounted && (
               <>
-                <Link
-                  href={
-                    resolvedBusinessId
-                      ? `/dashboard/clients?business_id=${resolvedBusinessId}`
-                      : "/dashboard"
-                  }
-                  className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
-                >
-                  Clients
-                </Link>
-                <Link
-                  href={
-                    resolvedBusinessId
-                      ? `/dashboard/invoices?business_id=${resolvedBusinessId}`
-                      : "/dashboard"
-                  }
-                  className="text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 transition-colors font-medium"
-                >
-                  Invoices
-                </Link>
+                <SignedOut>
+                  <Link
+                    href="#features"
+                    className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+                  >
+                    Features
+                  </Link>
+                  <Link
+                    href="/upgrade"
+                    className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+                  >
+                    Pricing
+                  </Link>
+                  <Link
+                    href="#testimonials"
+                    className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+                  >
+                    Testimonials
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+                  >
+                    Contact
+                  </Link>
+                </SignedOut>
+
+                <SignedIn>
+                  <Link
+                    href="/dashboard"
+                    className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+                  >
+                    Dashboard
+                  </Link>
+                  <>
+                    <Link
+                      href={
+                        resolvedBusinessId
+                          ? `/dashboard/clients?business_id=${resolvedBusinessId}`
+                          : "/dashboard"
+                      }
+                      className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+                    >
+                      Clients
+                    </Link>
+                    <Link
+                      href={
+                        resolvedBusinessId
+                          ? `/dashboard/invoices?business_id=${resolvedBusinessId}`
+                          : "/dashboard"
+                      }
+                      className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+                    >
+                      Invoices
+                    </Link>
+                  </>
+                </SignedIn>
               </>
-            </SignedIn>
+            )}
           </motion.div>
 
           {/* Desktop Auth & Mobile Menu Button */}
@@ -213,31 +181,37 @@ export default function Navbar() {
 
             {/* Desktop Authentication */}
             <div className="hidden md:flex items-center space-x-3">
-              <SignedOut>
-                <SignInButton>
-                  <Button
-                    variant="ghost"
-                    className="text-primary-text hover:text-primary hover:bg-blue-50 dark:text-slate-300 dark:hover:bg-slate-800"
-                  >
-                    Log in
-                  </Button>
-                </SignInButton>
-                <SignUpButton>
-                  <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-cyan-500 text-white rounded-xl px-6">
-                    Sign up
-                  </Button>
-                </SignUpButton>
-              </SignedOut>
-              <SignedIn>
-                <UserButton afterSignOutUrl="/" />
-              </SignedIn>
+              {mounted && (
+                <>
+                  <SignedOut>
+                    <SignInButton>
+                      <Button
+                        variant="ghost"
+                        className="text-slate-600 hover:text-blue-600 hover:bg-blue-50 dark:text-slate-300 dark:hover:bg-slate-800"
+                      >
+                        Log in
+                      </Button>
+                    </SignInButton>
+                    <SignUpButton>
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 shadow-lg shadow-blue-500/20">
+                        Sign up
+                      </Button>
+                    </SignUpButton>
+                  </SignedOut>
+                  <SignedIn>
+                    <UserButton afterSignOutUrl="/" />
+                  </SignedIn>
+                </>
+              )}
             </div>
 
             {/* Mobile User Button (when signed in) */}
             <div className="md:hidden">
-              <SignedIn>
-                <UserButton afterSignOutUrl="/" />
-              </SignedIn>
+              {mounted && (
+                <SignedIn>
+                  <UserButton afterSignOutUrl="/" />
+                </SignedIn>
+              )}
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -289,28 +263,28 @@ export default function Navbar() {
                   <SignedOut>
                     <Link
                       href="#features"
-                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Features
                     </Link>
                     <Link
                       href="/upgrade"
-                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Pricing
                     </Link>
                     <Link
                       href="#testimonials"
-                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Testimonials
                     </Link>
                     <Link
                       href="/contact"
-                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Contact
@@ -320,7 +294,7 @@ export default function Navbar() {
                   <SignedIn>
                     <Link
                       href="/dashboard"
-                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Dashboard
@@ -331,7 +305,7 @@ export default function Navbar() {
                           ? `/dashboard/clients?business_id=${resolvedBusinessId}`
                           : "/dashboard"
                       }
-                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Clients
@@ -342,7 +316,7 @@ export default function Navbar() {
                           ? `/dashboard/invoices?business_id=${resolvedBusinessId}`
                           : "/dashboard"
                       }
-                      className="px-4 py-3 text-primary-text dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
+                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
                       onClick={closeMenu}
                     >
                       Invoices
@@ -355,7 +329,7 @@ export default function Navbar() {
                       <SignInButton>
                         <Button
                           variant="secondary"
-                          className="w-full py-3 text-base font-medium border-blue-200 dark:border-slate-700 text-primary dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all duration-200"
+                          className="w-full py-3 text-base font-medium border-blue-200 dark:border-slate-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all duration-200"
                           onClick={closeMenu}
                         >
                           Sign In
@@ -363,7 +337,7 @@ export default function Navbar() {
                       </SignInButton>
                       <SignUpButton>
                         <Button
-                          className="w-full py-3 text-base font-medium bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-cyan-500 text-white rounded-xl transition-all duration-200"
+                          className="w-full py-3 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/20"
                           onClick={closeMenu}
                         >
                           Get Started Free

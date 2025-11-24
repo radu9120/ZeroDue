@@ -112,7 +112,7 @@ export default function RootLayout({
             </Script>
             <Analytics />
             <Suspense fallback={null}>
-              <HideOnRoutes routes={["/invoice"]}>
+              <HideOnRoutes routes={["/invoice", "/dashboard"]}>
                 <Navbar />
               </HideOnRoutes>
             </Suspense>
@@ -121,7 +121,7 @@ export default function RootLayout({
             </Suspense>
             <div id="modal-root"></div>
             <Toaster richColors position="top-right" />
-            <HideOnRoutes routes={["/invoice"]}>
+            <HideOnRoutes routes={["/invoice", "/dashboard"]}>
               <Footer />
             </HideOnRoutes>
             <CookieBanner />

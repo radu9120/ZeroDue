@@ -807,25 +807,21 @@ export default function InvoiceSuccessView({
 
   return (
     <main
-      className={`relative w-full min-h-[100vh] ${
-        isPublicView ? "py-12 bg-gray-50 dark:bg-slate-900" : "pt-24 md:pt-28"
+      className={`relative w-full ${
+        isPublicView ? "min-h-[100vh] py-12 bg-gray-50 dark:bg-slate-900" : ""
       }`}
     >
-      {!isPublicView && (
-        <>
-          <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-white to-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 z-0" />
-          <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-green-100/40 dark:bg-green-900/20 mix-blend-multiply blur-3xl"></div>
-        </>
-      )}
-
       <div className="relative z-10 max-w-6xl mx-auto lg:p-4  space-y-6 md:space-y-8">
         {!isPublicView && (
-          <div className="mb-2">
-            <Link
-              href={`/dashboard/invoices?business_id=${company.id}`}
-              className="inline-flex items-center text-primary hover:text-primary-dark transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" /> Back to Invoices
+          <div className="mb-4 flex justify-end">
+            <Link href={`/dashboard/invoices?business_id=${company.id}`}>
+              <Button
+                variant="neutralOutline"
+                size="sm"
+                className="border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+              >
+                View All Invoices
+              </Button>
             </Link>
           </div>
         )}
@@ -1009,23 +1005,6 @@ export default function InvoiceSuccessView({
             }
           }
         `}</style>
-
-        {!isPublicView && (
-          <div className="flex gap-4 justify-center pt-6">
-            <Link
-              href={`/dashboard/business?business_id=${company.id}&name=${encodeURIComponent(company.name)}`}
-            >
-              <CustomButton
-                label="Back to Dashboard"
-                icon={ArrowLeft}
-                variant="secondary"
-              />
-            </Link>
-            <Link href={`/dashboard/invoices?business_id=${company.id}`}>
-              <CustomButton label="View All Invoices" variant="primary" />
-            </Link>
-          </div>
-        )}
       </div>
     </main>
   );

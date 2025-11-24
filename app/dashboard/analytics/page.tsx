@@ -20,6 +20,8 @@ import {
   getRevenueSeries,
   getInvoiceStatusBreakdown,
 } from "@/lib/actions/analytics.actions";
+import { getBusiness, getUserBusinesses } from "@/lib/actions/business.actions";
+import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";
 
 export const revalidate = 0;
 
@@ -33,11 +35,23 @@ export default async function AnalyticsPage({
   if (!business_id) redirect("/dashboard");
 
   const bizId = Number(business_id);
-  const [overview, revenueData, invoiceStatusData] = await Promise.all([
+  const [
+    overview,
+    revenueData,
+    invoiceStatusData,
+    business,
+    allBusinesses,
+    userPlan,
+  ] = await Promise.all([
     getOverview(bizId, 30),
     getRevenueSeries(bizId, 6),
     getInvoiceStatusBreakdown(bizId, 90),
+    getBusiness({ business_id: bizId }),
+    getUserBusinesses(),
+    getCurrentPlan(),
   ]);
+
+  if (!business) redirect("/dashboard");
 
   const maxRevenue = Math.max(0, ...revenueData.map((d) => d.amount));
   const totalInvoices = invoiceStatusData.reduce(
@@ -61,19 +75,17 @@ export default async function AnalyticsPage({
   const collectionRate = overview.total
     ? Math.round((overview.paid / overview.total) * 100)
     : 0;
-  const userPlan: AppPlan = await getCurrentPlan();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 bg-white dark:bg-slate-900 pt-24 md:pt-28">
-      <div className="container mx-auto px-4 md:px-6 py-8">
+    <DashboardShell
+      business={business}
+      allBusinesses={allBusinesses}
+      activePage="analytics"
+      userPlan={userPlan as AppPlan}
+    >
+      <div className="space-y-8">
         {/* Header */}
-        <div className="mb-8">
-          <Link
-            href={`/dashboard/business?business_id=${business_id}`}
-            className="inline-flex items-center text-primary hover:text-primary-dark mb-4 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" /> Back to Business Dashboard
-          </Link>
+        <div>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
               <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
@@ -162,141 +174,138 @@ export default async function AnalyticsPage({
                   {collectionRate}%
                 </p>
               </div>
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-green-600" />
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+                <PieChart className="h-6 w-6 text-orange-600" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Charts Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Revenue Chart */}
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-header-text dark:text-slate-100">
-                Revenue Trend
-              </h2>
-              <BarChart3 className="h-5 w-5 text-secondary-text dark:text-slate-400" />
-            </div>
-            <div className="h-64 p-4">
-              <div className="h-full flex items-end justify-between gap-4">
-                {revenueData.map((d, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center">
-                    <div
-                      className="w-full bg-gradient-to-t from-primary to-accent dark:from-blue-500 dark:to-indigo-400 rounded-t-lg"
-                      style={{
-                        height: `${
-                          maxRevenue ? (d.amount / maxRevenue) * 100 : 0
-                        }%`,
-                        minHeight: "20px",
-                      }}
-                    />
-                    <span className="text-sm text-secondary-text dark:text-slate-400 mt-2">
-                      {d.month}
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Revenue Trend */}
+          <div className="lg:col-span-2 bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
+            <h3 className="text-lg font-bold text-header-text dark:text-slate-100 mb-6">
+              Revenue Trend
+            </h3>
+            <div className="h-64 flex items-end justify-between gap-2">
+              {revenueData.map((item, i) => {
+                const height = maxRevenue
+                  ? (item.amount / maxRevenue) * 100
+                  : 0;
+                return (
+                  <div
+                    key={i}
+                    className="flex-1 flex flex-col items-center gap-2 group"
+                  >
+                    <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-t-lg relative h-full flex items-end overflow-hidden">
+                      <div
+                        className="w-full bg-blue-500 dark:bg-blue-600 transition-all duration-500 group-hover:bg-blue-400"
+                        style={{ height: `${height}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-xs text-secondary-text dark:text-slate-400">
+                      {item.month}
                     </span>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* Invoice Status Pie Chart */}
+          {/* Invoice Status */}
           <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-header-text dark:text-slate-100">
-                Invoice Status
-              </h2>
-              <PieChart className="h-5 w-5 text-secondary-text dark:text-slate-400" />
-            </div>
-            <div className="h-64 flex items-center justify-center">
-              <div className="relative">
-                <svg width="200" height="200" className="transform -rotate-90">
-                  {pieSlices.map((slice: any, i: number) => {
-                    const radius = 80;
-                    const centerX = 100;
-                    const centerY = 100;
-                    const startAngleRad = (slice.startAngle * Math.PI) / 180;
-                    const endAngleRad = (slice.endAngle * Math.PI) / 180;
-                    const x1 = centerX + radius * Math.cos(startAngleRad);
-                    const y1 = centerY + radius * Math.sin(startAngleRad);
-                    const x2 = centerX + radius * Math.cos(endAngleRad);
-                    const y2 = centerY + radius * Math.sin(endAngleRad);
-                    const largeArcFlag =
-                      slice.endAngle - slice.startAngle > 180 ? 1 : 0;
-                    const pathData = [
-                      `M ${centerX} ${centerY}`,
-                      `L ${x1} ${y1}`,
-                      `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-                      "Z",
-                    ].join(" ");
-                    return (
-                      <path
-                        key={i}
-                        d={pathData}
-                        fill={slice.color}
-                        stroke="white"
-                        strokeWidth="2"
-                      />
-                    );
-                  })}
-                </svg>
-                {/* Legend */}
-                <div className="absolute -right-32 top-0 space-y-2">
-                  {pieSlices.map((slice: any, i: number) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: slice.color }}
-                      />
-                      <span className="text-sm text-primary-text dark:text-slate-300">
-                        {slice.status}: {slice.percentage}% (
-                        {invoiceStatusData[i].count})
-                      </span>
-                    </div>
-                  ))}
+            <h3 className="text-lg font-bold text-header-text dark:text-slate-100 mb-6">
+              Invoice Status
+            </h3>
+            <div className="relative h-64 w-64 mx-auto">
+              <svg
+                viewBox="0 0 100 100"
+                className="transform -rotate-90 w-full h-full"
+              >
+                {pieSlices.map((slice, i) => {
+                  const x1 =
+                    50 + 40 * Math.cos((Math.PI * slice.startAngle) / 180);
+                  const y1 =
+                    50 + 40 * Math.sin((Math.PI * slice.startAngle) / 180);
+                  const x2 =
+                    50 + 40 * Math.cos((Math.PI * slice.endAngle) / 180);
+                  const y2 =
+                    50 + 40 * Math.sin((Math.PI * slice.endAngle) / 180);
+                  const largeArcFlag =
+                    slice.endAngle - slice.startAngle > 180 ? 1 : 0;
+                  const pathData = [
+                    `M 50 50`,
+                    `L ${x1} ${y1}`,
+                    `A 40 40 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+                    `Z`,
+                  ].join(" ");
+                  const colors: Record<string, string> = {
+                    paid: "#22c55e",
+                    pending: "#eab308",
+                    overdue: "#ef4444",
+                    draft: "#94a3b8",
+                  };
+                  return (
+                    <path
+                      key={i}
+                      d={pathData}
+                      fill={colors[slice.status] || "#cbd5e1"}
+                      className="hover:opacity-80 transition-opacity"
+                    />
+                  );
+                })}
+                {/* Center hole for donut chart */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="25"
+                  className="fill-white dark:fill-slate-800"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-center">
+                  <span className="text-2xl font-bold text-header-text dark:text-slate-100">
+                    {totalInvoices}
+                  </span>
+                  <p className="text-xs text-secondary-text dark:text-slate-400">
+                    Invoices
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Summary Stats */}
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700 mt-8">
-          <h2 className="text-xl font-semibold text-header-text dark:text-slate-100 mb-6">
-            Quick Summary
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {invoiceStatusData.map((item, index) => (
-              <div
-                key={index}
-                className="text-center p-4 bg-blue-50 dark:bg-slate-800/60 border border-blue-100 dark:border-slate-700 rounded-lg"
-              >
+            <div className="mt-6 space-y-2">
+              {pieSlices.map((slice, i) => (
                 <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3"
-                  style={{ backgroundColor: `${item.color}20` }}
+                  key={i}
+                  className="flex items-center justify-between text-sm"
                 >
-                  <span
-                    className="text-2xl font-bold"
-                    style={{ color: item.color }}
-                  >
-                    {item.count}
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-3 h-3 rounded-full ${
+                        slice.status === "paid"
+                          ? "bg-green-500"
+                          : slice.status === "pending"
+                            ? "bg-yellow-500"
+                            : slice.status === "overdue"
+                              ? "bg-red-500"
+                              : "bg-slate-400"
+                      }`}
+                    />
+                    <span className="capitalize text-secondary-text dark:text-slate-300">
+                      {slice.status}
+                    </span>
+                  </div>
+                  <span className="font-medium text-header-text dark:text-slate-100">
+                    {slice.percentage}%
                   </span>
                 </div>
-                <p className="text-sm font-medium text-secondary-text dark:text-slate-400">
-                  {item.status} Invoices
-                </p>
-                <p className="text-xs text-secondary-text dark:text-slate-400 mt-1">
-                  {((item.count / (totalInvoices || 1)) * 100).toFixed(1)}% of
-                  total
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-
-        <PlanWatcher initialPlan={userPlan} />
       </div>
-    </div>
+      <PlanWatcher initialPlan={userPlan} />
+    </DashboardShell>
   );
 }

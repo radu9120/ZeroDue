@@ -8,7 +8,7 @@ import {
   getCurrentMonthInvoiceCountForUser,
   getInvoices,
 } from "@/lib/actions/invoice.actions";
-import { getBusiness } from "@/lib/actions/business.actions";
+import { getBusiness, getUserBusinesses } from "@/lib/actions/business.actions";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CustomButton from "@/components/ui/CustomButton";
@@ -36,6 +36,8 @@ import {
 } from "@/components/ui/select";
 import getStatusBadge from "@/components/ui/getStatusBadge";
 import PlanWatcher from "../../../components/PlanWatcher";
+import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";
+import InvoiceList from "@/components/Business/Invoices/InvoiceList";
 
 export const revalidate = 0;
 
@@ -57,27 +59,30 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
   const currentPage = parseInt(params.page || "1");
   const sortOrder = params.sort || "desc";
 
-  if (!businessId) {
+  if (!businessId || isNaN(parseInt(businessId))) {
     redirect("/dashboard");
   }
 
-  const [business, invoicesData, allInvoicesCount, monthCount] =
+  const parsedBusinessId = parseInt(businessId);
+
+  const [business, invoicesData, allInvoicesCount, monthCount, allBusinesses] =
     await Promise.all([
-      getBusiness({ business_id: parseInt(businessId) }),
-      getInvoices(parseInt(businessId), {
+      getBusiness({ business_id: parsedBusinessId }),
+      getInvoices(parsedBusinessId, {
         search: searchQuery,
         status: statusFilter,
         page: currentPage,
-        limit: 12,
+        limit: 6,
       }),
       // Lightweight count-only fetch ignoring filters to decide plan gating
-      getInvoices(parseInt(businessId), {
+      getInvoices(parsedBusinessId, {
         search: "",
         status: "all",
         page: 1,
         limit: 1,
       }),
       getCurrentMonthInvoiceCountForUser(),
+      getUserBusinesses(),
     ]);
 
   if (!business) {
@@ -116,21 +121,14 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
   };
 
   return (
-    <main className="relative w-full min-h-screen bg-gray-50 dark:bg-slate-900 pt-24 md:pt-28">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 z-0" />
-      <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/30 dark:bg-blue-900/20 mix-blend-multiply blur-3xl"></div>
-
-      <div className="relative z-10 max-w-7xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
-        <div className="mb-2">
-          <Link
-            href={`/dashboard/business?business_id=${businessId}`}
-            className="inline-flex items-center text-primary hover:text-primary-dark transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" /> Back to Business Dashboard
-          </Link>
-        </div>
-
+    <DashboardShell
+      business={business}
+      allBusinesses={allBusinesses}
+      activePage="invoices"
+      pendingInvoicesCount={stats.pending}
+      userPlan={plan}
+    >
+      <div className="space-y-6 md:space-y-8">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center space-x-3 md:space-x-4">
@@ -297,154 +295,16 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
           </CardContent>
         </Card>
 
-        {/* Invoices Grid */}
-        {invoices && invoices.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {invoices.map((invoice: any) => {
-              // Parse bill_to safely
-              let billTo = null;
-              try {
-                if (typeof invoice.bill_to === "string") {
-                  billTo = JSON.parse(invoice.bill_to);
-                } else if (
-                  invoice.bill_to &&
-                  typeof invoice.bill_to === "object"
-                ) {
-                  billTo = invoice.bill_to;
-                }
-              } catch (error) {
-                console.error("Error parsing bill_to:", error);
-              }
-
-              return (
-                <Card
-                  key={invoice.id}
-                  className="shadow-lg border-0 hover:shadow-xl transition-all duration-300 group"
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                          <FileText className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-lg text-gray-900 dark:text-slate-100">
-                            {invoice.invoice_number}
-                          </h3>
-                          <p className="text-sm text-gray-500 dark:text-slate-500">
-                            {billTo?.name || "No client"}
-                          </p>
-                        </div>
-                      </div>
-                      {getStatusBadge(invoice.status)}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600 dark:text-slate-400">
-                        Amount:
-                      </span>
-                      <span className="text-xl font-bold text-gray-900 dark:text-slate-100">
-                        £{(invoice.total || 0).toFixed(2)}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600 dark:text-slate-400">
-                        Due Date:
-                      </span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-slate-100">
-                        {formatDate(invoice.due_date)}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center pt-2">
-                      <span className="text-sm text-gray-600 dark:text-slate-400">
-                        Created:
-                      </span>
-                      <span className="text-sm text-gray-500 dark:text-slate-500">
-                        {formatDate(invoice.created_at)}
-                      </span>
-                    </div>
-
-                    <div className="flex gap-2 pt-4 border-t border-gray-100">
-                      <Link
-                        href={`/dashboard/invoices/success?business_id=${businessId}&invoice_id=${invoice.id}`}
-                        className="flex-1"
-                      >
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full hover:bg-blue-50"
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          View
-                        </Button>
-                      </Link>
-                      <Link
-                        href={`/dashboard/invoices/success?business_id=${businessId}&invoice_id=${invoice.id}&download=1`}
-                        aria-label="Download invoice PDF"
-                      >
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="hover:bg-gray-50"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        ) : (
-          <Card className="shadow-lg border-0">
-            <CardContent className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <FileText className="h-8 w-8 text-gray-400 dark:text-slate-500" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-2">
-                No invoices found
-              </h3>
-              <p className="text-gray-500 dark:text-slate-400 mb-6">
-                {searchQuery || statusFilter !== "all"
-                  ? "Try adjusting your search or filter criteria"
-                  : "Create your first invoice to get started"}
-              </p>
-              <Link href={`/dashboard/invoices/new?business_id=${businessId}`}>
-                <CustomButton
-                  label="Create Invoice"
-                  icon={Plus}
-                  variant="primary"
-                />
-              </Link>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <Link
-                key={page}
-                href={`/dashboard/invoices?business_id=${businessId}&page=${page}&search=${searchQuery}&status=${statusFilter}&sort=${sortOrder}`}
-              >
-                <Button
-                  variant={currentPage === page ? "primary" : "ghost"}
-                  size="sm"
-                  className="w-10 h-10"
-                >
-                  {page}
-                </Button>
-              </Link>
-            ))}
-          </div>
-        )}
+        <InvoiceList
+          initialInvoices={invoices}
+          businessId={parsedBusinessId}
+          totalCount={totalCount || 0}
+          searchQuery={searchQuery}
+          statusFilter={statusFilter}
+          sortOrder={sortOrder}
+        />
       </div>
       <PlanWatcher initialPlan={plan} />
-    </main>
+    </DashboardShell>
   );
 }

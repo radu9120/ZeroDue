@@ -1,12 +1,14 @@
 import ClientManagement from "@/components/Clients/ClientManagement";
 import Bounded from "@/components/ui/BoundedSection";
 import { getAllClients } from "@/lib/actions/client.actions";
+import { getBusiness, getUserBusinesses } from "@/lib/actions/business.actions";
 import { SearchParams } from "@/types";
 import { redirect } from "next/navigation";
 import PlanWatcher from "../../../components/PlanWatcher";
 import { currentUser } from "@clerk/nextjs/server";
 import { type AppPlan } from "@/lib/utils";
 import { getCurrentPlan } from "@/lib/plan";
+import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";
 
 export const revalidate = 0;
 
@@ -21,15 +23,24 @@ export default async function Page({
 
   if (!business_id) redirect("/dashboard");
 
-  const clients = await getAllClients({ business_id: business_id });
-  const userPlan: AppPlan = await getCurrentPlan();
+  const [clients, userPlan, business, allBusinesses] = await Promise.all([
+    getAllClients({ business_id: business_id }),
+    getCurrentPlan(),
+    getBusiness({ business_id: parseInt(business_id) }),
+    getUserBusinesses(),
+  ]);
+
+  if (!business) redirect("/dashboard");
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-slate-800 transition-colors">
-      <Bounded className="">
-        <ClientManagement clients={clients} business_id={business_id} />
-      </Bounded>
+    <DashboardShell
+      business={business}
+      allBusinesses={allBusinesses}
+      activePage="clients"
+      userPlan={userPlan}
+    >
+      <ClientManagement clients={clients} business_id={business_id} />
       <PlanWatcher initialPlan={userPlan} />
-    </main>
+    </DashboardShell>
   );
 }

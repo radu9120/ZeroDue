@@ -1,365 +1,447 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle, FileText } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle,
+  PlayCircle,
+  LayoutDashboard,
+  FileText,
+  Users,
+  Settings,
+  Search,
+  Bell,
+  ChevronDown,
+  MoreHorizontal,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react";
 import CompanyBanner from "./companies-banner";
-import { memo, useEffect, useMemo, useState } from "react";
-
-const FloatingPaths = memo(function FloatingPaths({
-  position,
-}: {
-  position: number;
-}) {
-  const paths = useMemo(
-    () =>
-      Array.from({ length: 18 }, (_, i) => ({
-        id: i,
-        d: `M-${380 - i * 6 * position} -${189 + i * 8}C-${
-          380 - i * 6 * position
-        } -${189 + i * 8} -${312 - i * 6 * position} ${216 - i * 8} ${
-          152 - i * 6 * position
-        } ${343 - i * 8}C${616 - i * 6 * position} ${470 - i * 8} ${
-          684 - i * 6 * position
-        } ${875 - i * 8} ${684 - i * 6 * position} ${875 - i * 8}`,
-        width: 0.7 + i * 0.05,
-        duration: 15 + Math.random() * 10,
-      })),
-    [position]
-  );
-
-  return (
-    <div className="absolute inset-0 pointer-events-none opacity-40">
-      <svg
-        className="w-full h-full text-primary"
-        viewBox="0 0 696 316"
-        fill="none"
-      >
-        {paths.map((path) => (
-          <motion.path
-            key={path.id}
-            d={path.d}
-            stroke="currentColor"
-            strokeWidth={path.width}
-            strokeOpacity={0.15}
-            initial={{ pathLength: 0.4 }}
-            animate={{
-              pathLength: 0.8,
-              pathOffset: [0, 0.5, 0],
-            }}
-            transition={{
-              duration: path.duration,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-        ))}
-      </svg>
-    </div>
-  );
-});
-FloatingPaths.displayName = "FloatingPaths";
-
-function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 768px)");
-
-    const updateMatch = () => setIsDesktop(mediaQuery.matches);
-    updateMatch();
-
-    mediaQuery.addEventListener("change", updateMatch);
-    return () => mediaQuery.removeEventListener("change", updateMatch);
-  }, []);
-
-  return isDesktop;
-}
+import { useRef } from "react";
+import { HeroGlow } from "@/components/ui/hero-glow";
 
 export default function Hero() {
-  const isDesktop = useIsDesktop();
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
   return (
-    <div className="relative w-full min-h-[100vh] overflow-hidden flex items-center pt-28 md:pt-32">
-      {/* Background elements OUTSIDE of Bounded */}
-      <div
-        className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900"
-        aria-hidden="true"
-      >
-        {isDesktop && <FloatingPaths position={1} />}
+    <section
+      ref={containerRef}
+      className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden"
+    >
+      {/* Background */}
+      <div className="absolute inset-0 -z-10">
+        <HeroGlow />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
       </div>
 
-      {/* Background blobs kept for larger viewports to reduce mobile paint cost */}
-      {isDesktop && (
-        <>
-          <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/40 dark:bg-blue-900/20 mix-blend-multiply dark:mix-blend-screen blur-3xl" />
-          <div className="absolute bottom-20 left-10 md:left-40 w-48 md:w-72 h-48 md:h-72 rounded-full bg-cyan-100/30 dark:bg-cyan-900/20 mix-blend-multiply dark:mix-blend-screen blur-3xl" />
-        </>
-      )}
+      <div className="container mx-auto px-4 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-4xl mx-auto space-y-8"
+        >
+          {/* Badge */}
+          {/* <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300 mb-4">
+            <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
+            New: AI-Powered Invoicing
+          </div> */}
 
-      {/* Removed Bounded as it need to be a bit more wide */}
-      <div className="relative z-10 w-full mx-auto px-4 md:px-6 lg:px-12 lg:py-24 xl:py-24 py-10 max-w-[1500px] space-y-8 md:space-y-16">
-        <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-16">
-          {/* Left column */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="md:w-5/12"
-          >
-            {/* Mobile: smaller text, desktop unchanged */}
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-8 text-header-text dark:text-slate-100 leading-tight">
-              Get paid
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-accent dark:from-[#569cd6] dark:to-[#4ec9b0] ml-2 md:ml-3">
-                faster
-              </span>
-            </h1>
+          {/* Headline */}
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+            Invoicing made <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
+              beautifully simple.
+            </span>
+          </h1>
 
-            {/* Mobile: smaller text, desktop unchanged */}
-            <p className="text-base md:text-xl text-primary-text dark:text-slate-300 mb-6 md:mb-10 max-w-lg">
-              Create professional invoices in seconds and automate your payment
-              process.
-            </p>
+          {/* Subheadline */}
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Stop chasing payments. Start getting paid. The all-in-one invoicing
+            platform designed for freelancers and small businesses.
+          </p>
 
-            {/* Mobile: vertical stack, desktop unchanged */}
-            <div className="flex flex-col sm:flex-wrap sm:flex-row gap-3 sm:gap-x-8 md:gap-x-12 sm:gap-y-4 mb-6 md:mb-10">
-              {[
-                "Save 5+ hours weekly",
-                "Get paid 3x faster",
-                "Professional invoices",
-              ].map((feature, i) => (
-                <div key={i} className="flex items-center">
-                  <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-primary dark:text-blue-400 mr-2 shrink-0" />
-                  <span className="text-primary-text dark:text-slate-300 text-sm md:text-base font-medium">
-                    {feature}
-                  </span>
-                </div>
-              ))}
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <Button
+              size="lg"
+              className="h-12 px-8 rounded-full text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all"
+              asChild
+            >
+              <Link href="/sign-up">
+                Start for free <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+
+          {/* Trust Badges */}
+          <div className="pt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-blue-500" /> No credit card
+              required
             </div>
-
-            {/* Mobile: better button sizing, desktop unchanged */}
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-6 md:mb-10">
-              <Button
-                size="lg"
-                className="flex-none w-full sm:w-auto rounded-xl px-6 md:px-7 text-base md:text-lg font-semibold
-                  bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600
-                  text-white shadow-md hover:shadow-lg hover:shadow-primary/20"
-                asChild
-              >
-                <Link
-                  href="/sign-up"
-                  className="flex w-full items-center justify-center gap-2"
-                >
-                  Get Started
-                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
-                </Link>
-              </Button>
-
-              <Button
-                size="lg"
-                variant="secondary"
-                className="flex-none w-full sm:w-auto rounded-xl px-6 md:px-7 text-base md:text-lg font-semibold
-                  border border-neutral-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 bg-white dark:bg-slate-800
-                  text-primary-text dark:text-slate-300 hover:bg-blue-50/50 dark:hover:bg-slate-700"
-                asChild
-              >
-                <a
-                  href="#features"
-                  className="flex w-full items-center justify-center"
-                >
-                  Learn More
-                </a>
-              </Button>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-blue-500" /> 60-day free
+              trial
             </div>
-          </motion.div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-blue-500" /> Cancel anytime
+            </div>
+          </div>
+        </motion.div>
 
-          {/* Right column - desktop rich preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="hidden md:flex md:w-7/12 justify-center md:justify-end relative"
-          >
-            {/* Browser mockup - mobile optimized sizing */}
-            <div className="relative w-full max-w-sm md:max-w-[550px] shadow-xl rounded-xl border border-neutral-200 dark:border-slate-700 overflow-hidden">
-              {/* Browser chrome - smaller on mobile */}
-              <div className="h-8 md:h-10 bg-white dark:bg-slate-800 border-b border-neutral-100 dark:border-slate-700 flex items-center px-3 md:px-4">
-                <div className="flex items-center space-x-1.5 md:space-x-2 flex-shrink-0">
-                  <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-400"></div>
-                  <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-yellow-400"></div>
-                  <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-green-400"></div>
+        {/* Dashboard Preview (No Tilt for Sharpness) */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, type: "spring" }}
+          style={{ y }}
+          className="mt-20 relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
+        >
+          <div className="relative rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl dark:border-slate-800 dark:bg-slate-950 ring-1 ring-slate-900/5">
+            {/* The Mockup Content */}
+            <div className="rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 aspect-[16/10] md:aspect-[16/9] shadow-inner relative flex flex-col">
+              {/* Mockup Header */}
+              <div className="h-14 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 justify-between bg-white dark:bg-slate-900 shrink-0 z-20">
+                <div className="flex items-center gap-8">
+                  <div className="flex gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-400/80" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-400/80" />
+                    <div className="w-3 h-3 rounded-full bg-green-400/80" />
+                  </div>
+                  {/* Breadcrumbs / Title */}
+                  <div className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400">
+                    <span className="text-slate-400">App</span>
+                    <span className="text-slate-300">/</span>
+                    <span className="text-slate-900 dark:text-white">
+                      Dashboard
+                    </span>
+                  </div>
                 </div>
-                <div className="mx-2 md:mx-4 flex-1 bg-neutral-50 dark:bg-slate-700 rounded-md text-xs md:text-sm text-secondary-text dark:text-slate-400 px-2 md:px-4 py-0.5 md:py-1 text-center overflow-hidden">
-                  <span className="hidden sm:inline">
-                    www.invcyflow.com/dashboard
-                  </span>
-                  <span className="sm:hidden">invcyflow.com</span>
+
+                {/* Search & Actions */}
+                <div className="flex items-center gap-4">
+                  <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700 w-64">
+                    <Search className="w-4 h-4 text-slate-400" />
+                    <span className="text-xs text-slate-400">Search...</span>
+                    <div className="ml-auto text-[10px] font-mono text-slate-400 border border-slate-300 dark:border-slate-600 rounded px-1">
+                      ⌘K
+                    </div>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center relative">
+                    <Bell className="w-4 h-4 text-slate-500" />
+                    <div className="absolute top-1.5 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border border-white dark:border-slate-800" />
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 border-2 border-white dark:border-slate-800 shadow-sm" />
                 </div>
               </div>
 
-              {/* App interface - mobile optimized */}
-              <div className="bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800">
-                {/* Dashboard content - cleaner stats preview */}
-                <div className="p-4 md:p-6">
-                  {/* Stats cards */}
-                  <div className="grid grid-cols-3 gap-3 mb-5">
+              {/* Mockup Body */}
+              <div className="flex-1 flex overflow-hidden">
+                {/* Sidebar */}
+                <div className="hidden md:flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 gap-6 shrink-0">
+                  <div className="space-y-1">
                     {[
-                      { label: "Total Invoices", value: "124", icon: "📊" },
-                      { label: "Revenue", value: "$45.2K", icon: "💰" },
-                      { label: "Clients", value: "28", icon: "👥" },
+                      {
+                        label: "Dashboard",
+                        icon: LayoutDashboard,
+                        active: true,
+                      },
+                      { label: "Invoices", icon: FileText, active: false },
+                      { label: "Clients", icon: Users, active: false },
+                      { label: "Settings", icon: Settings, active: false },
+                    ].map((item, i) => (
+                      <div
+                        key={i}
+                        className={`h-10 w-full rounded-lg flex items-center px-3 gap-3 transition-colors cursor-default ${
+                          item.active
+                            ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
+                            : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        }`}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        <span className="text-sm">{item.label}</span>
+                        {item.label === "Invoices" && (
+                          <span className="ml-auto text-[10px] font-bold bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded-full">
+                            3
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                      <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                        <div className="w-4 h-4 rounded-full bg-slate-300 dark:bg-slate-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-medium text-slate-900 dark:text-white truncate">
+                          Acme Inc.
+                        </div>
+                        <div className="text-[10px] text-slate-500 truncate">
+                          Free Plan
+                        </div>
+                      </div>
+                      <ChevronDown className="w-3 h-3 text-slate-400" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Main Content Area */}
+                <div className="flex-1 bg-slate-50/50 dark:bg-slate-950/50 p-6 overflow-hidden flex flex-col gap-6">
+                  {/* Stats Row */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {[
+                      {
+                        label: "Total Revenue",
+                        value: "$45,231.89",
+                        change: "+20.1%",
+                        trend: "up",
+                        color: "blue",
+                      },
+                      {
+                        label: "Pending Invoices",
+                        value: "$2,345.00",
+                        change: "+4.5%",
+                        trend: "up",
+                        color: "purple",
+                      },
+                      {
+                        label: "Overdue",
+                        value: "$1,200.00",
+                        change: "-12%",
+                        trend: "down",
+                        color: "red",
+                      },
                     ].map((stat, i) => (
                       <div
                         key={i}
-                        className="bg-white dark:bg-slate-800 rounded-lg p-3 shadow-md border border-gray-100 dark:border-slate-700 hover:shadow-lg transition-shadow"
+                        className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm relative overflow-hidden group"
                       >
-                        <div className="text-lg mb-1">{stat.icon}</div>
-                        <div className="text-xs text-gray-500 dark:text-slate-400 mb-1">
-                          {stat.label}
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                            {stat.label}
+                          </div>
+                          <div
+                            className={`p-1 rounded-md ${
+                              stat.color === "blue"
+                                ? "bg-blue-50 dark:bg-blue-900/20"
+                                : stat.color === "purple"
+                                  ? "bg-purple-50 dark:bg-purple-900/20"
+                                  : "bg-red-50 dark:bg-red-900/20"
+                            }`}
+                          >
+                            {stat.trend === "up" ? (
+                              <ArrowUpRight
+                                className={`w-3 h-3 ${
+                                  stat.color === "blue"
+                                    ? "text-blue-600 dark:text-blue-400"
+                                    : stat.color === "purple"
+                                      ? "text-purple-600 dark:text-purple-400"
+                                      : "text-red-600 dark:text-red-400"
+                                }`}
+                              />
+                            ) : (
+                              <ArrowDownRight
+                                className={`w-3 h-3 ${
+                                  stat.color === "blue"
+                                    ? "text-blue-600 dark:text-blue-400"
+                                    : stat.color === "purple"
+                                      ? "text-purple-600 dark:text-purple-400"
+                                      : "text-red-600 dark:text-red-400"
+                                }`}
+                              />
+                            )}
+                          </div>
                         </div>
-                        <div className="text-base md:text-lg font-bold text-blue-600 dark:text-blue-400">
+                        <div className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-1">
                           {stat.value}
+                        </div>
+                        <div className="flex items-center gap-1 text-xs">
+                          <span
+                            className={
+                              stat.trend === "up"
+                                ? "text-emerald-600"
+                                : "text-red-600"
+                            }
+                          >
+                            {stat.change}
+                          </span>
+                          <span className="text-slate-400">vs last month</span>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  {/* Revenue chart */}
-                  <div className="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-md border border-gray-100 dark:border-slate-700 mb-4">
-                    <div className="text-xs font-semibold text-gray-700 dark:text-slate-300 mb-3">
-                      Monthly Revenue
+                  {/* Chart & Recent Activity Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full min-h-0">
+                    {/* Chart Area */}
+                    <div className="md:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
+                      <div className="flex justify-between items-center mb-6">
+                        <div>
+                          <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                            Revenue Overview
+                          </div>
+                          <div className="text-xs text-slate-500">
+                            Monthly revenue performance
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="px-2 py-1 bg-slate-50 dark:bg-slate-800 rounded text-[10px] font-medium text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                            Last 12 Months
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex-1 flex items-end justify-between gap-3 px-2">
+                        {[65, 45, 75, 55, 85, 70, 90, 60, 75, 85, 95, 80].map(
+                          (h, i) => (
+                            <div
+                              key={i}
+                              className="w-full flex flex-col gap-2 group cursor-pointer"
+                            >
+                              <div className="relative w-full bg-slate-100 dark:bg-slate-800 rounded-sm h-32 md:h-40 overflow-hidden">
+                                <div
+                                  className="absolute bottom-0 left-0 right-0 bg-blue-500 dark:bg-blue-500 rounded-t-sm transition-all duration-500 ease-out group-hover:bg-blue-600"
+                                  style={{ height: `${h}%` }}
+                                >
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                                </div>
+                              </div>
+                              <div className="text-[10px] text-center text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {
+                                  [
+                                    "Jan",
+                                    "Feb",
+                                    "Mar",
+                                    "Apr",
+                                    "May",
+                                    "Jun",
+                                    "Jul",
+                                    "Aug",
+                                    "Sep",
+                                    "Oct",
+                                    "Nov",
+                                    "Dec",
+                                  ][i]
+                                }
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
-                    <div className="h-32 flex items-end justify-around gap-2">
-                      {[45, 65, 55, 75, 85, 70, 90, 95].map((height, i) => (
-                        <div
-                          key={i}
-                          className="flex-1 bg-gradient-to-t from-blue-600 to-blue-400 dark:from-blue-500 dark:to-blue-300 rounded-t hover:from-blue-700 hover:to-blue-500 transition-all cursor-pointer"
-                          style={{ height: `${height}%` }}
-                        ></div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Quick actions */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1">
-                      <span>+</span> New Invoice
-                    </button>
-                    <button className="bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-300 text-xs font-medium py-2 px-3 rounded-lg transition-colors">
-                      View All
-                    </button>
+                    {/* Recent Invoices Table */}
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+                      <div className="px-4 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                        <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                          Recent Invoices
+                        </div>
+                        <MoreHorizontal className="w-4 h-4 text-slate-400 cursor-pointer" />
+                      </div>
+                      <div className="flex-1 overflow-hidden">
+                        <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                          {[
+                            {
+                              client: "Acme Corp",
+                              amount: "$1,200.00",
+                              status: "Paid",
+                              statusColor: "emerald",
+                              date: "Today",
+                              initials: "AC",
+                            },
+                            {
+                              client: "Globex Inc",
+                              amount: "$850.00",
+                              status: "Pending",
+                              statusColor: "amber",
+                              date: "Yesterday",
+                              initials: "GI",
+                            },
+                            {
+                              client: "Soylent Corp",
+                              amount: "$2,340.00",
+                              status: "Overdue",
+                              statusColor: "red",
+                              date: "Nov 20",
+                              initials: "SC",
+                            },
+                            {
+                              client: "Umbrella",
+                              amount: "$4,500.00",
+                              status: "Paid",
+                              statusColor: "emerald",
+                              date: "Nov 18",
+                              initials: "UC",
+                            },
+                          ].map((invoice, i) => (
+                            <div
+                              key={i}
+                              className="px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                  {invoice.initials}
+                                </div>
+                                <div>
+                                  <div className="text-xs font-medium text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
+                                    {invoice.client}
+                                  </div>
+                                  <div className="text-[10px] text-slate-500">
+                                    {invoice.date}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-xs font-bold text-slate-900 dark:text-white">
+                                  {invoice.amount}
+                                </div>
+                                <div
+                                  className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium mt-0.5 ${
+                                    invoice.status === "Paid"
+                                      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                                      : invoice.status === "Pending"
+                                        ? "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                                        : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                                  }`}
+                                >
+                                  {invoice.status}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 text-center">
+                        <span className="text-xs font-medium text-blue-600 hover:text-blue-700 cursor-pointer">
+                          View All Invoices
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Floating success notification */}
-            <motion.div
-              initial={{ opacity: 0, x: 20, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              className="hidden md:block absolute -right-6 top-1/4 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-2xl border border-gray-100 dark:border-slate-700"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-gray-900 dark:text-slate-100">
-                    Payment Received
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-slate-400">
-                    $2,400 • Acme Corp
-                  </p>
-                </div>
-              </div>
-            </motion.div>
+          {/* Glow behind dashboard */}
+          <div className="absolute -inset-4 -z-10 bg-gradient-to-r from-blue-500 to-cyan-500 opacity-20 blur-3xl rounded-[3rem]" />
+        </motion.div>
 
-            {/* Floating invoice notification */}
-            <motion.div
-              initial={{ opacity: 0, x: 20, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{ duration: 0.5, delay: 1 }}
-              className="hidden md:block absolute -right-6 bottom-1/4 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-2xl border border-gray-100 dark:border-slate-700"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-gray-900 dark:text-slate-100">
-                    Invoice Created
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-slate-400">
-                    INV-2324 • Ready to send
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Right column - mobile lightweight preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="md:hidden"
-          >
-            <div className="w-full rounded-xl border border-neutral-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800/90 p-4 shadow-xl">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-slate-400">
-                    This week
-                  </p>
-                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    $8,240
-                  </p>
-                </div>
-                <span className="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full">
-                  +18%
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-3">
-                  <p className="text-xs text-blue-600 dark:text-blue-300">
-                    Invoices
-                  </p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-slate-100">
-                    12 sent
-                  </p>
-                </div>
-                <div className="rounded-lg bg-cyan-50 dark:bg-cyan-900/20 p-3">
-                  <p className="text-xs text-cyan-600 dark:text-cyan-300">
-                    Payments
-                  </p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-slate-100">
-                    9 received
-                  </p>
-                </div>
-                <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 p-3">
-                  <p className="text-xs text-emerald-600 dark:text-emerald-300">
-                    Overdue
-                  </p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-slate-100">
-                    1 follow-up
-                  </p>
-                </div>
-                <div className="rounded-lg bg-violet-50 dark:bg-violet-900/20 p-3">
-                  <p className="text-xs text-violet-600 dark:text-violet-300">
-                    Clients
-                  </p>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-slate-100">
-                    +3 new
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-        <div>
+        <div className="mt-24">
           <CompanyBanner />
         </div>
       </div>
-    </div>
+    </section>
   );
 }

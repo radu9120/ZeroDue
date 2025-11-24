@@ -1,6 +1,9 @@
 import InvoiceForm from "@/components/Invoices/InvoiceForm";
 import Bounded from "@/components/ui/BoundedSection";
-import { getBusinessById } from "@/lib/actions/business.actions";
+import {
+  getBusinessById,
+  getUserBusinesses,
+} from "@/lib/actions/business.actions";
 import { getClient, getClients } from "@/lib/actions/client.actions";
 import { ClientType, NewInvoicePageProps } from "@/types";
 import { auth } from "@clerk/nextjs/server";
@@ -8,6 +11,9 @@ import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";
+import { getCurrentPlan } from "@/lib/plan";
+import { AppPlan } from "@/lib/utils";
 
 export default async function NewInvoice({
   searchParams,
@@ -22,21 +28,23 @@ export default async function NewInvoice({
 
   if (!businessId) return notFound();
 
-  const business = await getBusinessById(Number(businessId));
+  const [business, clients, allBusinesses, userPlan] = await Promise.all([
+    getBusinessById(Number(businessId)),
+    getClients({ business_id: Number(businessId) }),
+    getUserBusinesses(),
+    getCurrentPlan(),
+  ]);
+
   if (!business) return notFound();
 
-  // const client = clientId ? await getClient({client_id: Number(clientId)}) : null
-
-  const clients: ClientType[] = await getClients({
-    business_id: Number(businessId),
-  });
-
   return (
-    <main className="relative w-full min-h-[100vh]">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white z-0" />
-      <div className="absolute top-20 right-10 md:right-40 w-64 md:w-96 h-64 md:h-96 rounded-full bg-blue-100/40 mix-blend-multiply blur-3xl"></div>
-      <div className="absolute bottom-20 left-10 md:left-40 w-48 md:w-72 h-48 md:h-72 rounded-full bg-cyan-100/30 mix-blend-multiply blur-3xl"></div>
-      <Bounded className="relative w-full z-10">
+    <DashboardShell
+      business={business}
+      allBusinesses={allBusinesses}
+      activePage="invoices"
+      userPlan={userPlan as AppPlan}
+    >
+      <div className="relative w-full z-10">
         <div className="mb-6">
           <Link
             href={`/dashboard/invoices?business_id=${businessId}`}
@@ -48,33 +56,37 @@ export default async function NewInvoice({
 
         <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-blue-100 shadow-xl p-4 md:p-6 mb-6">
           <div className="flex items-center gap-3 md:gap-5">
-            {business.logo && (
-              <div className="w-16 h-12 md:w-20 md:h-16 rounded-xl overflow-hidden bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 flex items-center justify-center flex-shrink-0">
+            {business.logo_url ? (
+              <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-xl overflow-hidden border-2 border-white shadow-md">
                 <Image
-                  src={business.logo}
-                  alt={`${business.name} logo`}
-                  width={160}
-                  height={96}
-                  className="w-full h-full object-contain p-2"
+                  src={business.logo_url}
+                  alt="Business Logo"
+                  fill
+                  className="object-cover"
                 />
               </div>
+            ) : (
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center text-white font-bold text-xl md:text-2xl shadow-md">
+                {business.name.substring(0, 2).toUpperCase()}
+              </div>
             )}
-            <div className="flex-1 min-w-0">
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-header-text dark:text-slate-100">
-                Create Invoice
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                New Invoice
               </h1>
-              <p className="text-sm md:text-base text-secondary-text dark:text-slate-400 mt-1 truncate">
-                {business.name}
-                {business.email ? ` • ${business.email}` : ""}
+              <p className="text-sm text-gray-500 dark:text-slate-400">
+                Create a new invoice for {business.name}
               </p>
             </div>
           </div>
         </div>
 
-        <article className="bg-white dark:bg-slate-800 rounded-2xl mx-auto shadow-2xl ring-1 ring-blue-100/60 dark:ring-slate-700/60 max-w-6xl w-full p-4 md:p-6 lg:p-8">
-          <InvoiceForm company_data={business} clients={clients} />
-        </article>
-      </Bounded>
-    </main>
+        <InvoiceForm
+          company_data={business}
+          clients={clients}
+          client_data={clients.find((c) => c.id === Number(clientId))}
+        />
+      </div>
+    </DashboardShell>
   );
 }

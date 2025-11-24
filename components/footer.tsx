@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Mail, Globe, Shield, Clock } from "lucide-react";
+import { Mail, Globe, Shield, Clock, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
@@ -13,186 +13,151 @@ export default function Footer() {
   }
 
   return (
-    <footer
-      id="contact"
-      className="relative bg-gradient-to-b from-white to-blue-50 dark:from-slate-900 dark:to-slate-800 pt-24 pb-12 overflow-hidden"
-    >
-      {/* Decorative blurs - improved positioninggg */}
-      <div className="absolute -top-32 right-0 w-96 h-96 bg-blue-200 dark:bg-blue-900/20 rounded-full opacity-20 blur-3xl"></div>
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-cyan-200 dark:bg-cyan-900/20 rounded-full opacity-20 blur-3xl"></div>
+    <footer className="relative bg-white dark:bg-slate-950 pt-24 pb-12 overflow-hidden border-t border-slate-100 dark:border-slate-800">
+      {/* Decorative background */}
+      <div className="absolute inset-0 -z-10 bg-slate-50/50 dark:bg-slate-900/50" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
+        <div className="absolute -top-24 right-0 w-96 h-96 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/5 dark:bg-cyan-500/10 rounded-full blur-3xl" />
+      </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="col-span-1 lg:col-span-1"
-          >
+          <div className="col-span-1 lg:col-span-1">
             <Link href="/" className="flex items-center space-x-2 mb-6">
-              <motion.div
-                initial={{ rotate: -10 }}
-                animate={{ rotate: 0 }}
-                transition={{ duration: 0.5 }}
-                className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center"
-              >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
                 <Image
                   src="/logo.png"
-                  alt={"logo"}
-                  height={50}
-                  width={50}
-                ></Image>
-              </motion.div>
-              <span className="text-2xl font-bold text-header-text dark:text-slate-100">
+                  alt="InvoiceFlow Logo"
+                  height={24}
+                  width={24}
+                  className="brightness-0 invert"
+                />
+              </div>
+              <span className="text-2xl font-bold text-slate-900 dark:text-white">
                 InvoiceFlow
               </span>
             </Link>
-            <p className="text-secondary-text dark:text-slate-400">
+            <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
               Streamline your invoicing process with our powerful, intuitive
               platform designed for modern businesses.
             </p>
-          </motion.div>
+            <div className="flex gap-4">{/* Social links could go here */}</div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="space-y-3"
-          >
-            <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-5">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-6">
               Product
             </h3>
-            {[
-              { name: "Features", href: "#features" },
-              { name: "Pricing", href: "/upgrade" },
-              { name: "Blog", href: "/blog" },
-              { name: "Testimonials", href: "#testimonials" },
-            ].map((item, i) => (
-              <Link
-                key={i}
-                href={item.href}
-                className="block text-secondary-text dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 transition-colors py-1"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </motion.div>
+            <ul className="space-y-4">
+              {[
+                { name: "Features", href: "#features" },
+                { name: "Pricing", href: "/upgrade" },
+                { name: "Blog", href: "/blog" },
+                { name: "Testimonials", href: "#testimonials" },
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2 group"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600/0 group-hover:bg-blue-600 dark:group-hover:bg-blue-400 transition-all" />
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="space-y-3"
-          >
-            <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-5">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-6">
               Resources
             </h3>
-            {[
-              { name: "Help Center", href: "/help" },
-              { name: "Contact Us", href: "/contact" },
-              { name: "Privacy Policy", href: "/privacy-policy" },
-              { name: "Cookie Policy", href: "/cookies" },
-              { name: "Sitemap", href: "/sitemap" },
-            ].map((item, i) => (
-              <Link
-                key={i}
-                href={item.href}
-                className="block text-secondary-text dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 transition-colors py-1"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </motion.div>
+            <ul className="space-y-4">
+              {[
+                { name: "Help Center", href: "/help" },
+                { name: "Contact Us", href: "/contact" },
+                { name: "Privacy Policy", href: "/privacy-policy" },
+                { name: "Cookie Policy", href: "/cookies" },
+                { name: "Sitemap", href: "/sitemap" },
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2 group"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600/0 group-hover:bg-blue-600 dark:group-hover:bg-blue-400 transition-all" />
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <h3 className="text-lg font-semibold text-header-text dark:text-slate-100 mb-5">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-6">
               Contact
             </h3>
-            <div className="space-y-5">
-              <div className="flex items-start group">
-                <Mail className="h-5 w-5 text-primary dark:text-blue-400 mr-3 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+            <div className="space-y-4">
+              <a
+                href="mailto:support@invoiceflow.com"
+                className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800 transition-colors group"
+              >
+                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                  <Mail className="w-5 h-5" />
+                </div>
                 <div>
-                  <p className="font-medium text-header-text dark:text-slate-100">
-                    Email Us
-                  </p>
-                  <a
-                    href="mailto:support@invoiceflow.com"
-                    className="text-secondary-text dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 transition-colors"
-                  >
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                    Email us at
+                  </div>
+                  <div className="font-medium text-slate-900 dark:text-white">
                     support@invoiceflow.com
-                  </a>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-t border-slate-200 dark:border-slate-800">
+          {[
+            {
+              icon: Clock,
+              title: "24/7 Support",
+              description: "Always here to help",
+            },
+            {
+              icon: Shield,
+              title: "Secure Payments",
+              description: "Bank-level security",
+            },
+            {
+              icon: Globe,
+              title: "Global Coverage",
+              description: "Multi-currency support",
+            },
+          ].map((feature, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800"
+            >
+              <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center text-blue-600 dark:text-blue-400">
+                <feature.icon className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="font-semibold text-slate-900 dark:text-white text-sm">
+                  {feature.title}
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  {feature.description}
                 </div>
               </div>
             </div>
-          </motion.div>
+          ))}
         </div>
 
-        {/* Features highlight */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10"
-        >
-          {[
-            {
-              icon: (
-                <Clock className="h-6 w-6 text-primary dark:text-blue-400" />
-              ),
-              title: "24/7 Support",
-              description:
-                "Our team is always available to help with any questions or issues.",
-            },
-            {
-              icon: (
-                <Shield className="h-6 w-6 text-primary dark:text-blue-400" />
-              ),
-              title: "Secure Payments",
-              description:
-                "Bank-level security ensures your financial data is always protected.",
-            },
-            {
-              icon: (
-                <Globe className="h-6 w-6 text-primary dark:text-blue-400" />
-              ),
-              title: "Global Coverage",
-              description:
-                "Support for multiple currencies and international payment methods.",
-            },
-          ].map((feature, i) => (
-            <motion.div
-              key={i}
-              className="flex items-start p-4 rounded-xl hover:bg-white/70 dark:hover:bg-slate-800/70 transition-colors"
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            >
-              <div className="mr-4 p-3 bg-blue-50 dark:bg-slate-800 rounded-lg">
-                {feature.icon}
-              </div>
-              <div>
-                <h4 className="font-semibold text-header-text dark:text-slate-100 mb-1">
-                  {feature.title}
-                </h4>
-                <p className="text-sm text-secondary-text dark:text-slate-400">
-                  {feature.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Bottom bar */}
-        <div className="py-8 flex flex-col md:flex-row justify-center items-center">
-          <p className="text-secondary-text dark:text-slate-400 text-sm mb-4 md:mb-0">
+        <div className="py-8 text-center border-t border-slate-200 dark:border-slate-800">
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
             © {new Date().getFullYear()} InvoiceFlow. All rights reserved.
           </p>
         </div>

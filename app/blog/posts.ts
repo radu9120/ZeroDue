@@ -233,11 +233,11 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "How to choose the right solution",
-        body: "Consider: your invoice volume (monthly and projected), number of team members needing access, international clients (multi-currency needs), industry-specific requirements, existing tools that need integration, budget constraints, and technical comfort level. Start with a free trial. Test the actual workflow. Check mobile experience. Read recent reviews. InvoiceFlow offers a 14-day free trial with full features—no credit card required.",
+        body: "Consider: your invoice volume (monthly and projected), number of team members needing access, international clients (multi-currency needs), industry-specific requirements, existing tools that need integration, budget constraints, and technical comfort level. Start with a free trial. Test the actual workflow. Check mobile experience. Read recent reviews. InvoiceFlow offers a 60-day free trial with full features—no credit card required.",
       },
       {
         heading: "Why small businesses choose InvoiceFlow",
-        body: "InvoiceFlow is purpose-built for service businesses, agencies, and freelancers. Unlimited invoices on all plans. Beautiful, professional templates that impress clients. Payment processing built-in (no third-party accounts). Smart reminders that get you paid faster. Time and expense tracking included. Supports 135+ currencies and all major tax systems. Setup takes under 5 minutes. Try InvoiceFlow free for 14 days.",
+        body: "InvoiceFlow is purpose-built for service businesses, agencies, and freelancers. Unlimited invoices on all plans. Beautiful, professional templates that impress clients. Payment processing built-in (no third-party accounts). Smart reminders that get you paid faster. Time and expense tracking included. Supports 135+ currencies and all major tax systems. Setup takes under 5 minutes. Try InvoiceFlow free for 60 days.",
       },
     ],
   },

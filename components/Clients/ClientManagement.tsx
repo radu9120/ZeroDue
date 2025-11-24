@@ -103,14 +103,6 @@ export default function ClientManagement({
     <div>
       {/* Header */}
       <div className="mb-8">
-        <Link
-          href={`/dashboard/business?business_id=${business_id}`}
-          className="inline-flex items-center text-primary hover:text-primary-dark mb-4 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Business Dashboard
-        </Link>
-
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
             <Users className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />

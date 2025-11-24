@@ -7,14 +7,15 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   ArrowLeft,
   Mail,
-  Phone,
-  Globe,
   MessageCircle,
-  Clock,
   Send,
   MapPin,
+  Phone,
+  Clock,
 } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -79,231 +80,224 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 md:pt-28 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
-        {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-primary hover:text-primary-dark mb-4 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
-          </Link>
-
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
-              <MessageCircle className="h-6 w-6 text-primary dark:text-blue-400" />
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-header-text dark:text-slate-100">
-                Contact Us
-              </h1>
-              <p className="text-secondary-text mt-1">
-                We'd love to hear from you. Send us a message and we'll respond
-                as soon as possible.
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-white dark:bg-slate-950 relative overflow-hidden pt-24 pb-12">
+      {/* Background Elements */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-200/20 dark:bg-cyan-900/10 rounded-full blur-3xl" />
         </div>
+      </div>
 
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Contact Information */}
-            <div className="space-y-8">
-              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-                <h2 className="text-xl font-semibold text-header-text mb-6">
-                  Get in Touch
-                </h2>
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-5xl mx-auto"
+        >
+          {/* Header */}
+          <div className="mb-12 text-center md:text-left">
+            <Link
+              href="/"
+              className="inline-flex items-center text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-8 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Link>
+
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+              Get in{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
+                Touch
+              </span>
+            </h1>
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl">
+              Have questions about InvoiceFlow? We're here to help. Send us a
+              message and we'll respond as soon as possible.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+            {/* Contact Info Side */}
+            <div className="space-y-6">
+              <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-6">
+                  Contact Information
+                </h3>
 
                 <div className="space-y-6">
-                  <div className="flex items-start group">
-                    <div className="w-10 h-10 bg-blue-100 dark:bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <Mail className="h-5 w-5 text-primary dark:text-blue-400" />
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0 text-blue-600 dark:text-blue-400">
+                      <Mail className="w-5 h-5" />
                     </div>
-                    <div className="ml-4">
-                      <h3 className="font-semibold text-header-text dark:text-slate-100">
-                        Email
-                      </h3>
-                      <a
-                        href="mailto:support@invoiceflow.com"
-                        className="text-secondary-text hover:text-primary transition-colors"
-                      >
+                    <div>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">
+                        Email Us
+                      </p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
                         support@invoiceflow.com
-                      </a>
-                      <p className="text-sm text-secondary-text mt-1">
-                        For general inquiries and support
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start group">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <Clock className="h-5 w-5 text-purple-600" />
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-cyan-100 dark:bg-cyan-900/20 flex items-center justify-center flex-shrink-0 text-cyan-600 dark:text-cyan-400">
+                      <MessageCircle className="w-5 h-5" />
                     </div>
-                    <div className="ml-4">
-                      <h3 className="font-semibold text-header-text dark:text-slate-100">
-                        Business Hours
-                      </h3>
-                      <p className="text-secondary-text dark:text-slate-400">
-                        Monday - Friday: 9:00 AM - 6:00 PM (GMT)
-                        <br />
-                        Weekend: Emergency support only
+                    <div>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">
+                        Live Chat
+                      </p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Available Mon-Fri, 9am-5pm EST
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/20 flex items-center justify-center flex-shrink-0 text-indigo-600 dark:text-indigo-400">
+                      <MapPin className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">
+                        Office
+                      </p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        123 Innovation Dr, Tech City, TC 90210
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Quick Links */}
-              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-                <h3 className="text-lg font-semibold text-header-text mb-4">
-                  Quick Help
+              <div className="bg-gradient-to-br from-blue-600 to-cyan-600 p-6 rounded-2xl text-white">
+                <h3 className="text-lg font-semibold mb-2">
+                  Need faster support?
                 </h3>
-                <div className="space-y-3">
-                  <Link
-                    href="/help"
-                    className="flex items-center text-secondary-text hover:text-primary transition-colors group"
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                    Help Center & FAQ
-                  </Link>
-                  <Link
-                    href="/privacy-policy"
-                    className="flex items-center text-secondary-text hover:text-primary transition-colors group"
-                  >
-                    <Globe className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                    Privacy Policy
-                  </Link>
-                  <Link
-                    href="/cookies"
-                    className="flex items-center text-secondary-text hover:text-primary transition-colors group"
-                  >
-                    <Globe className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-                    Cookie Policy
-                  </Link>
-                </div>
+                <p className="text-blue-100 text-sm mb-4">
+                  Check out our Help Center for quick answers to common
+                  questions.
+                </p>
+                <Link
+                  href="/help"
+                  className="inline-flex items-center text-sm font-medium bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors backdrop-blur-sm"
+                >
+                  Visit Help Center{" "}
+                  <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+                </Link>
               </div>
             </div>
 
-            {/* Contact Form */}
+            {/* Form Side */}
             <div className="lg:col-span-2">
-              <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700">
-                <h2 className="text-xl font-semibold text-header-text mb-6">
-                  Send us a Message
-                </h2>
-
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+                    <div className="space-y-2">
                       <label
                         htmlFor="name"
-                        className="block text-sm font-medium text-primary-text mb-2"
+                        className="text-sm font-medium text-slate-700 dark:text-slate-300"
                       >
-                        Full Name *
+                        Name
                       </label>
                       <Input
-                        type="text"
                         id="name"
                         name="name"
+                        placeholder="John Doe"
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="w-full"
-                        placeholder="Enter your full name"
+                        className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus:ring-blue-500"
                       />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <label
                         htmlFor="email"
-                        className="block text-sm font-medium text-primary-text mb-2"
+                        className="text-sm font-medium text-slate-700 dark:text-slate-300"
                       >
-                        Email Address *
+                        Email
                       </label>
                       <Input
-                        type="email"
                         id="email"
                         name="email"
+                        type="email"
+                        placeholder="john@example.com"
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full"
-                        placeholder="Enter your email address"
+                        className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus:ring-blue-500"
                       />
                     </div>
                   </div>
 
-                  <div>
+                  <div className="space-y-2">
                     <label
                       htmlFor="subject"
-                      className="block text-sm font-medium text-primary-text mb-2"
+                      className="text-sm font-medium text-slate-700 dark:text-slate-300"
                     >
-                      Subject *
+                      Subject
                     </label>
                     <Input
-                      type="text"
                       id="subject"
                       name="subject"
+                      placeholder="How can we help?"
                       value={formData.subject}
                       onChange={handleChange}
                       required
-                      className="w-full"
-                      placeholder="What's this about?"
+                      className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus:ring-blue-500"
                     />
                   </div>
 
-                  <div>
+                  <div className="space-y-2">
                     <label
                       htmlFor="message"
-                      className="block text-sm font-medium text-primary-text mb-2"
+                      className="text-sm font-medium text-slate-700 dark:text-slate-300"
                     >
-                      Message *
+                      Message
                     </label>
                     <Textarea
                       id="message"
                       name="message"
+                      placeholder="Tell us more about your inquiry..."
                       value={formData.message}
                       onChange={handleChange}
                       required
-                      rows={6}
-                      className="w-full"
-                      placeholder="Tell us how we can help you..."
+                      className="min-h-[150px] bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus:ring-blue-500"
                     />
                   </div>
 
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-cyan-500 text-white"
-                    disabled={submitting}
-                  >
-                    <Send className="h-4 w-4 mr-2" />
-                    {submitting ? "Sending…" : "Send Message"}
-                  </Button>
-
                   {feedback && (
-                    <p
-                      className={`text-sm ${
+                    <div
+                      className={cn(
+                        "p-4 rounded-lg text-sm",
                         feedback.type === "success"
-                          ? "text-green-600 dark:text-green-400"
-                          : "text-red-600 dark:text-red-400"
-                      }`}
+                          ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300"
+                          : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300"
+                      )}
                     >
                       {feedback.message}
-                    </p>
+                    </div>
                   )}
-                </form>
 
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-primary dark:text-blue-400">
-                    <strong>💡 Tip:</strong> For faster support, include as much
-                    detail as possible about your issue or question. We
-                    typically respond within 24 hours during business days.
-                  </p>
-                </div>
+                  <Button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-xl text-base font-medium transition-all hover:shadow-lg hover:shadow-blue-500/25"
+                  >
+                    {submitting ? (
+                      "Sending..."
+                    ) : (
+                      <>
+                        Send Message <Send className="w-4 h-4 ml-2" />
+                      </>
+                    )}
+                  </Button>
+                </form>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -21,6 +21,7 @@ import { CheckCircle } from "lucide-react";
 interface UpdateBusinessProps {
   businessId: number;
   closeModal?: () => void;
+  initialBusiness?: BusinessType;
 }
 
 type CompanyFormData = z.infer<typeof companySchema>;
@@ -28,17 +29,22 @@ type CompanyFormData = z.infer<typeof companySchema>;
 export const UpdateBusiness = ({
   businessId,
   closeModal,
+  initialBusiness,
 }: UpdateBusinessProps) => {
   const router = useRouter();
 
-  const [business, setBusiness] = useState<BusinessType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [business, setBusiness] = useState<BusinessType | null>(
+    initialBusiness || null
+  );
+  const [isLoading, setIsLoading] = useState(!initialBusiness);
   const [error, setError] = useState<string | null>(null);
   const [newLogoFile, setNewLogoFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
 
   useEffect(() => {
+    if (initialBusiness) return;
+
     const fetchBusinessData = async () => {
       setIsLoading(true);
       setError(null);
@@ -60,7 +66,7 @@ export const UpdateBusiness = ({
     if (businessId) {
       fetchBusinessData();
     }
-  }, [businessId]);
+  }, [businessId, initialBusiness]);
 
   const form = useForm<z.infer<typeof companySchema>>({
     resolver: zodResolver(companySchema),
