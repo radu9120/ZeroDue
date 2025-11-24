@@ -229,7 +229,7 @@ export function DashboardShell({
               </span>
               <Badge
                 variant="outline"
-                className={`text-[10px] px-1.5 py-0 h-5 border-0 ${
+                className={`text-[10px] px-2 py-0.5 h-auto min-h-5 border-0 font-semibold whitespace-nowrap ${
                   userPlan === "enterprise"
                     ? "bg-purple-500/10 text-purple-600 dark:text-purple-400"
                     : userPlan === "professional"
@@ -238,10 +238,10 @@ export function DashboardShell({
                 }`}
               >
                 {userPlan === "professional"
-                  ? "PRO"
+                  ? "Professional"
                   : userPlan === "enterprise"
-                    ? "ENT"
-                    : "FREE"}
+                    ? "Enterprise"
+                    : "Free"}
               </Badge>
             </div>
             {userPlan === "free_user" ? (
