@@ -240,113 +240,96 @@ export default function Navbar() {
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
               transition={{
-                duration: 0.25,
-                ease: "easeInOut",
-                height: { duration: 0.25 },
-                opacity: { duration: 0.2 },
+                duration: 0.2,
+                ease: "easeOut",
               }}
-              className="md:hidden overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-b-lg border-t border-blue-100 dark:border-slate-700"
+              className="md:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 shadow-xl"
             >
-              <motion.div
-                initial={{ y: -10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -10, opacity: 0 }}
-                transition={{ duration: 0.2, delay: 0.05 }}
-                className="py-4 px-2"
-              >
-                <div className="flex flex-col space-y-1">
+              <div className="p-4 space-y-4">
+                <div className="flex flex-col space-y-2">
                   {/* Mobile Navigation Links - Different for auth states */}
                   <SignedOut>
-                    <Link
-                      href="#features"
-                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
-                      onClick={closeMenu}
-                    >
-                      Features
-                    </Link>
-                    <Link
-                      href="/upgrade"
-                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
-                      onClick={closeMenu}
-                    >
-                      Pricing
-                    </Link>
-                    <Link
-                      href="#testimonials"
-                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
-                      onClick={closeMenu}
-                    >
-                      Testimonials
-                    </Link>
-                    <Link
-                      href="/contact"
-                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
-                      onClick={closeMenu}
-                    >
-                      Contact
-                    </Link>
+                    {["Features", "Pricing", "Testimonials", "Contact"].map(
+                      (item) => (
+                        <Link
+                          key={item}
+                          href={
+                            item === "Pricing"
+                              ? "/upgrade"
+                              : item === "Contact"
+                                ? "/contact"
+                                : `#${item.toLowerCase()}`
+                          }
+                          className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-xl transition-all duration-200 font-medium flex items-center justify-between group"
+                          onClick={closeMenu}
+                        >
+                          {item}
+                          <span className="text-slate-400 group-hover:text-blue-500 transition-colors">
+                            →
+                          </span>
+                        </Link>
+                      )
+                    )}
                   </SignedOut>
 
                   <SignedIn>
-                    <Link
-                      href="/dashboard"
-                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
-                      onClick={closeMenu}
-                    >
-                      Dashboard
-                    </Link>
-                    <Link
-                      href={
-                        resolvedBusinessId
+                    {[
+                      { label: "Dashboard", href: "/dashboard" },
+                      {
+                        label: "Clients",
+                        href: resolvedBusinessId
                           ? `/dashboard/clients?business_id=${resolvedBusinessId}`
-                          : "/dashboard"
-                      }
-                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
-                      onClick={closeMenu}
-                    >
-                      Clients
-                    </Link>
-                    <Link
-                      href={
-                        resolvedBusinessId
+                          : "/dashboard",
+                      },
+                      {
+                        label: "Invoices",
+                        href: resolvedBusinessId
                           ? `/dashboard/invoices?business_id=${resolvedBusinessId}`
-                          : "/dashboard"
-                      }
-                      className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 font-medium"
-                      onClick={closeMenu}
-                    >
-                      Invoices
-                    </Link>
+                          : "/dashboard",
+                      },
+                    ].map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-xl transition-all duration-200 font-medium flex items-center justify-between group"
+                        onClick={closeMenu}
+                      >
+                        {item.label}
+                        <span className="text-slate-400 group-hover:text-blue-500 transition-colors">
+                          →
+                        </span>
+                      </Link>
+                    ))}
                   </SignedIn>
 
                   {/* Mobile Authentication */}
                   <SignedOut>
-                    <div className="pt-3 mt-3 border-t border-blue-100 dark:border-slate-700 space-y-2">
+                    <div className="pt-4 mt-2 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-3">
                       <SignInButton>
                         <Button
-                          variant="secondary"
-                          className="w-full py-3 text-base font-medium border-blue-200 dark:border-slate-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all duration-200"
+                          variant="outline"
+                          className="w-full h-12 text-base font-medium border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl"
                           onClick={closeMenu}
                         >
-                          Sign In
+                          Log in
                         </Button>
                       </SignInButton>
                       <SignUpButton>
                         <Button
-                          className="w-full py-3 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/20"
+                          className="w-full h-12 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-500/20"
                           onClick={closeMenu}
                         >
-                          Get Started Free
+                          Sign up
                         </Button>
                       </SignUpButton>
                     </div>
                   </SignedOut>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

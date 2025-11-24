@@ -104,7 +104,7 @@ export default function Testimonials() {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="snap-center shrink-0 w-[85vw] bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none"
+                className="snap-center shrink-0 w-[85vw] sm:w-[350px] bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none"
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (

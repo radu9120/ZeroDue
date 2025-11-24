@@ -274,7 +274,7 @@ export function DashboardShell({
         </div>
 
         {/* Plan Status */}
-        <div className="px-2 mt-4">
+        <div className="px-2 mt-auto">
           <div className="bg-gray-100/50 dark:bg-slate-900/50 rounded-xl p-3 border border-gray-200/50 dark:border-slate-800/50">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-slate-500 dark:text-slate-400">

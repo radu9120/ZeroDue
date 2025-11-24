@@ -93,15 +93,15 @@ export default function Hero() {
 
           {/* Trust Badges */}
           <div className="pt-8 flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 gap-y-4 text-sm text-slate-500 dark:text-slate-400">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
               <CheckCircle className="h-4 w-4 text-blue-500" /> No credit card
               required
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
               <CheckCircle className="h-4 w-4 text-blue-500" /> 60-day free
               trial
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
               <CheckCircle className="h-4 w-4 text-blue-500" /> Cancel anytime
             </div>
           </div>
