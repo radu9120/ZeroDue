@@ -168,10 +168,10 @@ export function DashboardShell({
         {/* Logo Area */}
         <div className="flex items-center gap-2 px-2 mb-10">
           <Link href="/" className="flex items-center gap-2 group">
-            {business.logo_url ? (
+            {business.logo ? (
               <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/10 transition-transform group-hover:scale-105">
                 <Image
-                  src={business.logo_url}
+                  src={business.logo}
                   alt={business.name}
                   height={32}
                   width={32}
