@@ -20,18 +20,30 @@ import {
   ArrowDownRight,
 } from "lucide-react";
 import CompanyBanner from "./companies-banner";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { HeroGlow } from "@/components/ui/hero-glow";
 import { FloatingPaths } from "@/components/ui/floating-paths";
 
 export default function Hero() {
   const containerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(true);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
   });
 
-  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const scrollY = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const parallaxY = isMobile ? 0 : scrollY;
 
   return (
     <section
@@ -116,7 +128,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, type: "spring" }}
-          style={{ y }}
+          style={{ y: parallaxY }}
           className="mt-12 md:mt-20 relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
         >
           <div className="relative rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl dark:border-slate-800 dark:bg-slate-950 ring-1 ring-slate-900/5">
