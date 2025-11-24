@@ -157,7 +157,7 @@ export function DashboardShell({
       {/* Sidebar */}
       <aside
         className={`
-          fixed md:sticky top-0 left-0 z-50 h-screen w-64 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 gap-6 transition-transform duration-300 ease-in-out
+          fixed md:sticky top-0 left-0 z-50 h-screen w-64 flex flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 gap-6 transition-transform duration-300 ease-in-out
           ${
             isSidebarOpen
               ? "translate-x-0"
@@ -165,137 +165,46 @@ export function DashboardShell({
           }
         `}
       >
-        {/* Logo Area */}
-        <div className="flex items-center gap-2 px-2 mb-10">
-          <Link href="/" className="flex items-center gap-2 group">
-            {business.logo ? (
-              <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/10 transition-transform group-hover:scale-105">
-                <Image
-                  src={business.logo}
-                  alt={business.name}
-                  height={32}
-                  width={32}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-            ) : (
-              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 transition-transform group-hover:scale-105">
-                <span className="font-bold text-sm">
-                  {business.name.substring(0, 2).toUpperCase()}
-                </span>
-              </div>
-            )}
-            <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight truncate max-w-[160px]">
-              {business.name}
-            </span>
-          </Link>
-        </div>
-
-        {/* Navigation */}
-        <div className="space-y-1 flex-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href}
-              className={`h-10 w-full rounded-lg flex items-center px-3 gap-3 transition-all duration-200 group ${
-                activePage === item.id
-                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
-            >
-              <item.icon
-                className={`w-4 h-4 ${
-                  activePage === item.id
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
-                }`}
-              />
-              <span className="text-sm">{item.label}</span>
-              {item.label === "Invoices" && pendingInvoicesCount > 0 && (
-                <span className="ml-auto text-[10px] font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded-full">
-                  {pendingInvoicesCount}
-                </span>
-              )}
-            </Link>
-          ))}
-        </div>
-
-        {/* Plan Status */}
-        <div className="px-2 mt-4">
-          <div className="bg-gray-100/50 dark:bg-slate-900/50 rounded-xl p-3 border border-gray-200/50 dark:border-slate-800/50">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                Current Plan
-              </span>
-              <Badge
-                variant="outline"
-                className={`text-[10px] px-2 py-0.5 h-auto min-h-5 border-0 font-semibold whitespace-nowrap ${
-                  userPlan === "enterprise"
-                    ? "bg-purple-500/10 text-purple-600 dark:text-purple-400"
-                    : userPlan === "professional"
-                      ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                      : "bg-slate-200/50 dark:bg-slate-700/30 text-slate-600 dark:text-slate-400"
-                }`}
-              >
-                {userPlan === "professional"
-                  ? "Professional"
-                  : userPlan === "enterprise"
-                    ? "Enterprise"
-                    : "Free"}
-              </Badge>
-            </div>
-            {userPlan === "free_user" ? (
-              <Link
-                href={`/dashboard/plan?business_id=${business.id}`}
-                className="block w-full"
-              >
-                <Button
-                  size="sm"
-                  className="w-full text-xs h-7 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border-0 text-white shadow-lg shadow-blue-500/20"
-                >
-                  Upgrade Plan
-                </Button>
-              </Link>
-            ) : (
-              <Link
-                href={`/dashboard/plan?business_id=${business.id}`}
-                className="block w-full"
-              >
-                <Button
-                  size="sm"
-                  variant="neutralOutline"
-                  className="w-full text-xs h-7 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
-                >
-                  Manage Plan
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* Business Switcher */}
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-slate-800">
+        {/* Business Switcher (Unified) */}
+        <div className="px-2 mb-6">
           <Popover>
             <PopoverTrigger asChild>
-              <button className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-100 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 hover:bg-gray-200 dark:hover:bg-slate-800 hover:border-gray-300 dark:hover:border-slate-700 transition-all cursor-pointer group text-left">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 dark:from-slate-800 dark:to-slate-900 border border-gray-300 dark:border-slate-700 flex items-center justify-center group-hover:border-gray-400 dark:group-hover:border-slate-600 transition-colors">
-                  <span className="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
-                    {business.name.substring(0, 2).toUpperCase()}
+              <button className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition-all cursor-pointer group text-left outline-none">
+                {business.logo ? (
+                  <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden border border-gray-200 dark:border-slate-700 shrink-0">
+                    <Image
+                      src={business.logo}
+                      alt={business.name}
+                      height={48}
+                      width={48}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center border border-blue-500 shadow-sm shrink-0">
+                    <span className="text-lg font-bold text-white">
+                      {business.name.substring(0, 2).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0 flex flex-col">
+                  <span className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                    {business.name}
+                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                    {userPlan === "professional"
+                      ? "Professional Plan"
+                      : userPlan === "enterprise"
+                        ? "Enterprise Plan"
+                        : "Free Plan"}
                   </span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {business.name}
-                  </div>
-                  <div className="text-[10px] text-slate-500 truncate flex items-center gap-1">
-                    Switch Business <ChevronDown className="w-3 h-3" />
-                  </div>
-                </div>
+                <ChevronDown className="w-4 h-4 text-slate-400" />
               </button>
             </PopoverTrigger>
             <PopoverContent
               className="w-60 p-2 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-slate-900 dark:text-white"
-              side="top"
+              side="bottom"
               align="start"
               sideOffset={8}
             >
@@ -331,6 +240,88 @@ export function DashboardShell({
               </div>
             </PopoverContent>
           </Popover>
+        </div>
+
+        {/* Navigation */}
+        <div className="space-y-1">
+          {navItems.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              className={`h-10 w-full rounded-lg flex items-center px-3 gap-3 transition-all duration-200 group ${
+                activePage === item.id
+                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              <item.icon
+                className={`w-5 h-5 ${
+                  activePage === item.id
+                    ? "text-blue-600 dark:text-blue-400"
+                    : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                }`}
+              />
+              <span className="text-base">{item.label}</span>
+              {item.label === "Invoices" && pendingInvoicesCount > 0 && (
+                <span className="ml-auto text-[10px] font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded-full">
+                  {pendingInvoicesCount}
+                </span>
+              )}
+            </Link>
+          ))}
+        </div>
+
+        {/* Plan Status */}
+        <div className="px-2 mt-4">
+          <div className="bg-gray-100/50 dark:bg-slate-900/50 rounded-xl p-3 border border-gray-200/50 dark:border-slate-800/50">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                Current Plan
+              </span>
+              <Badge
+                variant="outline"
+                className={`text-xs px-2 py-0.5 h-auto min-h-5 border-0 font-semibold whitespace-nowrap ${
+                  userPlan === "enterprise"
+                    ? "bg-purple-500/10 text-purple-600 dark:text-purple-400"
+                    : userPlan === "professional"
+                      ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                      : "bg-slate-200/50 dark:bg-slate-700/30 text-slate-600 dark:text-slate-400"
+                }`}
+              >
+                {userPlan === "professional"
+                  ? "Professional"
+                  : userPlan === "enterprise"
+                    ? "Enterprise"
+                    : "Free"}
+              </Badge>
+            </div>
+            {userPlan === "free_user" ? (
+              <Link
+                href={`/dashboard/plan?business_id=${business.id}`}
+                className="block w-full"
+              >
+                <Button
+                  size="sm"
+                  className="w-full text-sm h-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border-0 text-white shadow-lg shadow-blue-500/20"
+                >
+                  Upgrade Plan
+                </Button>
+              </Link>
+            ) : (
+              <Link
+                href={`/dashboard/plan?business_id=${business.id}`}
+                className="block w-full"
+              >
+                <Button
+                  size="sm"
+                  variant="neutralOutline"
+                  className="w-full text-sm h-8 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+                >
+                  Manage Plan
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
       </aside>
 
