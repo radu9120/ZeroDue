@@ -2,6 +2,7 @@ import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardS
 import {
   getBusinessById,
   getUserBusinesses,
+  getBusinessStats,
 } from "@/lib/actions/business.actions";
 import { redirect } from "next/navigation";
 import { UpdateBusiness } from "@/components/Business/Forms/UpdateBusiness";
@@ -18,10 +19,11 @@ export default async function SettingsPage({
 
   if (!business_id) redirect("/dashboard");
 
-  const [business, allBusinesses, userPlan] = await Promise.all([
+  const [business, allBusinesses, userPlan, businessStats] = await Promise.all([
     getBusinessById(parseInt(business_id)),
     getUserBusinesses(),
     getCurrentPlan(),
+    getBusinessStats({ business_id: parseInt(business_id) }),
   ]);
 
   if (!business) redirect("/dashboard");
@@ -32,6 +34,7 @@ export default async function SettingsPage({
       allBusinesses={allBusinesses}
       activePage="settings"
       userPlan={userPlan as AppPlan}
+      pendingInvoicesCount={businessStats?.total_pending_invoices || 0}
     >
       <div className="space-y-6">
         <div>

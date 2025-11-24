@@ -36,6 +36,9 @@ export default function ModernDashboard({
     total_revenue: Number(stats?.total_paid_amount || 0),
     pending_amount: Number(stats?.total_pending_amount || 0),
     overdue_amount: Number(stats?.total_overdue_amount || 0),
+    revenue_growth: Number(stats?.revenue_growth || 0),
+    pending_growth: Number(stats?.pending_growth || 0),
+    overdue_growth: Number(stats?.overdue_growth || 0),
   };
 
   return (

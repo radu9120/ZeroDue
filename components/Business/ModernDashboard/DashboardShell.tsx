@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, FormEvent, ReactNode } from "react";
 import {
   LayoutDashboard,
   FileText,
@@ -15,7 +16,6 @@ import {
   BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { UserButton } from "@clerk/nextjs";
@@ -30,7 +30,7 @@ import Pricing from "@/components/pricing";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 interface DashboardShellProps {
-  children: React.ReactNode;
+  children: ReactNode;
   business: any;
   allBusinesses?: any[];
   activePage?:
@@ -95,7 +95,7 @@ export function DashboardShell({
     },
   ];
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(
@@ -107,7 +107,7 @@ export function DashboardShell({
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans selection:bg-blue-500/30">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-[#0B1120] text-slate-900 dark:text-white font-sans selection:bg-blue-500/30">
       {/* Modals */}
       {isUpgradeOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -166,7 +166,7 @@ export function DashboardShell({
         `}
       >
         {/* Logo Area */}
-        <div className="flex items-center gap-2 px-2 mb-4">
+        <div className="flex items-center gap-2 px-2 mb-10">
           <Link href="/" className="flex items-center gap-2 group">
             {business.logo_url ? (
               <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/10 transition-transform group-hover:scale-105">
@@ -375,7 +375,7 @@ export function DashboardShell({
             {/* Search */}
             <form
               onSubmit={handleSearch}
-              className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-slate-900 rounded-md border border-gray-200 dark:border-slate-800 w-64 focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/50 transition-all"
+              className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-slate-900 rounded-md border border-gray-200 dark:border-slate-800 w-48 lg:w-64 focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/50 transition-all"
             >
               <Search className="w-4 h-4 text-slate-500" />
               <input
@@ -420,10 +420,34 @@ export function DashboardShell({
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 pb-24 md:pb-8">
           {children}
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-slate-800 z-50 px-4 py-2">
+        <div className="flex justify-between items-center">
+          {navItems.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
+                activePage === item.id
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              <item.icon
+                className={`w-5 h-5 ${
+                  activePage === item.id ? "stroke-[2.5px]" : "stroke-2"
+                }`}
+              />
+              <span className="text-[10px] font-medium">{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

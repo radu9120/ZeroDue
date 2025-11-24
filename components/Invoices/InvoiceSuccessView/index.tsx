@@ -813,15 +813,13 @@ export default function InvoiceSuccessView({
     >
       <div className="relative z-10 max-w-6xl mx-auto lg:p-4  space-y-6 md:space-y-8">
         {!isPublicView && (
-          <div className="mb-4 flex justify-end">
-            <Link href={`/dashboard/invoices?business_id=${company.id}`}>
-              <Button
-                variant="neutralOutline"
-                size="sm"
-                className="border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
-              >
-                View All Invoices
-              </Button>
+          <div className="mb-6 flex items-center justify-between">
+            <Link
+              href={`/dashboard/invoices?business_id=${company.id}`}
+              className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Invoices
             </Link>
           </div>
         )}

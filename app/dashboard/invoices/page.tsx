@@ -8,7 +8,11 @@ import {
   getCurrentMonthInvoiceCountForUser,
   getInvoices,
 } from "@/lib/actions/invoice.actions";
-import { getBusiness, getUserBusinesses } from "@/lib/actions/business.actions";
+import {
+  getBusiness,
+  getUserBusinesses,
+  getBusinessStats,
+} from "@/lib/actions/business.actions";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CustomButton from "@/components/ui/CustomButton";
@@ -65,25 +69,32 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
   const parsedBusinessId = parseInt(businessId);
 
-  const [business, invoicesData, allInvoicesCount, monthCount, allBusinesses] =
-    await Promise.all([
-      getBusiness({ business_id: parsedBusinessId }),
-      getInvoices(parsedBusinessId, {
-        search: searchQuery,
-        status: statusFilter,
-        page: currentPage,
-        limit: 6,
-      }),
-      // Lightweight count-only fetch ignoring filters to decide plan gating
-      getInvoices(parsedBusinessId, {
-        search: "",
-        status: "all",
-        page: 1,
-        limit: 1,
-      }),
-      getCurrentMonthInvoiceCountForUser(),
-      getUserBusinesses(),
-    ]);
+  const [
+    business,
+    invoicesData,
+    allInvoicesCount,
+    monthCount,
+    allBusinesses,
+    businessStats,
+  ] = await Promise.all([
+    getBusiness({ business_id: parsedBusinessId }),
+    getInvoices(parsedBusinessId, {
+      search: searchQuery,
+      status: statusFilter,
+      page: currentPage,
+      limit: 6,
+    }),
+    // Lightweight count-only fetch ignoring filters to decide plan gating
+    getInvoices(parsedBusinessId, {
+      search: "",
+      status: "all",
+      page: 1,
+      limit: 1,
+    }),
+    getCurrentMonthInvoiceCountForUser(),
+    getUserBusinesses(),
+    getBusinessStats({ business_id: parsedBusinessId }),
+  ]);
 
   if (!business) {
     redirect("/dashboard");
@@ -101,15 +112,11 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
   // Calculate summary stats
   const stats = {
-    total: totalCount || 0,
-    paid: invoices?.filter((inv: any) => inv.status === "paid").length || 0,
-    pending:
-      invoices?.filter((inv: any) => inv.status === "pending").length || 0,
-    overdue:
-      invoices?.filter((inv: any) => inv.status === "overdue").length || 0,
-    totalAmount:
-      invoices?.reduce((sum: number, inv: any) => sum + (inv.total || 0), 0) ||
-      0,
+    total: businessStats?.total_invoices || totalCount || 0,
+    paid: businessStats?.total_paid_invoices || 0,
+    pending: businessStats?.total_pending_invoices || 0,
+    overdue: businessStats?.total_overdue_invoices || 0,
+    totalAmount: Number(businessStats?.total_paid_amount || 0),
   };
 
   const formatDate = (dateString: string) => {
@@ -157,74 +164,90 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 text-blue-900 border-blue-200 dark:from-slate-900 dark:to-slate-800 dark:text-slate-100 dark:border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-blue-700 dark:text-blue-200">
-                    Total Invoices
-                  </p>
-                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                    {stats.total}
-                  </p>
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent dark:from-blue-500/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 text-white">
+                  <FileText className="h-6 w-6" />
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center dark:bg-blue-900/40">
-                  <FileText className="h-6 w-6 text-blue-600 dark:text-blue-200" />
-                </div>
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30">
+                  Total
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  Total Invoices
+                </p>
+                <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+                  {stats.total}
+                </h3>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 text-green-900 border-green-200 dark:from-slate-900 dark:to-slate-800 dark:text-slate-100 dark:border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-green-700 dark:text-green-200">
-                    Paid
-                  </p>
-                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">
-                    {stats.paid}
-                  </p>
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent dark:from-emerald-500/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
+                  <DollarSign className="h-6 w-6" />
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center dark:bg-green-900/40">
-                  <DollarSign className="h-6 w-6 text-green-600 dark:text-green-200" />
-                </div>
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                  Paid
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  Paid Invoices
+                </p>
+                <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+                  {stats.paid}
+                </h3>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 text-yellow-900 border-yellow-200 dark:from-slate-900 dark:to-slate-800 dark:text-slate-100 dark:border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-yellow-700 dark:text-yellow-200">
-                    Pending
-                  </p>
-                  <p className="text-2xl font-bold text-yellow-900 dark:text-yellow-100">
-                    {stats.pending}
-                  </p>
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent dark:from-amber-500/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 text-white">
+                  <Calendar className="h-6 w-6" />
                 </div>
-                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center dark:bg-yellow-900/40">
-                  <Calendar className="h-6 w-6 text-yellow-600 dark:text-yellow-200" />
-                </div>
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
+                  Pending
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  Pending Invoices
+                </p>
+                <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+                  {stats.pending}
+                </h3>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-50 to-violet-50 text-purple-900 border-purple-200 dark:from-slate-900 dark:to-slate-800 dark:text-slate-100 dark:border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-purple-700 dark:text-purple-200">
-                    Total Amount
-                  </p>
-                  <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
-                    £{stats.totalAmount.toFixed(2)}
-                  </p>
+          <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent dark:from-purple-500/10" />
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20 text-white">
+                  <DollarSign className="h-6 w-6" />
                 </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center dark:bg-purple-900/40">
-                  <DollarSign className="h-6 w-6 text-purple-600 dark:text-purple-200" />
-                </div>
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
+                  Revenue
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  Total Amount
+                </p>
+                <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+                  £{stats.totalAmount.toFixed(2)}
+                </h3>
               </div>
             </CardContent>
           </Card>

@@ -169,9 +169,9 @@ export function RecentActivityList({
   };
 
   return (
-    <Card className="col-span-7 bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-slate-900 dark:text-white">
-      <CardHeader>
-        <CardTitle className="text-base font-medium text-slate-900 dark:text-white">
+    <Card className="col-span-full md:col-span-7 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-gray-200/60 dark:border-slate-800/60 text-slate-900 dark:text-white shadow-sm hover:shadow-md transition-shadow duration-300">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-base font-semibold text-slate-900 dark:text-white">
           Recent Activity
         </CardTitle>
       </CardHeader>
@@ -183,31 +183,31 @@ export function RecentActivityList({
               index === aggregatedActivities.slice(0, 5).length - 1;
 
             return (
-              <div key={index} className="flex gap-4">
+              <div key={index} className="flex gap-4 group">
                 <div className="relative flex flex-col items-center">
-                  <div className="z-10 bg-white dark:bg-slate-900">
+                  <div className="z-10 bg-white dark:bg-slate-900 ring-4 ring-white dark:ring-slate-900 rounded-full transition-transform group-hover:scale-110 duration-200">
                     {getActivityIcon(activity)}
                   </div>
                   {!isLast && (
-                    <div className="w-px h-full bg-gray-200 dark:bg-slate-800 absolute top-8" />
+                    <div className="w-px h-full bg-gray-200 dark:bg-slate-800 absolute top-8 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors" />
                   )}
                 </div>
-                <div className="flex-1 pt-1">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm font-medium text-slate-900 dark:text-white">
+                <div className="flex-1 pt-1 min-w-0">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {activity.action}
                         {group.count > 1 && (
-                          <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-full">
+                          <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-full align-middle">
                             x{group.count}
                           </span>
                         )}
                       </p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                         {activity.target_name || "Unknown item"}
                       </p>
                     </div>
-                    <span className="text-xs text-slate-400 dark:text-slate-500 whitespace-nowrap">
+                    <span className="text-xs text-slate-400 dark:text-slate-500 whitespace-nowrap flex-shrink-0 font-medium bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
                       {formatTimeAgo(activity.created_at)}
                     </span>
                   </div>
@@ -217,7 +217,7 @@ export function RecentActivityList({
           })}
 
           {aggregatedActivities.length === 0 && (
-            <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <div className="text-center py-8 text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
               No recent activity found.
             </div>
           )}

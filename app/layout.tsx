@@ -69,7 +69,7 @@ export default function RootLayout({
           colorInputText: "#111827",
           colorTextOnPrimaryBackground: "#ffffff",
           colorTextSecondary: "#6b7280",
-          fontFamily: "Inter, sans-serif",
+          fontFamily: "Plus Jakarta Sans, sans-serif",
           borderRadius: "0.75rem",
         },
         elements: {

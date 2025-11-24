@@ -34,7 +34,7 @@ export function StatsCards({ stats, currencySymbol }: StatsCardsProps) {
       bgColor: "bg-blue-500/10",
     },
     {
-      title: "Pending Invoices",
+      title: "Draft Invoices",
       value: stats.pending_amount,
       growth: stats.pending_growth || 0,
       icon: FileText,
@@ -54,22 +54,47 @@ export function StatsCards({ stats, currencySymbol }: StatsCardsProps) {
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
       {cards.map((card) => (
         <Card
           key={card.title}
-          className="bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-slate-900 dark:text-white"
+          className="relative overflow-hidden bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-gray-200/60 dark:border-slate-800/60 text-slate-900 dark:text-white shadow-sm hover:shadow-md transition-all duration-300 group"
         >
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500 dark:text-slate-400">
+          <div
+            className={cn(
+              "absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-500 bg-gradient-to-br",
+              card.color.replace("text-", "from-").replace("500", "400"),
+              "to-transparent"
+            )}
+          />
+
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+            <CardTitle
+              className={cn(
+                "text-sm font-medium transition-all duration-300",
+                card.title === "Total Revenue"
+                  ? "text-blue-700 dark:text-blue-100 bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/40 dark:to-blue-800/20 px-3 py-1 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-blue-100 dark:border-blue-800/50"
+                  : card.title === "Draft Invoices"
+                    ? "text-purple-700 dark:text-purple-100 bg-gradient-to-r from-purple-50 to-purple-100/50 dark:from-purple-900/40 dark:to-purple-800/20 px-3 py-1 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-purple-100 dark:border-purple-800/50"
+                    : card.title === "Overdue"
+                      ? "text-red-700 dark:text-red-100 bg-gradient-to-r from-red-50 to-red-100/50 dark:from-red-900/40 dark:to-red-800/20 px-3 py-1 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-red-100 dark:border-red-800/50"
+                      : "text-slate-500 dark:text-slate-400"
+              )}
+            >
               {card.title}
             </CardTitle>
-            <div className={cn("p-2 rounded-full", card.bgColor)}>
+            <div
+              className={cn(
+                "p-2 rounded-xl transition-colors duration-300",
+                card.bgColor,
+                "group-hover:bg-opacity-80"
+              )}
+            >
               <card.icon className={cn("h-4 w-4", card.color)} />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="relative z-10">
+            <div className="text-xl sm:text-2xl font-bold truncate tracking-tight">
               {currencySymbol}
               {card.value.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -77,13 +102,13 @@ export function StatsCards({ stats, currencySymbol }: StatsCardsProps) {
               })}
             </div>
             {card.growth !== 0 && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center font-medium">
                 <span
                   className={cn(
-                    "flex items-center mr-1",
+                    "flex items-center mr-1.5 px-1.5 py-0.5 rounded-md",
                     card.growth > 0
-                      ? "text-green-600 dark:text-green-500"
-                      : "text-red-600 dark:text-red-500"
+                      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
+                      : "text-rose-600 dark:text-rose-400 bg-rose-500/10"
                   )}
                 >
                   {card.growth > 0 ? (

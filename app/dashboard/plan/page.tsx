@@ -1,6 +1,10 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import { getBusiness, getUserBusinesses } from "@/lib/actions/business.actions";
+import {
+  getBusiness,
+  getUserBusinesses,
+  getBusinessStats,
+} from "@/lib/actions/business.actions";
 import { getCurrentPlan } from "@/lib/plan";
 import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";
 import Pricing from "@/components/pricing";
@@ -22,10 +26,11 @@ export default async function PlanPage({ searchParams }: PageProps) {
 
   const parsedBusinessId = parseInt(businessId);
 
-  const [business, allBusinesses, plan] = await Promise.all([
+  const [business, allBusinesses, plan, businessStats] = await Promise.all([
     getBusiness({ business_id: parsedBusinessId }),
     getUserBusinesses(),
     getCurrentPlan(),
+    getBusinessStats({ business_id: parsedBusinessId }),
   ]);
 
   if (!business) {
@@ -38,6 +43,7 @@ export default async function PlanPage({ searchParams }: PageProps) {
       allBusinesses={allBusinesses}
       activePage="plan"
       userPlan={plan as AppPlan}
+      pendingInvoicesCount={businessStats?.total_pending_invoices || 0}
     >
       <div className="max-w-5xl mx-auto">
         <div className="mb-8">

@@ -71,6 +71,18 @@ export async function getInvoiceStatusBreakdown(
   sinceDays = 90
 ): Promise<StatusSlice[]> {
   const supabase = createSupabaseClient();
+
+  // Auto-mark overdue invoices
+  const today = new Date().toISOString().split("T")[0];
+  await supabase
+    .from("Invoices")
+    .update({ status: "overdue" })
+    .eq("business_id", business_id)
+    .neq("status", "paid")
+    .neq("status", "draft")
+    .neq("status", "overdue")
+    .lt("due_date", today);
+
   const since = new Date();
   since.setDate(since.getDate() - sinceDays);
 
@@ -115,8 +127,21 @@ export async function getOverview(
   pending: number;
   overdue: number;
   totalAmount: number;
+  totalValueAll: number;
 }> {
   const supabase = createSupabaseClient();
+
+  // Auto-mark overdue invoices
+  const today = new Date().toISOString().split("T")[0];
+  await supabase
+    .from("Invoices")
+    .update({ status: "overdue" })
+    .eq("business_id", business_id)
+    .neq("status", "paid")
+    .neq("status", "draft")
+    .neq("status", "overdue")
+    .lt("due_date", today);
+
   const since = new Date();
   since.setDate(since.getDate() - sinceDays);
 
@@ -140,9 +165,15 @@ export async function getOverview(
   ).length;
   const total = rows.length;
   const totalAmount = rows.reduce((sum: number, r: any) => {
+    if (String(r.status).toLowerCase() !== "paid") return sum;
     const val = typeof r.total === "number" ? r.total : parseFloat(r.total);
     return sum + (isNaN(val) ? 0 : val);
   }, 0);
 
-  return { total, paid, pending, overdue, totalAmount };
+  const totalValueAll = rows.reduce((sum: number, r: any) => {
+    const val = typeof r.total === "number" ? r.total : parseFloat(r.total);
+    return sum + (isNaN(val) ? 0 : val);
+  }, 0);
+
+  return { total, paid, pending, overdue, totalAmount, totalValueAll };
 }

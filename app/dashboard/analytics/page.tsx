@@ -20,7 +20,11 @@ import {
   getRevenueSeries,
   getInvoiceStatusBreakdown,
 } from "@/lib/actions/analytics.actions";
-import { getBusiness, getUserBusinesses } from "@/lib/actions/business.actions";
+import {
+  getBusiness,
+  getUserBusinesses,
+  getBusinessStats,
+} from "@/lib/actions/business.actions";
 import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";
 
 export const revalidate = 0;
@@ -42,6 +46,7 @@ export default async function AnalyticsPage({
     business,
     allBusinesses,
     userPlan,
+    businessStats,
   ] = await Promise.all([
     getOverview(bizId, 30),
     getRevenueSeries(bizId, 6),
@@ -49,6 +54,7 @@ export default async function AnalyticsPage({
     getBusiness({ business_id: bizId }),
     getUserBusinesses(),
     getCurrentPlan(),
+    getBusinessStats({ business_id: bizId }),
   ]);
 
   if (!business) redirect("/dashboard");
@@ -71,7 +77,9 @@ export default async function AnalyticsPage({
     currentAngle += angle;
     return slice;
   });
-  const avgInvoice = overview.total ? overview.totalAmount / overview.total : 0;
+  const avgInvoice = overview.total
+    ? overview.totalValueAll / overview.total
+    : 0;
   const collectionRate = overview.total
     ? Math.round((overview.paid / overview.total) * 100)
     : 0;
@@ -82,19 +90,20 @@ export default async function AnalyticsPage({
       allBusinesses={allBusinesses}
       activePage="analytics"
       userPlan={userPlan as AppPlan}
+      pendingInvoicesCount={businessStats?.total_pending_invoices || 0}
     >
       <div className="space-y-8">
         {/* Header */}
         <div>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20 text-white">
+              <TrendingUp className="h-5 w-5 md:h-6 md:w-6" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-header-text dark:text-slate-100">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-slate-100">
                 Analytics & Reports
               </h1>
-              <p className="text-sm md:text-base text-secondary-text dark:text-slate-400 mt-1">
+              <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-1">
                 Track your business performance and insights.
               </p>
             </div>
@@ -119,63 +128,67 @@ export default async function AnalyticsPage({
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-            <div className="flex items-center justify-between">
+          <div className="relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent dark:from-emerald-500/10 pointer-events-none" />
+            <div className="relative z-10 flex items-center justify-between">
               <div>
-                <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
                   Total Revenue
                 </p>
-                <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   £{overview.totalAmount.toFixed(2)}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-green-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
+                <DollarSign className="h-6 w-6" />
               </div>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-            <div className="flex items-center justify-between">
+          <div className="relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent dark:from-blue-500/10 pointer-events-none" />
+            <div className="relative z-10 flex items-center justify-between">
               <div>
-                <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
                   Invoices Sent
                 </p>
-                <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   {overview.total}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <FileText className="h-6 w-6 text-primary dark:text-blue-400" />
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 text-white">
+                <FileText className="h-6 w-6" />
               </div>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-            <div className="flex items-center justify-between">
+          <div className="relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent dark:from-purple-500/10 pointer-events-none" />
+            <div className="relative z-10 flex items-center justify-between">
               <div>
-                <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
                   Average Invoice
                 </p>
-                <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   £{avgInvoice.toFixed(2)}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                <BarChart3 className="h-6 w-6 text-purple-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20 text-white">
+                <BarChart3 className="h-6 w-6" />
               </div>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-            <div className="flex items-center justify-between">
+          <div className="relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent dark:from-orange-500/10 pointer-events-none" />
+            <div className="relative z-10 flex items-center justify-between">
               <div>
-                <p className="text-secondary-text dark:text-slate-400 text-sm font-medium">
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
                   Collection Rate
                 </p>
-                <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   {collectionRate}%
                 </p>
               </div>
-              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-                <PieChart className="h-6 w-6 text-orange-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 text-white">
+                <PieChart className="h-6 w-6" />
               </div>
             </div>
           </div>
@@ -184,8 +197,8 @@ export default async function AnalyticsPage({
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Revenue Trend */}
-          <div className="lg:col-span-2 bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-            <h3 className="text-lg font-bold text-header-text dark:text-slate-100 mb-6">
+          <div className="lg:col-span-2 relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-6">
               Revenue Trend
             </h3>
             <div className="h-64 flex items-end justify-between gap-2">
@@ -198,13 +211,13 @@ export default async function AnalyticsPage({
                     key={i}
                     className="flex-1 flex flex-col items-center gap-2 group"
                   >
-                    <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-t-lg relative h-full flex items-end overflow-hidden">
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg relative h-full flex items-end overflow-hidden">
                       <div
                         className="w-full bg-blue-500 dark:bg-blue-600 transition-all duration-500 group-hover:bg-blue-400"
                         style={{ height: `${height}%` }}
                       ></div>
                     </div>
-                    <span className="text-xs text-secondary-text dark:text-slate-400">
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
                       {item.month}
                     </span>
                   </div>
@@ -214,8 +227,8 @@ export default async function AnalyticsPage({
           </div>
 
           {/* Invoice Status */}
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-            <h3 className="text-lg font-bold text-header-text dark:text-slate-100 mb-6">
+          <div className="relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-6">
               Invoice Status
             </h3>
             <div className="relative h-64 w-64 mx-auto">
@@ -241,16 +254,16 @@ export default async function AnalyticsPage({
                     `Z`,
                   ].join(" ");
                   const colors: Record<string, string> = {
-                    paid: "#22c55e",
-                    pending: "#eab308",
-                    overdue: "#ef4444",
-                    draft: "#94a3b8",
+                    paid: "#10B981",
+                    pending: "#F59E0B",
+                    overdue: "#EF4444",
+                    draft: "#6B7280",
                   };
                   return (
                     <path
                       key={i}
                       d={pathData}
-                      fill={colors[slice.status] || "#cbd5e1"}
+                      fill={colors[slice.status.toLowerCase()] || "#cbd5e1"}
                       className="hover:opacity-80 transition-opacity"
                     />
                   );
@@ -260,15 +273,15 @@ export default async function AnalyticsPage({
                   cx="50"
                   cy="50"
                   r="25"
-                  className="fill-white dark:fill-slate-800"
+                  className="fill-white dark:fill-slate-900"
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-center">
-                  <span className="text-2xl font-bold text-header-text dark:text-slate-100">
+                  <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {totalInvoices}
                   </span>
-                  <p className="text-xs text-secondary-text dark:text-slate-400">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Invoices
                   </p>
                 </div>
@@ -283,20 +296,20 @@ export default async function AnalyticsPage({
                   <div className="flex items-center gap-2">
                     <div
                       className={`w-3 h-3 rounded-full ${
-                        slice.status === "paid"
-                          ? "bg-green-500"
-                          : slice.status === "pending"
-                            ? "bg-yellow-500"
-                            : slice.status === "overdue"
+                        slice.status.toLowerCase() === "paid"
+                          ? "bg-emerald-500"
+                          : slice.status.toLowerCase() === "pending"
+                            ? "bg-amber-500"
+                            : slice.status.toLowerCase() === "overdue"
                               ? "bg-red-500"
                               : "bg-slate-400"
                       }`}
                     />
-                    <span className="capitalize text-secondary-text dark:text-slate-300">
+                    <span className="capitalize text-slate-500 dark:text-slate-300">
                       {slice.status}
                     </span>
                   </div>
-                  <span className="font-medium text-header-text dark:text-slate-100">
+                  <span className="font-medium text-slate-900 dark:text-slate-100">
                     {slice.percentage}%
                   </span>
                 </div>

@@ -228,56 +228,53 @@ export default function Hero() {
                         key={i}
                         className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm relative overflow-hidden group"
                       >
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                            {stat.label}
+                        <div
+                          className={`absolute inset-0 bg-gradient-to-br opacity-10 ${
+                            stat.color === "blue"
+                              ? "from-blue-500 to-transparent"
+                              : stat.color === "purple"
+                                ? "from-purple-500 to-transparent"
+                                : "from-red-500 to-transparent"
+                          }`}
+                        />
+                        <div className="relative z-10">
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                              {stat.label}
+                            </div>
+                            <div
+                              className={`p-1 rounded-md shadow-inner ${
+                                stat.color === "blue"
+                                  ? "bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300"
+                                  : stat.color === "purple"
+                                    ? "bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300"
+                                    : "bg-red-50 dark:bg-red-500/20 text-red-600 dark:text-red-300"
+                              }`}
+                            >
+                              {stat.trend === "up" ? (
+                                <ArrowUpRight className="w-3 h-3" />
+                              ) : (
+                                <ArrowDownRight className="w-3 h-3" />
+                              )}
+                            </div>
                           </div>
-                          <div
-                            className={`p-1 rounded-md ${
-                              stat.color === "blue"
-                                ? "bg-blue-50 dark:bg-blue-900/20"
-                                : stat.color === "purple"
-                                  ? "bg-purple-50 dark:bg-purple-900/20"
-                                  : "bg-red-50 dark:bg-red-900/20"
-                            }`}
-                          >
-                            {stat.trend === "up" ? (
-                              <ArrowUpRight
-                                className={`w-3 h-3 ${
-                                  stat.color === "blue"
-                                    ? "text-blue-600 dark:text-blue-400"
-                                    : stat.color === "purple"
-                                      ? "text-purple-600 dark:text-purple-400"
-                                      : "text-red-600 dark:text-red-400"
-                                }`}
-                              />
-                            ) : (
-                              <ArrowDownRight
-                                className={`w-3 h-3 ${
-                                  stat.color === "blue"
-                                    ? "text-blue-600 dark:text-blue-400"
-                                    : stat.color === "purple"
-                                      ? "text-purple-600 dark:text-purple-400"
-                                      : "text-red-600 dark:text-red-400"
-                                }`}
-                              />
-                            )}
+                          <div className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-1">
+                            {stat.value}
                           </div>
-                        </div>
-                        <div className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-1">
-                          {stat.value}
-                        </div>
-                        <div className="flex items-center gap-1 text-xs">
-                          <span
-                            className={
-                              stat.trend === "up"
-                                ? "text-emerald-600"
-                                : "text-red-600"
-                            }
-                          >
-                            {stat.change}
-                          </span>
-                          <span className="text-slate-400">vs last month</span>
+                          <div className="flex items-center gap-1 text-xs">
+                            <span
+                              className={
+                                stat.trend === "up"
+                                  ? "text-emerald-600"
+                                  : "text-red-600"
+                              }
+                            >
+                              {stat.change}
+                            </span>
+                            <span className="text-slate-400">
+                              vs last month
+                            </span>
+                          </div>
                         </div>
                       </div>
                     ))}

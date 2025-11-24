@@ -14,8 +14,11 @@ import {
 import ClientCard from "@/components/Clients/ClientCard";
 import { ClientType } from "@/types";
 import CustomButton from "../ui/CustomButton";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { normalizeCurrencyCode } from "@/lib/utils";
+
+// Actually, I'll just use a simple timeout inside the component since I can't install packages easily without user permission/context.
+// Or better, I'll just implement the logic directly.
 
 const formatCurrency = (amount?: number | null, currency?: string | null) => {
   const currencyCode = normalizeCurrencyCode(
@@ -56,6 +59,18 @@ export default function ClientManagement({
   business_id: number;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const handleSearch = (term: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (term) {
+      params.set("searchTerm", term);
+    } else {
+      params.delete("searchTerm");
+    }
+    router.replace(`${pathname}?${params.toString()}`);
+  };
 
   const stats = React.useMemo(() => {
     if (!clients || clients.length === 0) {
@@ -104,14 +119,14 @@ export default function ClientManagement({
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <Users className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/20 text-white">
+            <Users className="h-5 w-5 md:h-6 md:w-6" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-header-text dark:text-slate-100">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-slate-100">
               Client Management
             </h1>
-            <p className="text-sm md:text-base text-secondary-text dark:text-slate-400 mt-1">
+            <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-1">
               Manage your clients and their information.
             </p>
           </div>
@@ -126,8 +141,8 @@ export default function ClientManagement({
             <Input
               type="text"
               placeholder="Search clients..."
-              // value={searchTerm}
-              // onChange={(e) => setSearchTerm(e.target.value)}
+              defaultValue={searchParams.get("searchTerm")?.toString()}
+              onChange={(e) => handleSearch(e.target.value)}
               className="pl-10 pr-4 py-2 border-blue-200 focus:ring-primary w-full sm:w-64"
             />
           </div>
@@ -156,58 +171,62 @@ export default function ClientManagement({
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+        <div className="relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent dark:from-purple-500/10 pointer-events-none" />
+          <div className="relative z-10 text-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-purple-500/20 text-white">
+              <Users className="h-6 w-6" />
             </div>
-            <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {clients.length}
             </p>
-            <p className="text-sm text-secondary-text dark:text-slate-400">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Total Clients
             </p>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
+        <div className="relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent dark:from-emerald-500/10 pointer-events-none" />
+          <div className="relative z-10 text-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-emerald-500/20 text-white">
+              <Users className="h-6 w-6" />
             </div>
-            <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {stats.activeClients}
             </p>
-            <p className="text-sm text-secondary-text dark:text-slate-400">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Active Clients
             </p>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <FileText className="h-6 w-6 text-primary dark:text-blue-400" />
+        <div className="relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent dark:from-blue-500/10 pointer-events-none" />
+          <div className="relative z-10 text-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/20 text-white">
+              <FileText className="h-6 w-6" />
             </div>
-            <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {stats.totalInvoices}
             </p>
-            <p className="text-sm text-secondary-text dark:text-slate-400">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Total Invoices
             </p>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
-              <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+        <div className="relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent dark:from-amber-500/10 pointer-events-none" />
+          <div className="relative z-10 text-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-amber-500/20 text-white">
+              <DollarSign className="h-6 w-6" />
             </div>
-            <p className="text-2xl font-bold text-header-text dark:text-slate-100">
+            <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {formatCurrency(stats.totalRevenue, stats.representativeCurrency)}
             </p>{" "}
             {/* Replace with actual revenue calculation */}
-            <p className="text-sm text-secondary-text dark:text-slate-400">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Total Revenue
             </p>
           </div>

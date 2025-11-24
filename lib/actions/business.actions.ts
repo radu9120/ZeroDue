@@ -444,24 +444,106 @@ export const getBusinessStats = async ({
 }: BusinessDashboardPageProps) => {
   const supabase = createSupabaseClient();
 
-  try {
-    const { data: businessStats, error } = await supabase.rpc(
-      "get_business_stats",
-      { p_business_id: business_id }
-    );
-    if (error) throw error;
-    return businessStats ? businessStats[0] : null;
-  } catch (e: any) {
-    // Useful server-side context
-    console.error("Supabase RPC get_business_stats failed", {
-      business_id,
-      message: e?.message,
-      status: e?.status,
-      details: e?.details,
-      hint: e?.hint,
-    });
-    throw new Error(e?.message || "Failed to fetch business stats");
-  }
+  // 1. Auto-mark overdue invoices
+  const today = new Date().toISOString().split("T")[0];
+  await supabase
+    .from("Invoices")
+    .update({ status: "overdue" })
+    .eq("business_id", business_id)
+    .neq("status", "paid")
+    .neq("status", "draft")
+    .neq("status", "overdue")
+    .lt("due_date", today);
+
+  // 2. Fetch invoices to calculate stats manually (replacing RPC)
+  const { data: invoices, error } = await supabase
+    .from("Invoices")
+    .select("total, status, created_at, issue_date")
+    .eq("business_id", business_id);
+
+  if (error) throw new Error(error.message);
+
+  const now = new Date();
+  const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthEnd = currentMonthStart;
+
+  let total_revenue = 0;
+  let pending_amount = 0;
+  let overdue_amount = 0;
+  let pending_invoices_count = 0;
+  let paid_invoices_count = 0;
+  let overdue_invoices_count = 0;
+  let total_invoices_count = 0;
+
+  let this_month_revenue = 0;
+  let this_month_pending = 0;
+  let this_month_overdue = 0;
+
+  let last_month_revenue = 0;
+  let last_month_pending = 0;
+  let last_month_overdue = 0;
+
+  (invoices || []).forEach((inv: any) => {
+    const amount =
+      typeof inv.total === "number"
+        ? inv.total
+        : parseFloat(String(inv.total).replace(/[^0-9.-]+/g, "")) || 0;
+    const status = (inv.status || "").toLowerCase();
+    const date = new Date(inv.created_at);
+
+    total_invoices_count++;
+
+    // Main Stats (All Time / Current State)
+    if (status === "paid") {
+      total_revenue += amount;
+      paid_invoices_count++;
+    } else if (
+      status === "pending" ||
+      status === "sent" ||
+      status === "draft"
+    ) {
+      pending_amount += amount;
+      pending_invoices_count++;
+    } else if (status === "overdue") {
+      overdue_amount += amount;
+      overdue_invoices_count++;
+    }
+
+    // Growth Stats (Monthly Performance)
+    const isThisMonth = date >= currentMonthStart;
+    const isLastMonth = date >= lastMonthStart && date < lastMonthEnd;
+
+    if (isThisMonth) {
+      if (status === "paid") this_month_revenue += amount;
+      else if (status === "pending" || status === "sent" || status === "draft")
+        this_month_pending += amount;
+      else if (status === "overdue") this_month_overdue += amount;
+    } else if (isLastMonth) {
+      if (status === "paid") last_month_revenue += amount;
+      else if (status === "pending" || status === "sent" || status === "draft")
+        last_month_pending += amount;
+      else if (status === "overdue") last_month_overdue += amount;
+    }
+  });
+
+  const calcGrowth = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - previous) / previous) * 100);
+  };
+
+  return {
+    total_paid_amount: total_revenue,
+    total_pending_amount: pending_amount,
+    total_overdue_amount: overdue_amount,
+    total_pending_invoices: pending_invoices_count,
+    total_paid_invoices: paid_invoices_count,
+    total_overdue_invoices: overdue_invoices_count,
+    total_invoices: total_invoices_count,
+    revenue_growth: calcGrowth(this_month_revenue, last_month_revenue),
+    pending_growth: calcGrowth(this_month_pending, last_month_pending),
+    overdue_growth: calcGrowth(this_month_overdue, last_month_overdue),
+  };
 };
 
 export const getDashboardStats = async (): Promise<

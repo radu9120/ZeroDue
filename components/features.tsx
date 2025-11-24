@@ -142,21 +142,24 @@ export default function Features() {
             <motion.div
               key={index}
               variants={featureCardVariants}
-              className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-xl hover:border-blue-200 dark:hover:border-blue-800 group flex flex-col h-full"
+              className="relative group h-full"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                  <feature.icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <div className="absolute -inset-px bg-gradient-to-b from-blue-500/20 to-purple-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+              <div className="relative h-full bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 shadow-sm border border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                <div className="flex items-start justify-between mb-6">
+                  <div className="p-3.5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-2xl group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                    <feature.icon className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                  </div>
                 </div>
+
+                <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {feature.title}
+                </h3>
+
+                <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
-
-              <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">
-                {feature.title}
-              </h3>
-
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                {feature.description}
-              </p>
             </motion.div>
           ))}
         </motion.div>
