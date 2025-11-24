@@ -22,6 +22,7 @@ import {
 import CompanyBanner from "./companies-banner";
 import { useRef } from "react";
 import { HeroGlow } from "@/components/ui/hero-glow";
+import { FloatingPaths } from "@/components/ui/floating-paths";
 
 export default function Hero() {
   const containerRef = useRef(null);
@@ -40,7 +41,10 @@ export default function Hero() {
       {/* Background */}
       <div className="absolute inset-0 -z-10">
         <HeroGlow />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+        <div className="absolute inset-0 opacity-40 dark:opacity-30">
+          <FloatingPaths position={1} />
+          <FloatingPaths position={-1} />
+        </div>
       </div>
 
       <div className="container mx-auto px-4 text-center">
