@@ -3,7 +3,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Cookie, X, Settings } from "lucide-react";
+import {
+  Cookie,
+  X,
+  Shield,
+  BarChart3,
+  Megaphone,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
 
 interface CookiePreferences {
@@ -13,22 +20,52 @@ interface CookiePreferences {
   functional: boolean;
 }
 
+const cookieTypes = [
+  {
+    key: "necessary" as const,
+    label: "Essential",
+    description:
+      "Required for core functionality like security and accessibility",
+    icon: Shield,
+    alwaysOn: true,
+  },
+  {
+    key: "analytics" as const,
+    label: "Analytics",
+    description: "Help us understand how you use InvoiceFlow",
+    icon: BarChart3,
+    alwaysOn: false,
+  },
+  {
+    key: "marketing" as const,
+    label: "Marketing",
+    description: "Personalized ads and promotional content",
+    icon: Megaphone,
+    alwaysOn: false,
+  },
+  {
+    key: "functional" as const,
+    label: "Preferences",
+    description: "Remember your settings and personalization",
+    icon: Sparkles,
+    alwaysOn: false,
+  },
+];
+
 export default function CookieBanner() {
   const [showBanner, setShowBanner] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [preferences, setPreferences] = useState<CookiePreferences>({
-    necessary: true, // Always true, can't be disabled
+    necessary: true,
     analytics: false,
     marketing: false,
     functional: false,
   });
 
   useEffect(() => {
-    // Check if user has already made a choice
     const cookieConsent = localStorage.getItem("cookie-consent");
     if (!cookieConsent) {
-      // Show banner after a short delay
-      const timer = setTimeout(() => setShowBanner(true), 1000);
+      const timer = setTimeout(() => setShowBanner(true), 1500);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -66,12 +103,8 @@ export default function CookieBanner() {
   const saveCookiePreferences = (prefs: CookiePreferences) => {
     localStorage.setItem("cookie-consent", JSON.stringify(prefs));
     localStorage.setItem("cookie-consent-date", new Date().toISOString());
-
-    // Dispatch custom event to notify other components
     window.dispatchEvent(new CustomEvent("cookiePreferencesUpdated"));
 
-    // Here you would typically initialize your analytics/marketing scripts
-    // based on the user's preferences
     if (prefs.analytics) {
       // Initialize Google Analytics, etc.
     }
@@ -81,7 +114,7 @@ export default function CookieBanner() {
   };
 
   const handlePreferenceChange = (key: keyof CookiePreferences) => {
-    if (key === "necessary") return; // Can't disable necessary cookies
+    if (key === "necessary") return;
     setPreferences((prev) => ({
       ...prev,
       [key]: !prev[key],
@@ -93,29 +126,29 @@ export default function CookieBanner() {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-[#1e293b] backdrop-blur-md border-t border-neutral-200 dark:border-[#475569] shadow-lg"
+        initial={{ y: 100, opacity: 0, scale: 0.95 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 100, opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md z-50"
       >
-        <div className="container mx-auto px-4 md:px-6 py-4 md:py-6">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl shadow-black/10 dark:shadow-black/30 border border-neutral-200/60 dark:border-slate-700/60 overflow-hidden">
           {!showSettings ? (
-            // Main banner
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-              <div className="flex items-start gap-3 flex-1">
-                <Cookie className="h-6 w-6 text-blue-600 dark:text-blue-400 mt-1 flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-neutral-900 dark:text-[#e2e8f0] mb-1">
-                    We use cookies
+            // Compact main banner
+            <div className="p-5">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                  <Cookie className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-neutral-900 dark:text-white text-base">
+                    Cookie preferences
                   </h3>
-                  <p className="text-sm text-neutral-600 dark:text-[#cbd5e1] leading-relaxed">
-                    We use cookies to enhance your browsing experience, serve
-                    personalized content, and analyze our traffic. By clicking
-                    "Accept All", you consent to our use of cookies.{" "}
+                  <p className="text-sm text-neutral-500 dark:text-slate-400 mt-1 leading-relaxed">
+                    We use cookies to improve your experience.{" "}
                     <Link
                       href="/cookies"
-                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                      className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
                     >
                       Learn more
                     </Link>
@@ -123,190 +156,136 @@ export default function CookieBanner() {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                <Button
-                  variant="secondary"
-                  size="sm"
+              <div className="flex flex-col gap-2 mt-5">
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={acceptAll}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium h-10 rounded-xl"
+                  >
+                    Accept all
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={rejectAll}
+                    className="flex-1 bg-neutral-100 dark:bg-slate-800 border-0 text-neutral-700 dark:text-slate-300 hover:bg-neutral-200 dark:hover:bg-slate-700 font-medium h-10 rounded-xl"
+                  >
+                    Reject all
+                  </Button>
+                </div>
+                <button
                   onClick={() => setShowSettings(true)}
-                  className="border-neutral-300 dark:border-[#475569] text-neutral-700 dark:text-[#cbd5e1] hover:bg-neutral-50 dark:hover:bg-[#334155]"
+                  className="text-sm text-neutral-500 dark:text-slate-400 hover:text-neutral-700 dark:hover:text-slate-200 transition-colors py-2 font-medium"
                 >
-                  <Settings className="h-4 w-4 mr-2" />
-                  Customize
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={rejectAll}
-                  className="border-neutral-300 dark:border-[#475569] text-neutral-700 dark:text-[#cbd5e1] hover:bg-neutral-50 dark:hover:bg-[#334155]"
-                >
-                  Reject All
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={acceptAll}
-                  className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
-                >
-                  Accept All
-                </Button>
+                  Manage preferences
+                </button>
               </div>
             </div>
           ) : (
             // Settings panel
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-neutral-900 dark:text-[#e2e8f0]">
-                  Cookie Preferences
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-neutral-900 dark:text-white text-base">
+                  Cookie settings
                 </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   onClick={() => setShowSettings(false)}
-                  className="p-1 hover:bg-neutral-100 dark:hover:bg-[#334155]"
+                  className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-slate-800 flex items-center justify-center text-neutral-500 dark:text-slate-400 hover:bg-neutral-200 dark:hover:bg-slate-700 transition-colors"
                 >
                   <X className="h-4 w-4" />
-                </Button>
+                </button>
               </div>
 
-              <div className="grid gap-4">
-                {/* Necessary Cookies */}
-                <div className="flex items-start justify-between p-3 bg-neutral-50 dark:bg-[#334155] rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-medium text-sm text-neutral-900 dark:text-[#e2e8f0]">
-                        Necessary
-                      </h4>
-                      <span className="text-xs bg-neutral-200 dark:bg-[#475569] text-neutral-700 dark:text-[#cbd5e1] px-2 py-0.5 rounded">
-                        Always Active
-                      </span>
-                    </div>
-                    <p className="text-xs text-neutral-600 dark:text-[#94a3b8]">
-                      Essential for the website to function properly. Cannot be
-                      disabled.
-                    </p>
-                  </div>
-                </div>
+              <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
+                {cookieTypes.map((cookie) => {
+                  const Icon = cookie.icon;
+                  const isEnabled = preferences[cookie.key];
 
-                {/* Analytics Cookies */}
-                <div className="flex items-start justify-between p-3 border border-neutral-200 dark:border-[#475569] rounded-lg">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-sm mb-1 text-neutral-900 dark:text-[#e2e8f0]">
-                      Analytics
-                    </h4>
-                    <p className="text-xs text-neutral-600 dark:text-[#94a3b8]">
-                      Help us understand how visitors interact with our website.
-                    </p>
-                  </div>
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={preferences.analytics}
-                      onChange={() => handlePreferenceChange("analytics")}
-                      className="sr-only"
-                    />
+                  return (
                     <div
-                      className={`w-10 h-6 rounded-full transition-colors ${
-                        preferences.analytics
-                          ? "bg-blue-600 dark:bg-blue-500"
-                          : "bg-neutral-300 dark:bg-[#475569]"
+                      key={cookie.key}
+                      className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
+                        cookie.alwaysOn
+                          ? "bg-neutral-50 dark:bg-slate-800/50"
+                          : "bg-white dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 hover:border-neutral-300 dark:hover:border-slate-600"
                       }`}
                     >
                       <div
-                        className={`w-4 h-4 bg-white dark:bg-[#e2e8f0] rounded-full shadow transition-transform mt-1 ${
-                          preferences.analytics
-                            ? "translate-x-5"
-                            : "translate-x-1"
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          isEnabled || cookie.alwaysOn
+                            ? "bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400"
+                            : "bg-neutral-100 dark:bg-slate-700 text-neutral-400 dark:text-slate-500"
                         }`}
-                      />
+                      >
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium text-sm text-neutral-900 dark:text-white">
+                            {cookie.label}
+                          </h4>
+                          {cookie.alwaysOn && (
+                            <span className="text-[10px] font-semibold uppercase tracking-wide bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 px-1.5 py-0.5 rounded">
+                              Required
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-neutral-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+                          {cookie.description}
+                        </p>
+                      </div>
+                      {!cookie.alwaysOn && (
+                        <button
+                          onClick={() => handlePreferenceChange(cookie.key)}
+                          className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${
+                            isEnabled
+                              ? "bg-blue-600 dark:bg-blue-500"
+                              : "bg-neutral-200 dark:bg-slate-600"
+                          }`}
+                        >
+                          <span
+                            className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
+                              isEnabled ? "left-6" : "left-1"
+                            }`}
+                          />
+                        </button>
+                      )}
+                      {cookie.alwaysOn && (
+                        <div className="w-11 h-6 rounded-full bg-green-500 dark:bg-green-600 flex items-center justify-center flex-shrink-0">
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      )}
                     </div>
-                  </label>
-                </div>
-
-                {/* Marketing Cookies */}
-                <div className="flex items-start justify-between p-3 border border-neutral-200 dark:border-[#475569] rounded-lg">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-sm mb-1 text-neutral-900 dark:text-[#e2e8f0]">
-                      Marketing
-                    </h4>
-                    <p className="text-xs text-neutral-600 dark:text-[#94a3b8]">
-                      Used to track visitors and display relevant ads.
-                    </p>
-                  </div>
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={preferences.marketing}
-                      onChange={() => handlePreferenceChange("marketing")}
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-10 h-6 rounded-full transition-colors ${
-                        preferences.marketing
-                          ? "bg-blue-600 dark:bg-blue-500"
-                          : "bg-neutral-300 dark:bg-[#475569]"
-                      }`}
-                    >
-                      <div
-                        className={`w-4 h-4 bg-white dark:bg-[#e2e8f0] rounded-full shadow transition-transform mt-1 ${
-                          preferences.marketing
-                            ? "translate-x-5"
-                            : "translate-x-1"
-                        }`}
-                      />
-                    </div>
-                  </label>
-                </div>
-
-                {/* Functional Cookies */}
-                <div className="flex items-start justify-between p-3 border border-neutral-200 dark:border-[#475569] rounded-lg">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-sm mb-1 text-neutral-900 dark:text-[#e2e8f0]">
-                      Functional
-                    </h4>
-                    <p className="text-xs text-neutral-600 dark:text-[#94a3b8]">
-                      Enable enhanced functionality and personalization.
-                    </p>
-                  </div>
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={preferences.functional}
-                      onChange={() => handlePreferenceChange("functional")}
-                      className="sr-only"
-                    />
-                    <div
-                      className={`w-10 h-6 rounded-full transition-colors ${
-                        preferences.functional
-                          ? "bg-blue-600 dark:bg-blue-500"
-                          : "bg-neutral-300 dark:bg-[#475569]"
-                      }`}
-                    >
-                      <div
-                        className={`w-4 h-4 bg-white dark:bg-[#e2e8f0] rounded-full shadow transition-transform mt-1 ${
-                          preferences.functional
-                            ? "translate-x-5"
-                            : "translate-x-1"
-                        }`}
-                      />
-                    </div>
-                  </label>
-                </div>
+                  );
+                })}
               </div>
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-2 mt-4 pt-4 border-t border-neutral-100 dark:border-slate-800">
                 <Button
                   variant="secondary"
                   size="sm"
                   onClick={rejectAll}
-                  className="flex-1 border-neutral-300 dark:border-[#475569] text-neutral-700 dark:text-[#cbd5e1] hover:bg-neutral-50 dark:hover:bg-[#334155]"
+                  className="flex-1 bg-neutral-100 dark:bg-slate-800 border-0 text-neutral-700 dark:text-slate-300 hover:bg-neutral-200 dark:hover:bg-slate-700 font-medium h-10 rounded-xl"
                 >
-                  Reject All
+                  Reject all
                 </Button>
                 <Button
                   size="sm"
                   onClick={acceptSelected}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium h-10 rounded-xl"
                 >
-                  Save Preferences
+                  Save preferences
                 </Button>
               </div>
             </div>
