@@ -1,30 +1,29 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/auth";
+import { createSupabaseAdminClient } from "@/lib/supabase";
 import { normalizePlan, type AppPlan } from "@/lib/utils";
+import { auth } from "@/lib/auth";
 
-// Resolves the user's current plan using Clerk Billing's has() helper when available,
-// with a safe fallback to publicMetadata.plan
+// Resolves the user's current plan using Supabase user metadata
 export async function getCurrentPlan(): Promise<AppPlan> {
   try {
-    const { has } = await auth();
-    // has() may be undefined on older SDKs or when unauthenticated
-    if (typeof has === "function") {
-      // Check higher tiers first to avoid misclassification
-      const [ent, pro] = await Promise.all([
-        has({ plan: "enterprise" as any }),
-        has({ plan: "professional" as any }),
-      ]);
-      if (ent) return "enterprise";
-      if (pro) return "professional";
-      // If neither, assume free
-      return "free_user";
+    const { userId } = await auth();
+    if (!userId) return "free_user";
+
+    // Use admin client to get the latest user data (bypasses session cache)
+    const supabase = createSupabaseAdminClient();
+    const { data: userData, error } =
+      await supabase.auth.admin.getUserById(userId);
+
+    if (error || !userData?.user) {
+      // Fallback to session-based user
+      const user = await currentUser();
+      if (!user) return "free_user";
+      const raw = (user.publicMetadata as any)?.plan || "free_user";
+      return normalizePlan(raw);
     }
-  } catch (_) {
-    // ignore and fallback
-  }
-  // Fallback to metadata
-  try {
-    const user = await currentUser();
-    const raw = (user?.publicMetadata as any)?.plan || "free_user";
+
+    // Get plan from user_metadata
+    const raw = userData.user.user_metadata?.plan || "free_user";
     return normalizePlan(raw);
   } catch (_) {
     return "free_user";

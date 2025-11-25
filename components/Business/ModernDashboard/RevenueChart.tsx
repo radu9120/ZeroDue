@@ -37,8 +37,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
         </div>
       </CardHeader>
       <CardContent className="p-0 sm:p-6">
-        <div className="h-[250px] sm:h-[350px] w-full min-w-0 pr-2">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="h-[250px] sm:h-[350px] w-full min-w-0 min-h-[250px] pr-2">
+          <ResponsiveContainer width="100%" height="100%" minHeight={250}>
             <BarChart
               data={data}
               margin={{ top: 10, right: 10, left: -20, bottom: 0 }}

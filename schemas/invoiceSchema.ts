@@ -74,9 +74,7 @@ export type CreateBusiness = z.infer<typeof companySchema>;
 
 export const formSchema = z.object({
   invoice_number: z.string().min(1, { message: "Invoice number is required." }),
-  description: z
-    .string()
-    .min(1, { message: "Invoice description is required." }),
+  description: z.string().optional().default(""),
   company_details: companySchema,
   bill_to: billToSchema,
   issue_date: z.coerce.date({ required_error: "Invoice date is required." }),

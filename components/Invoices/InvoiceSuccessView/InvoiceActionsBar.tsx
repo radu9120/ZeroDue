@@ -44,11 +44,11 @@ export function InvoiceActionsBar({
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center">
-          <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/40 rounded-2xl flex items-center justify-center">
+          <FileText className="h-6 w-6 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-100">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             Invoice Preview
           </h2>
           <p className="text-sm text-gray-500 dark:text-slate-400">
@@ -63,7 +63,7 @@ export function InvoiceActionsBar({
             <select
               value={status}
               onChange={(event) => onStatusChange(event.target.value)}
-              className="border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 bg-white dark:bg-slate-700 text-sm text-gray-900 dark:text-slate-100"
+              className="border border-gray-300 dark:border-slate-600 rounded-xl px-4 py-2.5 bg-white dark:bg-slate-700 text-sm font-medium text-gray-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               {STATUS_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -74,14 +74,14 @@ export function InvoiceActionsBar({
             <Button
               onClick={onSave}
               disabled={saving}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-500 text-white rounded-xl px-5 py-2.5 font-medium"
             >
               {saving ? "Saving…" : "Save Changes"}
             </Button>
             <Button
               variant="secondary"
               onClick={onCancel}
-              className="dark:bg-slate-700 dark:hover:bg-slate-600"
+              className="rounded-xl px-5 py-2.5 dark:bg-slate-700 dark:hover:bg-slate-600"
             >
               Cancel
             </Button>
@@ -92,7 +92,7 @@ export function InvoiceActionsBar({
           <Button
             variant="secondary"
             onClick={onEdit}
-            className="dark:bg-slate-700 dark:hover:bg-slate-600"
+            className="rounded-xl px-5 py-2.5 font-medium border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600"
           >
             Edit Invoice
           </Button>
@@ -100,14 +100,14 @@ export function InvoiceActionsBar({
             <Button
               onClick={onCopyPublicLink}
               variant="secondary"
-              className="bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800"
+              className="rounded-xl px-5 py-2.5 font-medium bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/40 dark:text-purple-300 dark:border-purple-700"
             >
               Copy Public Link
             </Button>
           )}
           <Button
             onClick={onSendToClient}
-            className="bg-green-600 hover:bg-green-700 shadow-lg"
+            className="bg-green-600 hover:bg-green-500 text-white rounded-xl px-5 py-2.5 font-medium shadow-lg shadow-green-500/20"
             disabled={sending}
           >
             <Mail className="h-4 w-4 mr-2" />
@@ -115,7 +115,7 @@ export function InvoiceActionsBar({
           </Button>
           <Button
             onClick={onDownloadPDF}
-            className="bg-blue-600 hover:bg-blue-700 shadow-lg"
+            className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl px-5 py-2.5 font-medium shadow-lg shadow-blue-500/20"
             disabled={downloading}
           >
             <Download className="h-4 w-4 mr-2" />

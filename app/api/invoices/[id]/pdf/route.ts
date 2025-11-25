@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { createSupabaseAdminClient } from "../../../../../lib/supabase";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 export async function GET(

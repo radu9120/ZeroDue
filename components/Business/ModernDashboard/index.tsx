@@ -49,20 +49,17 @@ export default function ModernDashboard({
       pendingInvoicesCount={Number(stats?.total_pending_invoices || 0)}
       userPlan={userPlan}
     >
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
             Overview
           </h1>
-          <p className="text-slate-500 dark:text-slate-400">
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">
             Here&apos;s what&apos;s happening with your business today.
           </p>
         </div>
-        <Link
-          href={`/dashboard/invoices/new?business_id=${business.id}`}
-          className="md:hidden"
-        >
-          <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white border-0">
+        <Link href={`/dashboard/invoices/new?business_id=${business.id}`}>
+          <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white border-0">
             <Plus className="w-4 h-4 mr-2" />
             New Invoice
           </Button>

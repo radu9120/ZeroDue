@@ -25,7 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton } from "@/components/auth/UserButton";
 import { useRouter } from "next/navigation";
 import {
   Popover,
@@ -439,16 +439,6 @@ export function DashboardShell({
 
             {/* Actions */}
             <div className="flex items-center gap-3">
-              <Link href={`/dashboard/invoices/new?business_id=${business.id}`}>
-                <Button
-                  size="sm"
-                  className="hidden md:flex bg-blue-600 hover:bg-blue-500 text-white border-0"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Invoice
-                </Button>
-              </Link>
-
               <ThemeToggle />
 
               {mounted ? (

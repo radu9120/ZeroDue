@@ -6,12 +6,12 @@ import Pricing from "@/components/pricing";
 import Testimonials from "@/components/testimonials";
 import HowItWorks from "@/components/how-it-works";
 import RecentBlogs from "@/components/recent-blogs";
-import { auth } from "@clerk/nextjs/server";
+import { getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const { userId } = await auth();
-  if (userId) {
+  const user = await getUser();
+  if (user) {
     redirect("/dashboard");
   }
   return (

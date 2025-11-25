@@ -144,8 +144,8 @@ export default function Features() {
               variants={featureCardVariants}
               className="relative group h-full"
             >
-              <div className="absolute -inset-px bg-gradient-to-b from-blue-500/20 to-purple-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-              <div className="relative h-full bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 shadow-sm border border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+              <div className="absolute -inset-px bg-gradient-to-b from-blue-500/20 to-purple-500/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+              <div className="relative h-full bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl p-8 shadow-sm border border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                 <div className="flex items-start justify-between mb-6">
                   <div className="p-3.5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-2xl group-hover:scale-110 transition-transform duration-500 shadow-inner relative overflow-hidden">
                     <div className="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

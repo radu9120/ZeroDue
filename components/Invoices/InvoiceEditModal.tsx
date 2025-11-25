@@ -380,7 +380,7 @@ export default function InvoiceEditModal({
         <Button
           type="submit"
           disabled={isLoading}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600"
+          className="flex-1 bg-blue-600 hover:bg-blue-500 text-white"
         >
           {isLoading ? (
             <>

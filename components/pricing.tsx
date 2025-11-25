@@ -1,119 +1,606 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { PricingTable } from "@clerk/nextjs";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Check,
+  Zap,
+  Crown,
+  Rocket,
+  X,
+  CreditCard,
+  Loader2,
+  AlertTriangle,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 
 interface PricingProps {
   showTitle?: boolean;
   showBackground?: boolean;
+  isDashboard?: boolean;
+}
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
+
+const plans = [
+  {
+    id: "free_user",
+    name: "Free",
+    price: "$0",
+    period: "/forever",
+    description: "Getting started",
+    icon: Zap,
+    features: ["2 invoices", "1 business", "Basic templates", "PDF export"],
+    cta: "Get Started Free",
+    popular: false,
+    gradient: "from-slate-500 to-slate-600",
+  },
+  {
+    id: "professional",
+    name: "Professional",
+    price: "$6.99",
+    period: "/mo",
+    yearlyNote: "or $70/year ($5.83/mo)",
+    description: "Small businesses",
+    icon: Rocket,
+    features: [
+      "15 invoices/mo",
+      "3 businesses",
+      "All templates",
+      "Priority support",
+      "Custom branding",
+    ],
+    cta: "Start Free 60 Days Trial",
+    popular: true,
+    gradient: "from-blue-600 to-cyan-500",
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    price: "$15.99",
+    period: "/mo",
+    yearlyNote: "or $192/year ($16/mo)",
+    description: "Growing businesses",
+    icon: Crown,
+    features: [
+      "Unlimited invoices",
+      "Unlimited businesses",
+      "All templates + custom branding",
+      "Email tracking & reminders",
+      "Priority support",
+    ],
+    cta: "Start Free 60 Days Trial",
+    popular: false,
+    gradient: "from-purple-600 to-pink-500",
+  },
+];
+
+function CheckoutForm({
+  planName,
+  planPrice,
+  planId,
+  subscriptionId,
+  onSuccess,
+  onCancel,
+}: {
+  planName: string;
+  planPrice: string;
+  planId: string;
+  subscriptionId: string;
+  onSuccess: () => void;
+  onCancel: () => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setIsProcessing(true);
+    setError(null);
+
+    const { error: submitError } = await stripe.confirmSetup({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/dashboard?checkout=success`,
+      },
+      redirect: "if_required",
+    });
+
+    if (submitError) {
+      setError(submitError.message || "Payment failed");
+      setIsProcessing(false);
+    } else {
+      // Update the user's plan immediately after successful setup
+      try {
+        const response = await fetch("/api/stripe/confirm-subscription", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan: planId, subscriptionId }),
+        });
+
+        if (!response.ok) {
+          console.error("Failed to confirm subscription");
+        }
+      } catch (err) {
+        console.error("Error confirming subscription:", err);
+      }
+
+      toast.success("Your 60-day free trial has started!");
+      // Force a full page reload to refresh all cached data
+      window.location.href = "/dashboard?checkout=success";
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="text-center mb-4">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+          {planName} Plan
+        </h3>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          {planPrice}/month after 60-day free trial
+        </p>
+      </div>
+
+      <PaymentElement
+        options={{
+          layout: "accordion",
+          wallets: { applePay: "auto", googlePay: "auto" },
+          paymentMethodOrder: ["apple_pay", "google_pay", "card"],
+        }}
+      />
+
+      {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm font-medium"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={!stripe || isProcessing}
+          className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+        >
+          {isProcessing ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            <>
+              <CreditCard className="w-4 h-4" />
+              Start Trial
+            </>
+          )}
+        </button>
+      </div>
+
+      <p className="text-[10px] text-center text-slate-500 dark:text-slate-400">
+        Your card won't be charged until after the 60-day trial. Cancel anytime.
+      </p>
+    </form>
+  );
 }
 
 export default function Pricing({
   showTitle = true,
   showBackground = true,
+  isDashboard = false,
 }: PricingProps) {
+  const router = useRouter();
+  const [loading, setLoading] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [checkoutPlan, setCheckoutPlan] = useState<{
+    id: string;
+    name: string;
+    price: string;
+    clientSecret: string;
+    subscriptionId: string;
+  } | null>(null);
+  const [showDowngradeModal, setShowDowngradeModal] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const root = document.documentElement;
-    const updateTheme = () => {
-      setIsDarkMode(root.classList.contains("dark"));
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+
+      // Fetch current plan if authenticated
+      if (user) {
+        try {
+          const response = await fetch("/api/plan");
+          const data = await response.json();
+          setCurrentPlan(data.plan || "free_user");
+        } catch {
+          setCurrentPlan("free_user");
+        }
+      }
     };
+    checkAuth();
 
-    updateTheme();
+    // Check dark mode
+    const checkDarkMode = () => {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    };
+    checkDarkMode();
 
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    // Listen for theme changes
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
 
     return () => observer.disconnect();
   }, []);
 
-  const appearance = useMemo(() => {
-    const light = {
-      foreground: "#0f172a",
-      muted: "#64748b",
-      cardBg: "#ffffff",
-      border: "#e2e8f0",
-      shadow: "rgba(15,23,42,0.05)",
-    } as const;
+  const handleDowngrade = async () => {
+    if (!isAuthenticated) return;
 
-    const dark = {
-      foreground: "#f8fafc",
-      muted: "#94a3b8",
-      cardBg: "#1e293b",
-      border: "#334155",
-      shadow: "rgba(0,0,0,0.2)",
-    } as const;
+    setLoading("free_user");
+    try {
+      const response = await fetch("/api/stripe/cancel-subscription", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
 
-    const palette = isDarkMode ? dark : light;
+      const data = await response.json();
 
-    return {
-      variables: {
-        colorPrimary: "#2563eb",
-        colorText: palette.foreground,
-        colorTextSecondary: palette.muted,
-        colorBackground: palette.cardBg,
-        borderRadius: "1rem",
-        fontFamily: '"Inter", var(--font-sans)',
-      },
-      elements: {
-        pricingTable: "gap-8 grid grid-cols-1 md:grid-cols-3 max-w-7xl mx-auto",
-        pricingTableItem:
-          "flex flex-col p-6 rounded-2xl border bg-white dark:bg-slate-950 transition-all duration-300 hover:shadow-xl border-slate-200 dark:border-slate-800",
-        // We can't easily target the "popular" item via class names here without :nth-child in global CSS
-        // But we can style the common elements
-        header: "mb-6",
-        headerTitle: "text-xl font-bold text-slate-900 dark:text-white mb-2",
-        headerSubtitle:
-          "text-sm text-slate-500 dark:text-slate-400 min-h-[2.5rem]",
-        price: "text-4xl font-bold text-slate-900 dark:text-white",
-        pricePeriod: "text-slate-500 dark:text-slate-400 ml-1",
-        features: "flex-1 mb-8 space-y-3",
-        feature:
-          "flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300",
-        featureIcon: "text-blue-600 dark:text-blue-400",
-        ctaButton:
-          "w-full font-semibold transition-all duration-300 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg py-2",
-      },
-    } satisfies Record<string, unknown>;
-  }, [isDarkMode]);
+      if (data.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      toast.success("Successfully downgraded to free plan!");
+      setCurrentPlan("free_user");
+      // Refresh to update the UI
+      window.location.href = "/dashboard?plan=downgraded";
+    } catch {
+      toast.error("Failed to downgrade plan. Please try again.");
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleCheckout = async (planId: string) => {
+    if (planId === "free_user") {
+      setLoading("free_user");
+      // If user is on a paid plan, show downgrade modal
+      if (
+        isAuthenticated === true &&
+        currentPlan &&
+        currentPlan !== "free_user"
+      ) {
+        setLoading(null);
+        setShowDowngradeModal(true);
+        return;
+      }
+      // If auth state is still loading or user is not authenticated, go to sign-up
+      if (isAuthenticated === true) {
+        // User is logged in, go to dashboard
+        window.location.href = "/dashboard";
+      } else {
+        // User is not logged in or auth is still loading, go to sign-up
+        window.location.href = "/sign-up";
+      }
+      return;
+    }
+
+    if (!isAuthenticated) {
+      router.push("/sign-up");
+      return;
+    }
+
+    const plan = plans.find((p) => p.id === planId);
+    if (!plan) return;
+
+    setLoading(planId);
+    try {
+      const response = await fetch("/api/stripe/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: planId }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      if (data.clientSecret) {
+        setCheckoutPlan({
+          id: planId,
+          name: plan.name,
+          price: plan.price,
+          clientSecret: data.clientSecret,
+          subscriptionId: data.subscriptionId || "",
+        });
+      }
+    } catch {
+      toast.error("Failed to start checkout. Please try again.");
+    } finally {
+      setLoading(null);
+    }
+  };
 
   return (
     <section
       id="pricing"
-      className={`${showTitle ? "py-24" : "py-0"} relative overflow-hidden`}
+      className={`${showTitle ? "py-24 sm:py-32" : "py-0"} relative overflow-hidden`}
     >
-      {/* Background elements */}
       {showBackground && (
-        <>
-          <div className="absolute inset-0 -z-10 bg-slate-50 dark:bg-slate-950" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-7xl pointer-events-none">
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-pulse" />
-            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-500/10 dark:bg-purple-500/20 rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-pulse delay-1000" />
-          </div>
-        </>
+        <div className="absolute inset-0 -z-10 bg-slate-50 dark:bg-slate-950" />
       )}
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+      {/* Downgrade Confirmation Modal */}
+      <AnimatePresence>
+        {showDowngradeModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowDowngradeModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden"
+            >
+              {/* Header with warning icon */}
+              <div className="bg-gradient-to-r from-orange-500 to-red-500 p-6 text-center">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <AlertTriangle className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">
+                  Cancel Subscription?
+                </h3>
+              </div>
+
+              {/* Content */}
+              <div className="p-6">
+                <p className="text-slate-600 dark:text-slate-300 text-center mb-6">
+                  You&apos;re about to downgrade to the{" "}
+                  <span className="font-semibold text-slate-900 dark:text-white">
+                    Free Plan
+                  </span>
+                  . This will cancel your current subscription immediately.
+                </p>
+
+                {/* What you'll lose */}
+                <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-4 mb-6">
+                  <p className="text-sm font-semibold text-red-700 dark:text-red-400 mb-3">
+                    What you&apos;ll lose:
+                  </p>
+                  <ul className="space-y-2">
+                    {currentPlan === "enterprise" ? (
+                      <>
+                        <li className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                          <X className="w-4 h-4" /> Unlimited invoices
+                        </li>
+                        <li className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                          <X className="w-4 h-4" /> Unlimited businesses
+                        </li>
+                        <li className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                          <X className="w-4 h-4" /> Email tracking & reminders
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                          <X className="w-4 h-4" /> 15 invoices per month
+                        </li>
+                        <li className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                          <X className="w-4 h-4" /> 3 businesses
+                        </li>
+                        <li className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                          <X className="w-4 h-4" /> Custom branding
+                        </li>
+                      </>
+                    )}
+                    <li className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                      <X className="w-4 h-4" /> Priority support
+                    </li>
+                  </ul>
+                </div>
+
+                {/* What you'll keep */}
+                <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl p-4 mb-6">
+                  <p className="text-sm font-semibold text-green-700 dark:text-green-400 mb-3">
+                    What you&apos;ll keep:
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                      <Check className="w-4 h-4" /> 2 invoices per month
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                      <Check className="w-4 h-4" /> 1 business
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                      <Check className="w-4 h-4" /> Basic templates
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                      <Check className="w-4 h-4" /> PDF export
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowDowngradeModal(false)}
+                    className="flex-1 py-3 px-4 rounded-xl font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    Keep My Plan
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDowngradeModal(false);
+                      handleDowngrade();
+                    }}
+                    disabled={loading === "free_user"}
+                    className="flex-1 py-3 px-4 rounded-xl font-semibold text-white bg-red-600 hover:bg-red-500 transition-colors disabled:opacity-50"
+                  >
+                    {loading === "free_user" ? (
+                      <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                    ) : (
+                      "Cancel Subscription"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Checkout Modal */}
+      <AnimatePresence>
+        {checkoutPlan && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => setCheckoutPlan(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 relative"
+            >
+              <button
+                onClick={() => setCheckoutPlan(null)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret: checkoutPlan.clientSecret,
+                  appearance: {
+                    theme: isDarkMode ? "night" : "stripe",
+                    variables: {
+                      colorPrimary: "#2563eb",
+                      borderRadius: "12px",
+                      fontFamily: "system-ui, sans-serif",
+                      colorBackground: isDarkMode ? "#0f172a" : "#ffffff",
+                      colorText: isDarkMode ? "#e2e8f0" : "#1e293b",
+                      colorTextSecondary: isDarkMode ? "#94a3b8" : "#64748b",
+                      colorDanger: "#ef4444",
+                    },
+                    rules: {
+                      ".Input": {
+                        backgroundColor: isDarkMode ? "#1e293b" : "#ffffff",
+                        border: isDarkMode
+                          ? "1px solid #334155"
+                          : "1px solid #e2e8f0",
+                        color: isDarkMode ? "#e2e8f0" : "#1e293b",
+                      },
+                      ".Input:focus": {
+                        border: "1px solid #2563eb",
+                        boxShadow: "0 0 0 2px rgba(37, 99, 235, 0.2)",
+                      },
+                      ".Label": {
+                        color: isDarkMode ? "#cbd5e1" : "#475569",
+                        fontWeight: "500",
+                      },
+                      ".Tab": {
+                        backgroundColor: isDarkMode ? "#1e293b" : "#f8fafc",
+                        border: isDarkMode
+                          ? "1px solid #334155"
+                          : "1px solid #e2e8f0",
+                        color: isDarkMode ? "#e2e8f0" : "#1e293b",
+                      },
+                      ".Tab--selected": {
+                        backgroundColor: isDarkMode ? "#2563eb" : "#2563eb",
+                        borderColor: "#2563eb",
+                        color: "#ffffff",
+                      },
+                      ".TabIcon": {
+                        fill: isDarkMode ? "#94a3b8" : "#64748b",
+                      },
+                      ".TabIcon--selected": {
+                        fill: "#ffffff",
+                      },
+                    },
+                  },
+                }}
+              >
+                <CheckoutForm
+                  planName={checkoutPlan.name}
+                  planPrice={checkoutPlan.price}
+                  planId={checkoutPlan.id}
+                  subscriptionId={checkoutPlan.subscriptionId}
+                  onSuccess={() => {
+                    setCheckoutPlan(null);
+                    router.push("/dashboard?checkout=success");
+                  }}
+                  onCancel={() => setCheckoutPlan(null)}
+                />
+              </Elements>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div
+        className={`${isDashboard ? "w-full" : "container mx-auto px-4"} relative z-10`}
+      >
         {showTitle && (
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 sm:mb-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium mb-6"
+            >
+              <Zap className="w-4 h-4" />
+              Pay-as-you-go Pricing
+            </motion.div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-3xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white"
+              className="text-3xl sm:text-5xl font-bold mb-6 text-slate-900 dark:text-white"
             >
-              Simple, Transparent{" "}
+              Start Free,{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-                Pricing
+                Scale as You Grow
               </span>
             </motion.h2>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Choose the plan that works best for your business. No hidden fees.
+              2 free invoices. Pay only for what you use.
             </p>
           </div>
         )}
@@ -122,22 +609,144 @@ export default function Pricing({
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
+          className={`grid gap-8 pt-8 ${
+            isDashboard
+              ? "grid-cols-1 md:grid-cols-3"
+              : "grid-cols-1 md:grid-cols-3 max-w-6xl mx-auto"
+          }`}
         >
-          {mounted && (
-            // To customize the content (prices, features, text), you must configure the Pricing Table
-            // in the Clerk Dashboard (https://dashboard.clerk.com/).
-            //
-            // Recommended Configuration based on your request:
-            // 1. Free ($0): "Get started with basic invoicing needs"
-            // 2. Professional ($5.83/mo): "Perfect for freelancers..."
-            // 3. Enterprise ($15.99/mo): "For established businesses..."
-            <PricingTable
-              appearance={appearance}
-              ctaPosition="bottom"
-              // pricingTableId="<YOUR_PRICING_TABLE_ID>" // Uncomment and add your ID from Clerk Dashboard
-            />
-          )}
+          {plans.map((plan, index) => {
+            const Icon = plan.icon;
+            return (
+              <motion.div
+                key={plan.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.05 * index }}
+                onClick={() => handleCheckout(plan.id)}
+                className={`relative flex flex-col rounded-3xl transition-all duration-200 cursor-pointer hover:scale-[1.03] ${
+                  plan.popular
+                    ? "border-2 border-blue-500 dark:border-blue-400 bg-slate-900 dark:bg-slate-900 shadow-lg shadow-blue-500/20 scale-[1.02]"
+                    : "border border-slate-700 bg-slate-900/80 dark:bg-slate-900/80 hover:border-slate-600"
+                }`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                    <span className="bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg shadow-blue-500/20 tracking-wide uppercase">
+                      Most Popular
+                    </span>
+                  </div>
+                )}
+
+                <div className={`p-10 ${plan.popular ? "pt-14" : ""}`}>
+                  {/* Icon & Name */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <div
+                      className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center shadow-lg`}
+                    >
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-white">
+                        {plan.name}
+                      </h3>
+                      <p className="text-sm text-slate-400">
+                        {plan.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Price */}
+                  <div className="mb-8">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-bold text-white">
+                        {plan.price}
+                      </span>
+                      <span className="text-lg text-slate-400">
+                        {plan.period}
+                      </span>
+                    </div>
+                    {plan.yearlyNote && (
+                      <p className="text-sm text-slate-500 mt-1">
+                        {plan.yearlyNote}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Features */}
+                  <ul className="space-y-4 mb-8">
+                    {plan.features.map((feature) => (
+                      <li
+                        key={feature}
+                        className="flex items-center gap-3 text-base text-slate-300"
+                      >
+                        <div
+                          className={`w-5 h-5 rounded-full bg-gradient-to-br ${plan.gradient} flex items-center justify-center flex-shrink-0`}
+                        >
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCheckout(plan.id);
+                    }}
+                    disabled={loading === plan.id || currentPlan === plan.id}
+                    className={`w-full py-4 px-6 rounded-xl font-semibold text-base transition-all disabled:opacity-50 cursor-pointer ${
+                      currentPlan === plan.id
+                        ? "bg-green-600 text-white cursor-default"
+                        : plan.id === "free_user" &&
+                            currentPlan &&
+                            currentPlan !== "free_user"
+                          ? "bg-orange-600 hover:bg-orange-500 text-white"
+                          : plan.popular
+                            ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/25 hover:scale-[1.02]"
+                            : "bg-slate-800 text-white hover:bg-slate-700 border border-slate-700"
+                    }`}
+                  >
+                    {loading === plan.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                    ) : currentPlan === plan.id ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Check className="w-4 h-4" />
+                        Current Plan
+                      </span>
+                    ) : plan.id === "free_user" &&
+                      currentPlan &&
+                      currentPlan !== "free_user" ? (
+                      "Downgrade to Free"
+                    ) : (
+                      plan.cta
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* Trust badges */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-16 flex flex-wrap items-center justify-center gap-8 text-slate-400"
+        >
+          <span className="text-sm flex items-center gap-2">
+            <Check className="w-5 h-5 text-green-500" /> No card for free plan
+          </span>
+          <span className="text-sm flex items-center gap-2">
+            <Check className="w-5 h-5 text-green-500" /> Secure via Stripe
+          </span>
+          <span className="text-sm flex items-center gap-2">
+            <Check className="w-5 h-5 text-green-500" /> Cancel anytime
+          </span>
         </motion.div>
       </div>
     </section>

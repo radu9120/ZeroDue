@@ -45,17 +45,17 @@ export default async function PlanPage({ searchParams }: PageProps) {
       userPlan={plan as AppPlan}
       pendingInvoicesCount={businessStats?.total_pending_invoices || 0}
     >
-      <div className="max-w-5xl mx-auto">
+      <div className="w-full">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
             Plan & Billing
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-2">
             Manage your subscription and billing details
           </p>
         </div>
 
-        <Pricing showTitle={false} showBackground={false} />
+        <Pricing showTitle={false} showBackground={false} isDashboard={true} />
       </div>
     </DashboardShell>
   );

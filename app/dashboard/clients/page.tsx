@@ -9,7 +9,7 @@ import {
 import { SearchParams } from "@/types";
 import { redirect } from "next/navigation";
 import PlanWatcher from "../../../components/PlanWatcher";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/auth";
 import { type AppPlan } from "@/lib/utils";
 import { getCurrentPlan } from "@/lib/plan";
 import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";

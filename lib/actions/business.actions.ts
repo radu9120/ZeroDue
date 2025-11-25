@@ -1,5 +1,5 @@
 "use server";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@/lib/auth";
 import {
   createSupabaseClient,
   createSupabaseAdminClient,

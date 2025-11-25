@@ -1,6 +1,6 @@
 import React from "react";
 import { cookies } from "next/headers";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/auth";
 import { getCurrentPlan } from "@/lib/plan";
 import { redirect } from "next/navigation";
 import { normalizePlan, type AppPlan } from "@/lib/utils";
@@ -15,7 +15,6 @@ import {
 } from "@/lib/actions/business.actions";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import CustomButton from "@/components/ui/CustomButton";
 import Link from "next/link";
 import {
   FileText,
@@ -151,15 +150,17 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
               </p>
             </div>
           </div>
-          <CustomButton
-            label="Create Invoice"
-            icon={Plus}
-            variant="primary"
-            href={`/dashboard/invoices/new?business_id=${businessId}`}
-            disabled={
-              (isFreePlan && (monthCount || 0) >= 3) || reachedProMonthlyLimit
-            }
-          />
+          <Link href={`/dashboard/invoices/new?business_id=${businessId}`}>
+            <Button
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white border-0"
+              disabled={
+                (isFreePlan && (monthCount || 0) >= 3) || reachedProMonthlyLimit
+              }
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Invoice
+            </Button>
+          </Link>
         </div>
 
         {/* Stats Cards */}
@@ -287,7 +288,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
               <div className="flex flex-col sm:flex-row gap-2 w-full">
                 <Button
                   type="submit"
-                  className="h-11 px-6 bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+                  className="h-11 px-6 bg-blue-600 hover:bg-blue-500 text-white w-full sm:w-auto"
                 >
                   Apply Filters
                 </Button>

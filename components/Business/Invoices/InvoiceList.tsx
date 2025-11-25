@@ -3,9 +3,8 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import CustomButton from "@/components/ui/CustomButton";
 import Link from "next/link";
-import { FileText, Plus, Eye, Download, Loader2 } from "lucide-react";
+import { FileText, Eye, Download, Loader2 } from "lucide-react";
 import getStatusBadge from "@/components/ui/getStatusBadge";
 import { getInvoices } from "@/lib/actions/invoice.actions";
 
@@ -83,13 +82,6 @@ export default function InvoiceList({
               ? "Try adjusting your search or filter criteria"
               : "Create your first invoice to get started"}
           </p>
-          <Link href={`/dashboard/invoices/new?business_id=${businessId}`}>
-            <CustomButton
-              label="Create Invoice"
-              icon={Plus}
-              variant="primary"
-            />
-          </Link>
         </CardContent>
       </Card>
     );

@@ -145,7 +145,7 @@ export const CalendarPicker = ({
               calDay.isToday &&
                 "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold ring-2 ring-blue-200 dark:ring-blue-700",
               calDay.isSelected &&
-                "bg-blue-600 text-white hover:bg-blue-700 shadow-md"
+                "bg-blue-600 text-white hover:bg-blue-500 shadow-md"
             )}
           >
             {calDay.day}

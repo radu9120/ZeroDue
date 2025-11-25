@@ -23,7 +23,7 @@ export const darkColors = {
   accentHover: "dark:text-blue-300", // #93c5fd - Accent hover
 
   // Buttons
-  btnPrimary: "dark:bg-blue-600 dark:hover:bg-blue-700",
+  btnPrimary: "dark:bg-blue-600 dark:hover:bg-blue-500",
   btnSecondary: "dark:bg-slate-700 dark:hover:bg-slate-600",
 
   // Input fields

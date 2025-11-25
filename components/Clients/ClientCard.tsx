@@ -131,7 +131,7 @@ export default function ClientCard({ client }: { client: any }) {
                 `/dashboard/invoices/new?business_id=${client.business_id}&client_id=${client.id}`
               )
             }
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm shadow-lg shadow-blue-500/20"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium transition-colors text-sm shadow-lg shadow-blue-500/20"
           >
             <PlusIcon className="h-4 w-4" />
             Invoice

@@ -26,7 +26,7 @@ export default function FAQPage() {
           <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-3 text-sm font-semibold">
             <Link
               href="/contact"
-              className="inline-flex items-center rounded-full bg-blue-600 px-5 py-2.5 text-white shadow-lg transition hover:bg-blue-700"
+              className="inline-flex items-center rounded-full bg-blue-600 px-5 py-2.5 text-white shadow-lg transition hover:bg-blue-500"
             >
               Talk to support →
             </Link>

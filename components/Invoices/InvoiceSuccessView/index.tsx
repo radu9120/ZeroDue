@@ -813,12 +813,12 @@ export default function InvoiceSuccessView({
     >
       <div className="relative z-10 max-w-6xl mx-auto lg:p-4  space-y-6 md:space-y-8">
         {!isPublicView && (
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6">
             <Link
               href={`/dashboard/invoices?business_id=${company.id}`}
-              className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors group"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Back to Invoices
             </Link>
           </div>
@@ -831,9 +831,9 @@ export default function InvoiceSuccessView({
           />
         )}
 
-        <Card className="shadow-2xl border-0">
+        <Card className="shadow-2xl border-0 rounded-3xl overflow-hidden">
           {!isPublicView && (
-            <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-slate-900 dark:to-slate-800 border-b border-gray-200 dark:border-slate-700">
+            <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-b border-gray-200 dark:border-slate-700 p-6">
               <InvoiceActionsBar
                 isEditing={isEditing}
                 status={status}
@@ -853,7 +853,7 @@ export default function InvoiceSuccessView({
           )}
 
           {!isPublicView && (
-            <div className="px-6 pt-4 pb-2 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-700">
               <InvoiceEmailStatus
                 badges={emailBadges}
                 timeline={emailTimeline}
@@ -873,7 +873,7 @@ export default function InvoiceSuccessView({
               <div className="flex justify-end mb-6">
                 <Button
                   onClick={downloadPDF}
-                  className="bg-blue-600 hover:bg-blue-700 shadow-lg"
+                  className="bg-blue-600 hover:bg-blue-500 shadow-lg"
                   disabled={downloading}
                 >
                   {downloading ? "Generating…" : "Download PDF"}

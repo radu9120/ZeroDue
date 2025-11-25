@@ -83,7 +83,7 @@ export default function DashboardHeader({
           {showNewCompanyButtonInHeader && !showUpgradeElements && (
             <Link
               href="/dashboard/business/new"
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-blue-700 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-blue-500 sm:w-auto"
             >
               <PlusIcon className="h-4 w-4" />
               <span>New Profile</span>

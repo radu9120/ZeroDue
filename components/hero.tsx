@@ -90,7 +90,7 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full sm:w-auto">
             <Button
               size="lg"
-              className="h-12 px-8 rounded-full text-lg bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all w-full sm:w-auto"
+              className="h-12 px-8 rounded-xl text-lg bg-blue-600 hover:bg-blue-500 text-white shadow-lg hover:shadow-blue-500/25 transition-all w-full sm:w-auto"
               asChild
             >
               <Link href="/sign-up">
@@ -100,7 +100,7 @@ export default function Hero() {
             <Button
               size="lg"
               variant="neutralOutline"
-              className="hidden sm:inline-flex h-12 px-8 rounded-full text-lg border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+              className="hidden sm:inline-flex h-12 px-8 rounded-xl text-lg border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
               asChild
             >
               <Link href="/blog/simplify-service-billing">Learn more</Link>

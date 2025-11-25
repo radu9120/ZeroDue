@@ -1,5 +1,5 @@
 "use server";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { createSupabaseClient } from "@/lib/supabase";
 import { billToSchema, CreateClient } from "@/schemas/invoiceSchema";
 import { GetAllClientsParams, GetClientParam } from "@/types";

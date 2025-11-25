@@ -6,7 +6,7 @@ import {
 } from "@/lib/actions/business.actions";
 import { getClient, getClients } from "@/lib/actions/client.actions";
 import { ClientType, NewInvoicePageProps } from "@/types";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";

@@ -1,5 +1,5 @@
 import Pricing from "@/components/pricing";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 

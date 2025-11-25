@@ -2,7 +2,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AppPlan, normalizePlan } from "@/lib/utils";
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth, updateUserMetadata } from "@/lib/auth";
 
 export async function setUserPlan(plan: AppPlan, redirectTo?: string) {
   const jar = await cookies();
@@ -12,8 +12,8 @@ export async function setUserPlan(plan: AppPlan, redirectTo?: string) {
     normalized === "free_user"
       ? "free"
       : normalized === "professional"
-      ? "pro"
-      : "enterprise";
+        ? "pro"
+        : "enterprise";
   jar.set("user_plan", normalized, {
     path: "/",
     httpOnly: false,
@@ -27,24 +27,23 @@ export async function setUserPlan(plan: AppPlan, redirectTo?: string) {
   if (redirectTo) redirect(redirectTo);
 }
 
-export async function setClerkPlan(plan: AppPlan, redirectTo?: string) {
+export async function setSupabasePlan(plan: AppPlan, redirectTo?: string) {
   const { userId } = await auth();
   if (!userId) throw new Error("Not authenticated");
 
   const normalized = normalizePlan(plan);
-  const client = await clerkClient();
-  await client.users.updateUser(userId, {
-    publicMetadata: { plan: normalized },
-  });
 
-  // Optional: keep cookies in sync for any legacy reads
+  // Update user metadata in Supabase
+  await updateUserMetadata({ plan: normalized });
+
+  // Keep cookies in sync for any legacy reads
   const jar = await cookies();
   const legacy =
     normalized === "free_user"
       ? "free"
       : normalized === "professional"
-      ? "pro"
-      : "enterprise";
+        ? "pro"
+        : "enterprise";
   jar.set("user_plan", normalized, {
     path: "/",
     httpOnly: false,
@@ -58,3 +57,6 @@ export async function setClerkPlan(plan: AppPlan, redirectTo?: string) {
 
   if (redirectTo) redirect(redirectTo);
 }
+
+// Keep for backwards compatibility
+export const setClerkPlan = setSupabasePlan;

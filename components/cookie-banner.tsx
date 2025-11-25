@@ -161,7 +161,7 @@ export default function CookieBanner() {
                   <Button
                     size="sm"
                     onClick={acceptAll}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium h-10 rounded-xl"
+                    className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-medium h-10 rounded-xl"
                   >
                     Accept all
                   </Button>
@@ -283,7 +283,7 @@ export default function CookieBanner() {
                 <Button
                   size="sm"
                   onClick={acceptSelected}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium h-10 rounded-xl"
+                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-medium h-10 rounded-xl"
                 >
                   Save preferences
                 </Button>

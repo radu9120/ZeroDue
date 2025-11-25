@@ -496,7 +496,7 @@ function InvoicePreview({
         <Link
           href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}&download=1`}
         >
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
+          <Button className="bg-blue-600 hover:bg-blue-500 text-white w-full sm:w-auto">
             <Download className="h-4 w-4 mr-2" />
             Download PDF
           </Button>

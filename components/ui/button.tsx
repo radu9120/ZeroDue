@@ -6,21 +6,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
-        primary:
-          " bg-gradient-to-r from-primary to-accent hover:from-primary-dark text-white shadow-xs ",
+        primary: "bg-blue-600 hover:bg-blue-500 text-white shadow-sm border-0",
         secondary:
-          "w-full flex-1 border-blue-200 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 dark:text-slate-200",
+          "w-full flex-1 border-slate-200 border bg-background shadow-xs hover:bg-slate-50 hover:text-slate-900 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 dark:text-slate-200",
         link: "text-primary underline-offset-4 hover:underline",
         ghost:
-          "hover:bg-blue-100 hover:text-accent-foreground dark:hover:bg-slate-700 dark:text-slate-200",
+          "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:text-slate-200",
         neutral:
-          "bg-neutral-900 text-white hover:bg-neutral-800 border border-neutral-900 shadow-xs dark:bg-neutral-100 dark:text-slate-900 dark:hover:bg-neutral-200 dark:border-neutral-200",
+          "bg-slate-900 text-white hover:bg-slate-800 border border-slate-900 shadow-xs dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 dark:border-slate-200",
         neutralOutline:
-          "border border-neutral-300 text-neutral-700 bg-white hover:bg-neutral-100 shadow-xs dark:border-neutral-600 dark:text-neutral-200 dark:hover:bg-neutral-700/40 dark:bg-transparent",
+          "border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 shadow-xs dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800 dark:bg-transparent",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

@@ -13,7 +13,7 @@ import {
   SignedIn,
   SignedOut,
   UserButton,
-} from "@clerk/nextjs";
+} from "@/components/auth/UserButton";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Navbar() {
@@ -193,7 +193,7 @@ export default function Navbar() {
                       </Button>
                     </SignInButton>
                     <SignUpButton>
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 shadow-lg shadow-blue-500/20">
+                      <Button className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl px-6 shadow-lg shadow-blue-500/20">
                         Sign up
                       </Button>
                     </SignUpButton>
@@ -320,7 +320,7 @@ export default function Navbar() {
                       </SignInButton>
                       <SignUpButton>
                         <Button
-                          className="w-full h-12 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-500/20"
+                          className="w-full h-12 text-base font-medium bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-500/20"
                           onClick={closeMenu}
                         >
                           Sign up

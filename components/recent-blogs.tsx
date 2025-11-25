@@ -56,9 +56,9 @@ export default function RecentBlogs() {
                 delay: index * 0.1,
                 ease: "easeOut",
               }}
-              className="group relative flex flex-col h-full bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300"
+              className="group relative flex flex-col h-full bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/60 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300"
             >
-              <div className="p-6 flex flex-col flex-grow">
+              <div className="p-8 flex flex-col flex-grow">
                 <div className="flex items-center justify-between text-xs font-medium mb-4">
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300">
                     <Tag className="w-3 h-3" />

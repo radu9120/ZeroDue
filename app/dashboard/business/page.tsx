@@ -2,7 +2,7 @@ import BusinessDashboard from "@/components/Business/BusinessDashboard";
 import Bounded from "@/components/ui/BoundedSection";
 import { getBusiness, getUserBusinesses } from "@/lib/actions/business.actions";
 import { BusinessDashboardPageProps, UserActivityLog } from "@/types";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import { getBusinessStats } from "../../../lib/actions/business.actions";
 import {

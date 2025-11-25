@@ -1,5 +1,5 @@
 "use server";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { createSupabaseClient } from "@/lib/supabase";
 import { CreateInvoice } from "@/schemas/invoiceSchema";
 import { BusinessDashboardPageProps } from "@/types";
@@ -39,32 +39,43 @@ export const createInvoice = async (formData: CreateInvoice) => {
   // Enforce plan limits before insert
   try {
     const plan: AppPlan = await getCurrentPlan();
+    const businessId = formData.business_id;
+
+    // Get business extra invoice credits
+    const { data: business } = await supabase
+      .from("Businesses")
+      .select("extra_invoice_credits")
+      .eq("id", businessId)
+      .single();
+
+    const extraCredits = business?.extra_invoice_credits || 0;
+
     if (plan === "free_user") {
-      // Free plan: 3 invoices per month
-      const now = new Date();
-      const firstDayISO = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        1
-      ).toISOString();
-      const nextMonthISO = new Date(
-        now.getFullYear(),
-        now.getMonth() + 1,
-        1
-      ).toISOString();
+      // Free plan: 2 free invoices total, then pay-as-you-go
       const { count } = await supabase
         .from("Invoices")
         .select("id", { count: "exact", head: true })
         .eq("author", author)
-        .gte("created_at", firstDayISO)
-        .lt("created_at", nextMonthISO);
-      if ((count || 0) >= 3) {
+        .eq("business_id", businessId);
+
+      const totalInvoices = count || 0;
+      const freeLimit = 2;
+
+      if (totalInvoices >= freeLimit && extraCredits <= 0) {
         throw new Error(
-          "Free plan limit: 3 invoices per month. Upgrade to create more."
+          "NEEDS_PAYMENT:You've used your 2 free invoices. Purchase additional invoice credits ($0.99 each) to continue."
         );
+      }
+
+      // If using extra credits, decrement
+      if (totalInvoices >= freeLimit && extraCredits > 0) {
+        await supabase
+          .from("Businesses")
+          .update({ extra_invoice_credits: extraCredits - 1 })
+          .eq("id", businessId);
       }
     } else if (plan === "professional") {
-      // Professional plan: 15 invoices per month
+      // Professional plan: 15 invoices per month, then pay-as-you-go at $0.49
       const now = new Date();
       const firstDayISO = new Date(
         now.getFullYear(),
@@ -80,14 +91,28 @@ export const createInvoice = async (formData: CreateInvoice) => {
         .from("Invoices")
         .select("id", { count: "exact", head: true })
         .eq("author", author)
+        .eq("business_id", businessId)
         .gte("created_at", firstDayISO)
         .lt("created_at", nextMonthISO);
-      if ((count || 0) >= 15) {
+
+      const monthlyCount = count || 0;
+      const monthlyLimit = 15;
+
+      if (monthlyCount >= monthlyLimit && extraCredits <= 0) {
         throw new Error(
-          "Professional plan limit: 15 invoices per month. Upgrade to Enterprise for unlimited."
+          "NEEDS_PAYMENT:You've reached your 15 invoices this month. Purchase additional credits ($0.49 each) or upgrade to Enterprise."
         );
       }
+
+      // If using extra credits, decrement
+      if (monthlyCount >= monthlyLimit && extraCredits > 0) {
+        await supabase
+          .from("Businesses")
+          .update({ extra_invoice_credits: extraCredits - 1 })
+          .eq("id", businessId);
+      }
     }
+    // Enterprise plan: unlimited invoices, no checks needed
   } catch (e) {
     // rethrow to surface a clean message to the UI
     throw e instanceof Error ? e : new Error("Plan validation failed.");

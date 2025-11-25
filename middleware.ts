@@ -1,40 +1,19 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { updateSession } from "@/lib/supabase/middleware";
+import { type NextRequest } from "next/server";
 
-const isPublicRoute = createRouteMatcher([
-  "/",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/pricing(.*)",
-  "/upgrade(.*)",
-  "/help(.*)",
-  "/contact(.*)",
-  "/privacy-policy(.*)",
-  "/cookies(.*)",
-  "/sitemap(.*)",
-  "/blog(.*)",
-  "/api/health(.*)",
-  "/api/clerk/webhooks(.*)",
-  "/api/webhooks/resend(.*)",
-  "/api/invoices/download(.*)",
-  "/invoice(.*)",
-]);
-
-export default clerkMiddleware(async (auth, req) => {
-  const { userId } = await auth();
-  const url = req.nextUrl;
-
-  // If signed out and attempting a protected route (not public), send to sign-in
-  if (!userId && !isPublicRoute(req)) {
-    const signInUrl = new URL("/sign-in", req.url);
-    signInUrl.searchParams.set("redirect_url", url.toString());
-    return NextResponse.redirect(signInUrl);
-  }
-
-  return NextResponse.next();
-});
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
+}
 
 export const config = {
-  // Exclude static assets and Next internals, include root path and APIs
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * Feel free to modify this pattern to include more paths.
+     */
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
