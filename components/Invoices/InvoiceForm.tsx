@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn, normalizeCurrencyCode } from "@/lib/utils";
+import { toast } from "sonner";
 import CustomModal from "../ModalsForms/CustomModal";
 import { ClientForm } from "../Clients/ClientForm";
 import {
@@ -47,6 +48,7 @@ import {
   InvoiceTemplateType,
 } from "./InvoiceTemplateSelector";
 import { CalendarPicker } from "../ui/calendar-picker";
+import { InvoicePreview } from "./InvoicePreview";
 
 // Custom Calendar Component
 // Removed local definition
@@ -82,6 +84,7 @@ const InvoiceForm = ({
 
   const [selectedTemplate, setSelectedTemplate] =
     useState<InvoiceTemplateType>("standard");
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -115,6 +118,71 @@ const InvoiceForm = ({
       meta_data: {},
     },
   });
+
+  // Autosave key based on business ID
+  const autosaveKey = `invoice_draft_${company_data.id}`;
+
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem(autosaveKey);
+      if (savedDraft) {
+        const parsed = JSON.parse(savedDraft);
+        // Only restore if it's for the same business and recent (within 24 hours)
+        const savedAt = parsed._savedAt;
+        const isRecent = savedAt && Date.now() - savedAt < 24 * 60 * 60 * 1000;
+
+        if (isRecent && parsed.business_id === company_data.id) {
+          // Restore form values (except dates which need special handling)
+          const { _savedAt, issue_date, due_date, ...restData } = parsed;
+
+          // Reset form with saved data
+          if (restData.items?.length > 0) {
+            form.reset({
+              ...form.getValues(),
+              ...restData,
+              issue_date: issue_date ? new Date(issue_date) : new Date(),
+              due_date: due_date ? new Date(due_date) : new Date(),
+            });
+            toast.info("Draft restored from previous session", {
+              description: "Your unsaved invoice has been recovered.",
+              duration: 4000,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // Silently fail if localStorage isn't available
+      console.warn("Could not restore draft:", e);
+    }
+  }, [autosaveKey, company_data.id]);
+
+  // Autosave to localStorage on form changes (debounced)
+  const formValues = form.watch();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const dataToSave = {
+          ...formValues,
+          _savedAt: Date.now(),
+        };
+        localStorage.setItem(autosaveKey, JSON.stringify(dataToSave));
+      } catch (e) {
+        // Silently fail if localStorage isn't available
+      }
+    }, 2000); // 2 second debounce
+
+    return () => clearTimeout(timer);
+  }, [formValues, autosaveKey]);
+
+  // Clear draft when form is successfully submitted
+  const clearDraft = () => {
+    try {
+      localStorage.removeItem(autosaveKey);
+    } catch (e) {
+      // Silently fail
+    }
+  };
 
   // Update form when template changes
   useEffect(() => {
@@ -324,15 +392,25 @@ const InvoiceForm = ({
     };
     const invoice = await createInvoice(invoiceData as any);
     if (invoice && invoice.id) {
+      clearDraft(); // Clear the autosaved draft on successful creation
       const redirectUrl = `/dashboard/invoices/success?invoice_id=${invoice.id}&business_id=${company_data.id}`;
       redirect(redirectUrl);
     } else {
-      console.log("Failed to create an invoice or no ID returned");
+      toast.error("Failed to create invoice. Please try again.");
       redirect(`/dashboard`);
     }
   };
 
-  console.log(form.formState.errors);
+  // Show validation errors as toast
+  useEffect(() => {
+    const errors = form.formState.errors;
+    if (Object.keys(errors).length > 0) {
+      const firstError = Object.values(errors)[0];
+      if (firstError?.message) {
+        toast.error(String(firstError.message));
+      }
+    }
+  }, [form.formState.errors]);
 
   return (
     <div className="bg-white dark:bg-slate-800">
@@ -1036,7 +1114,7 @@ const InvoiceForm = ({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
-                            Shipping (£)
+                            Shipping
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -1106,6 +1184,14 @@ const InvoiceForm = ({
               >
                 Cancel
               </Button>
+              <Button
+                type="button"
+                variant="neutralOutline"
+                onClick={() => setIsPreviewOpen(true)}
+                className="border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+              >
+                Preview Invoice
+              </Button>
               <CustomButton
                 type="submit"
                 label="Create Invoice"
@@ -1115,6 +1201,13 @@ const InvoiceForm = ({
           </div>
         </form>
       </Form>
+
+      {/* Invoice Preview Modal */}
+      <InvoicePreview
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        formData={form.watch()}
+      />
     </div>
   );
 };

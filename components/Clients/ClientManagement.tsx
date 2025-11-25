@@ -2,15 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import {
-  ArrowLeft,
-  Search,
-  Users,
-  FileText,
-  DollarSign,
-  PlusIcon,
-  FilterIcon,
-} from "lucide-react";
+import { Search, Users, FileText, DollarSign, PlusIcon } from "lucide-react";
 import ClientCard from "@/components/Clients/ClientCard";
 import { ClientType } from "@/types";
 import CustomButton from "../ui/CustomButton";
@@ -61,15 +53,27 @@ export default function ClientManagement({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const [searchValue, setSearchValue] = React.useState(
+    searchParams.get("searchTerm") || ""
+  );
+
+  // Debounced search handler
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams(searchParams);
+      if (searchValue) {
+        params.set("searchTerm", searchValue);
+      } else {
+        params.delete("searchTerm");
+      }
+      router.replace(`${pathname}?${params.toString()}`);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchValue, pathname, router, searchParams]);
 
   const handleSearch = (term: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (term) {
-      params.set("searchTerm", term);
-    } else {
-      params.delete("searchTerm");
-    }
-    router.replace(`${pathname}?${params.toString()}`);
+    setSearchValue(term);
   };
 
   const stats = React.useMemo(() => {
@@ -141,16 +145,11 @@ export default function ClientManagement({
             <Input
               type="text"
               placeholder="Search clients..."
-              defaultValue={searchParams.get("searchTerm")?.toString()}
+              value={searchValue}
               onChange={(e) => handleSearch(e.target.value)}
               className="pl-10 pr-4 py-2 border-blue-200 focus:ring-primary w-full sm:w-64"
             />
           </div>
-          <CustomButton
-            label={"Filter"}
-            icon={FilterIcon}
-            variant={"secondary"}
-          />
         </div>
         <CustomButton
           label="Add Client"
@@ -163,11 +162,34 @@ export default function ClientManagement({
       </div>
 
       {/* Clients Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {clients.map((client) => (
-          <ClientCard client={client} key={client.id} />
-        ))}
-      </div>
+      {clients.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 px-4">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-2xl flex items-center justify-center mb-6">
+            <Users className="h-10 w-10 text-purple-500" />
+          </div>
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
+            No clients yet
+          </h3>
+          <p className="text-slate-500 dark:text-slate-400 text-center max-w-md mb-6">
+            Start by adding your first client. Clients help you organize
+            invoices and track payments.
+          </p>
+          <CustomButton
+            label="Add Your First Client"
+            icon={PlusIcon}
+            variant="primary"
+            onClick={() =>
+              router.push(`/dashboard/clients/new?business_id=${business_id}`)
+            }
+          />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {clients.map((client) => (
+            <ClientCard client={client} key={client.id} />
+          ))}
+        </div>
+      )}
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">

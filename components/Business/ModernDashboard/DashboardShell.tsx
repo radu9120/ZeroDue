@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useEffect, FormEvent, ReactNode } from "react";
+import {
+  useState,
+  useEffect,
+  FormEvent,
+  ReactNode,
+  useRef,
+  useCallback,
+} from "react";
 import {
   LayoutDashboard,
   FileText,
@@ -56,10 +63,31 @@ export function DashboardShell({
   const [searchQuery, setSearchQuery] = useState("");
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // ⌘K keyboard shortcut for search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      // Escape to blur search
+      if (
+        e.key === "Escape" &&
+        document.activeElement === searchInputRef.current
+      ) {
+        searchInputRef.current?.blur();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const navItems = [
@@ -250,6 +278,7 @@ export function DashboardShell({
             <Link
               key={item.id}
               href={item.href}
+              onClick={() => setIsSidebarOpen(false)}
               className={`h-10 w-full rounded-lg flex items-center px-3 gap-3 transition-all duration-200 group ${
                 activePage === item.id
                   ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
@@ -396,6 +425,7 @@ export function DashboardShell({
             >
               <Search className="w-4 h-4 text-slate-500" />
               <input
+                ref={searchInputRef}
                 type="text"
                 placeholder="Search invoices..."
                 value={searchQuery}

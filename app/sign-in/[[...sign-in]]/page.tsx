@@ -10,7 +10,7 @@ export default function Page() {
             Welcome back
           </h1>
           <p className="text-gray-600 dark:text-slate-300">
-            Sign in to your InvcyFlow account
+            Sign in to your InvoiceFlow account
           </p>
         </div>
         <SignIn
