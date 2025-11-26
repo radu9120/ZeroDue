@@ -7,7 +7,7 @@ import {
 } from "@/lib/actions/business.actions";
 import { getCurrentPlan } from "@/lib/plan";
 import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";
-import Pricing from "@/components/pricing";
+import DashboardPricing from "@/components/pricing/DashboardPricing";
 import { AppPlan } from "@/lib/utils";
 
 interface PageProps {
@@ -55,7 +55,7 @@ export default async function PlanPage({ searchParams }: PageProps) {
           </p>
         </div>
 
-        <Pricing showTitle={false} showBackground={false} isDashboard={true} />
+        <DashboardPricing />
       </div>
     </DashboardShell>
   );

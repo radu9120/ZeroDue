@@ -1,21 +1,27 @@
 import Stripe from "stripe";
 
-// Use test keys by default, switch to live in production
-const isProduction = process.env.NODE_ENV === "production";
+// Check for test mode flag or use production setting
+const useTestMode = process.env.STRIPE_USE_TEST_MODE === "true";
+const isProduction = process.env.NODE_ENV === "production" && !useTestMode;
 
 // Lazy initialize Stripe to avoid build-time errors when env var is not set
 let stripeInstance: Stripe | null = null;
 export function getStripeClient(): Stripe {
   if (!stripeInstance) {
-    stripeInstance = new Stripe(
-      isProduction
-        ? process.env.STRIPE_LIVE_SECRET_KEY!
-        : process.env.STRIPE_TEST_SECRET_KEY!,
-      {
-        apiVersion: "2025-11-17.clover",
-        typescript: true,
-      }
-    );
+    // Always prefer test key if available and not explicitly in production
+    const secretKey =
+      process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_LIVE_SECRET_KEY;
+
+    if (!secretKey) {
+      throw new Error(
+        "No Stripe secret key found. Set STRIPE_TEST_SECRET_KEY or STRIPE_LIVE_SECRET_KEY"
+      );
+    }
+
+    stripeInstance = new Stripe(secretKey, {
+      apiVersion: "2025-11-17.clover",
+      typescript: true,
+    });
   }
   return stripeInstance;
 }
