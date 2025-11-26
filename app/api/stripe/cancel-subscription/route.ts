@@ -56,12 +56,12 @@ export async function POST() {
     // Cancel subscriptions at period end (not immediately)
     let periodEndDate: Date | null = null;
     for (const subscription of allSubscriptions) {
-      await stripe.subscriptions.update(subscription.id, {
+      const updatedSub = await stripe.subscriptions.update(subscription.id, {
         cancel_at_period_end: true,
       });
-      // Get the period end date for the email
-      if (!periodEndDate && subscription.current_period_end) {
-        periodEndDate = new Date(subscription.current_period_end * 1000);
+      // Get the period end date from the updated subscription
+      if (!periodEndDate && updatedSub.current_period_end) {
+        periodEndDate = new Date(updatedSub.current_period_end * 1000);
       }
     }
 
