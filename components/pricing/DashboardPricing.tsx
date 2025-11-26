@@ -655,8 +655,8 @@ export default function DashboardPricing() {
         )}
       </AnimatePresence>
 
-      {/* Compact Horizontal Plan Cards */}
-      <div className="space-y-3">
+      {/* Mobile-First Plan Cards */}
+      <div className="space-y-4">
         {plans.map((plan) => {
           const Icon = plan.icon;
           const isCurrentPlan = currentPlan === plan.id;
@@ -667,62 +667,83 @@ export default function DashboardPricing() {
               key={plan.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`relative rounded-2xl p-4 transition-all duration-200 ${
+              className={`relative rounded-2xl p-4 sm:p-5 transition-all duration-200 ${
                 isCurrentPlan
-                  ? "ring-2 ring-green-500 bg-slate-800/80"
+                  ? "ring-2 ring-green-500 bg-slate-800"
                   : plan.popular
-                    ? "ring-2 ring-blue-500 bg-slate-800/80"
-                    : "bg-slate-800/50 hover:bg-slate-800/80"
-              } ${!isCurrentPlan && !isCancelling ? "cursor-pointer" : ""}`}
+                    ? "ring-2 ring-blue-500 bg-slate-800"
+                    : "bg-slate-800/60 hover:bg-slate-800"
+              } ${!isCurrentPlan && !isCancelling ? "cursor-pointer active:scale-[0.98]" : ""}`}
               onClick={() =>
                 !isCurrentPlan && !isCancelling && handleCheckout(plan.id)
               }
             >
               {plan.popular && !isCurrentPlan && (
-                <span className="absolute -top-2 right-4 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                <span className="absolute -top-2.5 left-4 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                   Popular
                 </span>
               )}
 
-              <div className="flex items-center gap-4">
-                {/* Icon */}
-                <div
-                  className={`w-10 h-10 rounded-xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center flex-shrink-0`}
-                >
-                  <Icon className="w-5 h-5 text-white" />
-                </div>
-
-                {/* Plan Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-white">{plan.name}</h3>
-                    {isCurrentPlan && (
-                      <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-medium">
-                        Current
-                      </span>
-                    )}
+              {/* Mobile Layout - Stacked */}
+              <div className="flex flex-col gap-4">
+                {/* Top Row: Icon, Name, Price */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center flex-shrink-0 shadow-lg`}
+                    >
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-bold text-white text-lg">
+                          {plan.name}
+                        </h3>
+                        {isCurrentPlan && (
+                          <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-semibold">
+                            Current
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-slate-400">
+                        {plan.description}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-xs text-slate-400 truncate">
-                    {plan.features.slice(0, 2).join(" • ")}
-                  </p>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-white">
+                      {plan.price}
+                    </div>
+                    <div className="text-xs text-slate-400">{plan.period}</div>
+                  </div>
                 </div>
 
-                {/* Price */}
-                <div className="text-right flex-shrink-0">
-                  <div className="font-bold text-white">
-                    {plan.price}
-                    <span className="text-xs text-slate-400 font-normal">
-                      {plan.period}
+                {/* Features Row */}
+                <div className="flex flex-wrap gap-2">
+                  {plan.features.slice(0, 3).map((feature, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1.5 text-xs text-slate-300 bg-slate-700/50 px-2.5 py-1 rounded-full"
+                    >
+                      <Check className="w-3 h-3 text-green-400" />
+                      {feature}
                     </span>
-                  </div>
+                  ))}
+                  {plan.features.length > 3 && (
+                    <span className="text-xs text-slate-500 px-2 py-1">
+                      +{plan.features.length - 3} more
+                    </span>
+                  )}
                 </div>
 
-                {/* Action Button */}
-                <div className="flex-shrink-0 w-32">
+                {/* Action Button - Full Width on Mobile */}
+                <div className="w-full">
                   {isCancelling ? (
-                    <div className="space-y-1">
-                      <div className="text-[10px] text-orange-400 text-center">
-                        Switching soon
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 py-2.5 px-4 rounded-xl bg-orange-500/20 border border-orange-500/30 text-center">
+                        <span className="text-sm text-orange-300 font-medium">
+                          Switching soon
+                        </span>
                       </div>
                       <button
                         onClick={(e) => {
@@ -730,19 +751,19 @@ export default function DashboardPricing() {
                           handleReactivate();
                         }}
                         disabled={loading === "reactivate"}
-                        className="w-full py-1.5 px-3 rounded-lg text-xs font-medium bg-green-600 hover:bg-green-500 text-white transition-colors disabled:opacity-50"
+                        className="flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold bg-green-600 hover:bg-green-500 text-white transition-colors disabled:opacity-50"
                       >
                         {loading === "reactivate" ? (
-                          <Loader2 className="w-3 h-3 animate-spin mx-auto" />
+                          <Loader2 className="w-4 h-4 animate-spin mx-auto" />
                         ) : (
                           "Keep Plan"
                         )}
                       </button>
                     </div>
                   ) : isCurrentPlan ? (
-                    <div className="flex items-center justify-center gap-1 text-green-400 text-sm">
-                      <Check className="w-4 h-4" />
-                      <span>Active</span>
+                    <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-green-500/20 text-green-400 font-semibold">
+                      <Check className="w-5 h-5" />
+                      <span>Active Plan</span>
                     </div>
                   ) : (
                     <button
@@ -751,26 +772,26 @@ export default function DashboardPricing() {
                         handleCheckout(plan.id);
                       }}
                       disabled={loading === plan.id}
-                      className={`w-full py-2 px-3 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 ${
+                      className={`w-full py-3 px-4 rounded-xl font-semibold text-sm transition-all disabled:opacity-50 ${
                         plan.id === "free_user" &&
                         currentPlan &&
                         currentPlan !== "free_user"
                           ? "bg-orange-600 hover:bg-orange-500 text-white"
                           : plan.popular
-                            ? "bg-blue-600 hover:bg-blue-500 text-white"
-                            : "bg-slate-700 hover:bg-slate-600 text-white"
+                            ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/25"
+                            : "bg-slate-700 hover:bg-slate-600 text-white border border-slate-600"
                       }`}
                     >
                       {loading === plan.id ? (
-                        <Loader2 className="w-3 h-3 animate-spin mx-auto" />
+                        <Loader2 className="w-4 h-4 animate-spin mx-auto" />
                       ) : plan.id === "free_user" &&
                         currentPlan &&
                         currentPlan !== "free_user" ? (
-                        "Downgrade"
+                        "Downgrade to Free"
                       ) : hasUsedTrial ? (
-                        "Subscribe"
+                        `Subscribe to ${plan.name}`
                       ) : (
-                        "Start Trial"
+                        `Start Free Trial`
                       )}
                     </button>
                   )}
@@ -781,13 +802,13 @@ export default function DashboardPricing() {
         })}
       </div>
 
-      {/* Trust badges - compact */}
-      <div className="mt-4 flex items-center justify-center gap-4 text-slate-500">
-        <span className="text-xs flex items-center gap-1">
-          <Check className="w-3 h-3 text-green-500" /> Secure via Stripe
+      {/* Trust badges - Mobile optimized */}
+      <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-slate-500">
+        <span className="text-sm flex items-center gap-2">
+          <Check className="w-4 h-4 text-green-500" /> Secure via Stripe
         </span>
-        <span className="text-xs flex items-center gap-1">
-          <Check className="w-3 h-3 text-green-500" /> Cancel anytime
+        <span className="text-sm flex items-center gap-2">
+          <Check className="w-4 h-4 text-green-500" /> Cancel anytime
         </span>
       </div>
     </div>
