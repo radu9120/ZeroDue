@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if user has an existing active subscription to upgrade
+    // Check if user has an existing subscription to upgrade or cancel
     if (existingSubscriptionId) {
       try {
         console.log(
@@ -145,7 +145,43 @@ export async function POST(req: NextRequest) {
           `Existing subscription status: ${existingSubscription.status}`
         );
 
+        // Handle incomplete subscriptions - cancel them and create new
         if (
+          existingSubscription.status === "incomplete" ||
+          existingSubscription.status === "incomplete_expired" ||
+          existingSubscription.status === "past_due" ||
+          existingSubscription.status === "canceled"
+        ) {
+          console.log(
+            `Canceling ${existingSubscription.status} subscription: ${existingSubscriptionId}`
+          );
+
+          // Cancel incomplete subscription so we can create a new one
+          if (existingSubscription.status !== "canceled") {
+            try {
+              await stripe.subscriptions.cancel(existingSubscriptionId);
+              console.log(
+                `Canceled incomplete subscription: ${existingSubscriptionId}`
+              );
+            } catch (cancelError: any) {
+              console.log(
+                `Could not cancel subscription (may already be canceled): ${cancelError?.message}`
+              );
+            }
+          }
+
+          // Clear the old subscription ID so we create a new one
+          await supabase.auth.updateUser({
+            data: {
+              stripe_subscription_id: null,
+            },
+          });
+
+          // Fall through to create new subscription
+          console.log(
+            "Will create new subscription after canceling incomplete one"
+          );
+        } else if (
           existingSubscription.status === "active" ||
           existingSubscription.status === "trialing"
         ) {
@@ -201,25 +237,23 @@ export async function POST(req: NextRequest) {
       } catch (error: any) {
         // Log the actual error for debugging
         console.error(
-          "Error during subscription upgrade:",
+          "Error during subscription check/upgrade:",
           error?.message || error
         );
 
-        // If it's a real upgrade error (not just subscription not found), throw it
+        // If subscription not found, just proceed to create new one
         if (
-          error?.type !== "StripeInvalidRequestError" ||
-          !error?.message?.includes("No such subscription")
+          error?.type === "StripeInvalidRequestError" &&
+          error?.message?.includes("No such subscription")
         ) {
-          // This is a real error during upgrade, not just missing subscription
-          console.error("Upgrade failed with error:", error);
-          return NextResponse.json(
-            { error: error?.message || "Failed to upgrade subscription" },
-            { status: 500 }
+          console.log("Existing subscription not found, creating new one");
+        } else {
+          // This is a real error, log it but try to proceed anyway
+          console.error(
+            "Subscription operation failed, will try creating new:",
+            error
           );
         }
-
-        // Subscription doesn't exist, proceed to create new one
-        console.log("Existing subscription not found, creating new one");
       }
     }
 
