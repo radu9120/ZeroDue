@@ -6,11 +6,11 @@ import type { AppPlan } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   console.log("[buy-invoice-intent] Starting...");
-  
+
   try {
     const { userId } = await auth();
     console.log("[buy-invoice-intent] userId:", userId);
-    
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -20,8 +20,13 @@ export async function POST(req: NextRequest) {
       businessId: number;
       quantity?: number;
     };
-    
-    console.log("[buy-invoice-intent] businessId:", businessId, "quantity:", quantity);
+
+    console.log(
+      "[buy-invoice-intent] businessId:",
+      businessId,
+      "quantity:",
+      quantity
+    );
 
     if (!businessId) {
       return NextResponse.json(
@@ -43,8 +48,13 @@ export async function POST(req: NextRequest) {
 
     const pricePerInvoice = EXTRA_INVOICE_PRICES[plan];
     const totalAmount = Math.round(pricePerInvoice * quantity * 100); // Convert to cents
-    
-    console.log("[buy-invoice-intent] pricePerInvoice:", pricePerInvoice, "totalAmount:", totalAmount);
+
+    console.log(
+      "[buy-invoice-intent] pricePerInvoice:",
+      pricePerInvoice,
+      "totalAmount:",
+      totalAmount
+    );
 
     // Create a PaymentIntent
     const stripe = getStripeClient();
@@ -61,8 +71,11 @@ export async function POST(req: NextRequest) {
         type: "extra_invoice",
       },
     });
-    
-    console.log("[buy-invoice-intent] paymentIntent created:", paymentIntent.id);
+
+    console.log(
+      "[buy-invoice-intent] paymentIntent created:",
+      paymentIntent.id
+    );
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,

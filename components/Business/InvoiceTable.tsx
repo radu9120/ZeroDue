@@ -790,7 +790,7 @@ export default function InvoiceTable({
       const result = await deleteInvoiceAction(invoiceToDelete.id);
 
       // Check if result is an error
-      if (result && 'error' in result) {
+      if (result && "error" in result) {
         toast.error(result.error);
         setInvoiceToDelete(null);
         return;

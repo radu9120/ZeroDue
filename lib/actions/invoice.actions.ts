@@ -602,7 +602,8 @@ export const deleteInvoiceAction = async (invoiceId: number) => {
   // They can only have 2 invoices total - if they want to delete and recreate, they need to upgrade
   if (plan === "free_user") {
     return {
-      error: "Free plan users cannot delete invoices. Upgrade to Professional or Enterprise to manage your invoices.",
+      error:
+        "Free plan users cannot delete invoices. Upgrade to Professional or Enterprise to manage your invoices.",
     };
   }
 
