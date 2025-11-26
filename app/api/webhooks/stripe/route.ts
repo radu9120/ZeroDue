@@ -3,17 +3,26 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { sendDowngradeCompletedEmail } from "@/lib/emails";
 
-const stripe = new Stripe(
-  process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_LIVE_SECRET_KEY!,
-  { apiVersion: "2025-11-17.clover" }
-);
+// Lazy initialize Stripe to avoid build-time errors
+function getStripe() {
+  return new Stripe(
+    process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_LIVE_SECRET_KEY!,
+    { apiVersion: "2025-11-17.clover" }
+  );
+}
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Lazy initialize Supabase Admin client
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 export async function POST(request: NextRequest) {
+  const stripe = getStripe();
+  const supabaseAdmin = getSupabaseAdmin();
+
   const body = await request.text();
   const signature = request.headers.get("stripe-signature");
 
