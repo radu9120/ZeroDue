@@ -1042,14 +1042,25 @@ export default function InvoiceTable({
                           </Button>
 
                           <div className="pt-2 border-t border-gray-200 dark:border-slate-600">
-                            <Button
-                              variant="secondary"
-                              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:bg-slate-700 dark:hover:bg-red-900/20"
-                              onClick={() => handleDeleteInvoice(invoice)}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete Invoice
-                            </Button>
+                            {userPlan === "free_user" ? (
+                              <div className="text-xs text-slate-500 dark:text-slate-400 text-center py-2">
+                                <Link 
+                                  href="/dashboard/plan"
+                                  className="text-blue-500 hover:text-blue-600 underline"
+                                >
+                                  Upgrade to delete invoices
+                                </Link>
+                              </div>
+                            ) : (
+                              <Button
+                                variant="secondary"
+                                className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:bg-slate-700 dark:hover:bg-red-900/20"
+                                onClick={() => handleDeleteInvoice(invoice)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete Invoice
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </CustomModal>
