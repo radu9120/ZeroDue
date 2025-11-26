@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
@@ -56,9 +57,14 @@ export async function POST() {
     // Cancel subscriptions at period end (not immediately)
     let periodEndDate: Date | null = null;
     for (const subscription of allSubscriptions) {
-      const updatedSub = await stripe.subscriptions.update(subscription.id, {
-        cancel_at_period_end: true,
-      });
+      const updatedSubResponse = await stripe.subscriptions.update(
+        subscription.id,
+        {
+          cancel_at_period_end: true,
+        }
+      );
+      // Cast to access the subscription data
+      const updatedSub = updatedSubResponse as unknown as Stripe.Subscription;
       // Get the period end date from the updated subscription
       if (!periodEndDate && updatedSub.current_period_end) {
         periodEndDate = new Date(updatedSub.current_period_end * 1000);
