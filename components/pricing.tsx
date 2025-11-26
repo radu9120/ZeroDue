@@ -15,7 +15,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe, type Stripe } from "@stripe/stripe-js";
 import {
   Elements,
   PaymentElement,
@@ -29,9 +29,14 @@ interface PricingProps {
   isDashboard?: boolean;
 }
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+// Lazy load Stripe to avoid errors when env var is missing
+let stripePromise: Promise<Stripe | null> | null = null;
+function getStripe() {
+  if (!stripePromise && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  }
+  return stripePromise;
+}
 
 const plans = [
   {
@@ -505,7 +510,7 @@ export default function Pricing({
                 <X className="w-5 h-5" />
               </button>
               <Elements
-                stripe={stripePromise}
+                stripe={getStripe()}
                 options={{
                   clientSecret: checkoutPlan.clientSecret,
                   appearance: {

@@ -14,7 +14,7 @@ import {
   Loader2,
 } from "lucide-react";
 import type { AppPlan } from "@/lib/utils";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe, type Stripe } from "@stripe/stripe-js";
 import {
   Elements,
   PaymentElement,
@@ -22,9 +22,14 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+// Lazy load Stripe to avoid errors when env var is missing
+let stripePromise: Promise<Stripe | null> | null = null;
+function getStripe() {
+  if (!stripePromise && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  }
+  return stripePromise;
+}
 
 interface BuyInvoiceCreditsProps {
   businessId: number;
@@ -385,7 +390,7 @@ export function BuyInvoiceCredits({
 
           {clientSecret && (
             <Elements
-              stripe={stripePromise}
+              stripe={getStripe()}
               options={{
                 clientSecret,
                 appearance: {
