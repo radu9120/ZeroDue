@@ -109,7 +109,10 @@ export function InvoiceHeaderSection({
     >
       <div className="flex-1" style={{ flex: 1, textAlign: "left" }}>
         {company.logo && (
-          <div className="mb-4" style={{ marginBottom: "16px", textAlign: "left" }}>
+          <div
+            className="mb-4"
+            style={{ marginBottom: "16px", textAlign: "left" }}
+          >
             <img
               src={company.logo}
               alt={`${company.name || "Company"} logo`}
