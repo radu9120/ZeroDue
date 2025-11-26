@@ -4,7 +4,15 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { FileText, Eye, Download, Loader2, Trash2, AlertTriangle, X } from "lucide-react";
+import {
+  FileText,
+  Eye,
+  Download,
+  Loader2,
+  Trash2,
+  AlertTriangle,
+  X,
+} from "lucide-react";
 import getStatusBadge from "@/components/ui/getStatusBadge";
 import {
   getInvoices,
@@ -234,7 +242,12 @@ export default function InvoiceList({
                   <Button
                     variant="neutralOutline"
                     size="sm"
-                    onClick={() => openDeleteModal(invoice.id, invoice.invoice_number || `#${invoice.id}`)}
+                    onClick={() =>
+                      openDeleteModal(
+                        invoice.id,
+                        invoice.invoice_number || `#${invoice.id}`
+                      )
+                    }
                     disabled={deletingId === invoice.id}
                     className="border-slate-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-800"
                   >
