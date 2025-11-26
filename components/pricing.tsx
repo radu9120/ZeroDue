@@ -10,6 +10,7 @@ import {
   CreditCard,
   Loader2,
   AlertTriangle,
+  Calendar,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -245,6 +246,10 @@ export default function Pricing({
   } | null>(null);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [hasUsedTrial, setHasUsedTrial] = useState(false);
+  const [cancellationSuccess, setCancellationSuccess] = useState<{
+    periodEnd: string;
+    planName: string;
+  } | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -306,11 +311,23 @@ export default function Pricing({
         return;
       }
 
-      // Show success message with period end date
-      toast.success(data.message || "Subscription cancellation scheduled!");
+      // Close downgrade modal and show success modal
       setShowDowngradeModal(false);
-      // Refresh to update the UI
-      window.location.href = "/dashboard?plan=cancellation-scheduled";
+
+      // Format the period end date
+      const periodEndDate = data.periodEnd
+        ? new Date(data.periodEnd).toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        : "the end of your billing period";
+
+      setCancellationSuccess({
+        periodEnd: periodEndDate,
+        planName: currentPlan === "enterprise" ? "Enterprise" : "Professional",
+      });
     } catch {
       toast.error("Failed to cancel subscription. Please try again.");
     } finally {
@@ -499,7 +516,6 @@ export default function Pricing({
                   </button>
                   <button
                     onClick={() => {
-                      setShowDowngradeModal(false);
                       handleDowngrade();
                     }}
                     disabled={loading === "free_user"}
@@ -512,6 +528,79 @@ export default function Pricing({
                     )}
                   </button>
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Cancellation Success Modal */}
+      <AnimatePresence>
+        {cancellationSuccess && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden"
+            >
+              {/* Header with calendar icon */}
+              <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-center">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">
+                  Cancellation Scheduled
+                </h3>
+              </div>
+
+              {/* Content */}
+              <div className="p-6">
+                <div className="text-center mb-6">
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Your{" "}
+                    <span className="font-semibold text-slate-900 dark:text-white">
+                      {cancellationSuccess.planName}
+                    </span>{" "}
+                    subscription has been scheduled for cancellation.
+                  </p>
+
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 mb-4">
+                    <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                      You&apos;ll keep full access until:
+                    </p>
+                    <p className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                      {cancellationSuccess.periodEnd}
+                    </p>
+                  </div>
+
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    After this date, your account will switch to the Free plan.
+                    You can reactivate anytime before then.
+                  </p>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setCancellationSuccess(null);
+                      router.refresh();
+                    }}
+                    className="flex-1 py-3 px-4 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-500 transition-colors"
+                  >
+                    Got it
+                  </button>
+                </div>
+
+                <p className="text-xs text-center text-slate-400 dark:text-slate-500 mt-4">
+                  We&apos;ve also sent a confirmation email to your inbox.
+                </p>
               </div>
             </motion.div>
           </motion.div>

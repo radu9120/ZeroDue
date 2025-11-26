@@ -60,16 +60,21 @@ export async function POST() {
         cancel_at_period_end: true,
       });
       // Get the period end date for the email
-      if (!periodEndDate) {
+      if (!periodEndDate && subscription.current_period_end) {
         periodEndDate = new Date(subscription.current_period_end * 1000);
       }
+    }
+
+    // Fallback: if no period end found, use 30 days from now
+    if (!periodEndDate || isNaN(periodEndDate.getTime())) {
+      periodEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     }
 
     // Update user metadata to indicate scheduled cancellation
     await supabase.auth.updateUser({
       data: {
         subscription_cancel_at_period_end: true,
-        subscription_period_end: periodEndDate?.toISOString(),
+        subscription_period_end: periodEndDate.toISOString(),
         // Note: We keep the current plan until the period ends
         // The webhook will handle the actual downgrade when the subscription ends
       },
