@@ -23,7 +23,10 @@ export async function POST(req: NextRequest) {
       supabaseUser?.user_metadata?.stripe_subscription_id;
 
     const body = await req.json();
-    const { plan, billingPeriod = "monthly" } = body as { plan: AppPlan; billingPeriod?: "monthly" | "yearly" };
+    const { plan, billingPeriod = "monthly" } = body as {
+      plan: AppPlan;
+      billingPeriod?: "monthly" | "yearly";
+    };
 
     if (!plan || !PLAN_CONFIG[plan]) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
@@ -63,19 +66,22 @@ export async function POST(req: NextRequest) {
 
     // Determine the price based on billing period
     const monthlyPrice = planConfig.monthlyPrice;
-    const yearlyPrice = "yearlyPrice" in planConfig ? (planConfig as any).yearlyPrice : monthlyPrice * 12;
+    const yearlyPrice =
+      "yearlyPrice" in planConfig
+        ? (planConfig as any).yearlyPrice
+        : monthlyPrice * 12;
     const priceAmount = isYearly ? yearlyPrice : monthlyPrice;
     const billingInterval: "month" | "year" = isYearly ? "year" : "month";
 
-    console.log(`Plan: ${plan}, billingPeriod: ${billingPeriod}, priceAmount: ${priceAmount}, priceId from env: ${priceId || "not set"}`);
+    console.log(
+      `Plan: ${plan}, billingPeriod: ${billingPeriod}, priceAmount: ${priceAmount}, priceId from env: ${priceId || "not set"}`
+    );
 
     // For yearly billing or if no preset price ID, create/find price dynamically
     if (!priceId || isYearly) {
       try {
         // Fallback: find existing product by name
-        console.log(
-          `Searching for existing product for ${plan}...`
-        );
+        console.log(`Searching for existing product for ${plan}...`);
         const products = await stripe.products.list({ limit: 100 });
         console.log(`Found ${products.data.length} products in Stripe`);
 
@@ -103,8 +109,9 @@ export async function POST(req: NextRequest) {
 
         // Find price matching our billing interval and amount
         const matchingPrice = prices.data.find(
-          (p) => p.recurring?.interval === billingInterval && 
-                 p.unit_amount === Math.round(priceAmount * 100)
+          (p) =>
+            p.recurring?.interval === billingInterval &&
+            p.unit_amount === Math.round(priceAmount * 100)
         );
 
         if (matchingPrice) {
