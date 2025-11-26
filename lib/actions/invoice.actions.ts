@@ -59,16 +59,19 @@ export const createInvoice = async (formData: CreateInvoice) => {
 
     if (plan === "free_user") {
       // Free plan: 2 free invoices total, then pay-as-you-go
-      const { count } = await supabase
+      const { count, error: countError } = await supabase
         .from("Invoices")
         .select("id", { count: "exact", head: true })
         .eq("author", author)
         .eq("business_id", businessId);
 
+      console.log("[createInvoice] Free plan check - author:", author, "businessId:", businessId, "count:", count, "error:", countError);
+
       const totalInvoices = count || 0;
       const freeLimit = 2;
 
       if (totalInvoices >= freeLimit && extraCredits <= 0) {
+        console.log("[createInvoice] Limit reached - totalInvoices:", totalInvoices, "freeLimit:", freeLimit, "extraCredits:", extraCredits);
         return {
           error: "NEEDS_PAYMENT:You've used your 2 free invoices. Purchase additional invoice credits ($0.99 each) to continue.",
         };
