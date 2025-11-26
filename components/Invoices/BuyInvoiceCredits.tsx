@@ -13,18 +13,26 @@ import {
   Loader2,
 } from "lucide-react";
 import type { AppPlan } from "@/lib/utils";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe, type Stripe } from "@stripe/stripe-js";
 import {
   Elements,
-  PaymentElement,
+  CardElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
 
-// Initialize Stripe promise at module level - this ensures it's created once
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+// Initialize Stripe promise at module level
+let stripePromise: Promise<Stripe | null> | null = null;
+
+function getStripePromise() {
+  if (!stripePromise) {
+    const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    if (key) {
+      stripePromise = loadStripe(key);
+    }
+  }
+  return stripePromise;
+}
 
 interface BuyInvoiceCreditsProps {
   businessId: number;
@@ -39,17 +47,21 @@ const PRICES = {
   enterprise: 0,
 };
 
-// Payment Form Component
+// Payment Form Component using CardElement
 function PaymentForm({
+  clientSecret,
   quantity,
   total,
   onSuccess,
   onBack,
+  isDarkMode,
 }: {
+  clientSecret: string;
   quantity: number;
   total: string;
   onSuccess: () => void;
   onBack: () => void;
+  isDarkMode: boolean;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -64,24 +76,21 @@ function PaymentForm({
       return;
     }
 
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      setError("Card element not found");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const { error: submitError } = await elements.submit();
-      if (submitError) {
-        setError(submitError.message || "Payment failed");
-        setLoading(false);
-        return;
-      }
-
       const { error: confirmError, paymentIntent } =
-        await stripe.confirmPayment({
-          elements,
-          confirmParams: {
-            return_url: window.location.href,
+        await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardElement,
           },
-          redirect: "if_required",
         });
 
       if (confirmError) {
@@ -97,6 +106,22 @@ function PaymentForm({
     } finally {
       setLoading(false);
     }
+  };
+
+  const cardStyle = {
+    base: {
+      color: isDarkMode ? "#e2e8f0" : "#1e293b",
+      fontFamily: "system-ui, sans-serif",
+      fontSmoothing: "antialiased",
+      fontSize: "16px",
+      "::placeholder": {
+        color: isDarkMode ? "#64748b" : "#94a3b8",
+      },
+    },
+    invalid: {
+      color: "#ef4444",
+      iconColor: "#ef4444",
+    },
   };
 
   return (
@@ -121,21 +146,24 @@ function PaymentForm({
         </div>
       </div>
 
-      <div className="min-h-[200px] relative">
+      <div className="min-h-[60px] relative">
         {!ready && (
           <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-slate-900 z-10">
             <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-            <span className="ml-2 text-sm text-slate-500">
-              Loading payment form...
-            </span>
+            <span className="ml-2 text-sm text-slate-500">Loading...</span>
           </div>
         )}
-        <PaymentElement
-          onReady={() => setReady(true)}
-          options={{
-            layout: "tabs",
-          }}
-        />
+        <div
+          className={`p-4 border rounded-xl ${isDarkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"}`}
+        >
+          <CardElement
+            onReady={() => setReady(true)}
+            options={{
+              style: cardStyle,
+              hidePostalCode: true,
+            }}
+          />
+        </div>
       </div>
 
       {error && (
@@ -415,21 +443,10 @@ export function BuyInvoiceCredits({
             </h3>
           </div>
 
-          {clientSecret && (
-            <Elements
-              stripe={stripePromise}
-              options={{
-                clientSecret,
-                appearance: {
-                  theme: isDarkMode ? "night" : "stripe",
-                  variables: {
-                    colorPrimary: "#2563eb",
-                    borderRadius: "12px",
-                  },
-                },
-              }}
-            >
+          {clientSecret && getStripePromise() && (
+            <Elements key={clientSecret} stripe={getStripePromise()}>
               <PaymentForm
+                clientSecret={clientSecret}
                 quantity={quantity}
                 total={total}
                 onSuccess={handlePaymentSuccess}
@@ -437,6 +454,7 @@ export function BuyInvoiceCredits({
                   setShowPayment(false);
                   setClientSecret(null);
                 }}
+                isDarkMode={isDarkMode}
               />
             </Elements>
           )}

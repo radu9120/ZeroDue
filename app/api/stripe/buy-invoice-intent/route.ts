@@ -56,12 +56,14 @@ export async function POST(req: NextRequest) {
       totalAmount
     );
 
-    // Create a PaymentIntent
+    // Create a PaymentIntent with automatic payment methods
     const stripe = getStripeClient();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAmount,
       currency: "usd",
-      payment_method_types: ["card"],
+      automatic_payment_methods: {
+        enabled: true,
+      },
       metadata: {
         userId,
         businessId: String(businessId),
