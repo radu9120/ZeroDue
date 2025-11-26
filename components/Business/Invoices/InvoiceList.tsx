@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FileText, Eye, Download, Loader2, Trash2 } from "lucide-react";
 import getStatusBadge from "@/components/ui/getStatusBadge";
-import { getInvoices, deleteInvoiceAction } from "@/lib/actions/invoice.actions";
+import {
+  getInvoices,
+  deleteInvoiceAction,
+} from "@/lib/actions/invoice.actions";
 import { toast } from "sonner";
 import type { AppPlan } from "@/lib/utils";
 
@@ -37,22 +40,26 @@ export default function InvoiceList({
 
   const handleDelete = async (invoiceId: number) => {
     if (deletingId) return;
-    
-    if (!confirm("Are you sure you want to delete this invoice? This action cannot be undone.")) {
+
+    if (
+      !confirm(
+        "Are you sure you want to delete this invoice? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
     setDeletingId(invoiceId);
     try {
       const result = await deleteInvoiceAction(invoiceId);
-      
+
       if (result?.error) {
         toast.error(result.error);
         return;
       }
 
       toast.success("Invoice deleted successfully");
-      setInvoices(invoices.filter(inv => inv.id !== invoiceId));
+      setInvoices(invoices.filter((inv) => inv.id !== invoiceId));
     } catch (error) {
       toast.error("Failed to delete invoice");
     } finally {
