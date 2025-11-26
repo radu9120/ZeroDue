@@ -17,7 +17,7 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:text-slate-200",
         neutral:
-          "bg-slate-900 text-white hover:bg-slate-800 border border-slate-900 shadow-xs dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 dark:border-slate-200",
+          "bg-slate-900 text-white hover:bg-slate-700 border border-slate-900 shadow-xs dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 dark:border-white",
         neutralOutline:
           "border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 shadow-xs dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800 dark:bg-transparent",
       },

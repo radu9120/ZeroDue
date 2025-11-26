@@ -61,9 +61,7 @@ export async function POST(req: NextRequest) {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAmount,
       currency: "usd",
-      automatic_payment_methods: {
-        enabled: true,
-      },
+      payment_method_types: ["card"],
       metadata: {
         userId,
         businessId: String(businessId),
@@ -74,7 +72,9 @@ export async function POST(req: NextRequest) {
 
     console.log(
       "[buy-invoice-intent] paymentIntent created:",
-      paymentIntent.id
+      paymentIntent.id,
+      "clientSecret:",
+      paymentIntent.client_secret ? "exists" : "missing"
     );
 
     return NextResponse.json({

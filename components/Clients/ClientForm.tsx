@@ -84,7 +84,6 @@ export const ClientForm = ({
         const updatedClient = await updateClient(dataToUpdate);
         if (updatedClient) {
           toast.success("Client updated successfully");
-          form.reset();
           closeModal?.();
           if (redirectAfterSubmit) {
             router.push(redirectAfterSubmit);
@@ -99,7 +98,6 @@ export const ClientForm = ({
         const client = await createClient(values);
         if (client) {
           toast.success("Client added successfully");
-          form.reset();
           closeModal?.();
           if (redirectAfterSubmit) {
             router.push(redirectAfterSubmit);

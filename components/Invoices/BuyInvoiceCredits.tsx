@@ -209,20 +209,33 @@ export function BuyInvoiceCredits({
       });
 
       const data = await response.json();
+      console.log("[BuyInvoiceCredits] API response:", data);
 
       if (data.error) {
         toast.error(data.error);
         return;
       }
 
-      // Show embedded payment form
-      if (data.clientSecret) {
+      // Validate client secret format before setting it
+      if (
+        data.clientSecret &&
+        typeof data.clientSecret === "string" &&
+        data.clientSecret.startsWith("pi_")
+      ) {
+        console.log(
+          "[BuyInvoiceCredits] Valid client secret received, showing payment form"
+        );
         setClientSecret(data.clientSecret);
         setShowPayment(true);
       } else {
-        toast.error("Failed to initialize payment");
+        console.error(
+          "[BuyInvoiceCredits] Invalid client secret:",
+          data.clientSecret
+        );
+        toast.error("Failed to initialize payment - invalid response");
       }
     } catch (error) {
+      console.error("[BuyInvoiceCredits] Error:", error);
       toast.error("Failed to start payment. Please try again.");
     } finally {
       setLoading(false);
@@ -413,40 +426,6 @@ export function BuyInvoiceCredits({
                   variables: {
                     colorPrimary: "#2563eb",
                     borderRadius: "12px",
-                    fontFamily: "system-ui, sans-serif",
-                    colorBackground: isDarkMode ? "#0f172a" : "#ffffff",
-                    colorText: isDarkMode ? "#e2e8f0" : "#1e293b",
-                    colorTextSecondary: isDarkMode ? "#94a3b8" : "#64748b",
-                    colorDanger: "#ef4444",
-                  },
-                  rules: {
-                    ".Input": {
-                      backgroundColor: isDarkMode ? "#1e293b" : "#ffffff",
-                      border: isDarkMode
-                        ? "1px solid #334155"
-                        : "1px solid #e2e8f0",
-                      color: isDarkMode ? "#e2e8f0" : "#1e293b",
-                    },
-                    ".Input:focus": {
-                      border: "1px solid #2563eb",
-                      boxShadow: "0 0 0 2px rgba(37, 99, 235, 0.2)",
-                    },
-                    ".Label": {
-                      color: isDarkMode ? "#cbd5e1" : "#475569",
-                      fontWeight: "500",
-                    },
-                    ".Tab": {
-                      backgroundColor: isDarkMode ? "#1e293b" : "#f8fafc",
-                      border: isDarkMode
-                        ? "1px solid #334155"
-                        : "1px solid #e2e8f0",
-                      color: isDarkMode ? "#e2e8f0" : "#1e293b",
-                    },
-                    ".Tab--selected": {
-                      backgroundColor: isDarkMode ? "#2563eb" : "#2563eb",
-                      borderColor: "#2563eb",
-                      color: "#ffffff",
-                    },
                   },
                 },
               }}
