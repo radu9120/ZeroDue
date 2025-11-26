@@ -717,15 +717,20 @@ const InvoiceForm = ({
                   {/* Company Logo Display */}
                   {company_data.logo && (
                     <div className="mb-6 flex justify-start">
-                      <div className="w-32 h-24 rounded-xl overflow-hidden bg-white dark:bg-slate-800 shadow-sm border border-gray-100">
-                        <Image
-                          src={company_data.logo}
-                          alt="Company Logo"
-                          width={196}
-                          height={196}
-                          className="w-full h-full object-contain object-left"
-                        />
-                      </div>
+                      <img
+                        src={company_data.logo}
+                        alt="Company Logo"
+                        style={{
+                          width: "auto",
+                          maxWidth: "220px",
+                          maxHeight: "100px",
+                          objectFit: "contain",
+                          objectPosition: "left top",
+                          display: "block",
+                          marginLeft: "-40px",
+                          marginRight: "auto",
+                        }}
+                      />
                     </div>
                   )}
 

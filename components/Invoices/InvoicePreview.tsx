@@ -103,12 +103,21 @@ export function InvoicePreview({
             {/* Invoice Header */}
             <div className="p-6 border-b border-gray-100 dark:border-slate-800">
               <div className="flex justify-between items-start">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col items-start gap-4">
                   {formData.company_details?.logo ? (
                     <img
                       src={formData.company_details.logo}
                       alt="Company Logo"
-                      className="w-16 h-16 object-contain object-left rounded-lg"
+                      style={{
+                        width: "auto",
+                        maxWidth: "220px",
+                        maxHeight: "100px",
+                        objectFit: "contain",
+                        objectPosition: "left top",
+                        display: "block",
+                        marginLeft: "-40px",
+                        marginRight: "auto",
+                      }}
                     />
                   ) : (
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">

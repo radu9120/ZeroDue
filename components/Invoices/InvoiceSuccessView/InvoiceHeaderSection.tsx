@@ -132,7 +132,7 @@ export function InvoiceHeaderSection({
                 objectFit: "contain",
                 objectPosition: "left top",
                 display: "block",
-                marginLeft: 0,
+                marginLeft: "-40px",
                 marginRight: "auto",
               }}
             />
