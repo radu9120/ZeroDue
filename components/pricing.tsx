@@ -246,6 +246,9 @@ export default function Pricing({
   } | null>(null);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [hasUsedTrial, setHasUsedTrial] = useState(false);
+  const [cancellationScheduled, setCancellationScheduled] = useState<{
+    periodEnd: string;
+  } | null>(null);
   const [cancellationSuccess, setCancellationSuccess] = useState<{
     periodEnd: string;
     planName: string;
@@ -270,6 +273,23 @@ export default function Pricing({
           const trialData = await trialResponse.json();
           setCurrentPlan(planData.plan || "free_user");
           setHasUsedTrial(trialData.hasUsedTrial || false);
+
+          // Check if cancellation is already scheduled
+          if (
+            user.user_metadata?.subscription_cancel_at_period_end &&
+            user.user_metadata?.subscription_period_end
+          ) {
+            setCancellationScheduled({
+              periodEnd: new Date(
+                user.user_metadata.subscription_period_end
+              ).toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }),
+            });
+          }
         } catch {
           setCurrentPlan("free_user");
           setHasUsedTrial(false);
@@ -324,12 +344,43 @@ export default function Pricing({
           })
         : "the end of your billing period";
 
+      // Update cancellation scheduled state immediately
+      setCancellationScheduled({
+        periodEnd: periodEndDate,
+      });
+
       setCancellationSuccess({
         periodEnd: periodEndDate,
         planName: currentPlan === "enterprise" ? "Enterprise" : "Professional",
       });
     } catch {
       toast.error("Failed to cancel subscription. Please try again.");
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleReactivate = async () => {
+    if (!isAuthenticated) return;
+
+    setLoading("reactivate");
+    try {
+      const response = await fetch("/api/stripe/reactivate-subscription", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      toast.success(data.message || "Subscription reactivated!");
+      setCancellationScheduled(null);
+    } catch {
+      toast.error("Failed to reactivate subscription. Please try again.");
     } finally {
       setLoading(null);
     }
@@ -819,42 +870,71 @@ export default function Pricing({
                   </ul>
 
                   {/* Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCheckout(plan.id);
-                    }}
-                    disabled={loading === plan.id || currentPlan === plan.id}
-                    className={`w-full py-4 px-6 rounded-xl font-semibold text-base transition-all disabled:opacity-50 cursor-pointer ${
-                      currentPlan === plan.id
-                        ? "bg-green-600 text-white cursor-default"
-                        : plan.id === "free_user" &&
-                            currentPlan &&
-                            currentPlan !== "free_user"
-                          ? "bg-orange-600 hover:bg-orange-500 text-white"
-                          : plan.popular
-                            ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/25 hover:scale-[1.02]"
-                            : "bg-slate-800 text-white hover:bg-slate-700 border border-slate-700"
-                    }`}
-                  >
-                    {loading === plan.id ? (
-                      <Loader2 className="w-4 h-4 animate-spin mx-auto" />
-                    ) : currentPlan === plan.id ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <Check className="w-4 h-4" />
-                        Current Plan
-                      </span>
-                    ) : plan.id === "free_user" &&
-                      currentPlan &&
-                      currentPlan !== "free_user" ? (
-                      "Downgrade to Free"
-                    ) : plan.id !== "free_user" && hasUsedTrial ? (
-                      // User has already used trial - show regular subscribe
-                      `Subscribe to ${plan.name}`
-                    ) : (
-                      plan.cta
-                    )}
-                  </button>
+                  {plan.id === "free_user" && cancellationScheduled ? (
+                    // Show both info and reactivate button when cancellation is scheduled
+                    <div className="space-y-2">
+                      <div className="w-full py-3 px-4 rounded-xl bg-orange-500/20 border border-orange-500/30 text-center">
+                        <span className="flex items-center justify-center gap-2 text-sm text-orange-300">
+                          <Calendar className="w-4 h-4" />
+                          Switching {cancellationScheduled.periodEnd}
+                        </span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleReactivate();
+                        }}
+                        disabled={loading === "reactivate"}
+                        className="w-full py-3 px-4 rounded-xl font-semibold text-sm bg-green-600 hover:bg-green-500 text-white transition-all disabled:opacity-50"
+                      >
+                        {loading === "reactivate" ? (
+                          <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                        ) : (
+                          <span className="flex items-center justify-center gap-2">
+                            <Check className="w-4 h-4" />
+                            Keep My Plan Instead
+                          </span>
+                        )}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCheckout(plan.id);
+                      }}
+                      disabled={loading === plan.id || currentPlan === plan.id}
+                      className={`w-full py-4 px-6 rounded-xl font-semibold text-base transition-all disabled:opacity-50 cursor-pointer ${
+                        currentPlan === plan.id
+                          ? "bg-green-600 text-white cursor-default"
+                          : plan.id === "free_user" &&
+                              currentPlan &&
+                              currentPlan !== "free_user"
+                            ? "bg-orange-600 hover:bg-orange-500 text-white"
+                            : plan.popular
+                              ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/25 hover:scale-[1.02]"
+                              : "bg-slate-800 text-white hover:bg-slate-700 border border-slate-700"
+                      }`}
+                    >
+                      {loading === plan.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                      ) : currentPlan === plan.id ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <Check className="w-4 h-4" />
+                          Current Plan
+                        </span>
+                      ) : plan.id === "free_user" &&
+                        currentPlan &&
+                        currentPlan !== "free_user" ? (
+                        "Downgrade to Free"
+                      ) : plan.id !== "free_user" && hasUsedTrial ? (
+                        // User has already used trial - show regular subscribe
+                        `Subscribe to ${plan.name}`
+                      ) : (
+                        plan.cta
+                      )}
+                    </button>
+                  )}
                 </div>
               </motion.div>
             );

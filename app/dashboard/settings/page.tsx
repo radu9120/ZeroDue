@@ -18,6 +18,9 @@ import {
   Zap,
   Rocket,
   X,
+  Calendar,
+  CreditCard,
+  Clock,
 } from "lucide-react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import Link from "next/link";
@@ -30,6 +33,13 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string>("free_user");
+  const [subscriptionStatus, setSubscriptionStatus] = useState<{
+    isTrialing?: boolean;
+    trialEndsAt?: string;
+    cancelAtPeriodEnd?: boolean;
+    periodEnd?: string;
+    hasUsedTrial?: boolean;
+  }>({});
 
   // Delete account states
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -61,6 +71,20 @@ export default function SettingsPage() {
       .then((res) => res.json())
       .then((data) => setCurrentPlan(data.plan || "free_user"))
       .catch(() => setCurrentPlan("free_user"));
+
+    // Fetch subscription status from user metadata
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.user_metadata) {
+        setSubscriptionStatus({
+          isTrialing: user.user_metadata.is_trialing,
+          trialEndsAt: user.user_metadata.trial_ends_at,
+          cancelAtPeriodEnd:
+            user.user_metadata.subscription_cancel_at_period_end,
+          periodEnd: user.user_metadata.subscription_period_end,
+          hasUsedTrial: user.user_metadata.has_used_trial,
+        });
+      }
+    });
   }, [router]);
 
   const handleUpdateProfile = async () => {
@@ -465,13 +489,25 @@ export default function SettingsPage() {
                   )}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">
-                    {currentPlan === "enterprise"
-                      ? "Enterprise Plan"
-                      : currentPlan === "professional"
-                        ? "Professional Plan"
-                        : "Free Plan"}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {currentPlan === "enterprise"
+                        ? "Enterprise Plan"
+                        : currentPlan === "professional"
+                          ? "Professional Plan"
+                          : "Free Plan"}
+                    </p>
+                    {subscriptionStatus.isTrialing && (
+                      <span className="px-2 py-0.5 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full">
+                        Trial
+                      </span>
+                    )}
+                    {subscriptionStatus.cancelAtPeriodEnd && (
+                      <span className="px-2 py-0.5 text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-full">
+                        Cancelling
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-500 dark:text-slate-400">
                     {currentPlan === "enterprise"
                       ? "Unlimited invoices & businesses"
@@ -496,10 +532,122 @@ export default function SettingsPage() {
               </Link>
             </div>
 
+            {/* Subscription Details */}
+            {currentPlan !== "free_user" && (
+              <div className="mt-4 space-y-3">
+                {/* Trial Status */}
+                {subscriptionStatus.isTrialing &&
+                  subscriptionStatus.trialEndsAt && (
+                    <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                      <Clock className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-green-800 dark:text-green-300">
+                          Free Trial Active
+                        </p>
+                        <p className="text-xs text-green-600 dark:text-green-400">
+                          Your trial ends on{" "}
+                          <span className="font-semibold">
+                            {new Date(
+                              subscriptionStatus.trialEndsAt
+                            ).toLocaleDateString("en-US", {
+                              weekday: "long",
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                {/* Cancellation Scheduled */}
+                {subscriptionStatus.cancelAtPeriodEnd &&
+                  subscriptionStatus.periodEnd && (
+                    <div className="flex items-center gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                      <Calendar className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-orange-800 dark:text-orange-300">
+                          Cancellation Scheduled
+                        </p>
+                        <p className="text-xs text-orange-600 dark:text-orange-400">
+                          Your plan will switch to Free on{" "}
+                          <span className="font-semibold">
+                            {new Date(
+                              subscriptionStatus.periodEnd
+                            ).toLocaleDateString("en-US", {
+                              weekday: "long",
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                {/* Active Subscription (not cancelling) */}
+                {!subscriptionStatus.cancelAtPeriodEnd &&
+                  !subscriptionStatus.isTrialing && (
+                    <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <CreditCard className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                          Active Subscription
+                        </p>
+                        <p className="text-xs text-blue-600 dark:text-blue-400">
+                          Your subscription renews automatically each month
+                        </p>
+                      </div>
+                    </div>
+                  )}
+              </div>
+            )}
+
+            {/* Free Plan - Show trial availability */}
+            {currentPlan === "free_user" && (
+              <div className="mt-4">
+                {subscriptionStatus.hasUsedTrial ? (
+                  <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <CreditCard className="w-5 h-5 text-slate-500 dark:text-slate-400 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        Upgrade to unlock more features
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        You&apos;ve already used your free trial. Subscribe to
+                        upgrade.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                    <Rocket className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-green-800 dark:text-green-300">
+                        60-Day Free Trial Available!
+                      </p>
+                      <p className="text-xs text-green-600 dark:text-green-400">
+                        Try Professional or Enterprise free for 60 days. No
+                        charge until trial ends.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {currentPlan !== "free_user" && (
               <p className="text-xs text-gray-500 dark:text-slate-500 mt-3">
-                To cancel or modify your subscription, visit the upgrade page or
-                contact support.
+                To cancel or modify your subscription, visit the{" "}
+                <Link
+                  href="/upgrade"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  upgrade page
+                </Link>{" "}
+                or contact support.
               </p>
             )}
           </div>
