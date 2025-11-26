@@ -97,6 +97,8 @@ function CheckoutForm({
   onSuccess,
   onCancel,
   hasTrial = true,
+  isUpgrade = false,
+  billingPeriod = "monthly",
 }: {
   planName: string;
   planPrice: string;
@@ -105,6 +107,8 @@ function CheckoutForm({
   onSuccess: () => void;
   onCancel: () => void;
   hasTrial?: boolean;
+  isUpgrade?: boolean;
+  billingPeriod?: "monthly" | "yearly";
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -118,7 +122,12 @@ function CheckoutForm({
     setIsProcessing(true);
     setError(null);
 
-    const confirmResult = hasTrial
+    // For upgrades from trial, we use confirmSetup to save payment method
+    // For new subscriptions with trial, we also use confirmSetup
+    // For immediate payments, we use confirmPayment
+    const useSetup = hasTrial || isUpgrade;
+
+    const confirmResult = useSetup
       ? await stripe.confirmSetup({
           elements,
           confirmParams: {
@@ -139,24 +148,44 @@ function CheckoutForm({
       setIsProcessing(false);
     } else {
       try {
-        const response = await fetch("/api/stripe/confirm-subscription", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan: planId, subscriptionId }),
-        });
+        // If this is an upgrade, call the upgrade endpoint
+        if (isUpgrade) {
+          const response = await fetch("/api/stripe/upgrade-subscription", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ plan: planId, subscriptionId, billingPeriod }),
+          });
 
-        if (!response.ok) {
-          console.error("Failed to confirm subscription");
+          if (!response.ok) {
+            const data = await response.json();
+            setError(data.error || "Failed to upgrade subscription");
+            setIsProcessing(false);
+            return;
+          }
+
+          toast.success(`Successfully upgraded to ${planName}!`);
+        } else {
+          // Regular subscription confirmation
+          const response = await fetch("/api/stripe/confirm-subscription", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ plan: planId, subscriptionId, hasTrial }),
+          });
+
+          if (!response.ok) {
+            console.error("Failed to confirm subscription");
+          }
+
+          toast.success(
+            hasTrial
+              ? "Your 60-day free trial has started!"
+              : "Subscription activated successfully!"
+          );
         }
       } catch (err) {
         console.error("Error confirming subscription:", err);
       }
 
-      toast.success(
-        hasTrial
-          ? "Your 60-day free trial has started!"
-          : "Subscription activated successfully!"
-      );
       window.location.href = "/dashboard?checkout=success";
     }
   };
@@ -168,9 +197,11 @@ function CheckoutForm({
           {planName} Plan
         </h3>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          {hasTrial
-            ? `${planPrice}/month after 60-day free trial`
-            : `${planPrice}/month - billed immediately`}
+          {isUpgrade
+            ? `Upgrade to ${planName} - ${planPrice}${billingPeriod === "yearly" ? "/year" : "/month"}`
+            : hasTrial
+              ? `${planPrice}/month after 60-day free trial`
+              : `${planPrice}/month - billed immediately`}
         </p>
       </div>
 
@@ -235,6 +266,8 @@ export default function DashboardPricing() {
     clientSecret: string;
     subscriptionId: string;
     hasTrial: boolean;
+    isUpgrade?: boolean;
+    billingPeriod?: "monthly" | "yearly";
   } | null>(null);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [hasUsedTrial, setHasUsedTrial] = useState(false);
@@ -390,6 +423,22 @@ export default function DashboardPricing() {
 
       if (data.error) {
         toast.error(data.error);
+        return;
+      }
+
+      // Handle upgrade that requires payment method first (trial without card)
+      if (data.type === "requires_payment" && data.clientSecret) {
+        setCheckoutPlan({
+          id: planId,
+          name: plan.name,
+          price:
+            billingPeriod === "monthly" ? plan.monthlyPrice : plan.yearlyPrice,
+          clientSecret: data.clientSecret,
+          subscriptionId: data.subscriptionId || "",
+          hasTrial: false,
+          isUpgrade: true,
+          billingPeriod: billingPeriod,
+        });
         return;
       }
 
@@ -650,6 +699,8 @@ export default function DashboardPricing() {
                   planId={checkoutPlan.id}
                   subscriptionId={checkoutPlan.subscriptionId}
                   hasTrial={checkoutPlan.hasTrial}
+                  isUpgrade={checkoutPlan.isUpgrade}
+                  billingPeriod={checkoutPlan.billingPeriod}
                   onSuccess={() => {
                     setCheckoutPlan(null);
                     router.push("/dashboard?checkout=success");
@@ -684,11 +735,13 @@ export default function DashboardPricing() {
             }`}
           >
             Yearly
-            <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-              billingPeriod === "yearly"
-                ? "bg-white/20 text-white"
-                : "bg-green-500/20 text-green-400"
-            }`}>
+            <span
+              className={`text-xs px-1.5 py-0.5 rounded-full ${
+                billingPeriod === "yearly"
+                  ? "bg-white/20 text-white"
+                  : "bg-green-500/20 text-green-400"
+              }`}
+            >
               -20%
             </span>
           </button>

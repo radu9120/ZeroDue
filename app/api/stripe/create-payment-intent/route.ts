@@ -206,6 +206,44 @@ export async function POST(req: NextRequest) {
           existingSubscription.status === "active" ||
           existingSubscription.status === "trialing"
         ) {
+          // Check if this is a trial subscription without a payment method
+          const customer = await stripe.customers.retrieve(
+            existingSubscription.customer as string
+          );
+
+          // Get customer's default payment method
+          const hasPaymentMethod =
+            !("deleted" in customer) &&
+            (customer.invoice_settings?.default_payment_method ||
+              customer.default_source);
+
+          // If trialing WITHOUT a payment method, require card first
+          if (existingSubscription.status === "trialing" && !hasPaymentMethod) {
+            console.log(
+              "User is on trial without payment method - requiring card for upgrade"
+            );
+
+            // Create a SetupIntent to collect payment method
+            const setupIntent = await stripe.setupIntents.create({
+              customer: existingSubscription.customer as string,
+              payment_method_types: ["card"],
+              metadata: {
+                userId,
+                plan,
+                subscriptionId: existingSubscriptionId,
+                upgradeAfterSetup: "true",
+              },
+            });
+
+            return NextResponse.json({
+              type: "requires_payment",
+              clientSecret: setupIntent.client_secret,
+              subscriptionId: existingSubscriptionId,
+              message: "Please add a payment method to upgrade",
+              hasTrial: true,
+            });
+          }
+
           console.log(
             `Upgrading subscription to ${plan} with priceId: ${priceId}`
           );
