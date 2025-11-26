@@ -187,8 +187,8 @@ export function BuyInvoiceCredits({
   const handleProceedToPayment = async () => {
     setLoading(true);
     try {
-      // Use Stripe Checkout redirect instead of embedded payment
-      const response = await fetch("/api/stripe/buy-invoice", {
+      // Use embedded payment form instead of redirect
+      const response = await fetch("/api/stripe/buy-invoice-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -204,14 +204,15 @@ export function BuyInvoiceCredits({
         return;
       }
 
-      // Redirect to Stripe Checkout
-      if (data.url) {
-        window.location.href = data.url;
+      // Show embedded payment form
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+        setShowPayment(true);
       } else {
-        toast.error("Failed to create checkout session");
+        toast.error("Failed to initialize payment");
       }
     } catch (error) {
-      toast.error("Failed to start checkout. Please try again.");
+      toast.error("Failed to start payment. Please try again.");
     } finally {
       setLoading(false);
     }

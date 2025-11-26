@@ -33,6 +33,43 @@ export async function POST(req: NextRequest) {
     const supabase = createSupabaseAdminClient();
 
     switch (event.type) {
+      case "payment_intent.succeeded": {
+        // Handle successful payment intent (used for extra invoice credits via embedded form)
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        const type = paymentIntent.metadata?.type;
+        
+        if (type === "extra_invoice") {
+          const businessId = paymentIntent.metadata?.businessId;
+          const quantity = parseInt(paymentIntent.metadata?.quantity || "1", 10);
+
+          console.log(`[Webhook] Extra invoice payment succeeded: businessId=${businessId}, quantity=${quantity}`);
+
+          if (businessId) {
+            // Add invoice credits to the business
+            const { data: business, error: fetchError } = await supabase
+              .from("Businesses")
+              .select("extra_invoice_credits")
+              .eq("id", parseInt(businessId, 10))
+              .single();
+
+            if (!fetchError && business) {
+              const currentCredits = business.extra_invoice_credits || 0;
+              await supabase
+                .from("Businesses")
+                .update({ extra_invoice_credits: currentCredits + quantity })
+                .eq("id", parseInt(businessId, 10));
+              
+              console.log(`[Webhook] Added ${quantity} credits to business ${businessId}. New total: ${currentCredits + quantity}`);
+            }
+          }
+
+          revalidatePath("/dashboard");
+          revalidatePath("/dashboard/business");
+          revalidatePath("/dashboard/invoices");
+        }
+        break;
+      }
+
       case "setup_intent.succeeded": {
         // Handle successful setup intent (used for trial subscriptions)
         const setupIntent = event.data.object as Stripe.SetupIntent;
