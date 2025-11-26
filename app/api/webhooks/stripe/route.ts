@@ -12,11 +12,10 @@ function getStripe() {
 
 // Lazy initialize Supabase Admin client
 function getSupabaseAdmin() {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    serviceRoleKey!
-  );
+  const serviceRoleKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey!);
 }
 
 // Helper to find user by customer ID or userId in metadata
@@ -66,13 +65,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !serviceRoleKey
-  ) {
-    console.error("[Stripe Webhook] Supabase not configured. URL:", !!process.env.NEXT_PUBLIC_SUPABASE_URL, "ServiceRole:", !!serviceRoleKey);
+  const serviceRoleKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !serviceRoleKey) {
+    console.error(
+      "[Stripe Webhook] Supabase not configured. URL:",
+      !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      "ServiceRole:",
+      !!serviceRoleKey
+    );
     return NextResponse.json(
       { error: "Supabase not configured" },
       { status: 500 }
