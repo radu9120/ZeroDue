@@ -37,12 +37,17 @@ export async function POST(req: NextRequest) {
         // Handle successful payment intent (used for extra invoice credits via embedded form)
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         const type = paymentIntent.metadata?.type;
-        
+
         if (type === "extra_invoice") {
           const businessId = paymentIntent.metadata?.businessId;
-          const quantity = parseInt(paymentIntent.metadata?.quantity || "1", 10);
+          const quantity = parseInt(
+            paymentIntent.metadata?.quantity || "1",
+            10
+          );
 
-          console.log(`[Webhook] Extra invoice payment succeeded: businessId=${businessId}, quantity=${quantity}`);
+          console.log(
+            `[Webhook] Extra invoice payment succeeded: businessId=${businessId}, quantity=${quantity}`
+          );
 
           if (businessId) {
             // Add invoice credits to the business
@@ -58,8 +63,10 @@ export async function POST(req: NextRequest) {
                 .from("Businesses")
                 .update({ extra_invoice_credits: currentCredits + quantity })
                 .eq("id", parseInt(businessId, 10));
-              
-              console.log(`[Webhook] Added ${quantity} credits to business ${businessId}. New total: ${currentCredits + quantity}`);
+
+              console.log(
+                `[Webhook] Added ${quantity} credits to business ${businessId}. New total: ${currentCredits + quantity}`
+              );
             }
           }
 
