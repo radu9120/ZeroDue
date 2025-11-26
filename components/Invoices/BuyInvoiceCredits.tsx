@@ -60,10 +60,14 @@ function PaymentForm({
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    if (!stripe || !elements) {
+      setError("Payment system not ready. Please wait...");
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -122,11 +126,20 @@ function PaymentForm({
         </div>
       </div>
 
-      <PaymentElement
-        options={{
-          layout: "tabs",
-        }}
-      />
+      <div className="min-h-[200px]">
+        <PaymentElement
+          onReady={() => setReady(true)}
+          options={{
+            layout: "tabs",
+          }}
+        />
+        {!ready && (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+            <span className="ml-2 text-sm text-slate-500">Loading payment form...</span>
+          </div>
+        )}
+      </div>
 
       {error && (
         <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
@@ -136,7 +149,7 @@ function PaymentForm({
 
       <Button
         type="submit"
-        disabled={!stripe || loading}
+        disabled={!stripe || !ready || loading}
         className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white py-3"
       >
         {loading ? (
