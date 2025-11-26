@@ -116,7 +116,10 @@ const InvoiceItemRow = ({
                             )}
                           >
                             <Calendar className="mr-2 h-4 w-4 text-slate-400" />
-                            {field.value ? (
+                            {field.value &&
+                            !isNaN(
+                              new Date(field.value + "T00:00:00").getTime()
+                            ) ? (
                               format(
                                 new Date(field.value + "T00:00:00"),
                                 "MMM dd, yyyy"

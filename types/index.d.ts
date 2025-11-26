@@ -63,6 +63,7 @@ interface BusinessType {
   logo?: url | "";
   currency?: string | null;
   profile_type?: "company" | "freelancer" | "exploring";
+  extra_invoice_credits?: number;
 }
 
 interface NewInvoicePageProps {
