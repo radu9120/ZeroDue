@@ -111,7 +111,12 @@ export function InvoiceHeaderSection({
         {company.logo && (
           <div
             className="mb-4"
-            style={{ marginBottom: "16px", textAlign: "left", display: "flex", justifyContent: "flex-start" }}
+            style={{
+              marginBottom: "16px",
+              textAlign: "left",
+              display: "flex",
+              justifyContent: "flex-start",
+            }}
           >
             <img
               src={company.logo}
