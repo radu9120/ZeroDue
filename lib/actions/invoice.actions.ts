@@ -65,15 +65,32 @@ export const createInvoice = async (formData: CreateInvoice) => {
         .eq("author", author)
         .eq("business_id", businessId);
 
-      console.log("[createInvoice] Free plan check - author:", author, "businessId:", businessId, "count:", count, "error:", countError);
+      console.log(
+        "[createInvoice] Free plan check - author:",
+        author,
+        "businessId:",
+        businessId,
+        "count:",
+        count,
+        "error:",
+        countError
+      );
 
       const totalInvoices = count || 0;
       const freeLimit = 2;
 
       if (totalInvoices >= freeLimit && extraCredits <= 0) {
-        console.log("[createInvoice] Limit reached - totalInvoices:", totalInvoices, "freeLimit:", freeLimit, "extraCredits:", extraCredits);
+        console.log(
+          "[createInvoice] Limit reached - totalInvoices:",
+          totalInvoices,
+          "freeLimit:",
+          freeLimit,
+          "extraCredits:",
+          extraCredits
+        );
         return {
-          error: "NEEDS_PAYMENT:You've used your 2 free invoices. Purchase additional invoice credits ($0.99 each) to continue.",
+          error:
+            "NEEDS_PAYMENT:You've used your 2 free invoices. Purchase additional invoice credits ($0.99 each) to continue.",
         };
       }
 
@@ -110,7 +127,8 @@ export const createInvoice = async (formData: CreateInvoice) => {
 
       if (monthlyCount >= monthlyLimit && extraCredits <= 0) {
         return {
-          error: "NEEDS_PAYMENT:You've reached your 15 invoices this month. Purchase additional credits ($0.49 each) or upgrade to Enterprise.",
+          error:
+            "NEEDS_PAYMENT:You've reached your 15 invoices this month. Purchase additional credits ($0.49 each) or upgrade to Enterprise.",
         };
       }
 
@@ -125,7 +143,9 @@ export const createInvoice = async (formData: CreateInvoice) => {
     // Enterprise plan: unlimited invoices, no checks needed
   } catch (e) {
     // Return error object instead of throwing
-    return { error: e instanceof Error ? e.message : "Plan validation failed." };
+    return {
+      error: e instanceof Error ? e.message : "Plan validation failed.",
+    };
   }
 
   const { data, error } = await supabase
