@@ -68,15 +68,22 @@ function PaymentForm({
 
   // Debug logging
   useEffect(() => {
-    console.log("[PaymentForm] mounted, stripe:", !!stripe, "elements:", !!elements);
-    
+    console.log(
+      "[PaymentForm] mounted, stripe:",
+      !!stripe,
+      "elements:",
+      !!elements
+    );
+
     // If after 5 seconds we still don't have stripe/elements, log warning
     const timeout = setTimeout(() => {
       if (!stripe || !elements) {
-        console.error("[PaymentForm] Stripe or elements not available after 5 seconds!");
+        console.error(
+          "[PaymentForm] Stripe or elements not available after 5 seconds!"
+        );
       }
     }, 5000);
-    
+
     return () => clearTimeout(timeout);
   }, [stripe, elements]);
 
@@ -173,7 +180,9 @@ function PaymentForm({
         {!ready && (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-            <span className="ml-2 text-sm text-slate-500">Loading payment form...</span>
+            <span className="ml-2 text-sm text-slate-500">
+              Loading payment form...
+            </span>
           </div>
         )}
       </div>
@@ -444,7 +453,10 @@ export function BuyInvoiceCredits({
 
           {clientSecret && (
             <>
-              {console.log("[BuyInvoiceCredits] Rendering Elements with clientSecret:", clientSecret?.substring(0, 20) + "...")}
+              {console.log(
+                "[BuyInvoiceCredits] Rendering Elements with clientSecret:",
+                clientSecret?.substring(0, 20) + "..."
+              )}
               <Elements
                 stripe={getStripe()}
                 options={{
@@ -492,16 +504,16 @@ export function BuyInvoiceCredits({
                   },
                 }}
               >
-              <PaymentForm
-                quantity={quantity}
-                total={total}
-                onSuccess={handlePaymentSuccess}
-                onBack={() => {
-                  setShowPayment(false);
-                  setClientSecret(null);
-                }}
-              />
-            </Elements>
+                <PaymentForm
+                  quantity={quantity}
+                  total={total}
+                  onSuccess={handlePaymentSuccess}
+                  onBack={() => {
+                    setShowPayment(false);
+                    setClientSecret(null);
+                  }}
+                />
+              </Elements>
             </>
           )}
         </>
