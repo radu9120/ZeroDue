@@ -25,8 +25,12 @@ import {
 // Lazy load Stripe to avoid errors when env var is missing
 let stripePromise: Promise<Stripe | null> | null = null;
 function getStripe() {
-  if (!stripePromise && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  if (!stripePromise) {
+    const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    console.log("[BuyInvoiceCredits] getStripe() called, key exists:", !!key);
+    if (key) {
+      stripePromise = loadStripe(key);
+    }
   }
   return stripePromise;
 }
@@ -61,6 +65,30 @@ function PaymentForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+
+  // Debug logging
+  useEffect(() => {
+    console.log("[PaymentForm] mounted, stripe:", !!stripe, "elements:", !!elements);
+    
+    // If after 5 seconds we still don't have stripe/elements, log warning
+    const timeout = setTimeout(() => {
+      if (!stripe || !elements) {
+        console.error("[PaymentForm] Stripe or elements not available after 5 seconds!");
+      }
+    }, 5000);
+    
+    return () => clearTimeout(timeout);
+  }, [stripe, elements]);
+
+  // Show error if stripe isn't loading
+  if (!stripe && !elements) {
+    return (
+      <div className="text-center py-8">
+        <Loader2 className="w-6 h-6 animate-spin text-blue-500 mx-auto mb-2" />
+        <p className="text-sm text-slate-500">Initializing payment system...</p>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,7 +156,16 @@ function PaymentForm({
 
       <div className="min-h-[200px]">
         <PaymentElement
-          onReady={() => setReady(true)}
+          onReady={() => {
+            console.log("[PaymentElement] onReady fired!");
+            setReady(true);
+          }}
+          onLoadError={(event) => {
+            console.error("[PaymentElement] Load error:", event);
+          }}
+          onChange={(event) => {
+            console.log("[PaymentElement] onChange:", event.complete);
+          }}
           options={{
             layout: "tabs",
           }}
@@ -406,53 +443,55 @@ export function BuyInvoiceCredits({
           </div>
 
           {clientSecret && (
-            <Elements
-              stripe={getStripe()}
-              options={{
-                clientSecret,
-                appearance: {
-                  theme: isDarkMode ? "night" : "stripe",
-                  variables: {
-                    colorPrimary: "#2563eb",
-                    borderRadius: "12px",
-                    fontFamily: "system-ui, sans-serif",
-                    colorBackground: isDarkMode ? "#0f172a" : "#ffffff",
-                    colorText: isDarkMode ? "#e2e8f0" : "#1e293b",
-                    colorTextSecondary: isDarkMode ? "#94a3b8" : "#64748b",
-                    colorDanger: "#ef4444",
+            <>
+              {console.log("[BuyInvoiceCredits] Rendering Elements with clientSecret:", clientSecret?.substring(0, 20) + "...")}
+              <Elements
+                stripe={getStripe()}
+                options={{
+                  clientSecret,
+                  appearance: {
+                    theme: isDarkMode ? "night" : "stripe",
+                    variables: {
+                      colorPrimary: "#2563eb",
+                      borderRadius: "12px",
+                      fontFamily: "system-ui, sans-serif",
+                      colorBackground: isDarkMode ? "#0f172a" : "#ffffff",
+                      colorText: isDarkMode ? "#e2e8f0" : "#1e293b",
+                      colorTextSecondary: isDarkMode ? "#94a3b8" : "#64748b",
+                      colorDanger: "#ef4444",
+                    },
+                    rules: {
+                      ".Input": {
+                        backgroundColor: isDarkMode ? "#1e293b" : "#ffffff",
+                        border: isDarkMode
+                          ? "1px solid #334155"
+                          : "1px solid #e2e8f0",
+                        color: isDarkMode ? "#e2e8f0" : "#1e293b",
+                      },
+                      ".Input:focus": {
+                        border: "1px solid #2563eb",
+                        boxShadow: "0 0 0 2px rgba(37, 99, 235, 0.2)",
+                      },
+                      ".Label": {
+                        color: isDarkMode ? "#cbd5e1" : "#475569",
+                        fontWeight: "500",
+                      },
+                      ".Tab": {
+                        backgroundColor: isDarkMode ? "#1e293b" : "#f8fafc",
+                        border: isDarkMode
+                          ? "1px solid #334155"
+                          : "1px solid #e2e8f0",
+                        color: isDarkMode ? "#e2e8f0" : "#1e293b",
+                      },
+                      ".Tab--selected": {
+                        backgroundColor: isDarkMode ? "#2563eb" : "#2563eb",
+                        borderColor: "#2563eb",
+                        color: "#ffffff",
+                      },
+                    },
                   },
-                  rules: {
-                    ".Input": {
-                      backgroundColor: isDarkMode ? "#1e293b" : "#ffffff",
-                      border: isDarkMode
-                        ? "1px solid #334155"
-                        : "1px solid #e2e8f0",
-                      color: isDarkMode ? "#e2e8f0" : "#1e293b",
-                    },
-                    ".Input:focus": {
-                      border: "1px solid #2563eb",
-                      boxShadow: "0 0 0 2px rgba(37, 99, 235, 0.2)",
-                    },
-                    ".Label": {
-                      color: isDarkMode ? "#cbd5e1" : "#475569",
-                      fontWeight: "500",
-                    },
-                    ".Tab": {
-                      backgroundColor: isDarkMode ? "#1e293b" : "#f8fafc",
-                      border: isDarkMode
-                        ? "1px solid #334155"
-                        : "1px solid #e2e8f0",
-                      color: isDarkMode ? "#e2e8f0" : "#1e293b",
-                    },
-                    ".Tab--selected": {
-                      backgroundColor: isDarkMode ? "#2563eb" : "#2563eb",
-                      borderColor: "#2563eb",
-                      color: "#ffffff",
-                    },
-                  },
-                },
-              }}
-            >
+                }}
+              >
               <PaymentForm
                 quantity={quantity}
                 total={total}
@@ -463,6 +502,7 @@ export function BuyInvoiceCredits({
                 }}
               />
             </Elements>
+            </>
           )}
         </>
       )}
