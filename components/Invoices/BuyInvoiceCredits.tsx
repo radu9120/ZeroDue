@@ -14,7 +14,7 @@ import {
   Loader2,
 } from "lucide-react";
 import type { AppPlan } from "@/lib/utils";
-import { loadStripe, type Stripe } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
   PaymentElement,
@@ -22,18 +22,10 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 
-// Lazy load Stripe to avoid errors when env var is missing
-let stripePromise: Promise<Stripe | null> | null = null;
-function getStripe() {
-  if (!stripePromise) {
-    const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-    console.log("[BuyInvoiceCredits] getStripe() called, key exists:", !!key);
-    if (key) {
-      stripePromise = loadStripe(key);
-    }
-  }
-  return stripePromise;
-}
+// Initialize Stripe promise at module level - this ensures it's created once
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 interface BuyInvoiceCreditsProps {
   businessId: number;
@@ -65,37 +57,6 @@ function PaymentForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
-
-  // Debug logging
-  useEffect(() => {
-    console.log(
-      "[PaymentForm] mounted, stripe:",
-      !!stripe,
-      "elements:",
-      !!elements
-    );
-
-    // If after 5 seconds we still don't have stripe/elements, log warning
-    const timeout = setTimeout(() => {
-      if (!stripe || !elements) {
-        console.error(
-          "[PaymentForm] Stripe or elements not available after 5 seconds!"
-        );
-      }
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [stripe, elements]);
-
-  // Show error if stripe isn't loading
-  if (!stripe && !elements) {
-    return (
-      <div className="text-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-500 mx-auto mb-2" />
-        <p className="text-sm text-slate-500">Initializing payment system...</p>
-      </div>
-    );
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,30 +122,21 @@ function PaymentForm({
         </div>
       </div>
 
-      <div className="min-h-[200px]">
-        <PaymentElement
-          onReady={() => {
-            console.log("[PaymentElement] onReady fired!");
-            setReady(true);
-          }}
-          onLoadError={(event) => {
-            console.error("[PaymentElement] Load error:", event);
-          }}
-          onChange={(event) => {
-            console.log("[PaymentElement] onChange:", event.complete);
-          }}
-          options={{
-            layout: "tabs",
-          }}
-        />
+      <div className="min-h-[200px] relative">
         {!ready && (
-          <div className="flex items-center justify-center py-8">
+          <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-slate-900 z-10">
             <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
             <span className="ml-2 text-sm text-slate-500">
               Loading payment form...
             </span>
           </div>
         )}
+        <PaymentElement
+          onReady={() => setReady(true)}
+          options={{
+            layout: "tabs",
+          }}
+        />
       </div>
 
       {error && (
@@ -452,20 +404,15 @@ export function BuyInvoiceCredits({
           </div>
 
           {clientSecret && (
-            <>
-              {console.log(
-                "[BuyInvoiceCredits] Rendering Elements with clientSecret:",
-                clientSecret?.substring(0, 20) + "..."
-              )}
-              <Elements
-                stripe={getStripe()}
-                options={{
-                  clientSecret,
-                  appearance: {
-                    theme: isDarkMode ? "night" : "stripe",
-                    variables: {
-                      colorPrimary: "#2563eb",
-                      borderRadius: "12px",
+            <Elements
+              stripe={stripePromise}
+              options={{
+                clientSecret,
+                appearance: {
+                  theme: isDarkMode ? "night" : "stripe",
+                  variables: {
+                    colorPrimary: "#2563eb",
+                    borderRadius: "12px",
                       fontFamily: "system-ui, sans-serif",
                       colorBackground: isDarkMode ? "#0f172a" : "#ffffff",
                       colorText: isDarkMode ? "#e2e8f0" : "#1e293b",
@@ -514,7 +461,6 @@ export function BuyInvoiceCredits({
                   }}
                 />
               </Elements>
-            </>
           )}
         </>
       )}
