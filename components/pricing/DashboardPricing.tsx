@@ -37,7 +37,8 @@ const plans = [
   {
     id: "free_user",
     name: "Free",
-    price: "$0",
+    monthlyPrice: "$0",
+    yearlyPrice: "$0",
     period: "/forever",
     description: "Getting started",
     icon: Zap,
@@ -49,9 +50,10 @@ const plans = [
   {
     id: "professional",
     name: "Professional",
-    price: "$6.99",
+    monthlyPrice: "$6.99",
+    yearlyPrice: "$70",
+    yearlySavings: "Save $14/year",
     period: "/mo",
-    yearlyNote: "or $70/year ($5.83/mo)",
     description: "Small businesses",
     icon: Rocket,
     features: [
@@ -68,9 +70,10 @@ const plans = [
   {
     id: "enterprise",
     name: "Enterprise",
-    price: "$15.99",
+    monthlyPrice: "$15.99",
+    yearlyPrice: "$192",
+    yearlySavings: "Save $0/year",
     period: "/mo",
-    yearlyNote: "or $192/year ($16/mo)",
     description: "Growing businesses",
     icon: Crown,
     features: [
@@ -222,6 +225,7 @@ export default function DashboardPricing() {
   const [loading, setLoading] = useState<string | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
   const [checkoutPlan, setCheckoutPlan] = useState<{
     id: string;
     name: string;
@@ -398,7 +402,7 @@ export default function DashboardPricing() {
         setCheckoutPlan({
           id: planId,
           name: plan.name,
-          price: plan.price,
+          price: billingPeriod === "monthly" ? plan.monthlyPrice : plan.yearlyPrice,
           clientSecret: data.clientSecret,
           subscriptionId: data.subscriptionId || "",
           hasTrial: data.hasTrial !== false,
@@ -655,6 +659,33 @@ export default function DashboardPricing() {
         )}
       </AnimatePresence>
 
+      {/* Billing Period Toggle */}
+      <div className="flex items-center justify-center gap-3 mb-6">
+        <span className={`text-sm font-medium ${billingPeriod === "monthly" ? "text-white" : "text-slate-400"}`}>
+          Monthly
+        </span>
+        <button
+          onClick={() => setBillingPeriod(billingPeriod === "monthly" ? "yearly" : "monthly")}
+          className={`relative w-14 h-7 rounded-full transition-colors ${
+            billingPeriod === "yearly" ? "bg-green-500" : "bg-slate-600"
+          }`}
+        >
+          <span
+            className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform ${
+              billingPeriod === "yearly" ? "translate-x-8" : "translate-x-1"
+            }`}
+          />
+        </button>
+        <span className={`text-sm font-medium ${billingPeriod === "yearly" ? "text-white" : "text-slate-400"}`}>
+          Yearly
+        </span>
+        {billingPeriod === "yearly" && (
+          <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">
+            Save up to 17%
+          </span>
+        )}
+      </div>
+
       {/* Mobile-First Plan Cards */}
       <div className="space-y-4">
         {plans.map((plan) => {
@@ -712,12 +743,14 @@ export default function DashboardPricing() {
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-white">
-                      {plan.price}
+                      {billingPeriod === "monthly" ? plan.monthlyPrice : plan.yearlyPrice}
                     </div>
-                    <div className="text-xs text-slate-400">{plan.period}</div>
-                    {plan.yearlyNote && (
-                      <div className="text-[10px] text-slate-500 mt-0.5">
-                        {plan.yearlyNote}
+                    <div className="text-xs text-slate-400">
+                      {billingPeriod === "monthly" ? plan.period : "/year"}
+                    </div>
+                    {billingPeriod === "monthly" && plan.yearlySavings && (
+                      <div className="text-[10px] text-green-400 mt-0.5">
+                        {plan.yearlySavings}
                       </div>
                     )}
                   </div>
@@ -744,10 +777,10 @@ export default function DashboardPricing() {
                 {/* Action Button - Full Width on Mobile */}
                 <div className="w-full">
                   {isCancelling ? (
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 py-2.5 px-4 rounded-xl bg-orange-500/20 border border-orange-500/30 text-center">
-                        <span className="text-sm text-orange-300 font-medium">
-                          Switching soon
+                    <div className="flex flex-col gap-2">
+                      <div className="py-2.5 px-4 rounded-xl bg-orange-500/20 border border-orange-500/30 text-center">
+                        <span className="text-xs text-orange-300 font-medium block">
+                          Ends {cancellationScheduled?.periodEnd || "soon"}
                         </span>
                       </div>
                       <button
@@ -756,7 +789,7 @@ export default function DashboardPricing() {
                           handleReactivate();
                         }}
                         disabled={loading === "reactivate"}
-                        className="flex-1 py-2.5 px-4 rounded-xl text-sm font-semibold bg-green-600 hover:bg-green-500 text-white transition-colors disabled:opacity-50"
+                        className="w-full py-2.5 px-4 rounded-xl text-sm font-semibold bg-green-600 hover:bg-green-500 text-white transition-colors disabled:opacity-50"
                       >
                         {loading === "reactivate" ? (
                           <Loader2 className="w-4 h-4 animate-spin mx-auto" />
