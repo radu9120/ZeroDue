@@ -225,7 +225,9 @@ export default function DashboardPricing() {
   const [loading, setLoading] = useState<string | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
+    "monthly"
+  );
   const [checkoutPlan, setCheckoutPlan] = useState<{
     id: string;
     name: string;
@@ -402,7 +404,8 @@ export default function DashboardPricing() {
         setCheckoutPlan({
           id: planId,
           name: plan.name,
-          price: billingPeriod === "monthly" ? plan.monthlyPrice : plan.yearlyPrice,
+          price:
+            billingPeriod === "monthly" ? plan.monthlyPrice : plan.yearlyPrice,
           clientSecret: data.clientSecret,
           subscriptionId: data.subscriptionId || "",
           hasTrial: data.hasTrial !== false,
@@ -661,11 +664,15 @@ export default function DashboardPricing() {
 
       {/* Billing Period Toggle */}
       <div className="flex items-center justify-center gap-3 mb-6">
-        <span className={`text-sm font-medium ${billingPeriod === "monthly" ? "text-white" : "text-slate-400"}`}>
+        <span
+          className={`text-sm font-medium ${billingPeriod === "monthly" ? "text-white" : "text-slate-400"}`}
+        >
           Monthly
         </span>
         <button
-          onClick={() => setBillingPeriod(billingPeriod === "monthly" ? "yearly" : "monthly")}
+          onClick={() =>
+            setBillingPeriod(billingPeriod === "monthly" ? "yearly" : "monthly")
+          }
           className={`relative w-14 h-7 rounded-full transition-colors ${
             billingPeriod === "yearly" ? "bg-green-500" : "bg-slate-600"
           }`}
@@ -676,7 +683,9 @@ export default function DashboardPricing() {
             }`}
           />
         </button>
-        <span className={`text-sm font-medium ${billingPeriod === "yearly" ? "text-white" : "text-slate-400"}`}>
+        <span
+          className={`text-sm font-medium ${billingPeriod === "yearly" ? "text-white" : "text-slate-400"}`}
+        >
           Yearly
         </span>
         {billingPeriod === "yearly" && (
@@ -743,7 +752,9 @@ export default function DashboardPricing() {
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-white">
-                      {billingPeriod === "monthly" ? plan.monthlyPrice : plan.yearlyPrice}
+                      {billingPeriod === "monthly"
+                        ? plan.monthlyPrice
+                        : plan.yearlyPrice}
                     </div>
                     <div className="text-xs text-slate-400">
                       {billingPeriod === "monthly" ? plan.period : "/year"}
