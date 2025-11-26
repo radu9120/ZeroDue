@@ -69,9 +69,9 @@ export const createInvoice = async (formData: CreateInvoice) => {
       const freeLimit = 2;
 
       if (totalInvoices >= freeLimit && extraCredits <= 0) {
-        throw new Error(
-          "NEEDS_PAYMENT:You've used your 2 free invoices. Purchase additional invoice credits ($0.99 each) to continue."
-        );
+        return {
+          error: "NEEDS_PAYMENT:You've used your 2 free invoices. Purchase additional invoice credits ($0.99 each) to continue.",
+        };
       }
 
       // If using extra credits, decrement
@@ -106,9 +106,9 @@ export const createInvoice = async (formData: CreateInvoice) => {
       const monthlyLimit = 15;
 
       if (monthlyCount >= monthlyLimit && extraCredits <= 0) {
-        throw new Error(
-          "NEEDS_PAYMENT:You've reached your 15 invoices this month. Purchase additional credits ($0.49 each) or upgrade to Enterprise."
-        );
+        return {
+          error: "NEEDS_PAYMENT:You've reached your 15 invoices this month. Purchase additional credits ($0.49 each) or upgrade to Enterprise.",
+        };
       }
 
       // If using extra credits, decrement
@@ -121,8 +121,8 @@ export const createInvoice = async (formData: CreateInvoice) => {
     }
     // Enterprise plan: unlimited invoices, no checks needed
   } catch (e) {
-    // rethrow to surface a clean message to the UI
-    throw e instanceof Error ? e : new Error("Plan validation failed.");
+    // Return error object instead of throwing
+    return { error: e instanceof Error ? e.message : "Plan validation failed." };
   }
 
   const { data, error } = await supabase

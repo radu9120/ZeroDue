@@ -412,7 +412,21 @@ const InvoiceForm = ({
         invoice_template: selectedTemplate,
         meta_data: values.meta_data || {},
       };
-      const invoice = await createInvoice(invoiceData as any);
+      
+      const result = await createInvoice(invoiceData as any);
+      
+      // Check if result is an error object
+      if (result && 'error' in result) {
+        const errorMessage = result.error;
+        if (errorMessage.includes("NEEDS_PAYMENT")) {
+          setShowBuyCreditsModal(true);
+          return;
+        }
+        toast.error(errorMessage);
+        return;
+      }
+      
+      const invoice = result;
       if (invoice && invoice.id) {
         clearDraft(); // Clear the autosaved draft on successful creation
         const redirectUrl = `/dashboard/invoices/success?invoice_id=${invoice.id}&business_id=${company_data.id}`;
@@ -426,7 +440,7 @@ const InvoiceForm = ({
         error instanceof Error ? error.message : "An error occurred";
 
       // Check if it's a payment required error
-      if (errorMessage.startsWith("NEEDS_PAYMENT:")) {
+      if (errorMessage.includes("NEEDS_PAYMENT")) {
         // Show the buy credits modal
         setShowBuyCreditsModal(true);
       } else {
