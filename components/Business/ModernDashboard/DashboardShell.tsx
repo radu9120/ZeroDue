@@ -303,7 +303,19 @@ export function DashboardShell({
         </div>
 
         {/* Plan Status */}
-        <div className="px-2 mt-auto">
+        <div className="px-2 mt-auto space-y-2">
+          {/* Extra Credits Display */}
+          {business.extra_invoice_credits > 0 && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 border border-blue-100 dark:border-blue-800/50 flex items-center justify-between">
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                Extra Credits
+              </span>
+              <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 border-0">
+                {business.extra_invoice_credits}
+              </Badge>
+            </div>
+          )}
+
           <div className="bg-gray-100/50 dark:bg-slate-900/50 rounded-xl p-3 border border-gray-200/50 dark:border-slate-800/50">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-slate-500 dark:text-slate-400">

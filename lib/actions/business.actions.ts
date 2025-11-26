@@ -414,7 +414,13 @@ export const getBusiness = async ({
   business_id,
 }: BusinessDashboardPageProps): Promise<Pick<
   BusinessType,
-  "id" | "name" | "email" | "currency" | "profile_type" | "logo"
+  | "id"
+  | "name"
+  | "email"
+  | "currency"
+  | "profile_type"
+  | "logo"
+  | "extra_invoice_credits"
 > | null> => {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
@@ -423,14 +429,22 @@ export const getBusiness = async ({
 
   const { data: business, error } = await supabase
     .from("Businesses")
-    .select("id, name, email, currency, profile_type, logo")
+    .select(
+      "id, name, email, currency, profile_type, logo, extra_invoice_credits"
+    )
     .eq("id", business_id)
     .eq("author", author)
     .limit(1)
     .maybeSingle<
       Pick<
         BusinessType,
-        "id" | "name" | "email" | "currency" | "profile_type" | "logo"
+        | "id"
+        | "name"
+        | "email"
+        | "currency"
+        | "profile_type"
+        | "logo"
+        | "extra_invoice_credits"
       >
     >();
 
