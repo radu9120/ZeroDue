@@ -16,10 +16,11 @@ import type { AppPlan } from "@/lib/utils";
 import { loadStripe, type Stripe } from "@stripe/stripe-js";
 import {
   Elements,
-  CardElement,
+  PaymentElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import type { StripePaymentElementOptions } from "@stripe/stripe-js";
 
 // Initialize Stripe promise at module level
 let stripePromise: Promise<Stripe | null> | null = null;
@@ -29,6 +30,8 @@ function getStripePromise() {
     const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
     if (key) {
       stripePromise = loadStripe(key);
+    } else {
+      console.error("Stripe publishable key is missing!");
     }
   }
   return stripePromise;
@@ -47,7 +50,7 @@ const PRICES = {
   enterprise: 0,
 };
 
-// Payment Form Component using CardElement
+// Payment Form Component using PaymentElement
 function PaymentForm({
   clientSecret,
   quantity,
@@ -72,13 +75,6 @@ function PaymentForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!stripe || !elements) {
-      setError("Payment system not ready. Please wait...");
-      return;
-    }
-
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      setError("Card element not found");
       return;
     }
 
@@ -87,10 +83,12 @@ function PaymentForm({
 
     try {
       const { error: confirmError, paymentIntent } =
-        await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: cardElement,
+        await stripe.confirmPayment({
+          elements,
+          confirmParams: {
+            return_url: `${window.location.origin}/dashboard/invoices/success`,
           },
+          redirect: "if_required",
         });
 
       if (confirmError) {
@@ -108,62 +106,46 @@ function PaymentForm({
     }
   };
 
-  const cardStyle = {
-    base: {
-      color: isDarkMode ? "#e2e8f0" : "#1e293b",
-      fontFamily: "system-ui, sans-serif",
-      fontSmoothing: "antialiased",
-      fontSize: "16px",
-      "::placeholder": {
-        color: isDarkMode ? "#64748b" : "#94a3b8",
-      },
-    },
-    invalid: {
-      color: "#ef4444",
-      iconColor: "#ef4444",
-    },
+  const paymentElementOptions: StripePaymentElementOptions = {
+    layout: "tabs",
+    paymentMethodOrder: ["apple_pay", "google_pay", "card"],
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <button
         type="button"
         onClick={onBack}
-        className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 mb-4"
+        className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to quantity
       </button>
 
-      <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 mb-4">
+      <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-slate-100 dark:border-slate-700/50">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-slate-600 dark:text-slate-400">
-            {quantity} invoice credit{quantity > 1 ? "s" : ""}
-          </span>
-          <span className="text-lg font-bold text-slate-900 dark:text-white">
-            ${total}
-          </span>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              Order Summary
+            </span>
+            <span className="text-base font-semibold text-slate-900 dark:text-white mt-0.5">
+              {quantity} invoice credit{quantity > 1 ? "s" : ""}
+            </span>
+          </div>
+          <div className="text-right">
+            <span className="text-2xl font-bold text-slate-900 dark:text-white">
+              ${total}
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="min-h-[60px] relative">
-        {!ready && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-slate-900 z-10">
-            <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-            <span className="ml-2 text-sm text-slate-500">Loading...</span>
-          </div>
-        )}
-        <div
-          className={`p-4 border rounded-xl ${isDarkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"}`}
-        >
-          <CardElement
-            onReady={() => setReady(true)}
-            options={{
-              style: cardStyle,
-              hidePostalCode: true,
-            }}
-          />
-        </div>
+      <div className="min-h-[200px]">
+        <PaymentElement
+          id="payment-element"
+          options={paymentElementOptions}
+          onReady={() => setReady(true)}
+        />
       </div>
 
       {error && (
@@ -270,22 +252,18 @@ export function BuyInvoiceCredits({
   };
 
   const handlePaymentSuccess = async () => {
-    // Add credits to business via API
-    try {
-      const response = await fetch("/api/stripe/add-credits", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          businessId,
-          quantity,
-        }),
-      });
-
-      if (!response.ok) {
-        console.error("Failed to add credits");
+    // Verify payment and add credits immediately (fallback for webhook delays)
+    if (clientSecret) {
+      try {
+        const paymentIntentId = clientSecret.split("_secret_")[0];
+        await fetch("/api/stripe/verify-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentIntentId }),
+        });
+      } catch (err) {
+        console.error("Failed to verify payment:", err);
       }
-    } catch (error) {
-      console.error("Error adding credits:", error);
     }
 
     onSuccess?.();
@@ -443,8 +421,22 @@ export function BuyInvoiceCredits({
             </h3>
           </div>
 
-          {clientSecret && getStripePromise() && (
-            <Elements key={clientSecret} stripe={getStripePromise()}>
+          {clientSecret && getStripePromise() ? (
+            <Elements
+              key={clientSecret}
+              stripe={getStripePromise()}
+              options={{
+                clientSecret,
+                appearance: {
+                  theme: isDarkMode ? "night" : "stripe",
+                  variables: {
+                    colorPrimary: "#2563eb",
+                    borderRadius: "12px",
+                    fontFamily: "system-ui, sans-serif",
+                  },
+                },
+              }}
+            >
               <PaymentForm
                 clientSecret={clientSecret}
                 quantity={quantity}
@@ -457,6 +449,13 @@ export function BuyInvoiceCredits({
                 isDarkMode={isDarkMode}
               />
             </Elements>
+          ) : (
+            <div className="text-center p-4 text-red-500">
+              Unable to load payment system. Please contact support.
+              {!getStripePromise() && (
+                <p className="text-xs mt-2">Stripe key missing</p>
+              )}
+            </div>
           )}
         </>
       )}

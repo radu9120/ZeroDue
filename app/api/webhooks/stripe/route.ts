@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
-import { sendDowngradeCompletedEmail } from "@/lib/emails";
+import { sendDowngradeCompletedEmail, sendCreditsEmail } from "@/lib/emails";
+import { revalidatePath } from "next/cache";
+import { EXTRA_INVOICE_PRICES } from "@/lib/stripe";
+import { normalizePlan } from "@/lib/utils";
 
 // Lazy initialize Stripe to avoid build-time errors
 function getStripe() {
@@ -21,7 +24,7 @@ function getSupabaseAdmin() {
 // Helper to find user by customer ID or userId in metadata
 async function findUserByCustomerOrMetadata(
   supabaseAdmin: ReturnType<typeof getSupabaseAdmin>,
-  customerId: string,
+  customerId: string | null,
   metadata?: Stripe.Metadata
 ) {
   const { data: users, error } = await supabaseAdmin.auth.admin.listUsers();
@@ -31,10 +34,14 @@ async function findUserByCustomerOrMetadata(
     return null;
   }
 
-  // First try to find by stripe_customer_id
-  let user = users.users.find(
-    (u) => u.user_metadata?.stripe_customer_id === customerId
-  );
+  let user = null;
+
+  // First try to find by stripe_customer_id if available
+  if (customerId) {
+    user = users.users.find(
+      (u) => u.user_metadata?.stripe_customer_id === customerId
+    );
+  }
 
   // If not found and we have userId in metadata, try that
   if (!user && metadata?.userId) {
@@ -109,6 +116,107 @@ export async function POST(request: NextRequest) {
 
   try {
     switch (event.type) {
+      case "payment_intent.succeeded": {
+        // Handle successful payment intent (used for extra invoice credits via embedded form)
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        const type = paymentIntent.metadata?.type;
+
+        // Check if already processed
+        if (paymentIntent.metadata?.processed === "true") {
+          console.log(
+            `[Stripe Webhook] PaymentIntent ${paymentIntent.id} already processed. Skipping.`
+          );
+          break;
+        }
+
+        if (type === "extra_invoice") {
+          const businessId = paymentIntent.metadata?.businessId;
+          const quantity = parseInt(
+            paymentIntent.metadata?.quantity || "1",
+            10
+          );
+          const userId = paymentIntent.metadata?.userId;
+
+          console.log(
+            `[Stripe Webhook] Extra invoice payment succeeded: businessId=${businessId}, quantity=${quantity}`
+          );
+
+          if (businessId) {
+            // Add invoice credits to the business
+            const { data: business, error: fetchError } = await supabaseAdmin
+              .from("Businesses")
+              .select("extra_invoice_credits")
+              .eq("id", parseInt(businessId, 10))
+              .single();
+
+            if (!fetchError && business) {
+              const currentCredits = business.extra_invoice_credits || 0;
+              const newCredits = currentCredits + quantity;
+
+              await supabaseAdmin
+                .from("Businesses")
+                .update({ extra_invoice_credits: newCredits })
+                .eq("id", parseInt(businessId, 10));
+
+              console.log(
+                `[Stripe Webhook] Added ${quantity} credits to business ${businessId}. New total: ${newCredits}`
+              );
+
+              // Mark as processed in Stripe metadata
+              try {
+                await stripe.paymentIntents.update(paymentIntent.id, {
+                  metadata: { processed: "true" },
+                });
+              } catch (stripeError) {
+                console.error(
+                  "[Stripe Webhook] Failed to update payment intent metadata:",
+                  stripeError
+                );
+              }
+
+              // Send confirmation email
+              if (userId) {
+                const user = await findUserByCustomerOrMetadata(
+                  supabaseAdmin,
+                  null,
+                  paymentIntent.metadata
+                );
+
+                if (user?.email) {
+                  const plan = normalizePlan(user.user_metadata?.plan);
+                  const pricePerCredit = EXTRA_INVOICE_PRICES[plan] || 0.99;
+                  const total = (pricePerCredit * quantity).toFixed(2);
+
+                  try {
+                    await sendCreditsEmail(
+                      user.email,
+                      quantity,
+                      total,
+                      newCredits
+                    );
+                  } catch (emailError) {
+                    console.error(
+                      "[Stripe Webhook] Failed to send credits email:",
+                      emailError
+                    );
+                  }
+                }
+              }
+            } else {
+              console.error(
+                "[Stripe Webhook] Failed to fetch business:",
+                fetchError
+              );
+            }
+          }
+
+          revalidatePath("/dashboard");
+          revalidatePath("/dashboard/business");
+          revalidatePath("/dashboard/invoices");
+        }
+        break;
+      }
+
       case "customer.subscription.created": {
         // New subscription created
         const subscription = event.data.object as Stripe.Subscription;
