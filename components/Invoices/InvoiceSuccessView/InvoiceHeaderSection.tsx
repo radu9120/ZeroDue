@@ -110,7 +110,7 @@ export function InvoiceHeaderSection({
       <div className="flex-1" style={{ flex: 1 }}>
         {company.logo && (
           <div
-            className="mb-4 flex items-start"
+            className="mb-4"
             style={{ marginBottom: "16px" }}
           >
             <img
@@ -125,7 +125,7 @@ export function InvoiceHeaderSection({
                 maxWidth: "220px",
                 maxHeight: "100px",
                 objectFit: "contain",
-                objectPosition: "left center",
+                objectPosition: "left top",
                 display: "block",
               }}
             />
@@ -138,6 +138,7 @@ export function InvoiceHeaderSection({
             fontWeight: "bold",
             color: "#111827",
             margin: "0 0 8px 0",
+            textAlign: "left",
           }}
         >
           {company.name}
