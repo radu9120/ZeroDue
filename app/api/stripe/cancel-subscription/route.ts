@@ -56,12 +56,9 @@ export async function POST() {
     // Cancel subscriptions at period end (not immediately)
     let periodEndDate: Date | null = null;
     for (const subscription of allSubscriptions) {
-      const updatedSub = await stripe.subscriptions.update(
-        subscription.id,
-        {
-          cancel_at_period_end: true,
-        }
-      );
+      const updatedSub = await stripe.subscriptions.update(subscription.id, {
+        cancel_at_period_end: true,
+      });
       // Get the cancellation date from the updated subscription
       // When cancel_at_period_end is true, Stripe sets cancel_at to the period end
       if (!periodEndDate && updatedSub.cancel_at) {
