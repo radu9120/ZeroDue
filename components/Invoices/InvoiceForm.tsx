@@ -430,12 +430,17 @@ const InvoiceForm = ({
       if (invoice && invoice.id) {
         clearDraft(); // Clear the autosaved draft on successful creation
         const redirectUrl = `/dashboard/invoices/success?invoice_id=${invoice.id}&business_id=${company_data.id}`;
-        redirect(redirectUrl);
+        // Use router.push instead of redirect to avoid the NEXT_REDIRECT error being caught
+        window.location.href = redirectUrl;
       } else {
         toast.error("Failed to create invoice. Please try again.");
-        redirect(`/dashboard`);
       }
     } catch (error: unknown) {
+      // Check if it's a Next.js redirect (not an actual error)
+      if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
+        throw error; // Re-throw redirect errors
+      }
+      
       const errorMessage =
         error instanceof Error ? error.message : "An error occurred";
 
