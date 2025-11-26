@@ -723,7 +723,7 @@ const InvoiceForm = ({
                           alt="Company Logo"
                           width={196}
                           height={196}
-                          className="w-full h-full object-contain p-2"
+                          className="w-full h-full object-contain object-left"
                         />
                       </div>
                     </div>

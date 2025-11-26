@@ -108,7 +108,7 @@ export function InvoicePreview({
                     <img
                       src={formData.company_details.logo}
                       alt="Company Logo"
-                      className="w-16 h-16 object-contain rounded-lg"
+                      className="w-16 h-16 object-contain object-left rounded-lg"
                     />
                   ) : (
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">

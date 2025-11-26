@@ -57,7 +57,7 @@ const plans = [
     name: "Professional",
     price: "$6.99",
     period: "/mo",
-    yearlyNote: "or $70/year ($5.83/mo)",
+    yearlyNote: "or $67/year ($5.58/mo)",
     description: "Small businesses",
     icon: Rocket,
     features: [
@@ -76,7 +76,7 @@ const plans = [
     name: "Enterprise",
     price: "$15.99",
     period: "/mo",
-    yearlyNote: "or $192/year ($16/mo)",
+    yearlyNote: "or $154/year ($12.83/mo)",
     description: "Growing businesses",
     icon: Crown,
     features: [
