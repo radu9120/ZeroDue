@@ -4,9 +4,11 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { FileText, Eye, Download, Loader2 } from "lucide-react";
+import { FileText, Eye, Download, Loader2, Trash2 } from "lucide-react";
 import getStatusBadge from "@/components/ui/getStatusBadge";
-import { getInvoices } from "@/lib/actions/invoice.actions";
+import { getInvoices, deleteInvoiceAction } from "@/lib/actions/invoice.actions";
+import { toast } from "sonner";
+import type { AppPlan } from "@/lib/utils";
 
 interface InvoiceListProps {
   initialInvoices: any[];
@@ -15,6 +17,7 @@ interface InvoiceListProps {
   searchQuery?: string;
   statusFilter?: string;
   sortOrder?: string;
+  userPlan?: AppPlan;
 }
 
 export default function InvoiceList({
@@ -24,11 +27,38 @@ export default function InvoiceList({
   searchQuery = "",
   statusFilter = "all",
   sortOrder = "desc",
+  userPlan = "free_user",
 }: InvoiceListProps) {
   const [invoices, setInvoices] = useState<any[]>(initialInvoices);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialInvoices.length < totalCount);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  const handleDelete = async (invoiceId: number) => {
+    if (deletingId) return;
+    
+    if (!confirm("Are you sure you want to delete this invoice? This action cannot be undone.")) {
+      return;
+    }
+
+    setDeletingId(invoiceId);
+    try {
+      const result = await deleteInvoiceAction(invoiceId);
+      
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      toast.success("Invoice deleted successfully");
+      setInvoices(invoices.filter(inv => inv.id !== invoiceId));
+    } catch (error) {
+      toast.error("Failed to delete invoice");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const loadMore = async () => {
     if (loading || !hasMore) return;
@@ -170,7 +200,7 @@ export default function InvoiceList({
                       className="w-full border-slate-200 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     >
                       <Eye className="h-4 w-4 mr-2" />
-                      View Details
+                      View
                     </Button>
                   </Link>
                   <Link
@@ -185,6 +215,19 @@ export default function InvoiceList({
                       <Download className="h-4 w-4" />
                     </Button>
                   </Link>
+                  <Button
+                    variant="neutralOutline"
+                    size="sm"
+                    onClick={() => handleDelete(invoice.id)}
+                    disabled={deletingId === invoice.id}
+                    className="border-slate-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-800"
+                  >
+                    {deletingId === invoice.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
               </CardContent>
             </Card>

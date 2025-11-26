@@ -326,6 +326,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
           searchQuery={searchQuery}
           statusFilter={statusFilter}
           sortOrder={sortOrder}
+          userPlan={plan}
         />
       </div>
       <PlanWatcher initialPlan={plan} />

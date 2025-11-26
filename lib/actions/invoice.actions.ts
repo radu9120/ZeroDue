@@ -596,16 +596,6 @@ export const deleteInvoiceAction = async (invoiceId: number) => {
   if (!author) redirect("/sign-in");
 
   const supabase = createSupabaseClient();
-  const plan: AppPlan = await getCurrentPlan();
-
-  // Free users cannot delete invoices to prevent gaming the system
-  // They can only have 2 invoices total - if they want to delete and recreate, they need to upgrade
-  if (plan === "free_user") {
-    return {
-      error:
-        "Free plan users cannot delete invoices. Upgrade to Professional or Enterprise to manage your invoices.",
-    };
-  }
 
   // Verify ownership
   const { data: invoice, error: fetchError } = await supabase
