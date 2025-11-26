@@ -153,7 +153,11 @@ function CheckoutForm({
           const response = await fetch("/api/stripe/upgrade-subscription", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ plan: planId, subscriptionId, billingPeriod }),
+            body: JSON.stringify({
+              plan: planId,
+              subscriptionId,
+              billingPeriod,
+            }),
           });
 
           if (!response.ok) {

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { FileText, Eye, Download, Loader2, Trash2 } from "lucide-react";
+import { FileText, Eye, Download, Loader2, Trash2, AlertTriangle, X } from "lucide-react";
 import getStatusBadge from "@/components/ui/getStatusBadge";
 import {
   getInvoices,
@@ -12,6 +12,7 @@ import {
 } from "@/lib/actions/invoice.actions";
 import { toast } from "sonner";
 import type { AppPlan } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface InvoiceListProps {
   initialInvoices: any[];
@@ -37,19 +38,27 @@ export default function InvoiceList({
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialInvoices.length < totalCount);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{
+    show: boolean;
+    invoiceId: number | null;
+    invoiceNumber: string;
+  }>({ show: false, invoiceId: null, invoiceNumber: "" });
 
-  const handleDelete = async (invoiceId: number) => {
-    if (deletingId) return;
+  const openDeleteModal = (invoiceId: number, invoiceNumber: string) => {
+    setDeleteModal({ show: true, invoiceId, invoiceNumber });
+  };
 
-    if (
-      !confirm(
-        "Are you sure you want to delete this invoice? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
+  const closeDeleteModal = () => {
+    setDeleteModal({ show: false, invoiceId: null, invoiceNumber: "" });
+  };
 
+  const handleDelete = async () => {
+    if (!deleteModal.invoiceId || deletingId) return;
+
+    const invoiceId = deleteModal.invoiceId;
     setDeletingId(invoiceId);
+    closeDeleteModal();
+
     try {
       const result = await deleteInvoiceAction(invoiceId);
 
@@ -225,7 +234,7 @@ export default function InvoiceList({
                   <Button
                     variant="neutralOutline"
                     size="sm"
-                    onClick={() => handleDelete(invoice.id)}
+                    onClick={() => openDeleteModal(invoice.id, invoice.invoice_number || `#${invoice.id}`)}
                     disabled={deletingId === invoice.id}
                     className="border-slate-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-800"
                   >
@@ -261,6 +270,71 @@ export default function InvoiceList({
           </Button>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteModal.show && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={closeDeleteModal}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden"
+            >
+              {/* Header */}
+              <div className="p-6 pb-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                      Delete Invoice
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                      Are you sure you want to delete invoice{" "}
+                      <span className="font-medium text-slate-700 dark:text-slate-300">
+                        {deleteModal.invoiceNumber}
+                      </span>
+                      ? This action cannot be undone.
+                    </p>
+                  </div>
+                  <button
+                    onClick={closeDeleteModal}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="px-6 pb-6 flex gap-3">
+                <button
+                  onClick={closeDeleteModal}
+                  className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium transition-colors flex items-center justify-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Invoice
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

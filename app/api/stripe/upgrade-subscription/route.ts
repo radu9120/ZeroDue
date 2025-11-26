@@ -12,7 +12,11 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { plan, subscriptionId, billingPeriod = "monthly" } = body as {
+    const {
+      plan,
+      subscriptionId,
+      billingPeriod = "monthly",
+    } = body as {
       plan: AppPlan;
       subscriptionId: string;
       billingPeriod?: "monthly" | "yearly";
