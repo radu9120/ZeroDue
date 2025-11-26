@@ -383,7 +383,7 @@ export default function DashboardPricing() {
       const response = await fetch("/api/stripe/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planId }),
+        body: JSON.stringify({ plan: planId, billingPeriod }),
       });
 
       const data = await response.json();

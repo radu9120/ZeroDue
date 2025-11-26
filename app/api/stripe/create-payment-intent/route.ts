@@ -23,13 +23,14 @@ export async function POST(req: NextRequest) {
       supabaseUser?.user_metadata?.stripe_subscription_id;
 
     const body = await req.json();
-    const { plan } = body as { plan: AppPlan };
+    const { plan, billingPeriod = "monthly" } = body as { plan: AppPlan; billingPeriod?: "monthly" | "yearly" };
 
     if (!plan || !PLAN_CONFIG[plan]) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
     const planConfig = PLAN_CONFIG[plan];
+    const isYearly = billingPeriod === "yearly";
 
     if (plan === "free_user") {
       return NextResponse.json(
@@ -60,13 +61,20 @@ export async function POST(req: NextRequest) {
     let priceId: string | undefined =
       "stripePriceId" in planConfig ? planConfig.stripePriceId : undefined;
 
-    console.log(`Plan: ${plan}, priceId from env: ${priceId || "not set"}`);
+    // Determine the price based on billing period
+    const monthlyPrice = planConfig.monthlyPrice;
+    const yearlyPrice = "yearlyPrice" in planConfig ? (planConfig as any).yearlyPrice : monthlyPrice * 12;
+    const priceAmount = isYearly ? yearlyPrice : monthlyPrice;
+    const billingInterval: "month" | "year" = isYearly ? "year" : "month";
 
-    if (!priceId) {
+    console.log(`Plan: ${plan}, billingPeriod: ${billingPeriod}, priceAmount: ${priceAmount}, priceId from env: ${priceId || "not set"}`);
+
+    // For yearly billing or if no preset price ID, create/find price dynamically
+    if (!priceId || isYearly) {
       try {
         // Fallback: find existing product by name
         console.log(
-          `No price ID for ${plan}, searching for existing product...`
+          `Searching for existing product for ${plan}...`
         );
         const products = await stripe.products.list({ limit: 100 });
         console.log(`Found ${products.data.length} products in Stripe`);
@@ -86,25 +94,31 @@ export async function POST(req: NextRequest) {
           console.log(`Found existing product: ${product.id}`);
         }
 
-        // Get or create price for the product
+        // Get or create price for the product with correct interval
         const prices = await stripe.prices.list({
           product: product.id,
           active: true,
-          limit: 1,
+          limit: 100,
         });
 
-        if (prices.data.length > 0) {
-          priceId = prices.data[0].id;
-          console.log(`Found existing price: ${priceId}`);
+        // Find price matching our billing interval and amount
+        const matchingPrice = prices.data.find(
+          (p) => p.recurring?.interval === billingInterval && 
+                 p.unit_amount === Math.round(priceAmount * 100)
+        );
+
+        if (matchingPrice) {
+          priceId = matchingPrice.id;
+          console.log(`Found existing ${billingInterval}ly price: ${priceId}`);
         } else {
           console.log(
-            `Creating new price for ${planConfig.name} at $${planConfig.monthlyPrice}...`
+            `Creating new ${billingInterval}ly price for ${planConfig.name} at $${priceAmount}...`
           );
           const price = await stripe.prices.create({
             product: product.id,
             currency: "usd",
-            unit_amount: Math.round(planConfig.monthlyPrice * 100),
-            recurring: { interval: "month" },
+            unit_amount: Math.round(priceAmount * 100),
+            recurring: { interval: billingInterval },
           });
           priceId = price.id;
           console.log(`Created new price: ${priceId}`);

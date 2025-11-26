@@ -42,6 +42,7 @@ export const PLAN_CONFIG = {
     businessesIncluded: 1,
     pricePerExtraInvoice: 0.99,
     monthlyPrice: 0,
+    yearlyPrice: 0,
     // No stripe price ID needed for free
   },
   professional: {
@@ -60,6 +61,7 @@ export const PLAN_CONFIG = {
     businessesIncluded: Infinity,
     pricePerExtraInvoice: 0,
     monthlyPrice: 15.99,
+    yearlyPrice: 192, // $16/mo if paid yearly
     stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID,
   },
 } as const;
