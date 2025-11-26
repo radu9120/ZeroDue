@@ -450,7 +450,9 @@ export function InvoiceItemsTable({
                         </td>
                         <td className="px-4 py-3.5 text-sm text-gray-900">
                           {item.description
-                            ? new Date(item.description).toLocaleDateString()
+                            ? new Date(item.description).toLocaleDateString(
+                                "en-US"
+                              )
                             : "-"}
                         </td>
                         <td className="px-4 py-3.5 text-center text-sm text-gray-900">

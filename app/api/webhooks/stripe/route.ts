@@ -18,6 +18,32 @@ function getSupabaseAdmin() {
   );
 }
 
+// Helper to find user by customer ID or userId in metadata
+async function findUserByCustomerOrMetadata(
+  supabaseAdmin: ReturnType<typeof getSupabaseAdmin>,
+  customerId: string,
+  metadata?: Stripe.Metadata
+) {
+  const { data: users, error } = await supabaseAdmin.auth.admin.listUsers();
+
+  if (error) {
+    console.error("[Stripe Webhook] Error listing users:", error);
+    return null;
+  }
+
+  // First try to find by stripe_customer_id
+  let user = users.users.find(
+    (u) => u.user_metadata?.stripe_customer_id === customerId
+  );
+
+  // If not found and we have userId in metadata, try that
+  if (!user && metadata?.userId) {
+    user = users.users.find((u) => u.id === metadata.userId);
+  }
+
+  return user;
+}
+
 export async function POST(request: NextRequest) {
   // Check environment variables first
   if (
@@ -77,6 +103,55 @@ export async function POST(request: NextRequest) {
 
   try {
     switch (event.type) {
+      case "customer.subscription.created": {
+        // New subscription created
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string;
+        const plan = subscription.metadata?.plan;
+        const userId = subscription.metadata?.userId;
+
+        console.log(
+          `[Stripe Webhook] Subscription created: ${subscription.id} for customer: ${customerId}, plan: ${plan}`
+        );
+
+        if (!userId) {
+          console.log(
+            "[Stripe Webhook] No userId in subscription metadata, skipping user update"
+          );
+          break;
+        }
+
+        const user = await findUserByCustomerOrMetadata(
+          supabaseAdmin,
+          customerId,
+          subscription.metadata
+        );
+
+        if (user) {
+          // Update user with subscription info
+          await supabaseAdmin.auth.admin.updateUserById(user.id, {
+            user_metadata: {
+              ...user.user_metadata,
+              stripe_customer_id: customerId,
+              stripe_subscription_id: subscription.id,
+              // Only update plan if subscription is active/trialing
+              ...(subscription.status === "active" ||
+              subscription.status === "trialing"
+                ? { plan: plan || user.user_metadata?.plan }
+                : {}),
+            },
+          });
+          console.log(
+            `[Stripe Webhook] Updated user ${user.email} with subscription ${subscription.id}`
+          );
+        } else {
+          console.warn(
+            `[Stripe Webhook] No user found for customer: ${customerId} or userId: ${userId}`
+          );
+        }
+        break;
+      }
+
       case "customer.subscription.deleted": {
         // Subscription has ended (either cancelled or expired)
         const subscription = event.data.object as Stripe.Subscription;
@@ -86,17 +161,10 @@ export async function POST(request: NextRequest) {
           `[Stripe Webhook] Subscription deleted for customer: ${customerId}`
         );
 
-        // Find user by stripe_customer_id in metadata
-        const { data: users, error: findError } =
-          await supabaseAdmin.auth.admin.listUsers();
-
-        if (findError) {
-          console.error("Error listing users:", findError);
-          break;
-        }
-
-        const user = users.users.find(
-          (u) => u.user_metadata?.stripe_customer_id === customerId
+        const user = await findUserByCustomerOrMetadata(
+          supabaseAdmin,
+          customerId,
+          subscription.metadata
         );
 
         if (user) {
@@ -108,6 +176,7 @@ export async function POST(request: NextRequest) {
               ...user.user_metadata,
               plan: "free_user",
               subscription_cancel_at_period_end: false,
+              subscription_cancel_at: null,
               stripe_subscription_id: null,
             },
           });
@@ -118,10 +187,17 @@ export async function POST(request: NextRequest) {
 
           // Send downgrade completed email
           if (user.email) {
-            await sendDowngradeCompletedEmail(user.email, previousPlan);
-            console.log(
-              `[Stripe Webhook] Sent downgrade email to ${user.email}`
-            );
+            try {
+              await sendDowngradeCompletedEmail(user.email, previousPlan);
+              console.log(
+                `[Stripe Webhook] Sent downgrade email to ${user.email}`
+              );
+            } catch (emailError) {
+              console.error(
+                "[Stripe Webhook] Failed to send email:",
+                emailError
+              );
+            }
           }
         } else {
           console.warn(
@@ -135,31 +211,52 @@ export async function POST(request: NextRequest) {
         // Subscription was updated (could be reactivation, plan change, etc.)
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
+        const plan = subscription.metadata?.plan;
 
         console.log(
           `[Stripe Webhook] Subscription updated for customer: ${customerId}`
         );
         console.log(
-          `[Stripe Webhook] Status: ${subscription.status}, Cancel at period end: ${subscription.cancel_at_period_end}`
+          `[Stripe Webhook] Status: ${subscription.status}, Cancel at period end: ${subscription.cancel_at_period_end}, Plan: ${plan}`
         );
 
-        // Find user by stripe_customer_id
-        const { data: users } = await supabaseAdmin.auth.admin.listUsers();
-        const user = users?.users.find(
-          (u) => u.user_metadata?.stripe_customer_id === customerId
+        const user = await findUserByCustomerOrMetadata(
+          supabaseAdmin,
+          customerId,
+          subscription.metadata
         );
 
         if (user) {
-          // Update cancel_at_period_end status
+          const updateData: Record<string, any> = {
+            ...user.user_metadata,
+            subscription_cancel_at_period_end:
+              subscription.cancel_at_period_end,
+            subscription_cancel_at: subscription.cancel_at
+              ? new Date(subscription.cancel_at * 1000).toISOString()
+              : null,
+            subscription_period_end: subscription.current_period_end
+              ? new Date(subscription.current_period_end * 1000).toISOString()
+              : null,
+          };
+
+          // Update plan if subscription is active and we have plan in metadata
+          if (
+            (subscription.status === "active" ||
+              subscription.status === "trialing") &&
+            plan
+          ) {
+            updateData.plan = plan;
+          }
+
           await supabaseAdmin.auth.admin.updateUserById(user.id, {
-            user_metadata: {
-              ...user.user_metadata,
-              subscription_cancel_at_period_end:
-                subscription.cancel_at_period_end,
-            },
+            user_metadata: updateData,
           });
           console.log(
             `[Stripe Webhook] Updated user ${user.email} subscription status`
+          );
+        } else {
+          console.warn(
+            `[Stripe Webhook] No user found for customer: ${customerId}`
           );
         }
         break;
@@ -178,11 +275,49 @@ export async function POST(request: NextRequest) {
       }
 
       case "invoice.payment_succeeded": {
-        // Payment succeeded
+        // Payment succeeded - update user plan if needed
         const invoice = event.data.object as Stripe.Invoice;
+        const customerId = invoice.customer as string;
+
         console.log(
           `[Stripe Webhook] Payment succeeded for invoice: ${invoice.id}`
         );
+
+        // Get subscription details from invoice
+        if (invoice.subscription) {
+          try {
+            const subscription = await stripe.subscriptions.retrieve(
+              invoice.subscription as string
+            );
+            const plan = subscription.metadata?.plan;
+
+            if (plan) {
+              const user = await findUserByCustomerOrMetadata(
+                supabaseAdmin,
+                customerId,
+                subscription.metadata
+              );
+
+              if (user) {
+                await supabaseAdmin.auth.admin.updateUserById(user.id, {
+                  user_metadata: {
+                    ...user.user_metadata,
+                    plan: plan,
+                    stripe_subscription_id: subscription.id,
+                  },
+                });
+                console.log(
+                  `[Stripe Webhook] Updated user ${user.email} plan to ${plan} after payment`
+                );
+              }
+            }
+          } catch (subError) {
+            console.error(
+              "[Stripe Webhook] Error fetching subscription:",
+              subError
+            );
+          }
+        }
         break;
       }
 

@@ -60,51 +60,99 @@ export async function POST(req: NextRequest) {
     let priceId: string | undefined =
       "stripePriceId" in planConfig ? planConfig.stripePriceId : undefined;
 
+    console.log(`Plan: ${plan}, priceId from env: ${priceId || "not set"}`);
+
     if (!priceId) {
-      // Fallback: find existing product by name
-      const products = await stripe.products.list({ limit: 20 });
-      let product = products.data.find(
-        (p) => p.name === `InvoiceFlow ${planConfig.name} Plan`
-      );
+      try {
+        // Fallback: find existing product by name
+        console.log(
+          `No price ID for ${plan}, searching for existing product...`
+        );
+        const products = await stripe.products.list({ limit: 100 });
+        console.log(`Found ${products.data.length} products in Stripe`);
 
-      if (!product) {
-        product = await stripe.products.create({
-          name: `InvoiceFlow ${planConfig.name} Plan`,
-          description: `${planConfig.invoicesIncluded === Infinity ? "Unlimited" : planConfig.invoicesIncluded} invoices/month`,
-        });
-      }
+        let product = products.data.find(
+          (p) => p.name === `InvoiceFlow ${planConfig.name} Plan`
+        );
 
-      // Get or create price for the product
-      const prices = await stripe.prices.list({
-        product: product.id,
-        active: true,
-        limit: 1,
-      });
+        if (!product) {
+          console.log(`Creating new product for ${planConfig.name}...`);
+          product = await stripe.products.create({
+            name: `InvoiceFlow ${planConfig.name} Plan`,
+            description: `${planConfig.invoicesIncluded === Infinity ? "Unlimited" : planConfig.invoicesIncluded} invoices/month`,
+          });
+          console.log(`Created product: ${product.id}`);
+        } else {
+          console.log(`Found existing product: ${product.id}`);
+        }
 
-      if (prices.data.length > 0) {
-        priceId = prices.data[0].id;
-      } else {
-        const price = await stripe.prices.create({
+        // Get or create price for the product
+        const prices = await stripe.prices.list({
           product: product.id,
-          currency: "usd",
-          unit_amount: Math.round(planConfig.monthlyPrice * 100),
-          recurring: { interval: "month" },
+          active: true,
+          limit: 1,
         });
-        priceId = price.id;
+
+        if (prices.data.length > 0) {
+          priceId = prices.data[0].id;
+          console.log(`Found existing price: ${priceId}`);
+        } else {
+          console.log(
+            `Creating new price for ${planConfig.name} at $${planConfig.monthlyPrice}...`
+          );
+          const price = await stripe.prices.create({
+            product: product.id,
+            currency: "usd",
+            unit_amount: Math.round(planConfig.monthlyPrice * 100),
+            recurring: { interval: "month" },
+          });
+          priceId = price.id;
+          console.log(`Created new price: ${priceId}`);
+        }
+      } catch (priceError: any) {
+        console.error(
+          `Failed to get/create product or price for ${plan}:`,
+          priceError?.message || priceError
+        );
+        return NextResponse.json(
+          {
+            error: `Failed to setup ${planConfig.name} plan pricing: ${priceError?.message}`,
+          },
+          { status: 500 }
+        );
       }
+    }
+
+    if (!priceId) {
+      console.error(`Failed to get or create price for plan: ${plan}`);
+      return NextResponse.json(
+        { error: "Failed to configure pricing. Please contact support." },
+        { status: 500 }
+      );
     }
 
     // Check if user has an existing active subscription to upgrade
     if (existingSubscriptionId) {
       try {
+        console.log(
+          `Checking existing subscription: ${existingSubscriptionId}`
+        );
         const existingSubscription = await stripe.subscriptions.retrieve(
           existingSubscriptionId
+        );
+
+        console.log(
+          `Existing subscription status: ${existingSubscription.status}`
         );
 
         if (
           existingSubscription.status === "active" ||
           existingSubscription.status === "trialing"
         ) {
+          console.log(
+            `Upgrading subscription to ${plan} with priceId: ${priceId}`
+          );
+
           // Upgrade the existing subscription
           const updatedSubscription = await stripe.subscriptions.update(
             existingSubscriptionId,
@@ -121,6 +169,10 @@ export async function POST(req: NextRequest) {
                 plan,
               },
             }
+          );
+
+          console.log(
+            `Subscription upgraded successfully: ${updatedSubscription.id}`
           );
 
           // Also undo any scheduled cancellation
@@ -146,11 +198,28 @@ export async function POST(req: NextRequest) {
             upgraded: true,
           });
         }
-      } catch (error) {
-        // Subscription doesn't exist or is cancelled, proceed to create new one
-        console.log(
-          "Existing subscription not found or inactive, creating new one"
+      } catch (error: any) {
+        // Log the actual error for debugging
+        console.error(
+          "Error during subscription upgrade:",
+          error?.message || error
         );
+
+        // If it's a real upgrade error (not just subscription not found), throw it
+        if (
+          error?.type !== "StripeInvalidRequestError" ||
+          !error?.message?.includes("No such subscription")
+        ) {
+          // This is a real error during upgrade, not just missing subscription
+          console.error("Upgrade failed with error:", error);
+          return NextResponse.json(
+            { error: error?.message || "Failed to upgrade subscription" },
+            { status: 500 }
+          );
+        }
+
+        // Subscription doesn't exist, proceed to create new one
+        console.log("Existing subscription not found, creating new one");
       }
     }
 
