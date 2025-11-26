@@ -227,6 +227,9 @@ export async function POST(request: NextRequest) {
         );
 
         if (user) {
+          // Get period end from subscription items
+          const periodEnd = subscription.items.data[0]?.current_period_end;
+
           const updateData: Record<string, any> = {
             ...user.user_metadata,
             subscription_cancel_at_period_end:
@@ -234,8 +237,8 @@ export async function POST(request: NextRequest) {
             subscription_cancel_at: subscription.cancel_at
               ? new Date(subscription.cancel_at * 1000).toISOString()
               : null,
-            subscription_period_end: subscription.current_period_end
-              ? new Date(subscription.current_period_end * 1000).toISOString()
+            subscription_period_end: periodEnd
+              ? new Date(periodEnd * 1000).toISOString()
               : null,
           };
 
@@ -283,11 +286,15 @@ export async function POST(request: NextRequest) {
           `[Stripe Webhook] Payment succeeded for invoice: ${invoice.id}`
         );
 
-        // Get subscription details from invoice
-        if (invoice.subscription) {
+        // Get subscription ID from invoice parent
+        const subscriptionId =
+          (invoice as any).parent?.subscription_details?.subscription ||
+          (invoice as any).subscription;
+
+        if (subscriptionId) {
           try {
             const subscription = await stripe.subscriptions.retrieve(
-              invoice.subscription as string
+              subscriptionId as string
             );
             const plan = subscription.metadata?.plan;
 
