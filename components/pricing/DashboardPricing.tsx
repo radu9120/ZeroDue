@@ -715,6 +715,11 @@ export default function DashboardPricing() {
                       {plan.price}
                     </div>
                     <div className="text-xs text-slate-400">{plan.period}</div>
+                    {plan.yearlyNote && (
+                      <div className="text-[10px] text-slate-500 mt-0.5">
+                        {plan.yearlyNote}
+                      </div>
+                    )}
                   </div>
                 </div>
 
