@@ -78,21 +78,26 @@ export const createInvoice = async (formData: CreateInvoice) => {
 
       // If count is null/undefined and no error, assume 0 invoices
       // This can happen with RLS or when table is empty for this user
-      const totalInvoices = typeof count === 'number' ? count : 0;
+      const totalInvoices = typeof count === "number" ? count : 0;
       const freeLimit = 2;
 
-      console.log("[createInvoice] totalInvoices:", totalInvoices, "freeLimit:", freeLimit, "extraCredits:", extraCredits);
+      console.log(
+        "[createInvoice] totalInvoices:",
+        totalInvoices,
+        "freeLimit:",
+        freeLimit,
+        "extraCredits:",
+        extraCredits
+      );
 
       if (totalInvoices >= freeLimit && extraCredits <= 0) {
-        console.log(
-          "[createInvoice] BLOCKING - Limit reached"
-        );
+        console.log("[createInvoice] BLOCKING - Limit reached");
         return {
           error:
             "NEEDS_PAYMENT:You've used your 2 free invoices. Purchase additional invoice credits ($0.99 each) to continue.",
         };
       }
-      
+
       console.log("[createInvoice] ALLOWING - Under limit or has credits");
 
       // If using extra credits, decrement

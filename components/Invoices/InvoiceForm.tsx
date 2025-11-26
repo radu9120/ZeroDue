@@ -412,11 +412,11 @@ const InvoiceForm = ({
         invoice_template: selectedTemplate,
         meta_data: values.meta_data || {},
       };
-      
+
       const result = await createInvoice(invoiceData as any);
-      
+
       // Check if result is an error object
-      if (result && 'error' in result) {
+      if (result && "error" in result) {
         const errorMessage = result.error;
         if (errorMessage.includes("NEEDS_PAYMENT")) {
           setShowBuyCreditsModal(true);
@@ -425,7 +425,7 @@ const InvoiceForm = ({
         toast.error(errorMessage);
         return;
       }
-      
+
       const invoice = result;
       if (invoice && invoice.id) {
         clearDraft(); // Clear the autosaved draft on successful creation
@@ -437,10 +437,10 @@ const InvoiceForm = ({
       }
     } catch (error: unknown) {
       // Check if it's a Next.js redirect (not an actual error)
-      if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
+      if (error instanceof Error && error.message === "NEXT_REDIRECT") {
         throw error; // Re-throw redirect errors
       }
-      
+
       const errorMessage =
         error instanceof Error ? error.message : "An error occurred";
 
