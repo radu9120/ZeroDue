@@ -35,17 +35,17 @@ export const CreateBusiness = ({
     return "company";
   }, [mode]);
 
-  const form = useForm({
+  const form = useForm<BusinessFormValues>({
     resolver: zodResolver(companySchema),
     defaultValues: {
       name: "",
       email: "",
       address: "",
       phone: "",
-      vat: undefined,
+      vat: "",
       tax_label: mode === "company" ? "VAT" : "Tax number",
       currency: "GBP",
-      logo: "", // Initialize as empty string
+      logo: "",
       profile_type: resolvedProfileType,
     },
   });

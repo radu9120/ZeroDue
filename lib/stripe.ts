@@ -3,15 +3,29 @@ import Stripe from "stripe";
 // Use test keys by default, switch to live in production
 const isProduction = process.env.NODE_ENV === "production";
 
-export const stripe = new Stripe(
-  isProduction
-    ? process.env.STRIPE_LIVE_SECRET_KEY!
-    : process.env.STRIPE_TEST_SECRET_KEY!,
-  {
-    apiVersion: "2025-11-17.clover",
-    typescript: true,
+// Lazy initialize Stripe to avoid build-time errors when env var is not set
+let stripeInstance: Stripe | null = null;
+export function getStripeClient(): Stripe {
+  if (!stripeInstance) {
+    stripeInstance = new Stripe(
+      isProduction
+        ? process.env.STRIPE_LIVE_SECRET_KEY!
+        : process.env.STRIPE_TEST_SECRET_KEY!,
+      {
+        apiVersion: "2025-11-17.clover",
+        typescript: true,
+      }
+    );
   }
-);
+  return stripeInstance;
+}
+
+// For backward compatibility, export stripe as a getter
+export const stripe = new Proxy({} as Stripe, {
+  get(_, prop) {
+    return (getStripeClient() as any)[prop];
+  },
+});
 
 // Plan configuration with Stripe price IDs
 // You'll need to create these products/prices in Stripe Dashboard

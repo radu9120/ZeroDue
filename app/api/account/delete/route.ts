@@ -1,13 +1,7 @@
-"use server";
-
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase";
-import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-11-17.clover",
-});
+import { getStripeClient } from "@/lib/stripe";
 
 export async function DELETE() {
   try {
@@ -28,6 +22,7 @@ export async function DELETE() {
 
     if (userData?.stripe_customer_id) {
       try {
+        const stripe = getStripeClient();
         // Cancel all active subscriptions
         const subscriptions = await stripe.subscriptions.list({
           customer: userData.stripe_customer_id,

@@ -12,7 +12,14 @@ import { Resend } from "resend";
 import { getBusinessById } from "./business.actions";
 import { createSupabaseAdminClient } from "@/lib/supabase";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialize Resend to avoid build-time errors when env var is not set
+let resend: Resend | null = null;
+function getResendClient(): Resend {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 const DEFAULT_INVOICE_PREFIX = "INV";
 const DEFAULT_PADDING = 4;
@@ -671,11 +678,12 @@ export const sendInvoiceEmailAction = async (
   }/invoice/${publicToken}`;
 
   // Send email via Resend
-  const { data: emailData, error: emailError } = await resend.emails.send({
-    from: "InvoiceFlow <noreply@invoiceflow.net>",
-    to: [clientEmail],
-    subject: `Invoice #${invoice.invoice_number} from ${business.name}`,
-    html: `
+  const { data: emailData, error: emailError } =
+    await getResendClient().emails.send({
+      from: "InvoiceFlow <noreply@invoiceflow.net>",
+      to: [clientEmail],
+      subject: `Invoice #${invoice.invoice_number} from ${business.name}`,
+      html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>New Invoice from ${business.name}</h2>
         <p>Hi ${clientName},</p>
@@ -691,11 +699,11 @@ export const sendInvoiceEmailAction = async (
         <p style="color: #666; font-size: 12px;">Powered by InvoiceFlow</p>
       </div>
     `,
-    tags: [
-      { name: "category", value: "invoice" },
-      { name: "invoice_id", value: invoice.id.toString() },
-    ],
-  });
+      tags: [
+        { name: "category", value: "invoice" },
+        { name: "invoice_id", value: invoice.id.toString() },
+      ],
+    });
 
   if (emailError) {
     console.error("Resend Error:", emailError);

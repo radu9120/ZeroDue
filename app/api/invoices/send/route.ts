@@ -5,7 +5,14 @@ import { getInvoicesByAuthor } from "@/lib/actions/invoice.actions";
 import { getBusinessById } from "@/lib/actions/business.actions";
 import { createSupabaseAdminClient } from "@/lib/supabase";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialize Resend to avoid build-time errors when env var is not set
+let resend: Resend | null = null;
+function getResendClient(): Resend {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -99,7 +106,7 @@ export async function POST(req: NextRequest) {
     }/invoice/${publicToken}`;
 
     // Send email using Resend
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResendClient().emails.send({
       from: `${business.name} <invoices@invcyflow.com>`,
       to: [clientEmail],
       subject: `Invoice ${invoice.invoice_number} from ${business.name}`,
