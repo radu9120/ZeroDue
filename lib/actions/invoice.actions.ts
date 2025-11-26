@@ -596,6 +596,15 @@ export const deleteInvoiceAction = async (invoiceId: number) => {
   if (!author) redirect("/sign-in");
 
   const supabase = createSupabaseClient();
+  const plan: AppPlan = await getCurrentPlan();
+
+  // Free users cannot delete invoices to prevent gaming the system
+  // They can only have 2 invoices total - if they want to delete and recreate, they need to upgrade
+  if (plan === "free_user") {
+    return {
+      error: "Free plan users cannot delete invoices. Upgrade to Professional or Enterprise to manage your invoices.",
+    };
+  }
 
   // Verify ownership
   const { data: invoice, error: fetchError } = await supabase
@@ -606,7 +615,7 @@ export const deleteInvoiceAction = async (invoiceId: number) => {
     .single();
 
   if (fetchError || !invoice) {
-    throw new Error("Invoice not found or access denied");
+    return { error: "Invoice not found or access denied" };
   }
 
   const { error: deleteError } = await supabase
@@ -615,7 +624,7 @@ export const deleteInvoiceAction = async (invoiceId: number) => {
     .eq("id", invoiceId);
 
   if (deleteError) {
-    throw new Error(deleteError.message || "Failed to delete invoice");
+    return { error: deleteError.message || "Failed to delete invoice" };
   }
 
   // Log activity

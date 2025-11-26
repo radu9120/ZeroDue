@@ -787,7 +787,14 @@ export default function InvoiceTable({
 
     setIsDeleting(true);
     try {
-      await deleteInvoiceAction(invoiceToDelete.id);
+      const result = await deleteInvoiceAction(invoiceToDelete.id);
+
+      // Check if result is an error
+      if (result && 'error' in result) {
+        toast.error(result.error);
+        setInvoiceToDelete(null);
+        return;
+      }
 
       toast.success(`Invoice ${invoiceToDelete.invoice_number} deleted`);
       // Optimistic update
