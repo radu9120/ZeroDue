@@ -51,7 +51,7 @@ export const PLAN_CONFIG = {
     businessesIncluded: 3,
     pricePerExtraInvoice: 0.49,
     monthlyPrice: 6.99,
-    yearlyPrice: 70, // $5.83/mo if paid yearly
+    yearlyPrice: 67, // ~$5.58/mo - 20% discount if paid yearly
     // Set these after creating products in Stripe Dashboard
     stripePriceId: process.env.STRIPE_PROFESSIONAL_PRICE_ID,
   },
@@ -61,7 +61,7 @@ export const PLAN_CONFIG = {
     businessesIncluded: Infinity,
     pricePerExtraInvoice: 0,
     monthlyPrice: 15.99,
-    yearlyPrice: 192, // $16/mo if paid yearly
+    yearlyPrice: 154, // ~$12.83/mo - 20% discount if paid yearly
     stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID,
   },
 } as const;

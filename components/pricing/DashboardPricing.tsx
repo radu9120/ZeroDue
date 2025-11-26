@@ -51,8 +51,8 @@ const plans = [
     id: "professional",
     name: "Professional",
     monthlyPrice: "$6.99",
-    yearlyPrice: "$70",
-    yearlySavings: "Save $14/year",
+    yearlyPrice: "$67",
+    yearlySavings: "Save $17/year",
     period: "/mo",
     description: "Small businesses",
     icon: Rocket,
@@ -71,8 +71,8 @@ const plans = [
     id: "enterprise",
     name: "Enterprise",
     monthlyPrice: "$15.99",
-    yearlyPrice: "$192",
-    yearlySavings: "Save $0/year",
+    yearlyPrice: "$154",
+    yearlySavings: "Save $38/year",
     period: "/mo",
     description: "Growing businesses",
     icon: Crown,
@@ -663,36 +663,36 @@ export default function DashboardPricing() {
       </AnimatePresence>
 
       {/* Billing Period Toggle */}
-      <div className="flex items-center justify-center gap-3 mb-6">
-        <span
-          className={`text-sm font-medium ${billingPeriod === "monthly" ? "text-white" : "text-slate-400"}`}
-        >
-          Monthly
-        </span>
-        <button
-          onClick={() =>
-            setBillingPeriod(billingPeriod === "monthly" ? "yearly" : "monthly")
-          }
-          className={`relative w-14 h-7 rounded-full transition-colors ${
-            billingPeriod === "yearly" ? "bg-green-500" : "bg-slate-600"
-          }`}
-        >
-          <span
-            className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform ${
-              billingPeriod === "yearly" ? "translate-x-8" : "translate-x-1"
+      <div className="flex items-center justify-center gap-4 mb-8">
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-full p-1 flex items-center gap-1 border border-slate-700/50">
+          <button
+            onClick={() => setBillingPeriod("monthly")}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              billingPeriod === "monthly"
+                ? "bg-white text-slate-900 shadow-md"
+                : "text-slate-400 hover:text-white"
             }`}
-          />
-        </button>
-        <span
-          className={`text-sm font-medium ${billingPeriod === "yearly" ? "text-white" : "text-slate-400"}`}
-        >
-          Yearly
-        </span>
-        {billingPeriod === "yearly" && (
-          <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">
-            Save up to 17%
-          </span>
-        )}
+          >
+            Monthly
+          </button>
+          <button
+            onClick={() => setBillingPeriod("yearly")}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              billingPeriod === "yearly"
+                ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md shadow-green-500/25"
+                : "text-slate-400 hover:text-white"
+            }`}
+          >
+            Yearly
+            <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+              billingPeriod === "yearly"
+                ? "bg-white/20 text-white"
+                : "bg-green-500/20 text-green-400"
+            }`}>
+              -20%
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* Mobile-First Plan Cards */}
