@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { Textarea } from "../ui/textarea";
-import { AlertTriangle, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { billToSchema } from "@/schemas/invoiceSchema";
 import { createClient, updateClient } from "@/lib/actions/client.actions";
 import { useRouter } from "next/navigation";

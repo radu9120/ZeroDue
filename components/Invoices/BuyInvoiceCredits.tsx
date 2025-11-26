@@ -9,7 +9,6 @@ import {
   Minus,
   CreditCard,
   Sparkles,
-  Check,
   ArrowLeft,
   Loader2,
 } from "lucide-react";
