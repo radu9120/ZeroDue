@@ -14,11 +14,13 @@ export async function POST(req: NextRequest) {
     const user = await currentUser();
     const supabase = await createClient();
 
-    // Get user metadata to check trial eligibility
+    // Get user metadata to check trial eligibility and existing subscription
     const {
       data: { user: supabaseUser },
     } = await supabase.auth.getUser();
     const hasUsedTrial = supabaseUser?.user_metadata?.has_used_trial === true;
+    const existingSubscriptionId =
+      supabaseUser?.user_metadata?.stripe_subscription_id;
 
     const body = await req.json();
     const { plan } = body as { plan: AppPlan };
@@ -92,7 +94,67 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Create subscription - with trial only if user hasn't used it before
+    // Check if user has an existing active subscription to upgrade
+    if (existingSubscriptionId) {
+      try {
+        const existingSubscription = await stripe.subscriptions.retrieve(
+          existingSubscriptionId
+        );
+
+        if (
+          existingSubscription.status === "active" ||
+          existingSubscription.status === "trialing"
+        ) {
+          // Upgrade the existing subscription
+          const updatedSubscription = await stripe.subscriptions.update(
+            existingSubscriptionId,
+            {
+              items: [
+                {
+                  id: existingSubscription.items.data[0].id,
+                  price: priceId,
+                },
+              ],
+              proration_behavior: "create_prorations",
+              metadata: {
+                userId,
+                plan,
+              },
+            }
+          );
+
+          // Also undo any scheduled cancellation
+          if (existingSubscription.cancel_at_period_end) {
+            await stripe.subscriptions.update(existingSubscriptionId, {
+              cancel_at_period_end: false,
+            });
+          }
+
+          // Update user plan immediately
+          await supabase.auth.updateUser({
+            data: {
+              plan: plan,
+              subscription_cancel_at_period_end: false,
+              subscription_cancel_at: null,
+            },
+          });
+
+          return NextResponse.json({
+            type: "upgrade",
+            message: `Successfully upgraded to ${planConfig.name}!`,
+            subscriptionId: updatedSubscription.id,
+            upgraded: true,
+          });
+        }
+      } catch (error) {
+        // Subscription doesn't exist or is cancelled, proceed to create new one
+        console.log(
+          "Existing subscription not found or inactive, creating new one"
+        );
+      }
+    }
+
+    // Create new subscription - with trial only if user hasn't used it before
     const subscriptionParams: any = {
       customer: customerId,
       items: [{ price: priceId }],
@@ -120,6 +182,7 @@ export async function POST(req: NextRequest) {
       data: {
         has_used_trial: true,
         stripe_customer_id: customerId,
+        stripe_subscription_id: subscription.id,
       },
     });
 

@@ -6,8 +6,7 @@ import { sendDowngradeCompletedEmail } from "@/lib/emails";
 // Lazy initialize Stripe to avoid build-time errors
 function getStripe() {
   return new Stripe(
-    process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_LIVE_SECRET_KEY!,
-    { apiVersion: "2025-11-17.clover" }
+    process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_LIVE_SECRET_KEY!
   );
 }
 
@@ -20,6 +19,37 @@ function getSupabaseAdmin() {
 }
 
 export async function POST(request: NextRequest) {
+  // Check environment variables first
+  if (
+    !process.env.STRIPE_TEST_SECRET_KEY &&
+    !process.env.STRIPE_LIVE_SECRET_KEY
+  ) {
+    console.error("[Stripe Webhook] No Stripe secret key configured");
+    return NextResponse.json(
+      { error: "Stripe not configured" },
+      { status: 500 }
+    );
+  }
+
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error("[Stripe Webhook] No webhook secret configured");
+    return NextResponse.json(
+      { error: "Webhook secret not configured" },
+      { status: 500 }
+    );
+  }
+
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.SUPABASE_SERVICE_ROLE_KEY
+  ) {
+    console.error("[Stripe Webhook] Supabase not configured");
+    return NextResponse.json(
+      { error: "Supabase not configured" },
+      { status: 500 }
+    );
+  }
+
   const stripe = getStripe();
   const supabaseAdmin = getSupabaseAdmin();
 

@@ -433,6 +433,14 @@ export default function Pricing({
         return;
       }
 
+      // Handle instant upgrade (no payment needed - already has payment method)
+      if (data.upgraded) {
+        toast.success(data.message || "Successfully upgraded!");
+        setCurrentPlan(planId);
+        router.refresh();
+        return;
+      }
+
       if (data.clientSecret) {
         setCheckoutPlan({
           id: planId,
@@ -787,14 +795,15 @@ export default function Pricing({
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className={`grid gap-8 pt-8 ${
+          className={`grid gap-6 lg:gap-8 pt-8 ${
             isDashboard
-              ? "grid-cols-1 md:grid-cols-3"
-              : "grid-cols-1 md:grid-cols-3 max-w-6xl mx-auto"
+              ? "grid-cols-1 lg:grid-cols-3"
+              : "grid-cols-1 lg:grid-cols-3 max-w-6xl mx-auto"
           }`}
         >
           {plans.map((plan, index) => {
             const Icon = plan.icon;
+            const isCurrentPlan = currentPlan === plan.id;
             return (
               <motion.div
                 key={plan.id}
@@ -802,8 +811,12 @@ export default function Pricing({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.05 * index }}
-                onClick={() => handleCheckout(plan.id)}
-                className={`relative flex flex-col rounded-3xl transition-all duration-200 cursor-pointer hover:scale-[1.03] ${
+                onClick={() => !isCurrentPlan && handleCheckout(plan.id)}
+                className={`relative flex flex-col rounded-3xl transition-all duration-200 ${
+                  isCurrentPlan
+                    ? "cursor-default"
+                    : "cursor-pointer hover:scale-[1.03]"
+                } ${
                   plan.popular
                     ? "border-2 border-blue-500 dark:border-blue-400 bg-slate-900 dark:bg-slate-900 shadow-lg shadow-blue-500/20 scale-[1.02]"
                     : "border border-slate-700 bg-slate-900/80 dark:bg-slate-900/80 hover:border-slate-600"
@@ -817,52 +830,54 @@ export default function Pricing({
                   </div>
                 )}
 
-                <div className={`p-10 ${plan.popular ? "pt-14" : ""}`}>
+                <div
+                  className={`p-6 lg:p-10 ${plan.popular ? "pt-10 lg:pt-14" : ""}`}
+                >
                   {/* Icon & Name */}
-                  <div className="flex items-center gap-4 mb-6">
+                  <div className="flex items-center gap-3 lg:gap-4 mb-4 lg:mb-6">
                     <div
-                      className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center shadow-lg`}
+                      className={`w-12 h-12 lg:w-14 lg:h-14 rounded-2xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}
                     >
-                      <Icon className="w-7 h-7 text-white" />
+                      <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-white">
+                      <h3 className="text-xl lg:text-2xl font-bold text-white">
                         {plan.name}
                       </h3>
-                      <p className="text-sm text-slate-400">
+                      <p className="text-xs lg:text-sm text-slate-400">
                         {plan.description}
                       </p>
                     </div>
                   </div>
 
                   {/* Price */}
-                  <div className="mb-8">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-5xl font-bold text-white">
+                  <div className="mb-6 lg:mb-8">
+                    <div className="flex items-baseline gap-1 lg:gap-2">
+                      <span className="text-4xl lg:text-5xl font-bold text-white">
                         {plan.price}
                       </span>
-                      <span className="text-lg text-slate-400">
+                      <span className="text-base lg:text-lg text-slate-400">
                         {plan.period}
                       </span>
                     </div>
                     {plan.yearlyNote && (
-                      <p className="text-sm text-slate-500 mt-1">
+                      <p className="text-xs lg:text-sm text-slate-500 mt-1">
                         {plan.yearlyNote}
                       </p>
                     )}
                   </div>
 
                   {/* Features */}
-                  <ul className="space-y-4 mb-8">
+                  <ul className="space-y-3 lg:space-y-4 mb-6 lg:mb-8">
                     {plan.features.map((feature) => (
                       <li
                         key={feature}
-                        className="flex items-center gap-3 text-base text-slate-300"
+                        className="flex items-center gap-2 lg:gap-3 text-sm lg:text-base text-slate-300"
                       >
                         <div
-                          className={`w-5 h-5 rounded-full bg-gradient-to-br ${plan.gradient} flex items-center justify-center flex-shrink-0`}
+                          className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-gradient-to-br ${plan.gradient} flex items-center justify-center flex-shrink-0`}
                         >
-                          <Check className="w-3 h-3 text-white" />
+                          <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
                         </div>
                         {feature}
                       </li>
@@ -904,7 +919,7 @@ export default function Pricing({
                         handleCheckout(plan.id);
                       }}
                       disabled={loading === plan.id || currentPlan === plan.id}
-                      className={`w-full py-4 px-6 rounded-xl font-semibold text-base transition-all disabled:opacity-50 cursor-pointer ${
+                      className={`w-full py-3 lg:py-4 px-4 lg:px-6 rounded-xl font-semibold text-sm lg:text-base transition-all disabled:opacity-50 cursor-pointer ${
                         currentPlan === plan.id
                           ? "bg-green-600 text-white cursor-default"
                           : plan.id === "free_user" &&
