@@ -98,6 +98,7 @@ function CheckoutForm({
   subscriptionId,
   onSuccess,
   onCancel,
+  hasTrial = true,
 }: {
   planName: string;
   planPrice: string;
@@ -105,6 +106,7 @@ function CheckoutForm({
   subscriptionId: string;
   onSuccess: () => void;
   onCancel: () => void;
+  hasTrial?: boolean;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -118,16 +120,25 @@ function CheckoutForm({
     setIsProcessing(true);
     setError(null);
 
-    const { error: submitError } = await stripe.confirmSetup({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/dashboard?checkout=success`,
-      },
-      redirect: "if_required",
-    });
+    // Use confirmSetup for trial (SetupIntent) or confirmPayment for immediate charge
+    const confirmResult = hasTrial
+      ? await stripe.confirmSetup({
+          elements,
+          confirmParams: {
+            return_url: `${window.location.origin}/dashboard?checkout=success`,
+          },
+          redirect: "if_required",
+        })
+      : await stripe.confirmPayment({
+          elements,
+          confirmParams: {
+            return_url: `${window.location.origin}/dashboard?checkout=success`,
+          },
+          redirect: "if_required",
+        });
 
-    if (submitError) {
-      setError(submitError.message || "Payment failed");
+    if (confirmResult.error) {
+      setError(confirmResult.error.message || "Payment failed");
       setIsProcessing(false);
     } else {
       // Update the user's plan immediately after successful setup
@@ -145,7 +156,11 @@ function CheckoutForm({
         console.error("Error confirming subscription:", err);
       }
 
-      toast.success("Your 60-day free trial has started!");
+      toast.success(
+        hasTrial
+          ? "Your 60-day free trial has started!"
+          : "Subscription activated successfully!"
+      );
       // Force a full page reload to refresh all cached data
       window.location.href = "/dashboard?checkout=success";
     }
@@ -158,7 +173,9 @@ function CheckoutForm({
           {planName} Plan
         </h3>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          {planPrice}/month after 60-day free trial
+          {hasTrial
+            ? `${planPrice}/month after 60-day free trial`
+            : `${planPrice}/month - billed immediately`}
         </p>
       </div>
 
@@ -193,14 +210,16 @@ function CheckoutForm({
           ) : (
             <>
               <CreditCard className="w-4 h-4" />
-              Start Trial
+              {hasTrial ? "Start Trial" : "Subscribe Now"}
             </>
           )}
         </button>
       </div>
 
       <p className="text-[10px] text-center text-slate-500 dark:text-slate-400">
-        Your card won't be charged until after the 60-day trial. Cancel anytime.
+        {hasTrial
+          ? "Your card won't be charged until after the 60-day trial. Cancel anytime."
+          : "Your card will be charged immediately. Cancel anytime."}
       </p>
     </form>
   );
@@ -222,8 +241,10 @@ export default function Pricing({
     price: string;
     clientSecret: string;
     subscriptionId: string;
+    hasTrial: boolean;
   } | null>(null);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
+  const [hasUsedTrial, setHasUsedTrial] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -233,14 +254,20 @@ export default function Pricing({
       } = await supabase.auth.getUser();
       setIsAuthenticated(!!user);
 
-      // Fetch current plan if authenticated
+      // Fetch current plan and trial status if authenticated
       if (user) {
         try {
-          const response = await fetch("/api/plan");
-          const data = await response.json();
-          setCurrentPlan(data.plan || "free_user");
+          const [planResponse, trialResponse] = await Promise.all([
+            fetch("/api/plan"),
+            fetch("/api/plan/trial-status"),
+          ]);
+          const planData = await planResponse.json();
+          const trialData = await trialResponse.json();
+          setCurrentPlan(planData.plan || "free_user");
+          setHasUsedTrial(trialData.hasUsedTrial || false);
         } catch {
           setCurrentPlan("free_user");
+          setHasUsedTrial(false);
         }
       }
     };
@@ -279,12 +306,13 @@ export default function Pricing({
         return;
       }
 
-      toast.success("Successfully downgraded to free plan!");
-      setCurrentPlan("free_user");
+      // Show success message with period end date
+      toast.success(data.message || "Subscription cancellation scheduled!");
+      setShowDowngradeModal(false);
       // Refresh to update the UI
-      window.location.href = "/dashboard?plan=downgraded";
+      window.location.href = "/dashboard?plan=cancellation-scheduled";
     } catch {
-      toast.error("Failed to downgrade plan. Please try again.");
+      toast.error("Failed to cancel subscription. Please try again.");
     } finally {
       setLoading(null);
     }
@@ -344,6 +372,7 @@ export default function Pricing({
           price: plan.price,
           clientSecret: data.clientSecret,
           subscriptionId: data.subscriptionId || "",
+          hasTrial: data.hasTrial !== false, // default to true if not specified
         });
       }
     } catch {
@@ -392,17 +421,20 @@ export default function Pricing({
               {/* Content */}
               <div className="p-6">
                 <p className="text-slate-600 dark:text-slate-300 text-center mb-6">
-                  You&apos;re about to downgrade to the{" "}
+                  You&apos;ll keep your{" "}
                   <span className="font-semibold text-slate-900 dark:text-white">
-                    Free Plan
-                  </span>
-                  . This will cancel your current subscription immediately.
+                    {currentPlan === "enterprise"
+                      ? "Enterprise"
+                      : "Professional"}
+                  </span>{" "}
+                  features until the end of your current billing period, then
+                  switch to the Free Plan.
                 </p>
 
                 {/* What you'll lose */}
                 <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-4 mb-6">
                   <p className="text-sm font-semibold text-red-700 dark:text-red-400 mb-3">
-                    What you&apos;ll lose:
+                    What you&apos;ll lose at period end:
                   </p>
                   <ul className="space-y-2">
                     {currentPlan === "enterprise" ? (
@@ -567,6 +599,7 @@ export default function Pricing({
                   planPrice={checkoutPlan.price}
                   planId={checkoutPlan.id}
                   subscriptionId={checkoutPlan.subscriptionId}
+                  hasTrial={checkoutPlan.hasTrial}
                   onSuccess={() => {
                     setCheckoutPlan(null);
                     router.push("/dashboard?checkout=success");
@@ -726,6 +759,9 @@ export default function Pricing({
                       currentPlan &&
                       currentPlan !== "free_user" ? (
                       "Downgrade to Free"
+                    ) : plan.id !== "free_user" && hasUsedTrial ? (
+                      // User has already used trial - show regular subscribe
+                      `Subscribe to ${plan.name}`
                     ) : (
                       plan.cta
                     )}

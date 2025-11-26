@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@/lib/auth";
 import { stripe, PLAN_CONFIG } from "@/lib/stripe";
+import { createClient } from "@/lib/supabase/server";
 import type { AppPlan } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
@@ -11,6 +12,14 @@ export async function POST(req: NextRequest) {
     }
 
     const user = await currentUser();
+    const supabase = await createClient();
+
+    // Get user metadata to check trial eligibility
+    const {
+      data: { user: supabaseUser },
+    } = await supabase.auth.getUser();
+    const hasUsedTrial = supabaseUser?.user_metadata?.has_used_trial === true;
+
     const body = await req.json();
     const { plan } = body as { plan: AppPlan };
 
@@ -83,31 +92,70 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Create subscription with 60-day trial
-    const subscription = await stripe.subscriptions.create({
+    // Create subscription - with trial only if user hasn't used it before
+    const subscriptionParams: any = {
       customer: customerId,
       items: [{ price: priceId }],
-      trial_period_days: 60,
       payment_behavior: "default_incomplete",
       payment_settings: {
         save_default_payment_method: "on_subscription",
       },
-      expand: ["pending_setup_intent"],
+      expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
       metadata: {
         userId,
         plan,
       },
+    };
+
+    // Only add trial if user hasn't used it before
+    if (!hasUsedTrial) {
+      subscriptionParams.trial_period_days = 60;
+    }
+
+    const subscription = await stripe.subscriptions.create(subscriptionParams);
+
+    // Mark trial as used in user metadata (regardless of whether they got trial or not)
+    // This ensures they can't game the system
+    await supabase.auth.updateUser({
+      data: {
+        has_used_trial: true,
+        stripe_customer_id: customerId,
+      },
     });
 
     // For trial subscriptions, we get a SetupIntent to collect payment method
-    const setupIntent = subscription.pending_setup_intent as any;
+    if (!hasUsedTrial && subscription.pending_setup_intent) {
+      const setupIntent = subscription.pending_setup_intent as any;
+      return NextResponse.json({
+        type: "setup",
+        clientSecret: setupIntent.client_secret,
+        subscriptionId: subscription.id,
+        customerId,
+        hasTrial: true,
+      });
+    }
 
+    // For non-trial subscriptions, we get a PaymentIntent for immediate charge
+    const invoice = subscription.latest_invoice as any;
+    if (invoice?.payment_intent?.client_secret) {
+      return NextResponse.json({
+        type: "payment",
+        clientSecret: invoice.payment_intent.client_secret,
+        subscriptionId: subscription.id,
+        customerId,
+        hasTrial: false,
+      });
+    }
+
+    // Fallback for setup intent
+    const setupIntent = subscription.pending_setup_intent as any;
     if (setupIntent) {
       return NextResponse.json({
         type: "setup",
         clientSecret: setupIntent.client_secret,
         subscriptionId: subscription.id,
         customerId,
+        hasTrial: false,
       });
     }
 

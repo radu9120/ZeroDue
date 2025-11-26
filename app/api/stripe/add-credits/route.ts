@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { createSupabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+import { sendCreditsEmail } from "@/lib/emails";
+import { EXTRA_INVOICE_PRICES } from "@/lib/stripe";
+import { getCurrentPlan } from "@/lib/plan";
 
 export async function POST(req: NextRequest) {
   try {
@@ -56,6 +60,24 @@ export async function POST(req: NextRequest) {
         { error: "Failed to add credits" },
         { status: 500 }
       );
+    }
+
+    // Send confirmation email
+    try {
+      const serverSupabase = await createClient();
+      const {
+        data: { user },
+      } = await serverSupabase.auth.getUser();
+
+      if (user?.email) {
+        const plan = await getCurrentPlan();
+        const pricePerCredit = EXTRA_INVOICE_PRICES[plan] || 0.99;
+        const total = (pricePerCredit * quantity).toFixed(2);
+
+        await sendCreditsEmail(user.email, quantity, total, newCredits);
+      }
+    } catch (emailError) {
+      console.error("Failed to send credits email:", emailError);
     }
 
     return NextResponse.json({

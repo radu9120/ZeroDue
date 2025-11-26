@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase";
 import { normalizePlan } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
+import { sendPlanUpgradeEmail } from "@/lib/emails";
 import type { AppPlan } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
@@ -13,9 +14,14 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { plan, subscriptionId } = body as {
+    const {
+      plan,
+      subscriptionId,
+      hasTrial = true,
+    } = body as {
       plan: AppPlan;
       subscriptionId?: string;
+      hasTrial?: boolean;
     };
 
     if (!plan) {
@@ -25,12 +31,17 @@ export async function POST(req: NextRequest) {
     const supabase = createSupabaseAdminClient();
     const normalizedPlan = normalizePlan(plan);
 
+    // Get user details for email
+    const { data: userData } = await supabase.auth.admin.getUserById(userId);
+    const userEmail = userData?.user?.email;
+
     // Update the user's plan in metadata
     const { error } = await supabase.auth.admin.updateUserById(userId, {
       user_metadata: {
         plan: normalizedPlan,
         subscription_id: subscriptionId,
         plan_updated_at: new Date().toISOString(),
+        has_used_trial: true, // Mark trial as used
       },
     });
 
@@ -40,6 +51,20 @@ export async function POST(req: NextRequest) {
         { error: "Failed to update plan" },
         { status: 500 }
       );
+    }
+
+    // Send plan upgrade email
+    if (userEmail) {
+      try {
+        const planName =
+          normalizedPlan === "enterprise" ? "Enterprise" : "Professional";
+        const trialEndDate = hasTrial
+          ? new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
+          : undefined; // 60 days from now
+        await sendPlanUpgradeEmail(userEmail, planName, hasTrial, trialEndDate);
+      } catch (emailError) {
+        console.error("Failed to send plan upgrade email:", emailError);
+      }
     }
 
     // Revalidate all dashboard paths to pick up the new plan
