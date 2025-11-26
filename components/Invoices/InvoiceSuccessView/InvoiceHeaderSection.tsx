@@ -107,12 +107,9 @@ export function InvoiceHeaderSection({
       className="mb-6 pb-6 border-b-2 border-gray-200"
       style={containerStyle}
     >
-      <div className="flex-1" style={{ flex: 1 }}>
+      <div className="flex-1" style={{ flex: 1, textAlign: "left" }}>
         {company.logo && (
-          <div
-            className="mb-4"
-            style={{ marginBottom: "16px" }}
-          >
+          <div className="mb-4" style={{ marginBottom: "16px", textAlign: "left" }}>
             <img
               src={company.logo}
               alt={`${company.name || "Company"} logo`}
@@ -127,6 +124,7 @@ export function InvoiceHeaderSection({
                 objectFit: "contain",
                 objectPosition: "left top",
                 display: "block",
+                margin: 0,
               }}
             />
           </div>
