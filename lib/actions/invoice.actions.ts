@@ -90,12 +90,36 @@ export const createInvoice = async (formData: CreateInvoice) => {
 
       console.log("[createInvoice] ALLOWING - Under limit or has credits");
 
-      // If using extra credits, decrement
+      // If using extra credits, decrement atomically to prevent race conditions
       if (totalInvoices >= freeLimit && extraCredits > 0) {
-        await supabase
-          .from("Businesses")
-          .update({ extra_invoice_credits: extraCredits - 1 })
-          .eq("id", businessId);
+        const { error: creditError } = await supabase.rpc(
+          "decrement_invoice_credits",
+          { business_id_param: businessId }
+        );
+        // If RPC doesn't exist, fall back to regular update with re-check
+        if (creditError?.code === "PGRST202") {
+          // RPC not found - use optimistic update with verification
+          const { data: updated, error: updateError } = await supabase
+            .from("Businesses")
+            .update({ extra_invoice_credits: extraCredits - 1 })
+            .eq("id", businessId)
+            .gt("extra_invoice_credits", 0)
+            .select("extra_invoice_credits")
+            .single();
+
+          if (updateError || !updated) {
+            return {
+              error:
+                "NEEDS_PAYMENT:Unable to use invoice credit. Please try again or purchase more credits.",
+            };
+          }
+        } else if (creditError) {
+          console.error("Failed to decrement credits:", creditError);
+          return {
+            error:
+              "NEEDS_PAYMENT:Unable to use invoice credit. Please try again.",
+          };
+        }
       }
     } else if (plan === "professional") {
       // Professional plan: 15 invoices per month, then pay-as-you-go at $0.49
@@ -128,12 +152,36 @@ export const createInvoice = async (formData: CreateInvoice) => {
         };
       }
 
-      // If using extra credits, decrement
+      // If using extra credits, decrement atomically to prevent race conditions
       if (monthlyCount >= monthlyLimit && extraCredits > 0) {
-        await supabase
-          .from("Businesses")
-          .update({ extra_invoice_credits: extraCredits - 1 })
-          .eq("id", businessId);
+        const { error: creditError } = await supabase.rpc(
+          "decrement_invoice_credits",
+          { business_id_param: businessId }
+        );
+        // If RPC doesn't exist, fall back to regular update with re-check
+        if (creditError?.code === "PGRST202") {
+          // RPC not found - use optimistic update with verification
+          const { data: updated, error: updateError } = await supabase
+            .from("Businesses")
+            .update({ extra_invoice_credits: extraCredits - 1 })
+            .eq("id", businessId)
+            .gt("extra_invoice_credits", 0)
+            .select("extra_invoice_credits")
+            .single();
+
+          if (updateError || !updated) {
+            return {
+              error:
+                "NEEDS_PAYMENT:Unable to use invoice credit. Please try again or purchase more credits.",
+            };
+          }
+        } else if (creditError) {
+          console.error("Failed to decrement credits:", creditError);
+          return {
+            error:
+              "NEEDS_PAYMENT:Unable to use invoice credit. Please try again.",
+          };
+        }
       }
     }
     // Enterprise plan: unlimited invoices, no checks needed
