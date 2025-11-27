@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
         const planName =
           normalizedPlan === "enterprise" ? "Enterprise" : "Professional";
         const trialEndDate = hasTrial
-          ? new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
-          : undefined; // 60 days from now
+          ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          : undefined; // 30 days from now
         await sendPlanUpgradeEmail(userEmail, planName, hasTrial, trialEndDate);
       } catch (emailError) {
         console.error("Failed to send plan upgrade email:", emailError);

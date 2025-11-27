@@ -47,7 +47,13 @@ const plans = [
     period: "/forever",
     description: "Getting started",
     icon: Zap,
-    features: ["2 invoices", "1 business", "Basic templates", "PDF export"],
+    features: [
+      "2 invoices",
+      "1 business",
+      "Basic templates",
+      "PDF export",
+      "Pay as you go",
+    ],
     cta: "Get Started Free",
     popular: false,
     gradient: "from-slate-500 to-slate-600",
@@ -66,8 +72,9 @@ const plans = [
       "All templates",
       "Priority support",
       "Custom branding",
+      "Pay as you go",
     ],
-    cta: "Start Free 60 Days Trial",
+    cta: "Start Free 30 Days Trial",
     popular: true,
     gradient: "from-blue-600 to-cyan-500",
   },
@@ -86,7 +93,7 @@ const plans = [
       "Email tracking & reminders",
       "Priority support",
     ],
-    cta: "Start Free 60 Days Trial",
+    cta: "Subscribe Now",
     popular: false,
     gradient: "from-purple-600 to-pink-500",
   },
@@ -159,7 +166,7 @@ function CheckoutForm({
 
       toast.success(
         hasTrial
-          ? "Your 60-day free trial has started!"
+          ? "Your 30-day free trial has started!"
           : "Subscription activated successfully!"
       );
       // Force a full page reload to refresh all cached data
@@ -175,7 +182,7 @@ function CheckoutForm({
         </h3>
         <p className="text-sm text-slate-500 dark:text-slate-400">
           {hasTrial
-            ? `${planPrice}/month after 60-day free trial`
+            ? `${planPrice}/month after 30-day free trial`
             : `${planPrice}/month - billed immediately`}
         </p>
       </div>
@@ -219,7 +226,7 @@ function CheckoutForm({
 
       <p className="text-[10px] text-center text-slate-500 dark:text-slate-400">
         {hasTrial
-          ? "Your card won't be charged until after the 60-day trial. Cancel anytime."
+          ? "Your card won't be charged until after the 30-day trial. Cancel anytime."
           : "Your card will be charged immediately. Cancel anytime."}
       </p>
     </form>

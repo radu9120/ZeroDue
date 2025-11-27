@@ -69,7 +69,7 @@ export async function sendWelcomeEmail(email: string, name?: string) {
     <p style="color: #64748b; font-size: 14px;">
       Your free plan includes 2 invoices and 1 business. Need more? Check out our 
       <a href="${APP_URL}/pricing" style="color: #2563eb;">Professional and Enterprise plans</a> 
-      with a 60-day free trial!
+      with a 30-day free trial!
     </p>
     
     <p style="margin-top: 24px;">
@@ -122,14 +122,14 @@ export async function sendPlanUpgradeEmail(
       <h2 style="margin: 0 0 8px 0; color: #166534; font-size: 24px;">
         ${hasTrial ? `Your ${planName} Trial Has Started! 🚀` : `Welcome to ${planName}! 🚀`}
       </h2>
-      ${hasTrial ? `<p style="margin: 0; color: #15803d;">60 days of full access, completely free</p>` : `<p style="margin: 0; color: #15803d;">Your subscription is now active</p>`}
+      ${hasTrial ? `<p style="margin: 0; color: #15803d;">30 days of full access, completely free</p>` : `<p style="margin: 0; color: #15803d;">Your subscription is now active</p>`}
     </div>
     
     <p>Hi there,</p>
     
     <p>${
       hasTrial
-        ? `Great news! Your 60-day free trial of the <strong>${planName}</strong> plan is now active. You won't be charged until ${formattedTrialEnd}.`
+        ? `Great news! Your 30-day free trial of the <strong>${planName}</strong> plan is now active. You won't be charged until ${formattedTrialEnd}.`
         : `Your <strong>${planName}</strong> subscription is now active. Thank you for upgrading!`
     }</p>
     
