@@ -884,8 +884,8 @@ export default function Pricing({
                     : "cursor-pointer hover:scale-[1.03]"
                 } ${
                   plan.popular
-                    ? "border-2 border-blue-500 dark:border-blue-400 bg-slate-900 dark:bg-slate-900 shadow-lg shadow-blue-500/20 scale-[1.02]"
-                    : "border border-slate-700 bg-slate-900/80 dark:bg-slate-900/80 hover:border-slate-600"
+                    ? "border-2 border-blue-500 dark:border-blue-400 bg-slate-900 dark:bg-slate-800 shadow-lg shadow-blue-500/20 scale-[1.02]"
+                    : "border border-slate-700 bg-slate-900/80 dark:bg-slate-800/80 hover:border-slate-600"
                 }`}
               >
                 {plan.popular && (

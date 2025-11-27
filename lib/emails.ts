@@ -13,21 +13,80 @@ function emailWrapper(content: string): string {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="color-scheme" content="light dark">
+      <meta name="supported-color-schemes" content="light dark">
+      <style>
+        :root {
+          color-scheme: light dark;
+          supported-color-schemes: light dark;
+        }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          line-height: 1.6;
+          color: #1e293b;
+          background-color: #f8fafc;
+          margin: 0;
+          padding: 20px;
+        }
+        .container {
+          background: #ffffff;
+          border-radius: 16px;
+          padding: 32px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          max-width: 600px;
+          margin: 0 auto;
+        }
+        .header-title { color: #2563eb; }
+        .header-subtitle { color: #64748b; }
+        .footer-text { color: #94a3b8; }
+        .footer-link { color: #64748b; }
+        .banner { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); }
+        .banner-title { color: #1e40af; }
+        .banner-text { color: #1e3a8a; }
+        .content-box { background: #f8fafc; }
+        .content-title { color: #334155; }
+        .list-item { color: #475569; }
+        
+        @media (prefers-color-scheme: dark) {
+          body {
+            background-color: #0f172a !important;
+            color: #e2e8f0 !important;
+          }
+          .container {
+            background: #1e293b !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid #334155 !important;
+          }
+          .header-title { color: #60a5fa !important; }
+          .header-subtitle { color: #94a3b8 !important; }
+          .footer-text { color: #64748b !important; }
+          .footer-link { color: #94a3b8 !important; }
+          .banner { background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%) !important; }
+          .banner-title { color: #bfdbfe !important; }
+          .banner-text { color: #dbeafe !important; }
+          .content-box { background: #0f172a !important; border: 1px solid #334155 !important; }
+          .content-title { color: #f1f5f9 !important; }
+          .list-item { color: #cbd5e1 !important; }
+          h1, h2, h3, h4, strong { color: #f8fafc !important; }
+          p, li, td { color: #cbd5e1 !important; }
+          a { color: #60a5fa !important; }
+        }
+      </style>
     </head>
-    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
-      <div style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <body>
+      <div class="container">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #2563eb; margin: 0; font-size: 28px;">InvoiceFlow</h1>
-          <p style="color: #64748b; margin: 8px 0 0 0; font-size: 14px;">Professional Invoicing Made Simple</p>
+          <h1 class="header-title" style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">InvoiceFlow</h1>
+          <p class="header-subtitle" style="margin: 8px 0 0 0; font-size: 14px;">Professional Invoicing Made Simple</p>
         </div>
         
         ${content}
         
-        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 12px;">
-          <p style="margin: 0;">© ${new Date().getFullYear()} InvoiceFlow. All rights reserved.</p>
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 12px;">
+          <p class="footer-text" style="margin: 0;">© ${new Date().getFullYear()} InvoiceFlow. All rights reserved.</p>
           <p style="margin: 8px 0 0 0;">
-            <a href="${APP_URL}/privacy-policy" style="color: #64748b; text-decoration: none;">Privacy Policy</a> · 
-            <a href="${APP_URL}/help" style="color: #64748b; text-decoration: none;">Help Center</a>
+            <a href="${APP_URL}/privacy-policy" class="footer-link" style="text-decoration: none;">Privacy Policy</a> · 
+            <a href="${APP_URL}/help" class="footer-link" style="text-decoration: none;">Help Center</a>
           </p>
         </div>
       </div>
@@ -41,22 +100,22 @@ export async function sendWelcomeEmail(email: string, name?: string) {
   const firstName = name?.split(" ")[0] || "there";
 
   const content = `
-    <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
-      <h2 style="margin: 0 0 8px 0; color: #1e40af; font-size: 24px;">Welcome to InvoiceFlow! 🎉</h2>
-      <p style="margin: 0; color: #1e3a8a;">Your professional invoicing journey starts now</p>
+    <div class="banner" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
+      <h2 class="banner-title" style="margin: 0 0 8px 0; color: #1e40af; font-size: 24px;">Welcome to InvoiceFlow! 🎉</h2>
+      <p class="banner-text" style="margin: 0; color: #1e3a8a;">Your professional invoicing journey starts now</p>
     </div>
     
     <p>Hi ${firstName},</p>
     
     <p>Thank you for joining InvoiceFlow! We're excited to help you create professional invoices in minutes.</p>
     
-    <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
-      <h3 style="margin: 0 0 16px 0; color: #334155;">Here's what you can do:</h3>
+    <div class="content-box" style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
+      <h3 class="content-title" style="margin: 0 0 16px 0; color: #334155;">Here's what you can do:</h3>
       <ul style="margin: 0; padding-left: 20px; color: #475569;">
-        <li style="margin-bottom: 12px;"><strong>Create invoices</strong> - Beautiful, professional invoices in seconds</li>
-        <li style="margin-bottom: 12px;"><strong>Track payments</strong> - Know when clients view your invoices</li>
-        <li style="margin-bottom: 12px;"><strong>Manage clients</strong> - Keep all your client info organized</li>
-        <li><strong>Get paid faster</strong> - Send invoices directly to clients</li>
+        <li class="list-item" style="margin-bottom: 12px;"><strong>Create invoices</strong> - Beautiful, professional invoices in seconds</li>
+        <li class="list-item" style="margin-bottom: 12px;"><strong>Track payments</strong> - Know when clients view your invoices</li>
+        <li class="list-item" style="margin-bottom: 12px;"><strong>Manage clients</strong> - Keep all your client info organized</li>
+        <li class="list-item"><strong>Get paid faster</strong> - Send invoices directly to clients</li>
       </ul>
     </div>
     
@@ -68,8 +127,8 @@ export async function sendWelcomeEmail(email: string, name?: string) {
     
     <p style="color: #64748b; font-size: 14px;">
       Your free plan includes 2 invoices and 1 business. Need more? Check out our 
-      <a href="${APP_URL}/pricing" style="color: #2563eb;">Professional and Enterprise plans</a> 
-      with a 30-day free trial!
+      <a href="${APP_URL}/pricing" style="color: #2563eb;">Professional plan</a> 
+      with a 30-day free trial, or our Enterprise plan for unlimited access!
     </p>
     
     <p style="margin-top: 24px;">

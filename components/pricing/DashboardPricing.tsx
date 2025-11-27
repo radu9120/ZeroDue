@@ -776,7 +776,7 @@ export default function DashboardPricing() {
                   ? "ring-2 ring-green-500 bg-slate-800"
                   : plan.popular
                     ? "ring-2 ring-blue-500 bg-slate-800"
-                    : "bg-slate-800/60 hover:bg-slate-800"
+                    : "bg-slate-800 dark:bg-slate-800 hover:bg-slate-700"
               } ${!isCurrentPlan && !isCancelling ? "cursor-pointer active:scale-[0.98]" : ""}`}
               onClick={() =>
                 !isCurrentPlan && !isCancelling && handleCheckout(plan.id)
