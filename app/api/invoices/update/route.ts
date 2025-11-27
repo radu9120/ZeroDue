@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { createSupabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { getCurrentPlan } from "@/lib/plan";
 import type { AppPlan } from "@/lib/utils";
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const supabase = createSupabaseClient();
+    const supabase = await createClient();
 
     // Ensure the invoice belongs to the current user
     const { data: invoice, error: fetchErr } = await supabase

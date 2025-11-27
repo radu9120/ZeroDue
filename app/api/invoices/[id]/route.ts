@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { createSupabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { createActivity } from "@/lib/actions/userActivity.actions";
 
 export async function DELETE(
@@ -22,7 +22,7 @@ export async function DELETE(
       );
     }
 
-    const supabase = createSupabaseClient();
+    const supabase = await createClient();
 
     const { data: invoice, error: fetchError } = await supabase
       .from("Invoices")
