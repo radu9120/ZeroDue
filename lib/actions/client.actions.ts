@@ -1,6 +1,6 @@
 "use server";
 import { auth } from "@/lib/auth";
-import { createSupabaseClient } from "@/lib/supabase";
+import { createClient as createSupabaseServerClient } from "@/lib/supabase/server";
 import { billToSchema, CreateClient } from "@/schemas/invoiceSchema";
 import { GetAllClientsParams, GetClientParam } from "@/types";
 import { redirect } from "next/navigation";
@@ -13,7 +13,7 @@ export const createClient = async (formData: CreateClient) => {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
 
-  const supabase = createSupabaseClient();
+  const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
     .from("Clients")
@@ -49,7 +49,7 @@ export const updateClient = async (
     throw new Error("Client ID is required for an update.");
   }
 
-  const supabase = createSupabaseClient();
+  const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
     .from("Clients")
@@ -85,7 +85,7 @@ export const getAllClients = async ({
   page = 1,
   searchTerm,
 }: GetAllClientsParams) => {
-  const supabase = createSupabaseClient();
+  const supabase = await createSupabaseServerClient();
 
   let query = supabase.from("Clients").select().eq("business_id", business_id);
 
@@ -199,7 +199,7 @@ export const getAllClients = async ({
 };
 
 export const getClients = async ({ business_id }: GetAllClientsParams) => {
-  const supabase = createSupabaseClient();
+  const supabase = await createSupabaseServerClient();
 
   let query = supabase.from("Clients").select().eq("business_id", business_id);
 
@@ -211,7 +211,7 @@ export const getClients = async ({ business_id }: GetAllClientsParams) => {
 };
 
 export const getClient = async ({ client_id }: GetClientParam) => {
-  const supabase = createSupabaseClient();
+  const supabase = await createSupabaseServerClient();
 
   let query = supabase.from("Clients").select().eq("id", client_id).single();
 

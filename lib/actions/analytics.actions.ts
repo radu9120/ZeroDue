@@ -1,5 +1,5 @@
 "use server";
-import { createSupabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 
 export type RevenuePoint = { month: string; amount: number };
 export type StatusSlice = { status: string; count: number; color?: string };
@@ -24,7 +24,7 @@ export async function getRevenueSeries(
   business_id: number,
   months = 6
 ): Promise<RevenuePoint[]> {
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
   const monthStarts = lastMonthStarts(months);
   const rangeStart = monthStarts[0];
   const rangeEnd = new Date(
@@ -70,7 +70,7 @@ export async function getInvoiceStatusBreakdown(
   business_id: number,
   sinceDays = 90
 ): Promise<StatusSlice[]> {
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   // Auto-mark overdue invoices
   const today = new Date().toISOString().split("T")[0];
@@ -129,7 +129,7 @@ export async function getOverview(
   totalAmount: number;
   totalValueAll: number;
 }> {
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   // Auto-mark overdue invoices
   const today = new Date().toISOString().split("T")[0];

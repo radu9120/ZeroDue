@@ -1,9 +1,7 @@
 "use server";
 import { auth, currentUser } from "@/lib/auth";
-import {
-  createSupabaseClient,
-  createSupabaseAdminClient,
-} from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase";
 import { CreateBusiness } from "@/schemas/invoiceSchema";
 import { redirect } from "next/navigation";
 import {
@@ -32,7 +30,7 @@ export const createBusiness = async (
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
   // Enforce plan limits before creating a business
   try {
     const plan: AppPlan = await getCurrentPlan();
@@ -207,7 +205,7 @@ export const getUserBusinesses = async () => {
     redirect("/sign-in");
   }
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("Businesses")
@@ -229,7 +227,7 @@ export const getBusinessById = async (businessId: number) => {
     redirect("/sign-in");
   }
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("Businesses")
@@ -258,7 +256,7 @@ export const updateBusiness = async (
     redirect("/sign-in");
   }
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("Businesses")
@@ -303,7 +301,7 @@ export const deleteBusiness = async (
     return { ok: false, error: "Invalid business identifier." };
   }
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   try {
     const { data: businessRecord, error: fetchError } = await supabase
@@ -425,7 +423,7 @@ export const getBusiness = async ({
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   const { data: business, error } = await supabase
     .from("Businesses")
@@ -456,7 +454,7 @@ export const getBusiness = async ({
 export const getBusinessStats = async ({
   business_id,
 }: BusinessDashboardPageProps) => {
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   // 1. Auto-mark overdue invoices
   const today = new Date().toISOString().split("T")[0];
@@ -566,7 +564,7 @@ export const getDashboardStats = async (): Promise<
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   // If flag set, bypass RPC entirely and aggregate directly.
   if (process.env.SUPABASE_DISABLE_DASHBOARD_RPC === "1") {
