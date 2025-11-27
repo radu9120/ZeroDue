@@ -2,14 +2,13 @@
 import { auth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { CreateInvoice } from "@/schemas/invoiceSchema";
-import { BusinessDashboardPageProps } from "@/types";
+import { BusinessDashboardPageProps, InvoiceListItem } from "@/types";
 import { createActivity } from "./userActivity.actions";
 import { redirect } from "next/navigation";
 import { type AppPlan } from "@/lib/utils";
 import { getCurrentPlan } from "@/lib/plan";
 import { revalidatePath } from "next/cache";
 import { getBusinessById } from "./business.actions";
-import { createSupabaseAdminClient } from "@/lib/supabase";
 import { v4 as uuidv4 } from "uuid";
 
 const DEFAULT_INVOICE_PREFIX = "INV";
@@ -176,9 +175,9 @@ export const createInvoice = async (formData: CreateInvoice) => {
 };
 
 //incorect, invoices must be selected by business id => clients id
-export const getInvoicesByAuthor = async () => {
+export const getInvoicesByAuthor = async (): Promise<InvoiceListItem[]> => {
   const { userId: author } = await auth();
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("Invoices")
@@ -189,7 +188,7 @@ export const getInvoicesByAuthor = async () => {
   if (error || !data)
     throw new Error(error?.message || "Failed to fetch invoices");
 
-  return data;
+  return data as unknown as InvoiceListItem[];
 };
 
 export const getInvoicesList = async ({
@@ -199,7 +198,7 @@ export const getInvoicesList = async ({
   searchTerm,
   filter,
 }: BusinessDashboardPageProps & { filter?: string }) => {
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   // Auto-mark overdue invoices
   const today = new Date().toISOString().split("T")[0];
@@ -289,7 +288,7 @@ export const getInvoices = async (
 ) => {
   const { search = "", status = "all", page = 1, limit = 12 } = options;
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   // Auto-mark overdue invoices
   // We check for invoices that are not paid/draft/overdue and have a due_date < today
@@ -380,7 +379,7 @@ export const getInvoices = async (
 export const getCurrentMonthInvoiceCountForUser = async () => {
   const { userId: author } = await auth();
   if (!author) return 0;
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   const now = new Date();
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -403,7 +402,7 @@ export const getCurrentMonthInvoiceCountForUser = async () => {
 export const getCurrentMonthInvoiceCountForBusiness = async (
   business_id: number
 ) => {
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   const now = new Date();
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -427,7 +426,7 @@ export const getNextInvoiceNumber = async (business_id: number) => {
     throw new Error("Business id is required to generate invoice numbers");
   }
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("Invoices")
@@ -470,7 +469,7 @@ export const updateInvoiceBankDetailsAndNotes = async (
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   // Verify ownership
   const { data: invoice, error: fetchError } = await supabase
@@ -555,7 +554,7 @@ export const getInvoiceById = async (invoiceId: number) => {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("Invoices")
@@ -591,7 +590,7 @@ export const deleteInvoiceAction = async (invoiceId: number) => {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   // Verify ownership
   const { data: invoice, error: fetchError } = await supabase
@@ -631,7 +630,7 @@ export const getMonthlyRevenue = async (businessId: number) => {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
-  const supabase = createSupabaseClient();
+  const supabase = await createClient();
 
   // Get invoices for the last 12 months
   const oneYearAgo = new Date();
