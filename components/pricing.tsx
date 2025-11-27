@@ -236,6 +236,9 @@ export default function Pricing({
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
+    "monthly"
+  );
   const [checkoutPlan, setCheckoutPlan] = useState<{
     id: string;
     name: string;
@@ -243,6 +246,7 @@ export default function Pricing({
     clientSecret: string;
     subscriptionId: string;
     hasTrial: boolean;
+    billingPeriod?: "monthly" | "yearly";
   } | null>(null);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [hasUsedTrial, setHasUsedTrial] = useState(false);
@@ -423,7 +427,7 @@ export default function Pricing({
       const response = await fetch("/api/stripe/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planId }),
+        body: JSON.stringify({ plan: planId, billingPeriod }),
       });
 
       const data = await response.json();
@@ -445,10 +449,14 @@ export default function Pricing({
         setCheckoutPlan({
           id: planId,
           name: plan.name,
-          price: plan.price,
+          price:
+            billingPeriod === "monthly"
+              ? plan.price
+              : plan.yearlyNote?.split(" ")[1] || plan.price,
           clientSecret: data.clientSecret,
           subscriptionId: data.subscriptionId || "",
           hasTrial: data.hasTrial !== false, // default to true if not specified
+          billingPeriod,
         });
       }
     } catch {
@@ -791,6 +799,41 @@ export default function Pricing({
           </div>
         )}
 
+        {/* Billing Period Toggle */}
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <div className="bg-slate-100 dark:bg-slate-800/50 backdrop-blur-sm rounded-full p-1 flex items-center gap-1 border border-slate-200 dark:border-slate-700/50">
+            <button
+              onClick={() => setBillingPeriod("monthly")}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                billingPeriod === "monthly"
+                  ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-md"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod("yearly")}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                billingPeriod === "yearly"
+                  ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md shadow-green-500/25"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              Yearly
+              <span
+                className={`text-xs px-1.5 py-0.5 rounded-full ${
+                  billingPeriod === "yearly"
+                    ? "bg-white/20 text-white"
+                    : "bg-green-500/20 text-green-600 dark:text-green-400"
+                }`}
+              >
+                -20%
+              </span>
+            </button>
+          </div>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -804,6 +847,22 @@ export default function Pricing({
           {plans.map((plan, index) => {
             const Icon = plan.icon;
             const isCurrentPlan = currentPlan === plan.id;
+
+            // Calculate price based on billing period
+            let displayPrice = plan.price;
+            let displayPeriod = plan.period;
+
+            if (plan.id !== "free_user") {
+              if (billingPeriod === "yearly") {
+                // Extract yearly price from yearlyNote "or $67/year"
+                const yearlyMatch = plan.yearlyNote?.match(/\$(\d+)\/year/);
+                if (yearlyMatch) {
+                  displayPrice = `$${yearlyMatch[1]}`;
+                  displayPeriod = "/year";
+                }
+              }
+            }
+
             return (
               <motion.div
                 key={plan.id}
@@ -854,15 +913,20 @@ export default function Pricing({
                   <div className="mb-6 lg:mb-8">
                     <div className="flex items-baseline gap-1 lg:gap-2">
                       <span className="text-4xl lg:text-5xl font-bold text-white">
-                        {plan.price}
+                        {displayPrice}
                       </span>
                       <span className="text-base lg:text-lg text-slate-400">
-                        {plan.period}
+                        {displayPeriod}
                       </span>
                     </div>
-                    {plan.yearlyNote && (
+                    {plan.yearlyNote && billingPeriod === "monthly" && (
                       <p className="text-xs lg:text-sm text-slate-500 mt-1">
                         {plan.yearlyNote}
+                      </p>
+                    )}
+                    {billingPeriod === "yearly" && plan.id !== "free_user" && (
+                      <p className="text-xs lg:text-sm text-green-400 mt-1">
+                        Save 20% with yearly billing
                       </p>
                     )}
                   </div>

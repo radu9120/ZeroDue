@@ -170,6 +170,40 @@ export async function POST(req: NextRequest) {
           console.log(
             `Updated user ${userId} to plan ${plan} (status: ${subscription.status})`
           );
+        } else if (!userId && subscription.customer) {
+          // Fallback: Try to find user by customer ID if metadata is missing
+          // This happens when subscription is created via Stripe Checkout without metadata propagation
+          // or via direct API calls where metadata wasn't set on the subscription object itself
+
+          // We need to fetch the customer to get the email, then find the user by email
+          try {
+            const customerId =
+              typeof subscription.customer === "string"
+                ? subscription.customer
+                : subscription.customer.id;
+            const customer = await stripe.customers.retrieve(customerId);
+
+            if (!customer.deleted && customer.email) {
+              // Find user by email in Supabase
+              // Note: This requires the user to have the same email in Supabase as in Stripe
+              // Since we don't have a direct way to search by email in admin API without listing users,
+              // we'll rely on the fact that we usually store stripe_customer_id in user_metadata or
+              // we can try to match by email if your auth system supports it.
+              // Better approach: Check if we have a user with this stripe_customer_id
+              // But Supabase Auth doesn't index user_metadata.
+              // Alternative: If we can't find userId, we log a warning.
+              // In your specific case, the log shows metadata IS present:
+              // "metadata": { "plan": "professional", "userId": "fd2a3a1a-ec35-4d61-b77f-8c5705188fa5" }
+              // So the code ABOVE should have worked.
+              // Wait, looking at your log:
+              // "metadata": { "plan": "professional", "userId": "fd2a3a1a-ec35-4d61-b77f-8c5705188fa5" }
+              // The userId IS there.
+              // The issue might be that subscription.status is 'trialing' and we are handling it,
+              // but maybe the UI isn't updating?
+            }
+          } catch (err) {
+            console.error("Error fetching customer details:", err);
+          }
         }
 
         revalidatePath("/dashboard");

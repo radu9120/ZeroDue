@@ -7,6 +7,7 @@ import {
 import InvoiceSuccessView from "@/components/Invoices/InvoiceSuccessView";
 import { getCurrentPlan } from "@/lib/plan";
 import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";
+import { revalidatePath } from "next/cache";
 
 interface PageProps {
   searchParams: Promise<{
@@ -18,6 +19,10 @@ interface PageProps {
 
 export default async function InvoiceSuccessPage({ searchParams }: PageProps) {
   const { business_id, invoice_id, edit } = await searchParams;
+
+  // Force revalidation of the plan to ensure UI is up to date after payment
+  revalidatePath("/api/plan");
+  revalidatePath("/dashboard");
 
   if (!business_id || !invoice_id) {
     notFound();
