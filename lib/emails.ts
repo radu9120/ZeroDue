@@ -1,6 +1,12 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend | null = null;
+function getResendClient(): Resend {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 const FROM_EMAIL = "InvoiceFlow <noreply@invcyflow.com>";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://invcyflow.com";
@@ -137,7 +143,7 @@ export async function sendWelcomeEmail(email: string, name?: string) {
     </p>
   `;
 
-  return resend.emails.send({
+  return getResendClient().emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: "Welcome to InvoiceFlow! 🎉",
@@ -224,7 +230,7 @@ export async function sendPlanUpgradeEmail(
     </p>
   `;
 
-  return resend.emails.send({
+  return getResendClient().emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: hasTrial
@@ -284,7 +290,7 @@ export async function sendCreditsEmail(
     </p>
   `;
 
-  return resend.emails.send({
+  return getResendClient().emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: `${quantity} invoice credit${quantity > 1 ? "s" : ""} added to your account`,
@@ -337,7 +343,7 @@ export async function sendDowngradeCompletedEmail(
     </p>
   `;
 
-  return resend.emails.send({
+  return getResendClient().emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: "Your plan has changed to Free",
@@ -371,7 +377,7 @@ export async function sendReactivationEmail(email: string, planName: string) {
     </p>
   `;
 
-  return resend.emails.send({
+  return getResendClient().emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: `Your ${planName} subscription is back! 🎉`,

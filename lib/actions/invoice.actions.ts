@@ -10,6 +10,7 @@ import { getCurrentPlan } from "@/lib/plan";
 import { revalidatePath } from "next/cache";
 import { emailWrapper } from "@/lib/emails";
 import { getBusinessById } from "./business.actions";
+import { Resend } from "resend";
 import { createSupabaseAdminClient } from "@/lib/supabase";
 
 // Lazy initialize Resend to avoid build-time errors when env var is not set
