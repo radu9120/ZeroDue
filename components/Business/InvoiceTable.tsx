@@ -43,10 +43,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
-import {
-  deleteInvoiceAction,
-  sendInvoiceEmailAction,
-} from "@/lib/actions/invoice.actions";
+import { deleteInvoiceAction } from "@/lib/actions/invoice.actions";
+import { sendInvoiceEmailAction } from "@/lib/actions/email.actions";
 
 const PAGE_SIZE = 5; // Keep in sync with getInvoicesList default limit
 

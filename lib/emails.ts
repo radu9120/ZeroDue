@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 let resend: Resend | null = null;
-function getResendClient(): Resend {
+export function getResendClient(): Resend {
   if (!resend) {
     resend = new Resend(process.env.RESEND_API_KEY);
   }
