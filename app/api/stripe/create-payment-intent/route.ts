@@ -126,6 +126,7 @@ export async function POST(req: NextRequest) {
             currency: "usd",
             unit_amount: Math.round(priceAmount * 100),
             recurring: { interval: billingInterval },
+            nickname: `${planConfig.name} ${isYearly ? "Yearly" : "Monthly"}`,
           });
           priceId = price.id;
           console.log(`Created new price: ${priceId}`);

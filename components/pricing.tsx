@@ -76,7 +76,7 @@ const plans = [
     name: "Enterprise",
     price: "$15.99",
     period: "/mo",
-    yearlyNote: "or $154/year ($12.83/mo)",
+    yearlyNote: "or $149.99/year ($12.50/mo)",
     description: "Growing businesses",
     icon: Crown,
     features: [

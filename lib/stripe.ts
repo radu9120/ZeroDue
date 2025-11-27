@@ -61,7 +61,7 @@ export const PLAN_CONFIG = {
     businessesIncluded: Infinity,
     pricePerExtraInvoice: 0,
     monthlyPrice: 15.99,
-    yearlyPrice: 154, // ~$12.83/mo - 20% discount if paid yearly
+    yearlyPrice: 149.99, // ~$12.50/mo - 20% discount if paid yearly
     stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID,
   },
 } as const;
