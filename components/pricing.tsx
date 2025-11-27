@@ -854,8 +854,8 @@ export default function Pricing({
 
             if (plan.id !== "free_user") {
               if (billingPeriod === "yearly") {
-                // Extract yearly price from yearlyNote "or $67/year"
-                const yearlyMatch = plan.yearlyNote?.match(/\$(\d+)\/year/);
+                // Extract yearly price from yearlyNote "or $67/year" or "or $149.99/year"
+                const yearlyMatch = plan.yearlyNote?.match(/\$([\d.]+)\/year/);
                 if (yearlyMatch) {
                   displayPrice = `$${yearlyMatch[1]}`;
                   displayPeriod = "/year";
