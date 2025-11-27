@@ -93,6 +93,14 @@ const InvoiceForm = ({
     "free_user" | "professional" | "enterprise"
   >("free_user");
 
+  const [localClients, setLocalClients] = useState<ClientType[]>(clients || []);
+
+  useEffect(() => {
+    if (clients) {
+      setLocalClients(clients);
+    }
+  }, [clients]);
+
   // Fetch current plan on mount
   useEffect(() => {
     const fetchPlan = async () => {
@@ -843,7 +851,7 @@ const InvoiceForm = ({
                       )}
                     </div>
                   </div>
-                ) : clients && clients.length > 0 ? (
+                ) : localClients && localClients.length > 0 ? (
                   <div className="space-y-6">
                     <FormField
                       control={form.control}
@@ -856,7 +864,7 @@ const InvoiceForm = ({
                           <FormControl>
                             <Select
                               onValueChange={(value) => {
-                                const selectedClient = clients.find(
+                                const selectedClient = localClients.find(
                                   (client) => client.id === Number(value)
                                 );
                                 if (selectedClient) {
@@ -879,13 +887,14 @@ const InvoiceForm = ({
                               <SelectTrigger className="w-full h-12 border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl">
                                 <span className="text-gray-600 dark:text-slate-300">
                                   {field.value
-                                    ? clients.find((c) => c.id === field.value)
-                                        ?.name
+                                    ? localClients.find(
+                                        (c) => c.id === field.value
+                                      )?.name
                                     : "Select a client..."}
                                 </span>
                               </SelectTrigger>
                               <SelectContent>
-                                {clients.map((client) => (
+                                {localClients.map((client) => (
                                   <SelectItem
                                     key={client.id}
                                     value={String(client.id)}
@@ -976,7 +985,21 @@ const InvoiceForm = ({
                           </Button>
                         }
                       >
-                        <ClientForm business_id={company_data.id} />
+                        <ClientForm
+                          business_id={company_data.id}
+                          onSuccess={(newClient) => {
+                            setLocalClients((prev) => [...prev, newClient]);
+                            form.setValue("client_id", newClient.id);
+                            form.setValue("bill_to", {
+                              name: newClient.name,
+                              email: newClient.email,
+                              address: newClient.address,
+                              phone: newClient.phone,
+                              id: newClient.id,
+                              business_id: newClient.business_id,
+                            });
+                          }}
+                        />
                       </CustomModal>
                     </div>
                   </div>

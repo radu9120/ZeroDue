@@ -36,6 +36,7 @@ interface ClientFormProps {
   isSubmitting?: boolean;
   closeModal?: () => void; // injected by CustomModal
   redirectAfterSubmit?: string; // URL to redirect to after successful submit
+  onSuccess?: (client: any) => void; // Callback for successful creation/update
 }
 
 export const ClientForm = ({
@@ -46,6 +47,7 @@ export const ClientForm = ({
   isSubmitting = false,
   closeModal,
   redirectAfterSubmit,
+  onSuccess,
 }: ClientFormProps) => {
   const router = useRouter();
   const [localSubmitting, setLocalSubmitting] = React.useState(false);
@@ -84,6 +86,13 @@ export const ClientForm = ({
         const updatedClient = await updateClient(dataToUpdate);
         if (updatedClient) {
           toast.success("Client updated successfully");
+
+          if (onSuccess) {
+            onSuccess(updatedClient);
+            closeModal?.();
+            return;
+          }
+
           closeModal?.();
           if (redirectAfterSubmit) {
             router.push(redirectAfterSubmit);
@@ -98,6 +107,13 @@ export const ClientForm = ({
         const client = await createClient(values);
         if (client) {
           toast.success("Client added successfully");
+
+          if (onSuccess) {
+            onSuccess(client);
+            closeModal?.();
+            return;
+          }
+
           closeModal?.();
           if (redirectAfterSubmit) {
             router.push(redirectAfterSubmit);

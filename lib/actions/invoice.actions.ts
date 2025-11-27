@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import { type AppPlan } from "@/lib/utils";
 import { getCurrentPlan } from "@/lib/plan";
 import { revalidatePath } from "next/cache";
-import { Resend } from "resend";
+import { emailWrapper } from "@/lib/emails";
 import { getBusinessById } from "./business.actions";
 import { createSupabaseAdminClient } from "@/lib/supabase";
 
@@ -712,22 +712,44 @@ export const sendInvoiceEmailAction = async (
       from: "InvoiceFlow <noreply@invoiceflow.net>",
       to: [clientEmail],
       subject: `Invoice #${invoice.invoice_number} from ${business.name}`,
-      html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>New Invoice from ${business.name}</h2>
-        <p>Hi ${clientName},</p>
-        <p>Please find attached invoice #${invoice.invoice_number} for ${currencySymbol}${total}.</p>
-        <p><strong>Due Date:</strong> ${new Date(
-          invoice.due_date
-        ).toLocaleDateString()}</p>
-        <div style="margin: 30px 0;">
-          <a href="${invoiceUrl}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">View & Pay Invoice</a>
+      html: emailWrapper(`
+        <div class="banner" style="border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
+          <h2 class="banner-title" style="margin: 0 0 8px 0; font-size: 24px;">New Invoice from ${business.name}</h2>
+          <p class="banner-text" style="margin: 0;">Invoice #${invoice.invoice_number}</p>
         </div>
-        <p>Or copy this link: <a href="${invoiceUrl}">${invoiceUrl}</a></p>
-        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;" />
-        <p style="color: #666; font-size: 12px;">Powered by InvoiceFlow</p>
-      </div>
-    `,
+        
+        <p>Hi ${clientName},</p>
+        
+        <p>Please find attached invoice <strong>#${invoice.invoice_number}</strong> for <strong>${currencySymbol}${total}</strong>.</p>
+        
+        <div class="content-box" style="border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td class="list-item" style="padding: 8px 0;">Invoice Number:</td>
+              <td style="padding: 8px 0; text-align: right; font-weight: 600;">${invoice.invoice_number}</td>
+            </tr>
+            <tr>
+              <td class="list-item" style="padding: 8px 0;">Due Date:</td>
+              <td style="padding: 8px 0; text-align: right; font-weight: 600;">${new Date(invoice.due_date).toLocaleDateString()}</td>
+            </tr>
+            <tr style="border-top: 1px solid #e2e8f0;">
+              <td class="content-title" style="padding: 12px 0 0 0; font-weight: 600;">Amount Due:</td>
+              <td style="padding: 12px 0 0 0; text-align: right; font-weight: 700; color: #2563eb; font-size: 18px;">${currencySymbol}${total}</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${invoiceUrl}" style="display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+            View & Pay Invoice →
+          </a>
+        </div>
+        
+        <p class="footer-text" style="font-size: 14px; text-align: center;">
+          Or copy this link: <br>
+          <a href="${invoiceUrl}" style="color: #2563eb;">${invoiceUrl}</a>
+        </p>
+      `),
       tags: [
         { name: "category", value: "invoice" },
         { name: "invoice_id", value: invoice.id.toString() },

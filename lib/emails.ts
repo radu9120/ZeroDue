@@ -6,7 +6,7 @@ const FROM_EMAIL = "InvoiceFlow <noreply@invcyflow.com>";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://invcyflow.com";
 
 // Base email template wrapper
-function emailWrapper(content: string): string {
+export function emailWrapper(content: string): string {
   return `
     <!DOCTYPE html>
     <html>
