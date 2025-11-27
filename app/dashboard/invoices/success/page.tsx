@@ -8,6 +8,7 @@ import InvoiceSuccessView from "@/components/Invoices/InvoiceSuccessView";
 import { getCurrentPlan } from "@/lib/plan";
 import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";
 import { revalidatePath } from "next/cache";
+import { InvoiceListItem } from "@/types";
 
 interface PageProps {
   searchParams: Promise<{
@@ -38,7 +39,7 @@ export default async function InvoiceSuccessPage({ searchParams }: PageProps) {
       ]);
 
     const invoice = allInvoices.find(
-      (inv) => String(inv.id) === String(invoice_id)
+      (inv: InvoiceListItem) => String(inv.id) === String(invoice_id)
     );
 
     if (!invoice || !businessData) {
