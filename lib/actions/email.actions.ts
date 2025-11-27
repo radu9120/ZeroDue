@@ -106,7 +106,7 @@ export const sendInvoiceEmailAction = async (
             </tr>
             <tr>
               <td class="list-item" style="padding: 8px 0;">Due Date:</td>
-              <td style="padding: 8px 0; text-align: right; font-weight: 600;">${new Date(invoice.due_date).toLocaleDateString()}</td>
+              <td style="padding: 8px 0; text-align: right; font-weight: 600;">${invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "Not specified"}</td>
             </tr>
             <tr style="border-top: 1px solid #e2e8f0;">
               <td class="content-title" style="padding: 12px 0 0 0; font-weight: 600;">Amount Due:</td>
