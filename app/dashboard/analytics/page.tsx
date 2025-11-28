@@ -26,6 +26,7 @@ import {
   getBusinessStats,
 } from "@/lib/actions/business.actions";
 import { DashboardShell } from "@/components/Business/ModernDashboard/DashboardShell";
+import { ExportReportButton } from "@/components/Business/ExportReportButton";
 
 export const revalidate = 0;
 
@@ -118,12 +119,12 @@ export default async function AnalyticsPage({
               Last 30 days
             </span>
           </div>
-          <Button
-            variant="secondary"
-            className="border-blue-200 dark:border-slate-700 w-full sm:w-auto"
-          >
-            <Download className="h-4 w-4 mr-2" /> Export Report
-          </Button>
+          <ExportReportButton
+            businessName={business.name}
+            overview={overview}
+            revenueData={revenueData}
+            invoiceStatusData={invoiceStatusData}
+          />
         </div>
 
         {/* Key Metrics */}
@@ -201,29 +202,49 @@ export default async function AnalyticsPage({
             <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-6">
               Revenue Trend
             </h3>
-            <div className="h-64 flex items-end justify-between gap-2">
-              {revenueData.map((item, i) => {
-                const height = maxRevenue
-                  ? (item.amount / maxRevenue) * 100
-                  : 0;
-                return (
-                  <div
-                    key={i}
-                    className="flex-1 flex flex-col items-center gap-2 group"
-                  >
-                    <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg relative h-full flex items-end overflow-hidden">
-                      <div
-                        className="w-full bg-blue-500 dark:bg-blue-600 transition-all duration-500 group-hover:bg-blue-400"
-                        style={{ height: `${height}%` }}
-                      ></div>
+            {maxRevenue === 0 ? (
+              <div className="h-64 flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                  <BarChart3 className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+                </div>
+                <p className="text-slate-500 dark:text-slate-400 font-medium">
+                  No revenue data yet
+                </p>
+                <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
+                  Revenue will appear here once you have paid invoices
+                </p>
+              </div>
+            ) : (
+              <div className="h-64 flex items-end justify-between gap-2">
+                {revenueData.map((item, i) => {
+                  const height = maxRevenue
+                    ? (item.amount / maxRevenue) * 100
+                    : 0;
+                  return (
+                    <div
+                      key={i}
+                      className="flex-1 flex flex-col items-center gap-2 group"
+                    >
+                      <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg relative h-full flex items-end overflow-hidden">
+                        <div
+                          className="w-full bg-gradient-to-t from-blue-600 to-blue-400 dark:from-blue-600 dark:to-blue-400 transition-all duration-500 group-hover:from-blue-500 group-hover:to-blue-300 rounded-t-lg"
+                          style={{ height: `${Math.max(height, 2)}%` }}
+                        >
+                          {height > 15 && (
+                            <span className="absolute top-2 left-1/2 -translate-x-1/2 text-xs font-medium text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                              £{item.amount.toFixed(0)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        {item.month}
+                      </span>
                     </div>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      {item.month}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Invoice Status */}

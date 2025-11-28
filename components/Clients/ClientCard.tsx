@@ -8,9 +8,12 @@ import {
   Phone,
   PlusIcon,
   Users,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { normalizeCurrencyCode } from "@/lib/utils";
+import { useState } from "react";
+import { ClientForm } from "./ClientForm";
 
 const formatCurrency = (amount?: number | null, currency?: string | null) => {
   const currencyCode = normalizeCurrencyCode(
@@ -44,6 +47,7 @@ const formatCurrency = (amount?: number | null, currency?: string | null) => {
 
 export default function ClientCard({ client }: { client: any }) {
   const router = useRouter();
+  const [showEditModal, setShowEditModal] = useState(false);
 
   return (
     <div className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
@@ -115,11 +119,7 @@ export default function ClientCard({ client }: { client: any }) {
 
         <div className="flex gap-2">
           <button
-            onClick={() =>
-              router.push(
-                `/dashboard/clients/edit?business_id=${client.business_id}&client_id=${client.id}`
-              )
-            }
+            onClick={() => setShowEditModal(true)}
             className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg font-medium transition-colors text-sm"
           >
             <Edit className="h-4 w-4" />
@@ -138,6 +138,60 @@ export default function ClientCard({ client }: { client: any }) {
           </button>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={() => setShowEditModal(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white">
+                  <Users className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                    Edit Client
+                  </h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Update client information
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5 text-slate-500" />
+              </button>
+            </div>
+            <div className="p-6">
+              <ClientForm
+                business_id={client.business_id}
+                defaultValues={{
+                  id: client.id,
+                  name: client.name || "",
+                  email: client.email || "",
+                  phone: client.phone || "",
+                  address: client.address || "",
+                  business_id: client.business_id,
+                }}
+                submitButtonText="Save Changes"
+                closeModal={() => setShowEditModal(false)}
+                onSuccess={() => {
+                  setShowEditModal(false);
+                  router.refresh();
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
