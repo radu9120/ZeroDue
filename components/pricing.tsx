@@ -54,6 +54,7 @@ const plans = [
       "PDF export",
       "Pay as you go",
     ],
+    excluded: ["Recurring invoices", "Estimates & quotes", "Expense tracking"],
     cta: "Get Started Free",
     popular: false,
     gradient: "from-slate-500 to-slate-600",
@@ -70,9 +71,11 @@ const plans = [
       "15 invoices/mo",
       "3 businesses",
       "All templates",
-      "Priority support",
+      "Recurring invoices",
+      "Estimates & quotes",
+      "Expense tracking",
       "Custom branding",
-      "Pay as you go",
+      "Priority support",
     ],
     cta: "Start Free 30 Days Trial",
     popular: true,
@@ -90,7 +93,12 @@ const plans = [
       "Unlimited invoices",
       "Unlimited businesses",
       "All templates + custom branding",
-      "Email tracking & reminders",
+      "Recurring invoices",
+      "Estimates & quotes",
+      "Expense tracking",
+      "Partial payments",
+      "Payment reminders",
+      "Email tracking",
       "Priority support",
     ],
     cta: "Subscribe Now",
@@ -951,6 +959,18 @@ export default function Pricing({
                           <Check className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white" />
                         </div>
                         {feature}
+                      </li>
+                    ))}
+                    {/* Show excluded features for free plan */}
+                    {(plan as any).excluded?.map((feature: string) => (
+                      <li
+                        key={feature}
+                        className="flex items-center gap-2 lg:gap-3 text-sm lg:text-base text-slate-500"
+                      >
+                        <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0">
+                          <X className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-slate-500" />
+                        </div>
+                        <span className="line-through">{feature}</span>
                       </li>
                     ))}
                   </ul>

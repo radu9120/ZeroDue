@@ -9,12 +9,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm, useWatch } from "react-hook-form";
 import InvoiceItems from "./InvoiceItems";
 import { Textarea } from "../ui/textarea";
 import { createInvoice } from "@/lib/actions/invoice.actions";
+import { createRecurringInvoice } from "@/lib/actions/recurring.actions";
 import { formSchema } from "@/schemas/invoiceSchema";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useRef } from "react";
@@ -31,6 +33,7 @@ import {
   Truck,
   Hammer,
   Code,
+  Repeat,
 } from "lucide-react";
 import Image from "next/image";
 import {
@@ -52,20 +55,40 @@ import { InvoicePreview } from "./InvoicePreview";
 import { BuyInvoiceCredits } from "./BuyInvoiceCredits";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Custom Calendar Component
 // Removed local definition
+
+const frequencyOptions = [
+  { value: "weekly", label: "Weekly" },
+  { value: "biweekly", label: "Bi-weekly" },
+  { value: "monthly", label: "Monthly" },
+  { value: "quarterly", label: "Quarterly" },
+  { value: "yearly", label: "Yearly" },
+];
+
+const paymentTermsOptions = [
+  { value: 7, label: "Net 7 days" },
+  { value: 14, label: "Net 14 days" },
+  { value: 30, label: "Net 30 days" },
+  { value: 45, label: "Net 45 days" },
+  { value: 60, label: "Net 60 days" },
+];
 
 const InvoiceForm = ({
   company_data,
   client_data,
   clients,
+  userPlan = "free_user",
 }: {
   company_data: BusinessType;
   client_data?: ClientType;
   clients?: ClientType[];
+  userPlan?: "free_user" | "professional" | "enterprise";
 }) => {
   const router = useRouter();
+  const isPaidUser = userPlan !== "free_user";
   const defaultCurrency = useMemo(
     () => normalizeCurrencyCode(company_data.currency),
     [company_data.currency]
@@ -94,6 +117,20 @@ const InvoiceForm = ({
   >("free_user");
 
   const [localClients, setLocalClients] = useState<ClientType[]>(clients || []);
+
+  // Recurring invoice state
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringFrequency, setRecurringFrequency] =
+    useState<string>("monthly");
+  const [recurringStartDate, setRecurringStartDate] = useState<Date>(
+    new Date()
+  );
+  const [recurringEndDate, setRecurringEndDate] = useState<Date | undefined>(
+    undefined
+  );
+  const [recurringPaymentTerms, setRecurringPaymentTerms] =
+    useState<number>(30);
+  const [autoSend, setAutoSend] = useState(false);
 
   useEffect(() => {
     if (clients) {
@@ -412,7 +449,53 @@ const InvoiceForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // Add status field before sending to backend
+      // Check if this is a recurring invoice
+      if (isRecurring) {
+        // Validate client is selected
+        if (!values.client_id) {
+          toast.error("Please select a client for recurring invoices");
+          return;
+        }
+
+        const recurringData = {
+          business_id: company_data.id,
+          client_id: values.client_id,
+          invoice_template: selectedTemplate,
+          description: values.description || "",
+          items: values.items,
+          notes: values.notes || "",
+          bank_details: values.bank_details || "",
+          currency: normalizeCurrencyCode(values.currency),
+          discount: values.discount || 0,
+          shipping: values.shipping || 0,
+          frequency: recurringFrequency as
+            | "weekly"
+            | "biweekly"
+            | "monthly"
+            | "quarterly"
+            | "yearly",
+          start_date: recurringStartDate.toISOString().split("T")[0],
+          end_date: recurringEndDate
+            ? recurringEndDate.toISOString().split("T")[0]
+            : undefined,
+          payment_terms: recurringPaymentTerms,
+          auto_send: autoSend,
+        };
+
+        const result = await createRecurringInvoice(recurringData);
+
+        if (result && "error" in result) {
+          toast.error(result.error);
+          return;
+        }
+
+        clearDraft();
+        toast.success("Recurring invoice created successfully!");
+        window.location.href = `/dashboard/invoices/recurring?business_id=${company_data.id}`;
+        return;
+      }
+
+      // Regular invoice creation
       const invoiceData = {
         ...values,
         status: "draft" as const,
@@ -1146,6 +1229,221 @@ const InvoiceForm = ({
               </div>
             </div>
 
+            {/* Recurring Invoice Option */}
+            <div className="border-t border-gray-100 dark:border-slate-700 pt-12">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
+                  <Repeat className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
+                    Make This Recurring?
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-slate-400">
+                    Automatically generate this invoice on a schedule
+                  </p>
+                </div>
+                {isPaidUser ? (
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id="isRecurring"
+                      checked={isRecurring}
+                      onCheckedChange={(checked) =>
+                        setIsRecurring(checked === true)
+                      }
+                      className="h-5 w-5"
+                    />
+                    <label
+                      htmlFor="isRecurring"
+                      className="text-sm font-medium text-gray-700 dark:text-slate-300 cursor-pointer"
+                    >
+                      Yes, make recurring
+                    </label>
+                  </div>
+                ) : (
+                  <Link href="/pricing">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs"
+                    >
+                      Upgrade to Unlock
+                    </Button>
+                  </Link>
+                )}
+              </div>
+
+              {/* Recurring Options - Show when enabled */}
+              <AnimatePresence>
+                {isRecurring && isPaidUser && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="bg-gradient-to-br from-emerald-50 to-teal-50/50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-emerald-100/50 dark:border-emerald-800/50 space-y-6">
+                      {/* Frequency Selection */}
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-3 block">
+                          Frequency
+                        </label>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                          {frequencyOptions.map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() =>
+                                setRecurringFrequency(option.value)
+                              }
+                              className={cn(
+                                "p-3 rounded-xl border-2 transition-all text-sm font-medium",
+                                recurringFrequency === option.value
+                                  ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
+                                  : "border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:border-emerald-300"
+                              )}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Dates and Payment Terms */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-2 block">
+                            Start Date
+                          </label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                type="button"
+                                className={cn(
+                                  "w-full h-12 justify-start text-left font-normal border border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl",
+                                  !recurringStartDate && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarIcon className="mr-3 h-4 w-4" />
+                                {recurringStartDate
+                                  ? format(recurringStartDate, "MMM dd, yyyy")
+                                  : "Pick a date"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
+                              <CalendarPicker
+                                date={recurringStartDate}
+                                onSelect={(date) =>
+                                  date && setRecurringStartDate(date)
+                                }
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                            First invoice generated on this date
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-2 block">
+                            End Date (Optional)
+                          </label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                type="button"
+                                className={cn(
+                                  "w-full h-12 justify-start text-left font-normal border border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl",
+                                  !recurringEndDate && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarIcon className="mr-3 h-4 w-4" />
+                                {recurringEndDate
+                                  ? format(recurringEndDate, "MMM dd, yyyy")
+                                  : "No end date"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
+                              <CalendarPicker
+                                date={recurringEndDate}
+                                onSelect={(date) => setRecurringEndDate(date)}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                            Leave empty for indefinite
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-gray-700 dark:text-slate-300 mb-2 block">
+                            Payment Terms
+                          </label>
+                          <Select
+                            value={String(recurringPaymentTerms)}
+                            onValueChange={(value) =>
+                              setRecurringPaymentTerms(Number(value))
+                            }
+                          >
+                            <SelectTrigger className="w-full h-12 border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl">
+                              <span>
+                                {paymentTermsOptions.find(
+                                  (o) => o.value === recurringPaymentTerms
+                                )?.label || "Net 30 days"}
+                              </span>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {paymentTermsOptions.map((option) => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={String(option.value)}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Auto-send Option */}
+                      <div className="flex items-center space-x-3 pt-2">
+                        <Checkbox
+                          id="autoSend"
+                          checked={autoSend}
+                          onCheckedChange={(checked) =>
+                            setAutoSend(checked === true)
+                          }
+                          className="h-5 w-5"
+                        />
+                        <div>
+                          <label
+                            htmlFor="autoSend"
+                            className="text-sm font-medium text-gray-700 dark:text-slate-300 cursor-pointer"
+                          >
+                            Auto-send invoices
+                          </label>
+                          <p className="text-xs text-gray-500 dark:text-slate-400">
+                            Automatically email invoices to the client when
+                            generated
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Items Section */}
             <div className="border-t border-gray-100 dark:border-slate-700 pt-12">
               <div className="flex items-center space-x-3 mb-8">
@@ -1307,17 +1605,21 @@ const InvoiceForm = ({
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="button"
-                  variant="neutralOutline"
-                  onClick={() => setIsPreviewOpen(true)}
-                  className="border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                >
-                  Preview Invoice
-                </Button>
+                {!isRecurring && (
+                  <Button
+                    type="button"
+                    variant="neutralOutline"
+                    onClick={() => setIsPreviewOpen(true)}
+                    className="border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  >
+                    Preview Invoice
+                  </Button>
+                )}
                 <CustomButton
                   type="submit"
-                  label="Create Invoice"
+                  label={
+                    isRecurring ? "Create Recurring Invoice" : "Create Invoice"
+                  }
                   variant="primary"
                 />
               </div>

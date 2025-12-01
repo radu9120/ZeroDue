@@ -85,6 +85,7 @@ export default async function NewInvoice({
           company_data={business}
           clients={clients}
           client_data={clients.find((c) => c.id === Number(clientId))}
+          userPlan={userPlan as "free_user" | "professional" | "enterprise"}
         />
       </div>
     </DashboardShell>

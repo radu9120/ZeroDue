@@ -21,6 +21,9 @@ import {
   Check,
   Building2,
   BarChart3,
+  RefreshCw,
+  Receipt,
+  ClipboardList,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -46,7 +49,10 @@ interface DashboardShellProps {
     | "clients"
     | "settings"
     | "analytics"
-    | "plan";
+    | "plan"
+    | "estimates"
+    | "expenses"
+    | "recurring";
   pendingInvoicesCount?: number;
   userPlan?: "free_user" | "professional" | "enterprise";
 }
@@ -102,6 +108,24 @@ export function DashboardShell({
       icon: FileText,
       id: "invoices",
       href: `/dashboard/invoices?business_id=${business.id}`,
+    },
+    {
+      label: "Estimates",
+      icon: ClipboardList,
+      id: "estimates",
+      href: `/dashboard/estimates?business_id=${business.id}`,
+    },
+    {
+      label: "Recurring",
+      icon: RefreshCw,
+      id: "recurring",
+      href: `/dashboard/invoices/recurring?business_id=${business.id}`,
+    },
+    {
+      label: "Expenses",
+      icon: Receipt,
+      id: "expenses",
+      href: `/dashboard/expenses?business_id=${business.id}`,
     },
     {
       label: "Clients",
