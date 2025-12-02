@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 
 // Initialize Gemini client
-const apiKey = "AIzaSyDM0RkUwayxvs89OrDJeyLDVCNK-LWeMBQ";
+const apiKey = process.env.GEMINI_API_KEY!;
 const ai = new GoogleGenAI({ apiKey });
 
 // Comprehensive knowledge base context for the AI
