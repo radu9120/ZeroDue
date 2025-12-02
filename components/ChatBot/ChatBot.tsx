@@ -251,10 +251,30 @@ If you're experiencing a problem, just describe it and I'll help you report it t
 interface ChatBotProps {
   userEmail?: string;
   businessName?: string;
+  isOpenExternal?: boolean;
+  onCloseExternal?: () => void;
+  hideToggleOnMobile?: boolean;
 }
 
-export default function ChatBot({ userEmail, businessName }: ChatBotProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function ChatBot({
+  userEmail,
+  businessName,
+  isOpenExternal,
+  onCloseExternal,
+  hideToggleOnMobile = false,
+}: ChatBotProps) {
+  const [isOpenInternal, setIsOpenInternal] = useState(false);
+
+  // Use external state if provided, otherwise use internal state
+  const isOpen = isOpenExternal !== undefined ? isOpenExternal : isOpenInternal;
+  const setIsOpen = (open: boolean) => {
+    if (isOpenExternal !== undefined && onCloseExternal && !open) {
+      onCloseExternal();
+    } else {
+      setIsOpenInternal(open);
+    }
+  };
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -459,18 +479,18 @@ How can I help you today?`,
 
   return (
     <>
-      {/* Chat Toggle Button */}
+      {/* Chat Toggle Button - hidden on mobile if controlled externally */}
       <AnimatePresence>
-        {!isOpen && (
+        {!isOpen && !hideToggleOnMobile && (
           <motion.button
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full shadow-lg shadow-blue-500/30 flex items-center justify-center text-white hover:shadow-xl hover:shadow-blue-500/40 transition-shadow"
+            className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-50 w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full shadow-lg shadow-blue-500/30 flex items-center justify-center text-white hover:shadow-xl hover:shadow-blue-500/40 transition-shadow hidden sm:flex"
           >
-            <MessageCircle className="w-6 h-6" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white" />
+            <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 rounded-full border-2 border-white" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -483,7 +503,7 @@ How can I help you today?`,
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)] h-[600px] max-h-[calc(100vh-100px)] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden"
+            className="fixed inset-0 sm:inset-auto sm:bottom-6 sm:right-6 z-50 sm:w-[380px] sm:max-w-[calc(100vw-48px)] sm:h-[600px] sm:max-h-[calc(100vh-100px)] bg-white dark:bg-slate-900 sm:rounded-2xl shadow-2xl border-0 sm:border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 flex items-center justify-between">

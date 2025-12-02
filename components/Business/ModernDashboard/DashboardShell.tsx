@@ -24,6 +24,7 @@ import {
   RefreshCw,
   Receipt,
   ClipboardList,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -69,6 +70,7 @@ export function DashboardShell({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -103,48 +105,56 @@ export function DashboardShell({
       icon: LayoutDashboard,
       id: "dashboard",
       href: `/dashboard/business?business_id=${business.id}`,
+      primary: true,
     },
     {
       label: "Invoices",
       icon: FileText,
       id: "invoices",
       href: `/dashboard/invoices?business_id=${business.id}`,
-    },
-    {
-      label: "Estimates",
-      icon: ClipboardList,
-      id: "estimates",
-      href: `/dashboard/estimates?business_id=${business.id}`,
-    },
-    {
-      label: "Recurring",
-      icon: RefreshCw,
-      id: "recurring",
-      href: `/dashboard/invoices/recurring?business_id=${business.id}`,
-    },
-    {
-      label: "Expenses",
-      icon: Receipt,
-      id: "expenses",
-      href: `/dashboard/expenses?business_id=${business.id}`,
+      primary: true,
     },
     {
       label: "Clients",
       icon: Users,
       id: "clients",
       href: `/dashboard/clients?business_id=${business.id}`,
+      primary: true,
+    },
+    {
+      label: "Estimates",
+      icon: ClipboardList,
+      id: "estimates",
+      href: `/dashboard/estimates?business_id=${business.id}`,
+      primary: false,
+    },
+    {
+      label: "Recurring",
+      icon: RefreshCw,
+      id: "recurring",
+      href: `/dashboard/invoices/recurring?business_id=${business.id}`,
+      primary: false,
+    },
+    {
+      label: "Expenses",
+      icon: Receipt,
+      id: "expenses",
+      href: `/dashboard/expenses?business_id=${business.id}`,
+      primary: false,
     },
     {
       label: "Analytics",
       icon: BarChart3,
       id: "analytics",
       href: `/dashboard/analytics?business_id=${business.id}`,
+      primary: false,
     },
     {
       label: "Settings",
       icon: Settings,
       id: "settings",
       href: `/dashboard/business/settings?business_id=${business.id}`,
+      primary: false,
     },
   ];
 
@@ -299,32 +309,65 @@ export function DashboardShell({
 
         {/* Navigation */}
         <div className="space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href}
-              onClick={() => setIsSidebarOpen(false)}
-              className={`h-10 w-full rounded-lg flex items-center px-3 gap-3 transition-all duration-200 group ${
-                activePage === item.id
-                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
-            >
-              <item.icon
-                className={`w-5 h-5 ${
+          {/* Primary nav items */}
+          {navItems
+            .filter((item) => item.primary)
+            .map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                onClick={() => setIsSidebarOpen(false)}
+                className={`h-10 w-full rounded-lg flex items-center px-3 gap-3 transition-all duration-200 group ${
                   activePage === item.id
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
+                    : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
                 }`}
-              />
-              <span className="text-base">{item.label}</span>
-              {item.label === "Invoices" && pendingInvoicesCount > 0 && (
-                <span className="ml-auto text-[10px] font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded-full">
-                  {pendingInvoicesCount}
-                </span>
-              )}
-            </Link>
-          ))}
+              >
+                <item.icon
+                  className={`w-5 h-5 ${
+                    activePage === item.id
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                  }`}
+                />
+                <span className="text-base">{item.label}</span>
+                {item.label === "Invoices" && pendingInvoicesCount > 0 && (
+                  <span className="ml-auto text-[10px] font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded-full">
+                    {pendingInvoicesCount}
+                  </span>
+                )}
+              </Link>
+            ))}
+
+          {/* Divider */}
+          <div className="my-2 border-t border-gray-200 dark:border-slate-800" />
+
+          {/* Secondary nav items - more compact on mobile */}
+          <div className="grid grid-cols-2 gap-1 md:grid-cols-1 md:gap-0">
+            {navItems
+              .filter((item) => !item.primary)
+              .map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className={`h-9 md:h-10 w-full rounded-lg flex items-center px-2 md:px-3 gap-2 md:gap-3 transition-all duration-200 group ${
+                    activePage === item.id
+                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
+                      : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
+                  }`}
+                >
+                  <item.icon
+                    className={`w-4 h-4 md:w-5 md:h-5 ${
+                      activePage === item.id
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                    }`}
+                  />
+                  <span className="text-sm md:text-base">{item.label}</span>
+                </Link>
+              ))}
+          </div>
         </div>
 
         {/* Plan Status */}
@@ -499,36 +542,73 @@ export function DashboardShell({
         </div>
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-t border-gray-200 dark:border-slate-800 z-50 px-6 py-3 pb-6 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)]">
-        <div className="flex justify-between items-center">
-          {navItems.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href}
-              className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200 ${
-                activePage === item.id
-                  ? "text-blue-600 dark:text-blue-400 scale-105"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
-            >
-              <item.icon
-                className={`w-6 h-6 ${
-                  activePage === item.id
-                    ? "stroke-[2.5px] fill-blue-600/10"
-                    : "stroke-2"
-                }`}
-              />
-              <span className="text-[10px] font-bold tracking-wide">
-                {item.label}
-              </span>
-            </Link>
-          ))}
+      {/* Mobile Bottom Navigation - Only 5 key items */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-t border-gray-200 dark:border-slate-800 z-50 px-2 py-2 pb-6 safe-area-inset-bottom">
+        <div className="flex justify-around items-center max-w-md mx-auto">
+          {/* Dashboard */}
+          <Link
+            href={`/dashboard/business?business_id=${business.id}`}
+            className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all ${activePage === "dashboard" ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
+          >
+            <LayoutDashboard
+              className={`w-5 h-5 ${activePage === "dashboard" ? "stroke-[2.5px]" : ""}`}
+            />
+            <span className="text-[10px] font-medium">Home</span>
+          </Link>
+
+          {/* Invoices */}
+          <Link
+            href={`/dashboard/invoices?business_id=${business.id}`}
+            className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all ${activePage === "invoices" ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
+          >
+            <FileText
+              className={`w-5 h-5 ${activePage === "invoices" ? "stroke-[2.5px]" : ""}`}
+            />
+            <span className="text-[10px] font-medium">Invoices</span>
+          </Link>
+
+          {/* Clients */}
+          <Link
+            href={`/dashboard/clients?business_id=${business.id}`}
+            className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all ${activePage === "clients" ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
+          >
+            <Users
+              className={`w-5 h-5 ${activePage === "clients" ? "stroke-[2.5px]" : ""}`}
+            />
+            <span className="text-[10px] font-medium">Clients</span>
+          </Link>
+
+          {/* Chat Button */}
+          <button
+            onClick={() => setIsChatOpen(true)}
+            className="flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            <div className="relative">
+              <MessageCircle className="w-5 h-5" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full" />
+            </div>
+            <span className="text-[10px] font-medium">Help</span>
+          </button>
+
+          {/* Menu/More */}
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
+          >
+            <Menu className="w-5 h-5" />
+            <span className="text-[10px] font-medium">More</span>
+          </button>
         </div>
       </div>
 
-      {/* ChatBot */}
-      <ChatBot userEmail={business?.email} businessName={business?.name} />
+      {/* ChatBot - controlled by state, hidden toggle on mobile */}
+      <ChatBot
+        userEmail={business?.email}
+        businessName={business?.name}
+        isOpenExternal={isChatOpen}
+        onCloseExternal={() => setIsChatOpen(false)}
+        hideToggleOnMobile={true}
+      />
     </div>
   );
 }
