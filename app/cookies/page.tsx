@@ -339,7 +339,7 @@ export default function CookiesPage() {
                   </span>
                 </li>
               </ul>
-              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+              <div className="bg-blue-50 dark:bg-slate-800/50 border border-blue-200 dark:border-slate-700 p-4 rounded-lg">
                 <p
                   className="text-sm"
                   style={{ color: "var(--color-primary)" }}
@@ -350,7 +350,7 @@ export default function CookiesPage() {
                   immediately.
                 </p>
               </div>
-              <p className="text-sm text-secondary-text bg-neutral-50 p-3 rounded-lg">
+              <p className="text-sm text-secondary-text bg-neutral-50 dark:bg-slate-800/50 p-3 rounded-lg">
                 <strong>Note:</strong> Disabling certain cookies may affect the
                 functionality of our website and limit your user experience.
               </p>

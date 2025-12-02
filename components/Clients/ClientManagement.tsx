@@ -147,7 +147,7 @@ export default function ClientManagement({
               placeholder="Search clients..."
               value={searchValue}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10 pr-4 py-2 border-blue-200 focus:ring-primary w-full sm:w-64"
+              className="pl-10 pr-4 py-2 border-blue-200 dark:border-slate-700 focus:ring-primary w-full sm:w-64"
             />
           </div>
         </div>

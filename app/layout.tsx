@@ -12,6 +12,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import HideOnRoutes from "@/components/layout/HideOnRoutes";
+import ChatBot from "@/components/ChatBot/ChatBot";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -85,6 +86,11 @@ export default function RootLayout({
           <HideOnRoutes routes={["/invoice", "/dashboard", "/upgrade"]}>
             <Footer />
           </HideOnRoutes>
+          <Suspense fallback={null}>
+            <HideOnRoutes routes={["/dashboard"]}>
+              <ChatBot />
+            </HideOnRoutes>
+          </Suspense>
           <CookieBanner />
           <SpeedInsights />
         </ThemeProvider>

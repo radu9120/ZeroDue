@@ -515,6 +515,16 @@ export function DashboardShell({
 
             {/* Actions */}
             <div className="flex items-center gap-2 md:gap-3">
+              {/* Help/Chat Button - Desktop only */}
+              <button
+                onClick={() => setIsChatOpen(true)}
+                className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors relative"
+                title="Help & Support"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full" />
+              </button>
+
               <ThemeToggle />
 
               {mounted ? (
