@@ -647,7 +647,14 @@ export default function SettingsPage() {
                 >
                   upgrade page
                 </Link>{" "}
-                or contact support.
+                or contact support. View our{" "}
+                <Link
+                  href="/refund-policy"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  refund policy
+                </Link>
+                .
               </p>
             )}
           </div>

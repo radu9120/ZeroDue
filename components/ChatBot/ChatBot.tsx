@@ -151,6 +151,16 @@ To track expenses:
 • PDF export
 To get more features like recurring invoices, estimates, and expense tracking, upgrade to Professional or Enterprise.`,
 
+  // Refund
+  refund: `We offer a 14-day money-back guarantee on all paid plans.
+
+To request a refund:
+1. Contact us within 14 days of purchase
+2. Email support@invoiceflow.com or use the Contact page
+3. We'll process your refund within 5-10 business days
+
+View our full refund policy at /refund-policy`,
+
   // General
   help: `I can help you with:
 • Creating and sending invoices
