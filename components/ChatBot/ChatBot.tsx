@@ -285,6 +285,37 @@ How can I help you today?`,
     scrollToBottom();
   }, [messages]);
 
+  // AI-powered response function
+  const getAIResponse = async (
+    userInput: string,
+    chatHistory: Message[]
+  ): Promise<string> => {
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userInput,
+          history: chatHistory.slice(-10).map((m) => ({
+            type: m.type,
+            content: m.content,
+          })),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get response");
+      }
+
+      const data = await response.json();
+      return data.response;
+    } catch (error) {
+      console.error("Chat API error:", error);
+      // Fallback to local findAnswer
+      return findAnswer(userInput);
+    }
+  };
+
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -295,41 +326,52 @@ How can I help you today?`,
       timestamp: new Date(),
     };
 
+    const currentInput = input;
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsTyping(true);
 
-    // Simulate typing delay
-    await new Promise((resolve) =>
-      setTimeout(resolve, 500 + Math.random() * 1000)
-    );
+    try {
+      // Get AI response
+      const answer = await getAIResponse(currentInput, [
+        ...messages,
+        userMessage,
+      ]);
 
-    const answer = findAnswer(input);
-    const botMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      type: "bot",
-      content: answer,
-      timestamp: new Date(),
-    };
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: "bot",
+        content: answer,
+        timestamp: new Date(),
+      };
 
-    setMessages((prev) => [...prev, botMessage]);
-    setIsTyping(false);
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: "bot",
+        content:
+          "Sorry, I encountered an error. Please try again or contact support@invoiceflow.com",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+    }
 
     // Show report form if it seems like an issue
     if (
-      input.toLowerCase().includes("bug") ||
-      input.toLowerCase().includes("issue") ||
-      input.toLowerCase().includes("problem") ||
-      input.toLowerCase().includes("error") ||
-      input.toLowerCase().includes("not working")
+      currentInput.toLowerCase().includes("bug") ||
+      currentInput.toLowerCase().includes("issue") ||
+      currentInput.toLowerCase().includes("problem") ||
+      currentInput.toLowerCase().includes("error") ||
+      currentInput.toLowerCase().includes("not working")
     ) {
       setShowReportForm(true);
     }
   };
 
-  const handleQuickAction = (action: QuickAction) => {
-    setInput(action.query);
-    // Auto-send after setting input
+  const handleQuickAction = async (action: QuickAction) => {
     const userMessage: Message = {
       id: Date.now().toString(),
       type: "user",
@@ -339,7 +381,19 @@ How can I help you today?`,
     setMessages((prev) => [...prev, userMessage]);
     setIsTyping(true);
 
-    setTimeout(() => {
+    try {
+      const answer = await getAIResponse(action.query, [
+        ...messages,
+        userMessage,
+      ]);
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: "bot",
+        content: answer,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
       const answer = findAnswer(action.query);
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -348,8 +402,9 @@ How can I help you today?`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botMessage]);
+    } finally {
       setIsTyping(false);
-    }, 800);
+    }
   };
 
   const handleReportIssue = async () => {
