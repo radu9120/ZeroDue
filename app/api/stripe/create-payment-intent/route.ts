@@ -332,8 +332,8 @@ export async function POST(req: NextRequest) {
       },
     };
 
-    // Only add trial if user hasn't used it before AND it's not enterprise
-    if (!hasUsedTrial && plan !== "enterprise") {
+    // Add 30-day trial for all plans if user hasn't used it before
+    if (!hasUsedTrial) {
       subscriptionParams.trial_period_days = 30;
     }
 

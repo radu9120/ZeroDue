@@ -38,6 +38,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Pricing from "@/components/pricing";
 import { ThemeToggle } from "@/components/theme-toggle";
+import ChatBot from "@/components/ChatBot/ChatBot";
 
 interface DashboardShellProps {
   children: ReactNode;
@@ -525,6 +526,9 @@ export function DashboardShell({
           ))}
         </div>
       </div>
+
+      {/* ChatBot */}
+      <ChatBot userEmail={business?.email} businessName={business?.name} />
     </div>
   );
 }

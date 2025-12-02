@@ -78,6 +78,7 @@ const plans = [
       "Priority support",
     ],
     cta: "Start Free 30 Days Trial",
+    trialNote: "30-day free trial • Cancel anytime",
     popular: true,
     gradient: "from-blue-600 to-cyan-500",
   },
@@ -101,7 +102,8 @@ const plans = [
       "Email tracking",
       "Priority support",
     ],
-    cta: "Subscribe Now",
+    cta: "Start Free 30 Days Trial",
+    trialNote: "30-day free trial • Cancel anytime",
     popular: false,
     gradient: "from-purple-600 to-pink-500",
   },
@@ -942,6 +944,13 @@ export default function Pricing({
                     {billingPeriod === "yearly" && plan.id !== "free_user" && (
                       <p className="text-xs lg:text-sm text-green-400 mt-1">
                         Save 20% with yearly billing
+                      </p>
+                    )}
+                    {/* Trial note for paid plans */}
+                    {(plan as any).trialNote && plan.id !== "free_user" && (
+                      <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1">
+                        <span className="inline-block w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+                        {(plan as any).trialNote}
                       </p>
                     )}
                   </div>
