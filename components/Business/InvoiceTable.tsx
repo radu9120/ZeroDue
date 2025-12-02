@@ -883,11 +883,180 @@ export default function InvoiceTable({
           </div>
 
           {invoiceRows.length > 0 ? (
-            <div className="space-y-4 md:space-y-0 md:divide-y md:divide-blue-100 dark:md:divide-slate-700">
+            <div className="space-y-3 md:space-y-0 md:divide-y md:divide-blue-100 dark:md:divide-slate-700">
+              {invoiceRows.map((invoice) => (
+                <div key={invoice.id} className="md:hidden">
+                  {/* Mobile Card - Improved Design */}
+                  <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden shadow-sm">
+                    {/* Card Header - Invoice Number, Status & Amount */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-slate-900 dark:text-white">
+                            {invoice.invoice_number}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            {invoice.description || "No description"}
+                          </p>
+                        </div>
+                      </div>
+                      {getStatusBadge(invoice?.status || "draft")}
+                    </div>
+
+                    {/* Card Body - Details */}
+                    <div className="px-4 py-3 space-y-3">
+                      {/* Amount - Prominent */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-slate-500 dark:text-slate-400">
+                          Amount
+                        </span>
+                        <span className="text-lg font-bold text-slate-900 dark:text-white">
+                          {formatInvoiceAmount(invoice.total, invoice.currency)}
+                        </span>
+                      </div>
+
+                      {/* Dates Row */}
+                      <div className="flex items-center justify-between text-sm">
+                        <div>
+                          <span className="text-slate-500 dark:text-slate-400">
+                            Issued:{" "}
+                          </span>
+                          <span className="text-slate-700 dark:text-slate-300">
+                            {invoice.issue_date
+                              ? formatDate(invoice.issue_date)
+                              : "N/A"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-slate-500 dark:text-slate-400">
+                            Due:{" "}
+                          </span>
+                          <span className="text-slate-700 dark:text-slate-300 font-medium">
+                            {formatDate(invoice.due_date)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Email Status */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {(() => {
+                          const badges = buildEmailStatusBadges(invoice);
+                          if (!badges.length) {
+                            return (
+                              <span className="text-xs text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">
+                                📧 Not sent
+                              </span>
+                            );
+                          }
+                          return badges.map((badge, index) => (
+                            <Fragment key={`${invoice.id}-mobile-${badge.key}`}>
+                              <Badge className={`${badge.className} text-xs`}>
+                                {badge.label}
+                              </Badge>
+                              {index < badges.length - 1 && (
+                                <span className="text-xs text-slate-400">
+                                  →
+                                </span>
+                              )}
+                            </Fragment>
+                          ));
+                        })()}
+                      </div>
+                    </div>
+
+                    {/* Card Footer - Actions */}
+                    <div className="flex items-center border-t border-slate-100 dark:border-slate-700 divide-x divide-slate-100 dark:divide-slate-700">
+                      <Link
+                        href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}`}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                      >
+                        <Eye className="w-4 h-4" />
+                        View
+                      </Link>
+                      <button
+                        onClick={() => handleSendToClient(invoice)}
+                        disabled={isSending === invoice.id}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors disabled:opacity-50"
+                      >
+                        <Send className="w-4 h-4" />
+                        {isSending === invoice.id ? "Sending..." : "Send"}
+                      </button>
+                      <CustomModal
+                        heading="More Actions"
+                        description={`Actions for invoice ${invoice.invoice_number}`}
+                        customTrigger={
+                          <button className="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            <MoreVertical className="w-4 h-4" />
+                            More
+                          </button>
+                        }
+                      >
+                        <div className="space-y-2">
+                          <Link
+                            href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}`}
+                            className="block"
+                          >
+                            <Button
+                              variant="secondary"
+                              className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Full Invoice
+                            </Button>
+                          </Link>
+
+                          <Link
+                            href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}&edit=1`}
+                            className="block"
+                          >
+                            <Button
+                              variant="secondary"
+                              className="w-full justify-start dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200"
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              {userPlan === "free_user"
+                                ? "Modify Status/Notes"
+                                : "Edit Invoice"}
+                            </Button>
+                          </Link>
+
+                          <Button
+                            variant="secondary"
+                            className="w-full justify-start text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 dark:bg-slate-700 dark:hover:bg-slate-600"
+                            onClick={() => handleSendToClient(invoice)}
+                            disabled={isSending === invoice.id}
+                          >
+                            <Send className="h-4 w-4 mr-2" />
+                            {isSending === invoice.id
+                              ? "Sending..."
+                              : "Send to Client"}
+                          </Button>
+
+                          <div className="pt-2 border-t border-gray-200 dark:border-slate-600">
+                            <Button
+                              variant="secondary"
+                              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:bg-slate-700 dark:hover:bg-red-900/20"
+                              onClick={() => handleDeleteInvoice(invoice)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Invoice
+                            </Button>
+                          </div>
+                        </div>
+                      </CustomModal>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Desktop Table Rows - Keep existing */}
               {invoiceRows.map((invoice) => (
                 <div
-                  key={invoice.id}
-                  className="grid w-full grid-cols-2 gap-x-4 gap-y-3 rounded-2xl border border-blue-100 bg-white px-4 py-4 shadow-sm transition-colors dark:border-slate-700 dark:bg-slate-800 md:grid-cols-7 md:gap-2 md:rounded-none md:border-0 md:bg-transparent md:px-4 md:py-3 md:shadow-none md:hover:bg-blue-50/50 dark:md:hover:bg-slate-800"
+                  key={`desktop-${invoice.id}`}
+                  className="hidden md:grid w-full grid-cols-7 gap-2 px-4 py-3 hover:bg-blue-50/50 dark:hover:bg-slate-800"
                 >
                   <div className="col-span-2 min-w-0 md:col-span-1">
                     <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">

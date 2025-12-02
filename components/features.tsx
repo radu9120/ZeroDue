@@ -8,6 +8,7 @@ import {
   Clock,
   Globe,
   Shield,
+  Bot,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -37,10 +38,11 @@ const features = [
       "Set up automatic payment reminders. Let the system chase payments for you while you focus on work.",
   },
   {
-    icon: Globe,
-    title: "Multi-Currency",
+    icon: Bot,
+    title: "AI Assistant",
     description:
-      "Invoice clients in their local currency with automatic exchange rate calculations.",
+      "Get instant help 24/7 with our smart AI assistant. Ask questions, get guidance, and solve issues in seconds.",
+    highlight: true,
   },
   {
     icon: Shield,
@@ -144,16 +146,63 @@ export default function Features() {
               variants={featureCardVariants}
               className="relative group h-full"
             >
-              <div className="absolute -inset-px bg-gradient-to-b from-blue-500/20 to-purple-500/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-              <div className="relative h-full bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl p-8 shadow-sm border border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+              <div
+                className={cn(
+                  "absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm",
+                  (feature as { highlight?: boolean }).highlight
+                    ? "bg-gradient-to-b from-emerald-500/30 to-teal-500/30 opacity-100"
+                    : "bg-gradient-to-b from-blue-500/20 to-purple-500/20"
+                )}
+              />
+              <div
+                className={cn(
+                  "relative h-full backdrop-blur-xl rounded-3xl p-8 shadow-sm border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
+                  (feature as { highlight?: boolean }).highlight
+                    ? "bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 dark:border-emerald-800"
+                    : "bg-white dark:bg-slate-900/80 border-slate-200 dark:border-slate-800"
+                )}
+              >
                 <div className="flex items-start justify-between mb-6">
-                  <div className="p-3.5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-2xl group-hover:scale-110 transition-transform duration-500 shadow-inner relative overflow-hidden">
-                    <div className="absolute inset-0 bg-blue-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <feature.icon className="w-7 h-7 text-blue-600 dark:text-blue-400 relative z-10" />
+                  <div
+                    className={cn(
+                      "p-3.5 rounded-2xl group-hover:scale-110 transition-transform duration-500 shadow-inner relative overflow-hidden",
+                      (feature as { highlight?: boolean }).highlight
+                        ? "bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/40 dark:to-teal-900/40"
+                        : "bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "absolute inset-0 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+                        (feature as { highlight?: boolean }).highlight
+                          ? "bg-emerald-500/20"
+                          : "bg-blue-500/20"
+                      )}
+                    />
+                    <feature.icon
+                      className={cn(
+                        "w-7 h-7 relative z-10",
+                        (feature as { highlight?: boolean }).highlight
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-blue-600 dark:text-blue-400"
+                      )}
+                    />
                   </div>
+                  {(feature as { highlight?: boolean }).highlight && (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
+                      ✨ New
+                    </span>
+                  )}
                 </div>
 
-                <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h3
+                  className={cn(
+                    "text-xl font-bold mb-3 transition-colors",
+                    (feature as { highlight?: boolean }).highlight
+                      ? "text-emerald-900 dark:text-emerald-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400"
+                      : "text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400"
+                  )}
+                >
                   {feature.title}
                 </h3>
 

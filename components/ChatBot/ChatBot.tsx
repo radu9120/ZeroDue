@@ -281,12 +281,12 @@ export default function ChatBot({
       type: "bot",
       content: `Hi there! 👋 I'm your InvoiceFlow assistant. I can help you with:
 
-• Creating and sending invoices
-• Setting up recurring billing
-• Tracking payments
-• Managing your business
+• How to create and send invoices
+• Understanding features and pricing
+• Troubleshooting issues
+• Navigating the dashboard
 
-How can I help you today?`,
+What would you like to know?`,
       timestamp: new Date(),
     },
   ]);

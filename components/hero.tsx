@@ -67,10 +67,10 @@ export default function Hero() {
           className="max-w-4xl mx-auto space-y-8"
         >
           {/* Badge */}
-          {/* <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300 mb-4">
-            <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
-            New: AI-Powered Invoicing
-          </div> */}
+          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300 mb-4 gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
+            <span>AI Assistant • Recurring Invoices • Expense Tracking</span>
+          </div>
 
           {/* Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
@@ -114,11 +114,12 @@ export default function Hero() {
               required
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
-              <CheckCircle className="h-4 w-4 text-blue-500" /> 60-day free
+              <CheckCircle className="h-4 w-4 text-blue-500" /> 30-day free
               trial
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
-              <CheckCircle className="h-4 w-4 text-blue-500" /> Cancel anytime
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300">
+              <CheckCircle className="h-4 w-4 text-emerald-500" /> AI Assistant
+              included
             </div>
           </div>
         </motion.div>

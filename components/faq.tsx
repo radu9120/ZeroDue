@@ -55,6 +55,11 @@ const faqs = [
     answer:
       "Yes! You can easily import your existing invoices, clients, and products via CSV upload. We also provide migration assistance for Enterprise customers switching from other platforms.",
   },
+  {
+    question: "Do you have an AI assistant?",
+    answer:
+      "Yes! InvoiceFlow includes a smart AI assistant available 24/7. Click the chat icon to get instant help with creating invoices, understanding features, troubleshooting issues, or any questions about your account. It's like having a support team member always ready to help.",
+  },
 ] as const;
 
 type FAQ = (typeof faqs)[number];

@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize Gemini client
-const apiKey = process.env.GEMINI_API_KEY!;
-const ai = new GoogleGenAI({ apiKey });
+// Initialize Gemini client lazily to handle missing env
+const getAI = () => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.error("GEMINI_API_KEY is not set");
+    return null;
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 // Comprehensive knowledge base context for the AI
 const systemContext = `You are a helpful, friendly customer support assistant for InvoiceFlow - a modern invoicing platform for small businesses and freelancers.
@@ -266,7 +272,10 @@ Response times:
 7. Never make up features that don't exist
 8. Suggest relevant pages (like /help, /pricing, /contact) when appropriate
 9. Be encouraging and positive about the user's business
-10. If someone is upset, be empathetic and helpful`;
+10. If someone is upset, be empathetic and helpful
+11. You are the AI Assistant feature - a key selling point of InvoiceFlow
+12. Mention that you're available 24/7 to help when relevant
+13. If asked about yourself, explain you're an AI assistant powered by advanced technology to help users instantly`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -280,6 +289,16 @@ export async function POST(request: NextRequest) {
     }
 
     try {
+      const ai = getAI();
+
+      if (!ai) {
+        // No API key, use fallback
+        return NextResponse.json({
+          response: getFallbackResponse(message),
+          fallback: true,
+        });
+      }
+
       // Build conversation context from history
       const conversationHistory = (history || [])
         .slice(-6)

@@ -164,23 +164,23 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 xl:gap-6">
           <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent dark:from-blue-500/10" />
-            <CardContent className="p-6 relative">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 text-white">
-                  <FileText className="h-6 w-6" />
+            <CardContent className="p-3 sm:p-4 xl:p-6 relative">
+              <div className="flex items-center justify-between mb-2 sm:mb-4">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 text-white">
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30">
+                <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30">
                   Total
                 </span>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
                   Total Invoices
                 </p>
-                <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1">
                   {stats.total}
                 </h3>
               </div>
@@ -189,20 +189,20 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
           <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent dark:from-emerald-500/10" />
-            <CardContent className="p-6 relative">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
-                  <DollarSign className="h-6 w-6" />
+            <CardContent className="p-3 sm:p-4 lg:p-6 relative">
+              <div className="flex items-center justify-between mb-2 sm:mb-4">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
+                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
                   Paid
                 </span>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
                   Paid Invoices
                 </p>
-                <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1">
                   {stats.paid}
                 </h3>
               </div>
@@ -211,20 +211,20 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
           <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent dark:from-amber-500/10" />
-            <CardContent className="p-6 relative">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 text-white">
-                  <Calendar className="h-6 w-6" />
+            <CardContent className="p-3 sm:p-4 lg:p-6 relative">
+              <div className="flex items-center justify-between mb-2 sm:mb-4">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 text-white">
+                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
+                <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
                   Pending
                 </span>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
                   Pending Invoices
                 </p>
-                <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1">
                   {stats.pending}
                 </h3>
               </div>
@@ -233,20 +233,20 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
 
           <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent dark:from-purple-500/10" />
-            <CardContent className="p-6 relative">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20 text-white">
-                  <DollarSign className="h-6 w-6" />
+            <CardContent className="p-3 sm:p-4 lg:p-6 relative">
+              <div className="flex items-center justify-between mb-2 sm:mb-4">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20 text-white">
+                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
                 </div>
-                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
+                <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
                   Revenue
                 </span>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
                   Total Amount
                 </p>
-                <h3 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1">
                   £{stats.totalAmount.toFixed(2)}
                 </h3>
               </div>
