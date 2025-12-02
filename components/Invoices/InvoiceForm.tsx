@@ -485,7 +485,7 @@ const InvoiceForm = ({
         const result = await createRecurringInvoice(recurringData);
 
         if (result && "error" in result) {
-          toast.error(result.error);
+          toast.error(String((result as { error: unknown }).error));
           return;
         }
 
