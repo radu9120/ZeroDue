@@ -160,7 +160,7 @@ export default function CookiesPage() {
 
         <div className="max-w-4xl">
           {/* Current Preferences */}
-          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 mb-8">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700 mb-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold text-header-text mb-2">
@@ -186,7 +186,7 @@ export default function CookiesPage() {
           </div>
 
           {/* Introduction */}
-          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 mb-8">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700 mb-8">
             <h2 className="text-xl font-semibold text-header-text mb-4">
               What are cookies?
             </h2>
@@ -308,7 +308,7 @@ export default function CookiesPage() {
           </div>
 
           {/* Managing Cookies */}
-          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 mb-8">
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 md:p-8 shadow-lg border border-blue-100 dark:border-slate-700 mb-8">
             <h2 className="text-xl font-semibold text-header-text mb-4">
               Managing your cookie preferences
             </h2>

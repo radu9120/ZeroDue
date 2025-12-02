@@ -439,42 +439,38 @@ export function DashboardShell({
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header */}
-        <header className="h-16 border-b border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden text-slate-500 dark:text-slate-400"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              <Menu className="w-5 h-5" />
-            </Button>
-
-            {/* Mobile Business Name */}
-            <div className="flex items-center gap-2 md:hidden">
-              {business.logo ? (
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center overflow-hidden border border-gray-200 dark:border-slate-700">
-                  <Image
-                    src={business.logo}
-                    alt={business.name}
-                    height={32}
-                    width={32}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center border border-blue-500 shadow-sm">
-                  <span className="text-xs font-bold text-white">
-                    {business.name.substring(0, 2).toUpperCase()}
-                  </span>
-                </div>
-              )}
-              <span className="text-sm font-semibold text-slate-900 dark:text-white truncate max-w-[120px]">
-                {business.name}
-              </span>
+        <header className="h-14 md:h-16 border-b border-gray-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between px-4 md:px-6">
+          <div className="flex items-center gap-3">
+            {/* Mobile: Business Name & Logo */}
+            <div className="flex items-center gap-2.5 md:hidden">
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="flex items-center gap-2.5"
+              >
+                {business.logo ? (
+                  <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center overflow-hidden border border-gray-200 dark:border-slate-700">
+                    <Image
+                      src={business.logo}
+                      alt={business.name}
+                      height={36}
+                      width={36}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center border border-blue-500 shadow-sm">
+                    <span className="text-sm font-bold text-white">
+                      {business.name.substring(0, 2).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <span className="text-sm font-semibold text-slate-900 dark:text-white truncate max-w-[140px]">
+                  {business.name}
+                </span>
+              </button>
             </div>
 
-            {/* Breadcrumbs */}
+            {/* Desktop: Breadcrumbs */}
             <nav className="hidden md:flex items-center text-sm font-medium">
               <ol className="flex items-center gap-2">
                 <li>
@@ -497,8 +493,8 @@ export function DashboardShell({
             </nav>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Search */}
+          <div className="flex items-center gap-3">
+            {/* Search - Desktop only */}
             <form
               onSubmit={handleSearch}
               className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-slate-900 rounded-md border border-gray-200 dark:border-slate-800 w-48 lg:w-64 focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/50 transition-all"
@@ -518,7 +514,7 @@ export function DashboardShell({
             </form>
 
             {/* Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               <ThemeToggle />
 
               {mounted ? (

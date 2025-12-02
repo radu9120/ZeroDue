@@ -858,7 +858,7 @@ export default function InvoiceTable({
       </CardHeader>
       <CardContent>
         <div className="w-full">
-          <div className="hidden border-b w-full py-3 px-4 border-blue-100 md:grid md:grid-cols-7 md:gap-2">
+          <div className="hidden border-b w-full py-3 px-4 border-blue-100 dark:border-slate-700 md:grid md:grid-cols-7 md:gap-2">
             <div className="font-medium text-secondary-text dark:text-slate-400">
               Invoice
             </div>

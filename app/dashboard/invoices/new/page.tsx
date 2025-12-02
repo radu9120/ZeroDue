@@ -54,7 +54,7 @@ export default async function NewInvoice({
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-blue-100 shadow-xl p-4 md:p-6 mb-6">
+        <div className="bg-white dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-blue-100 dark:border-slate-700 shadow-xl p-4 md:p-6 mb-6">
           <div className="flex items-center gap-3 md:gap-5">
             {business.logo ? (
               <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-xl overflow-hidden border-2 border-white shadow-md">

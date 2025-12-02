@@ -79,7 +79,7 @@ const InvoiceItemRow = ({
     return (
       <div
         key={index}
-        className="border-t py-3 space-y-3 pl-2 pr-2 sm:pr-4 border-blue-100"
+        className="border-t py-3 space-y-3 pl-2 pr-2 sm:pr-4 border-blue-100 dark:border-slate-700"
       >
         <div className="flex flex-col gap-4 md:grid md:grid-cols-12 md:gap-4 py-3 items-center">
           {/* Mobile: Date & Delete Row */}
@@ -281,7 +281,7 @@ const InvoiceItemRow = ({
   return (
     <div
       key={index}
-      className="border-t py-3 space-y-3 pl-2 pr-2 sm:pr-4 border-blue-100"
+      className="border-t py-3 space-y-3 pl-2 pr-2 sm:pr-4 border-blue-100 dark:border-slate-700"
     >
       {/* Mobile: Stack all fields vertically, Desktop: Grid layout */}
       <div className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-4 py-3">
@@ -478,7 +478,7 @@ const InvoiceItems = ({
           Add Item
         </Button>
       </div>
-      <div className="bg-white dark:bg-slate-800 border border-blue-100 rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-lg overflow-hidden">
         <div className="w-full">
           {/* Desktop Header - Hidden on mobile */}
           <div className="hidden md:block bg-blue-50 pl-2 pr-2 sm:pr-4">
