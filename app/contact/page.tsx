@@ -21,6 +21,7 @@ export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    reason: "",
     subject: "",
     message: "",
   });
@@ -42,7 +43,7 @@ export default function ContactPage() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          message: `${formData.subject}\n\n${formData.message}`,
+          message: `Reason: ${formData.reason}\n\nSubject: ${formData.subject}\n\n${formData.message}`,
         }),
       });
 
@@ -55,7 +56,13 @@ export default function ContactPage() {
         type: "success",
         message: "Thanks! We received your message and will respond soon.",
       });
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({
+        name: "",
+        email: "",
+        reason: "",
+        subject: "",
+        message: "",
+      });
     } catch (error) {
       console.error("Contact form submission failed", error);
       setFeedback({
@@ -71,7 +78,9 @@ export default function ContactPage() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setFormData({
       ...formData,
@@ -229,6 +238,35 @@ export default function ContactPage() {
                         className="bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus:ring-blue-500"
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="reason"
+                      className="text-sm font-medium text-slate-700 dark:text-slate-300"
+                    >
+                      Reason for Contacting
+                    </label>
+                    <select
+                      id="reason"
+                      name="reason"
+                      value={formData.reason}
+                      onChange={handleChange}
+                      required
+                      className="w-full h-10 px-3 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="" disabled>
+                        Select a reason...
+                      </option>
+                      <option value="general">General Inquiry</option>
+                      <option value="support">Technical Support</option>
+                      <option value="billing">Billing Question</option>
+                      <option value="refund">Refund Request</option>
+                      <option value="feature">Feature Request</option>
+                      <option value="bug">Report a Bug</option>
+                      <option value="partnership">Partnership Inquiry</option>
+                      <option value="other">Other</option>
+                    </select>
                   </div>
 
                   <div className="space-y-2">

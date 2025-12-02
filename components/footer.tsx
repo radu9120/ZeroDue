@@ -78,6 +78,7 @@ export default function Footer() {
                 { name: "Help Center", href: "/help" },
                 { name: "Contact Us", href: "/contact" },
                 { name: "Privacy Policy", href: "/privacy-policy" },
+                { name: "Refund Policy", href: "/refund-policy" },
                 { name: "Cookie Policy", href: "/cookies" },
                 { name: "Sitemap", href: "/sitemap" },
               ].map((item) => (
