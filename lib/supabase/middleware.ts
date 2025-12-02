@@ -49,6 +49,7 @@ export async function updateSession(request: NextRequest) {
     "/help",
     "/contact",
     "/privacy-policy",
+    "/refund-policy",
     "/cookies",
     "/sitemap",
     "/blog",
