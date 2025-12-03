@@ -67,10 +67,7 @@ interface ExpenseRowProps {
   business: PartialBusiness;
 }
 
-export function ExpenseRow({
-  expense,
-  business,
-}: ExpenseRowProps) {
+export function ExpenseRow({ expense, business }: ExpenseRowProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
