@@ -8,6 +8,117 @@ type PdfOptions = {
   format?: "a4" | "letter";
 };
 
+// Convert oklch/oklab colors to rgb - html2canvas doesn't support modern CSS color functions
+function convertModernColorsToRgb(element: HTMLElement): void {
+  const colorProperties = [
+    "color",
+    "backgroundColor",
+    "borderColor",
+    "borderTopColor",
+    "borderRightColor",
+    "borderBottomColor",
+    "borderLeftColor",
+    "outlineColor",
+    "textDecorationColor",
+    "fill",
+    "stroke",
+    "boxShadow",
+    "textShadow",
+  ];
+
+  const convertColor = (colorValue: string): string => {
+    if (!colorValue) return colorValue;
+    // Check if it's an oklch, oklab, lab, lch, or color() function
+    if (
+      colorValue.includes("oklch") ||
+      colorValue.includes("oklab") ||
+      colorValue.includes("lab(") ||
+      colorValue.includes("lch(") ||
+      colorValue.includes("color(")
+    ) {
+      // Create a temporary element to let the browser convert it
+      const temp = document.createElement("div");
+      temp.style.color = colorValue;
+      document.body.appendChild(temp);
+      const computed = getComputedStyle(temp).color;
+      document.body.removeChild(temp);
+      // If browser returned a valid rgb value, use it; otherwise fallback to a safe color
+      if (computed && computed.startsWith("rgb")) {
+        return computed;
+      }
+      // Fallback to black for text-like properties, transparent for backgrounds
+      return "rgb(0, 0, 0)";
+    }
+    return colorValue;
+  };
+
+  // Process the element itself
+  const processElement = (el: HTMLElement) => {
+    try {
+      const computed = getComputedStyle(el);
+      colorProperties.forEach((prop) => {
+        try {
+          // Get computed value
+          const computedValue = computed.getPropertyValue(
+            prop.replace(/([A-Z])/g, "-$1").toLowerCase()
+          );
+          const value = computedValue || (computed as any)[prop];
+          if (value && typeof value === "string") {
+            const converted = convertColor(value);
+            if (converted !== value) {
+              (el.style as any)[prop] = converted;
+            }
+          }
+        } catch {
+          // skip this property
+        }
+      });
+
+      // Force set computed colors directly on the element to override CSS
+      try {
+        const bgColor = computed.backgroundColor;
+        const textColor = computed.color;
+        const borderColor = computed.borderColor;
+
+        if (bgColor && bgColor.startsWith("rgb")) {
+          el.style.backgroundColor = bgColor;
+        }
+        if (textColor && textColor.startsWith("rgb")) {
+          el.style.color = textColor;
+        }
+        if (borderColor && borderColor.startsWith("rgb")) {
+          el.style.borderColor = borderColor;
+        }
+      } catch {
+        // ignore
+      }
+    } catch {
+      // Ignore errors for individual elements
+    }
+  };
+
+  processElement(element);
+  element.querySelectorAll("*").forEach((child) => {
+    if (child instanceof HTMLElement) {
+      processElement(child);
+    }
+  });
+
+  // Also add a style tag to override any oklch in CSS custom properties/variables
+  try {
+    const styleOverride = document.createElement("style");
+    styleOverride.textContent = `
+      * {
+        --tw-ring-color: rgb(59, 130, 246) !important;
+        --tw-shadow-color: rgb(0, 0, 0) !important;
+      }
+    `;
+    element.prepend(styleOverride);
+  } catch {
+    // ignore
+  }
+}
+
 // Capture a DOM node and export to a paginated PDF that matches the on-screen styling.
 export async function downloadElementAsPDF(
   element: HTMLElement,
@@ -189,6 +300,13 @@ export async function downloadElementAsPDF(
     clone.style.left = "0";
     clone.style.top = "0";
   } catch {}
+
+  // Convert modern CSS color functions (oklch, oklab, etc.) to rgb for html2canvas compatibility
+  try {
+    convertModernColorsToRgb(clone);
+  } catch (e) {
+    console.warn("Failed to convert modern colors:", e);
+  }
 
   // ALWAYS use light mode for PDFs - remove dark mode variants and normalize colors
   try {
