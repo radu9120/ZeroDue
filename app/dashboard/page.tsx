@@ -7,13 +7,11 @@ export const revalidate = 0;
 
 export default async function Page() {
   const { userId } = await auth();
-  console.log("DEBUG: userId from auth() =", userId);
   if (!userId) redirect("/sign-in");
 
   let businesses;
   try {
     businesses = await getUserBusinesses();
-    console.log("DEBUG: businesses fetched =", businesses?.length);
   } catch (error) {
     console.error("Error fetching businesses for redirection:", error);
     redirect("/dashboard/business/new");
