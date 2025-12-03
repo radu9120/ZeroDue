@@ -296,55 +296,56 @@ export async function generateInvoicePDF(
   }
 
   // ============================================
-  // ITEMS TABLE - Dark navy header like preview
+  // ITEMS TABLE - Dark navy header with thick border
   // ============================================
 
-  // Table container with border
+  const tableStartY = y;
+  const headerHeight = 14;
+  const rowHeight = 14;
+  const tableHeight = headerHeight + items.length * rowHeight;
+
+  // Draw the outer border first (thick dark navy rounded rect)
   doc.setDrawColor(...darkNavy);
-  doc.setLineWidth(0.8);
+  doc.setLineWidth(1.5);
+  doc.roundedRect(margin, y, contentWidth, tableHeight, 3, 3, "S");
 
-  // Table header with dark navy background
-  const headerHeight = 12;
+  // Table header with dark navy background (clip to rounded corners at top)
   doc.setFillColor(...darkNavy);
-  doc.rect(margin, y, contentWidth, headerHeight, "F");
+  doc.roundedRect(margin, y, contentWidth, headerHeight, 3, 3, "F");
+  // Fill the bottom part of header to make it square at bottom
+  doc.rect(margin, y + 6, contentWidth, headerHeight - 6, "F");
 
-  doc.setFontSize(8);
+  doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(255, 255, 255);
 
   // Column positions - matching preview (DESCRIPTION, QTY, UNIT PRICE, TAX, AMOUNT)
-  const colDesc = margin + 4;
-  const colQty = margin + contentWidth * 0.42;
-  const colPrice = margin + contentWidth * 0.55;
-  const colTax = margin + contentWidth * 0.72;
-  const colAmount = margin + contentWidth - 4;
+  const colDesc = margin + 8;
+  const colQty = margin + contentWidth * 0.4;
+  const colPrice = margin + contentWidth * 0.54;
+  const colTax = margin + contentWidth * 0.7;
+  const colAmount = margin + contentWidth - 8;
 
-  doc.text("DESCRIPTION", colDesc, y + 8);
-  doc.text("QTY", colQty, y + 8, { align: "center" });
-  doc.text("UNIT PRICE", colPrice, y + 8, { align: "center" });
-  doc.text("TAX", colTax, y + 8, { align: "center" });
-  doc.text("AMOUNT", colAmount, y + 8, { align: "right" });
+  doc.text("DESCRIPTION", colDesc, y + 9);
+  doc.text("QTY", colQty, y + 9, { align: "center" });
+  doc.text("UNIT PRICE", colPrice, y + 9, { align: "center" });
+  doc.text("TAX", colTax, y + 9, { align: "center" });
+  doc.text("AMOUNT", colAmount, y + 9, { align: "right" });
 
   y += headerHeight;
 
   // Table rows
-  const rowHeight = 12;
   items.forEach((item, index) => {
-    // Row border at bottom
-    doc.setDrawColor(...borderColor);
-    doc.setLineWidth(0.3);
-    doc.line(margin, y + rowHeight, margin + contentWidth, y + rowHeight);
-
-    const rowY = y + 8;
+    const rowY = y + 10;
 
     // Description
-    doc.setFontSize(9);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...darkText);
     const descText = item.description || "—";
-    doc.text(descText.substring(0, 40), colDesc, rowY);
+    doc.text(descText.substring(0, 45), colDesc, rowY);
 
-    // Quantity
+    // Quantity - centered
     doc.setTextColor(...mutedText);
     doc.text(String(item.quantity || 0), colQty, rowY, { align: "center" });
 
@@ -366,21 +367,7 @@ export async function generateInvoicePDF(
     y += rowHeight;
   });
 
-  // Table bottom border
-  doc.setDrawColor(...darkNavy);
-  doc.setLineWidth(0.8);
-  doc.line(margin, y, margin + contentWidth, y);
-
-  // Left and right table borders
-  doc.line(margin, y - items.length * rowHeight, margin, y);
-  doc.line(
-    margin + contentWidth,
-    y - items.length * rowHeight,
-    margin + contentWidth,
-    y
-  );
-
-  y += 15;
+  y += 20;
 
   // ============================================
   // BANK DETAILS (LEFT) & INVOICE SUMMARY (RIGHT) - Two column layout
@@ -457,39 +444,42 @@ export async function generateInvoicePDF(
     );
   }
 
-  // INVOICE SUMMARY on the right - dark navy box
+  // INVOICE SUMMARY on the right - dark navy header with rounded top corners
   const summaryBoxY = summaryStartY;
-  const summaryHeaderHeight = 12;
+  const summaryHeaderHeight = 14;
 
-  // Summary container with dark navy header
+  // We'll calculate the content height first, then draw everything
+  // For now, start with header
   doc.setFillColor(...darkNavy);
+  // Draw header with only top corners rounded
   doc.roundedRect(
     rightColumnX,
     summaryBoxY,
     rightColumnWidth,
     summaryHeaderHeight,
-    3,
-    3,
+    4,
+    4,
     "F"
   );
-  // Fix bottom corners to be square for header
-  doc.rect(rightColumnX, summaryBoxY + 6, rightColumnWidth, 6, "F");
+  // Square off the bottom of header
+  doc.rect(rightColumnX, summaryBoxY + 7, rightColumnWidth, 7, "F");
 
-  doc.setFontSize(10);
+  doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(255, 255, 255);
-  doc.text("INVOICE SUMMARY", rightColumnX + 8, summaryBoxY + 8);
+  doc.text("INVOICE SUMMARY", rightColumnX + 10, summaryBoxY + 10);
 
   // Summary content area
-  let summaryY = summaryBoxY + summaryHeaderHeight + 8;
-  const summaryContentX = rightColumnX + 8;
-  const summaryValueX = rightColumnX + rightColumnWidth - 8;
+  let summaryY = summaryBoxY + summaryHeaderHeight + 12;
+  const summaryContentX = rightColumnX + 12;
+  const summaryValueX = rightColumnX + rightColumnWidth - 12;
 
   // Subtotal
-  doc.setFontSize(10);
+  doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...mutedText);
   doc.text("Subtotal", summaryContentX, summaryY);
+  doc.setFont("helvetica", "bold");
   doc.setTextColor(...darkText);
   doc.text(
     formatCurrency(invoice.subtotal || 0, currency),
@@ -579,23 +569,23 @@ export async function generateInvoicePDF(
   }
 
   // TOTAL - Bold and prominent
-  doc.setFontSize(11);
+  doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...darkText);
   doc.text("Total", summaryContentX, summaryY);
 
   const totalAmount = parseFloat(String(invoice.total)) || 0;
-  doc.setFontSize(12);
+  doc.setFontSize(13);
   doc.text(formatCurrency(totalAmount, currency), summaryValueX, summaryY, {
     align: "right",
   });
 
-  summaryY += 8;
+  summaryY += 12;
 
-  // Draw border around summary content
+  // Draw thick border around summary content area
   const summaryContentHeight = summaryY - (summaryBoxY + summaryHeaderHeight);
   doc.setDrawColor(...darkNavy);
-  doc.setLineWidth(0.8);
+  doc.setLineWidth(1.5);
   doc.rect(
     rightColumnX,
     summaryBoxY + summaryHeaderHeight,
