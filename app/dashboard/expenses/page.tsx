@@ -100,6 +100,7 @@ export default async function ExpensesPage({
     businessStats,
     expenses,
     expenseStats,
+    allTimeStats,
     categories,
   ] = await Promise.all([
     getBusiness({ business_id: bizId }),
@@ -108,6 +109,13 @@ export default async function ExpensesPage({
     getBusinessStats({ business_id: bizId }),
     getExpenses(bizId, { limit: 50 }).catch(() => []),
     getExpenseStats(bizId, startOfMonth, endOfMonth).catch(() => ({
+      totalExpenses: 0,
+      billableExpenses: 0,
+      taxDeductible: 0,
+      byCategory: {},
+      count: 0,
+    })),
+    getExpenseStats(bizId).catch(() => ({
       totalExpenses: 0,
       billableExpenses: 0,
       taxDeductible: 0,
@@ -197,55 +205,63 @@ export default async function ExpensesPage({
             </Link>
           </div>
 
-          {/* Monthly Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-xl p-4 border border-slate-200/50 dark:border-slate-800/50">
-              <div className="flex items-center justify-between">
-                <div>
+          {/* Monthly Stats - Show all-time if no expenses this month */}
+          {(() => {
+            const hasMonthlyData = expenseStats.count > 0;
+            const stats = hasMonthlyData ? expenseStats : allTimeStats;
+            const periodLabel = hasMonthlyData ? "This Month" : "All Time";
+
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-xl p-4 border border-slate-200/50 dark:border-slate-800/50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                        {periodLabel}
+                      </p>
+                      <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                        {formatCurrency(stats.totalExpenses)}
+                      </p>
+                    </div>
+                    <TrendingDown className="h-8 w-8 text-rose-500 opacity-50" />
+                  </div>
+                </div>
+                <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-xl p-4 border border-slate-200/50 dark:border-slate-800/50">
                   <p className="text-sm text-slate-500 dark:text-slate-400">
-                    This Month
+                    Billable
                   </p>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                    {formatCurrency(expenseStats.totalExpenses)}
+                  <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                    {formatCurrency(stats.billableExpenses)}
                   </p>
                 </div>
-                <TrendingDown className="h-8 w-8 text-rose-500 opacity-50" />
+                <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-xl p-4 border border-slate-200/50 dark:border-slate-800/50">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Tax Deductible
+                  </p>
+                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    {formatCurrency(stats.taxDeductible)}
+                  </p>
+                </div>
+                <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-xl p-4 border border-slate-200/50 dark:border-slate-800/50">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Transactions
+                  </p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                    {stats.count}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-xl p-4 border border-slate-200/50 dark:border-slate-800/50">
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Billable
-              </p>
-              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                {formatCurrency(expenseStats.billableExpenses)}
-              </p>
-            </div>
-            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-xl p-4 border border-slate-200/50 dark:border-slate-800/50">
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Tax Deductible
-              </p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {formatCurrency(expenseStats.taxDeductible)}
-              </p>
-            </div>
-            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-xl p-4 border border-slate-200/50 dark:border-slate-800/50">
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Transactions
-              </p>
-              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                {expenseStats.count}
-              </p>
-            </div>
-          </div>
+            );
+          })()}
 
           {/* Category Breakdown */}
-          {Object.keys(expenseStats.byCategory).length > 0 && (
+          {Object.keys(allTimeStats.byCategory).length > 0 && (
             <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-xl p-6 border border-slate-200/50 dark:border-slate-800/50">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
                 By Category
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                {Object.entries(expenseStats.byCategory).map(
+                {Object.entries(allTimeStats.byCategory).map(
                   ([category, amount]) => {
                     const Icon = categoryIcons[category] || Folder;
                     const colorClass =
