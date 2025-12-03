@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CustomButton from "@/components/ui/CustomButton";
-import { downloadElementAsPDF } from "@/lib/pdf";
+import { generateInvoicePDF } from "@/lib/invoice-pdf";
 import type { InvoiceListItem, BusinessType } from "@/types";
 import currencies from "@/lib/currencies.json";
 import {
@@ -498,16 +498,7 @@ export default function InvoiceSuccessView({
   const downloadPDF = useCallback(async () => {
     try {
       setDownloading(true);
-      const invoiceElement = document.getElementById("invoice-capture");
-      if (!invoiceElement) {
-        throw new Error("Invoice element not found");
-      }
-      await downloadElementAsPDF(invoiceElement, {
-        filename: `Invoice-${invoice.invoice_number || invoice.id}.pdf`,
-        margin: 16,
-        scale: 3,
-        format: "a4",
-      });
+      await generateInvoicePDF(invoice, company);
       toast.success("PDF downloaded");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -515,7 +506,7 @@ export default function InvoiceSuccessView({
     } finally {
       setDownloading(false);
     }
-  }, [invoice.invoice_number, invoice.id]);
+  }, [invoice, company]);
 
   const sendToClient = useCallback(async () => {
     try {
