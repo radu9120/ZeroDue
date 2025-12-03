@@ -186,6 +186,7 @@ export async function generateExpenseReceiptPDF(
 
   // === BUSINESS & DATE SECTION ===
   y += 10;
+  const sectionStartY = y;
 
   // Business Details (left)
   drawText("BUSINESS DETAILS", margin, y, {
@@ -194,56 +195,64 @@ export async function generateExpenseReceiptPDF(
     color: secondaryColor,
   });
 
-  y += 5;
+  y += 6;
   drawText(business.name, margin, y, { fontSize: 10, fontStyle: "bold" });
+  y += 5;
 
+  // Handle multi-line address
   if (business.address) {
-    y += 4;
-    drawText(business.address, margin, y, {
-      fontSize: 9,
-      color: secondaryColor,
-      maxWidth: 80,
-    });
-    y += 4;
+    const addressLines = doc.splitTextToSize(business.address, 80);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...secondaryColor);
+    doc.text(addressLines, margin, y);
+    y += addressLines.length * 4;
   }
 
   if (business.email) {
-    y += 4;
+    y += 1;
     drawText(business.email, margin, y, { fontSize: 9, color: secondaryColor });
+    y += 4;
   }
 
   if (business.phone) {
-    y += 4;
+    y += 1;
     drawText(business.phone, margin, y, { fontSize: 9, color: secondaryColor });
+    y += 4;
   }
 
   if (business.vat) {
-    y += 4;
+    y += 1;
     drawText(`VAT: ${business.vat}`, margin, y, {
       fontSize: 9,
       color: secondaryColor,
     });
+    y += 4;
   }
 
-  // Expense Date (right side)
-  const dateY = y - 20;
-  drawText("EXPENSE DATE", pageWidth - margin, dateY, {
+  // Expense Date (right side) - positioned at same start as business details
+  drawText("EXPENSE DATE", pageWidth - margin, sectionStartY, {
     fontSize: 8,
     fontStyle: "bold",
     color: secondaryColor,
     align: "right",
   });
 
-  drawText(formatDate(expense.expense_date), pageWidth - margin, dateY + 6, {
-    fontSize: 12,
-    fontStyle: "bold",
-    align: "right",
-  });
+  drawText(
+    formatDate(expense.expense_date),
+    pageWidth - margin,
+    sectionStartY + 7,
+    {
+      fontSize: 14,
+      fontStyle: "bold",
+      align: "right",
+    }
+  );
 
   drawText(
     `Created: ${formatShortDate(expense.created_at)}`,
     pageWidth - margin,
-    dateY + 12,
+    sectionStartY + 14,
     {
       fontSize: 9,
       color: secondaryColor,
@@ -251,8 +260,11 @@ export async function generateExpenseReceiptPDF(
     }
   );
 
+  // Ensure y is past the date section
+  y = Math.max(y, sectionStartY + 25);
+
   // === MAIN EXPENSE BOX ===
-  y += 15;
+  y += 10;
   const boxHeight = 30;
   drawRoundedRect(margin, y, contentWidth, boxHeight, 3, lightGray);
 
