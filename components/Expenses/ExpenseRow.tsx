@@ -227,7 +227,7 @@ export function ExpenseRow({ expense, business }: ExpenseRowProps) {
               </h2>
               <div className="flex items-center gap-2">
                 <Button
-                  variant="outline"
+                  variant="neutralOutline"
                   size="sm"
                   onClick={handleDownloadFromModal}
                   disabled={isDownloading}
@@ -257,17 +257,12 @@ export function ExpenseRow({ expense, business }: ExpenseRowProps) {
             {/* Modal Content - white background wrapper for PDF capture */}
             <div className="flex-1 overflow-y-auto p-6 bg-slate-100 dark:bg-slate-800">
               <div ref={modalReceiptRef}>
-                <ExpenseReceipt
-                  expense={expense}
-                  business={business}
-                />
+                <ExpenseReceipt expense={expense} business={business} />
               </div>
             </div>
           </div>
         </div>
       )}
     </>
-  );
-}
   );
 }
