@@ -6,7 +6,6 @@ import {
   TrendingDown,
   Calendar,
   Filter,
-  Trash2,
   Plane,
   Utensils,
   Briefcase,
@@ -37,6 +36,7 @@ import { getCurrentPlan } from "@/lib/plan";
 import type { SearchParams } from "@/types";
 import type { AppPlan } from "@/lib/utils";
 import PlanWatcher from "@/components/PlanWatcher";
+import { ExpenseRow } from "@/components/Expenses/ExpenseRow";
 
 export const revalidate = 0;
 
@@ -297,60 +297,14 @@ export default async function ExpensesPage({
           ) : (
             <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden">
               <div className="divide-y divide-slate-200/50 dark:divide-slate-800/50">
-                {expenses.map((expense) => {
-                  const Icon = categoryIcons[expense.category] || Folder;
-                  const colorClass =
-                    categoryColors[expense.category] || categoryColors.other;
-
-                  return (
-                    <div
-                      key={expense.id}
-                      className="flex items-center justify-between p-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClass}`}
-                        >
-                          <Icon className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-slate-900 dark:text-slate-100">
-                            {expense.description}
-                          </p>
-                          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                            <span>{expense.vendor || "No vendor"}</span>
-                            <span>•</span>
-                            <span>
-                              {new Date(
-                                expense.expense_date
-                              ).toLocaleDateString()}
-                            </span>
-                            {expense.is_billable && (
-                              <>
-                                <span>•</span>
-                                <span className="text-emerald-600 dark:text-emerald-400">
-                                  Billable
-                                </span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <p className="font-semibold text-slate-900 dark:text-slate-100">
-                          {formatCurrency(expense.amount)}
-                        </p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
+                {expenses.map((expense) => (
+                  <ExpenseRow
+                    key={expense.id}
+                    expense={expense}
+                    business={business}
+                    formatCurrency={formatCurrency}
+                  />
+                ))}
               </div>
             </div>
           )}

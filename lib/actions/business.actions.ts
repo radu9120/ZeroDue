@@ -419,6 +419,9 @@ export const getBusiness = async ({
   | "profile_type"
   | "logo"
   | "extra_invoice_credits"
+  | "address"
+  | "phone"
+  | "vat"
 > | null> => {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
@@ -428,7 +431,7 @@ export const getBusiness = async ({
   const { data: business, error } = await supabase
     .from("Businesses")
     .select(
-      "id, name, email, currency, profile_type, logo, extra_invoice_credits"
+      "id, name, email, currency, profile_type, logo, extra_invoice_credits, address, phone, vat"
     )
     .eq("id", business_id)
     .eq("author", author)
@@ -443,6 +446,9 @@ export const getBusiness = async ({
         | "profile_type"
         | "logo"
         | "extra_invoice_credits"
+        | "address"
+        | "phone"
+        | "vat"
       >
     >();
 
