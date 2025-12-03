@@ -1164,9 +1164,9 @@ const InvoiceForm = ({
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant="ghost"
+                                variant="neutralOutline"
                                 className={cn(
-                                  "w-full h-12 justify-start text-left font-normal border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl",
+                                  "w-full h-12 justify-start text-left font-normal rounded-xl",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
@@ -1201,9 +1201,9 @@ const InvoiceForm = ({
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
-                                variant="ghost"
+                                variant="neutralOutline"
                                 className={cn(
-                                  "w-full h-12 justify-start text-left font-normal border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl",
+                                  "w-full h-12 justify-start text-left font-normal rounded-xl",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
@@ -1301,7 +1301,7 @@ const InvoiceForm = ({
                                 "p-3 rounded-xl border-2 transition-all text-sm font-medium",
                                 recurringFrequency === option.value
                                   ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
-                                  : "border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:border-emerald-300"
+                                  : "border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:border-emerald-300 dark:hover:border-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
                               )}
                             >
                               {option.label}
@@ -1319,10 +1319,10 @@ const InvoiceForm = ({
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button
-                                variant="ghost"
+                                variant="neutralOutline"
                                 type="button"
                                 className={cn(
-                                  "w-full h-12 justify-start text-left font-normal border border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl",
+                                  "w-full h-12 justify-start text-left font-normal rounded-xl",
                                   !recurringStartDate && "text-muted-foreground"
                                 )}
                               >
@@ -1356,10 +1356,10 @@ const InvoiceForm = ({
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button
-                                variant="ghost"
+                                variant="neutralOutline"
                                 type="button"
                                 className={cn(
-                                  "w-full h-12 justify-start text-left font-normal border border-gray-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-xl",
+                                  "w-full h-12 justify-start text-left font-normal rounded-xl",
                                   !recurringEndDate && "text-muted-foreground"
                                 )}
                               >

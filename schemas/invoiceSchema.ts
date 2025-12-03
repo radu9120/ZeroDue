@@ -30,7 +30,10 @@ const itemSchema = z.object({
 });
 
 export const billToSchema = z.object({
-  id: z.coerce.number().optional(),
+  id: z.coerce
+    .number()
+    .optional()
+    .transform((val) => (Number.isNaN(val) ? undefined : val)),
   name: z
     .string()
     .min(3, { message: "Name must be between 3 and 100 characters" })
@@ -98,7 +101,13 @@ export const formSchema = z.object({
   notes: z.string().optional(),
   bank_details: z.string().optional(),
   currency: z.string().min(1, { message: "Currency is required." }),
-  client_id: z.coerce.number().min(1, { message: "Client is required." }),
+  client_id: z.preprocess(
+    (val) =>
+      val === undefined || val === null || val === "" ? NaN : Number(val),
+    z
+      .number({ invalid_type_error: "Client is required." })
+      .min(1, { message: "Client is required." })
+  ),
   business_id: z.coerce.number().min(1, { message: "Business is required." }),
   invoice_template: z.string().optional(),
   meta_data: z.record(z.any()).optional(),

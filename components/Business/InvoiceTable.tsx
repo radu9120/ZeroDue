@@ -428,7 +428,7 @@ function InvoicePreview({
                   return (
                     <tr
                       key={index}
-                      className="hover:bg-gray-50 dark:bg-slate-800"
+                      className="hover:bg-gray-50 dark:hover:bg-slate-700"
                     >
                       <td className="border border-gray-300 dark:border-slate-600 px-4 py-3">
                         {item.description || "No description"}
