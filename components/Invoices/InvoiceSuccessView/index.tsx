@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CustomButton from "@/components/ui/CustomButton";
-import { downloadElementAsPDF } from "@/lib/pdf";
+import { generateInvoicePDF } from "@/lib/invoice-pdf";
 import type { InvoiceListItem, BusinessType } from "@/types";
 import currencies from "@/lib/currencies.json";
 import {
@@ -496,174 +496,17 @@ export default function InvoiceSuccessView({
   }, [invoice.public_token]);
 
   const downloadPDF = useCallback(async () => {
-    setForceDesktopLayout(true);
-    const waitForNextFrame = () =>
-      new Promise<void>((resolve) => {
-        if (
-          typeof window !== "undefined" &&
-          typeof window.requestAnimationFrame === "function"
-        ) {
-          window.requestAnimationFrame(() => resolve());
-        } else {
-          setTimeout(() => resolve(), 16);
-        }
-      });
-
-    await waitForNextFrame();
-    await waitForNextFrame();
-
     try {
       setDownloading(true);
-      const container = document.getElementById(
-        "invoice-capture"
-      ) as HTMLElement | null;
-
-      if (!container) {
-        const res = await fetch(`/api/invoices/${invoice.id}/pdf`);
-        if (!res.ok) {
-          throw new Error("Could not generate PDF");
-        }
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = `Invoice-${invoice.invoice_number || invoice.id}.pdf`;
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-        URL.revokeObjectURL(url);
-        toast.success("PDF downloaded");
-        return;
-      }
-
-      const html = document.documentElement;
-      const body = document.body;
-      const originalHtmlClass = html.className;
-      const originalBodyBg = body.style.backgroundColor;
-      const originalBodyColor = body.style.color;
-      const originalContainerBg = container.style.backgroundColor;
-      const originalContainerColor = container.style.color;
-      const originalContainerWidth = container.style.width;
-      const originalContainerMaxWidth = container.style.maxWidth;
-      const originalContainerMinWidth = container.style.minWidth;
-      const originalContainerMargin = container.style.margin;
-      const originalContainerPadding = container.style.padding;
-
-      const restoreContainerDimensions = () => {
-        container.style.width = originalContainerWidth;
-        container.style.maxWidth = originalContainerMaxWidth;
-        if (originalContainerMinWidth) {
-          container.style.minWidth = originalContainerMinWidth;
-        } else {
-          container.style.removeProperty("min-width");
-        }
-        if (originalContainerMargin) {
-          container.style.margin = originalContainerMargin;
-        } else {
-          container.style.removeProperty("margin");
-        }
-        if (originalContainerPadding) {
-          container.style.padding = originalContainerPadding;
-        } else {
-          container.style.removeProperty("padding");
-        }
-      };
-
-      html.classList.remove("dark");
-      body.style.backgroundColor = "#ffffff";
-      body.style.color = "#000000";
-      container.style.backgroundColor = "#ffffff";
-      container.style.color = "#000000";
-      container.style.width = "794px";
-      container.style.maxWidth = "794px";
-      container.style.minWidth = "794px";
-      container.style.margin = "0 auto";
-      container.style.padding = "48px";
-
-      const allElements = container.querySelectorAll("*");
-      const originalStyles: Array<{
-        el: HTMLElement;
-        bg: string;
-        color: string;
-      }> = [];
-
-      allElements.forEach((element) => {
-        const htmlElement = element as HTMLElement;
-        const isDarkDesign =
-          htmlElement.classList.contains("bg-gray-800") ||
-          htmlElement.classList.contains("bg-gray-900");
-        if (!isDarkDesign) {
-          originalStyles.push({
-            el: htmlElement,
-            bg: htmlElement.style.backgroundColor,
-            color: htmlElement.style.color,
-          });
-        }
-      });
-
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      if (isPublicView) {
-        const originalBorder = container.style.border;
-        const originalShadow = container.style.boxShadow;
-        const originalBackground = container.style.background;
-        container.style.border = "none";
-        container.style.boxShadow = "none";
-        container.style.background = "#ffffff";
-
-        try {
-          await downloadElementAsPDF(container, {
-            filename: `Invoice-${invoice.invoice_number || "unnamed"}.pdf`,
-            margin: 0,
-            scale: 3,
-            format: "a4",
-          });
-          toast.success("PDF downloaded");
-        } finally {
-          container.style.border = originalBorder;
-          container.style.boxShadow = originalShadow;
-          container.style.background = originalBackground;
-          restoreContainerDimensions();
-          html.className = originalHtmlClass;
-          body.style.backgroundColor = originalBodyBg;
-          body.style.color = originalBodyColor;
-          container.style.backgroundColor = originalContainerBg;
-          container.style.color = originalContainerColor;
-          originalStyles.forEach(({ el, bg, color }) => {
-            el.style.backgroundColor = bg;
-            el.style.color = color;
-          });
-        }
-      } else {
-        try {
-          await downloadElementAsPDF(container, {
-            filename: `Invoice-${invoice.invoice_number || "unnamed"}.pdf`,
-            margin: 0,
-            scale: 3,
-            format: "a4",
-          });
-          toast.success("PDF downloaded");
-        } finally {
-          restoreContainerDimensions();
-          html.className = originalHtmlClass;
-          body.style.backgroundColor = originalBodyBg;
-          body.style.color = originalBodyColor;
-          container.style.backgroundColor = originalContainerBg;
-          container.style.color = originalContainerColor;
-          originalStyles.forEach(({ el, bg, color }) => {
-            el.style.backgroundColor = bg;
-            el.style.color = color;
-          });
-        }
-      }
+      await generateInvoicePDF(invoice, company);
+      toast.success("PDF downloaded");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       toast.error(`Failed to generate PDF: ${message}`);
     } finally {
       setDownloading(false);
-      setForceDesktopLayout(false);
     }
-  }, [invoice.id, invoice.invoice_number, isPublicView]);
+  }, [invoice, company]);
 
   const sendToClient = useCallback(async () => {
     try {

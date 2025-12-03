@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   FileText,
   Download,
@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { downloadElementAsPDF } from "@/lib/pdf";
+import { generateEstimatePDF } from "@/lib/estimate-pdf";
 import type { Estimate } from "@/types";
 
 interface EstimateViewProps {
@@ -79,7 +79,6 @@ export default function EstimateView({
   publicView = false,
   onStatusChange,
 }: EstimateViewProps) {
-  const printRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showResponseForm, setShowResponseForm] = useState(false);
   const [clientNotes, setClientNotes] = useState("");
@@ -98,12 +97,9 @@ export default function EstimateView({
     publicView && ["sent", "viewed"].includes(estimate.status) && !isExpired;
 
   const handleDownloadPDF = async () => {
-    if (!printRef.current) return;
     setIsDownloading(true);
     try {
-      await downloadElementAsPDF(printRef.current, {
-        filename: `Estimate-${estimate.estimate_number}.pdf`,
-      });
+      await generateEstimatePDF(estimate);
       toast.success("PDF downloaded successfully!");
     } catch (error) {
       toast.error("Failed to download PDF");
@@ -254,7 +250,7 @@ export default function EstimateView({
       )}
 
       {/* Printable Content */}
-      <div ref={printRef} className="p-6 sm:p-8 lg:p-12">
+      <div className="p-6 sm:p-8 lg:p-12">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between gap-6 mb-8 pb-8 border-b border-slate-200 dark:border-slate-800">
           <div>

@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { createActivity } from "./userActivity.actions";
 import { revalidatePath } from "next/cache";
 import type { Expense, ExpenseCategory } from "@/types";
+import { getCurrentPlan } from "@/lib/plan";
+import { type AppPlan } from "@/lib/utils";
 
 export interface CreateExpenseInput {
   business_id: number;
@@ -31,6 +33,128 @@ export async function createExpense(input: CreateExpenseInput) {
   if (!author) redirect("/sign-in");
 
   const supabase = await createClient();
+
+  // Enforce plan limits before insert
+  try {
+    const plan: AppPlan = await getCurrentPlan();
+    const businessId = input.business_id;
+
+    // Get business extra expense credits
+    const { data: business } = await supabase
+      .from("Businesses")
+      .select("extra_expense_credits")
+      .eq("id", businessId)
+      .single();
+
+    const extraCredits = business?.extra_expense_credits || 0;
+
+    if (plan === "free_user") {
+      // Free plan: Pay-as-you-go at £0.20 per expense
+      if (extraCredits <= 0) {
+        return {
+          error:
+            "NEEDS_PAYMENT:Expenses require payment on Free plan. Purchase expense credits (£0.20 each) to continue.",
+        };
+      }
+
+      // Decrement credits
+      const { error: creditError } = await supabase.rpc(
+        "decrement_expense_credits",
+        { business_id_param: businessId }
+      );
+
+      if (creditError?.code === "PGRST202") {
+        // RPC not found - use optimistic update
+        const { data: updated, error: updateError } = await supabase
+          .from("Businesses")
+          .update({ extra_expense_credits: extraCredits - 1 })
+          .eq("id", businessId)
+          .gt("extra_expense_credits", 0)
+          .select("extra_expense_credits")
+          .single();
+
+        if (updateError || !updated) {
+          return {
+            error:
+              "NEEDS_PAYMENT:Unable to use expense credit. Please try again or purchase more credits.",
+          };
+        }
+      } else if (creditError) {
+        console.error("Failed to decrement expense credits:", creditError);
+        return {
+          error:
+            "NEEDS_PAYMENT:Unable to use expense credit. Please try again.",
+        };
+      }
+    } else if (plan === "professional") {
+      // Professional plan: 10 expenses per month, then pay-as-you-go at £0.20
+      const now = new Date();
+      const firstDayISO = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+      ).toISOString();
+      const nextMonthISO = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        1
+      ).toISOString();
+
+      const { count } = await supabase
+        .from("Expenses")
+        .select("id", { count: "exact", head: true })
+        .eq("author", author)
+        .eq("business_id", businessId)
+        .gte("created_at", firstDayISO)
+        .lt("created_at", nextMonthISO);
+
+      const monthlyCount = count || 0;
+      const monthlyLimit = 10;
+
+      if (monthlyCount >= monthlyLimit && extraCredits <= 0) {
+        return {
+          error:
+            "NEEDS_PAYMENT:You've reached your 10 expenses this month. Purchase additional credits (£0.20 each) or upgrade to Enterprise.",
+        };
+      }
+
+      // If using extra credits, decrement
+      if (monthlyCount >= monthlyLimit && extraCredits > 0) {
+        const { error: creditError } = await supabase.rpc(
+          "decrement_expense_credits",
+          { business_id_param: businessId }
+        );
+
+        if (creditError?.code === "PGRST202") {
+          const { data: updated, error: updateError } = await supabase
+            .from("Businesses")
+            .update({ extra_expense_credits: extraCredits - 1 })
+            .eq("id", businessId)
+            .gt("extra_expense_credits", 0)
+            .select("extra_expense_credits")
+            .single();
+
+          if (updateError || !updated) {
+            return {
+              error:
+                "NEEDS_PAYMENT:Unable to use expense credit. Please try again or purchase more credits.",
+            };
+          }
+        } else if (creditError) {
+          console.error("Failed to decrement expense credits:", creditError);
+          return {
+            error:
+              "NEEDS_PAYMENT:Unable to use expense credit. Please try again.",
+          };
+        }
+      }
+    }
+    // Enterprise plan: unlimited expenses, no checks needed
+  } catch (e) {
+    return {
+      error: e instanceof Error ? e.message : "Plan validation failed.",
+    };
+  }
 
   const { data, error } = await supabase
     .from("Expenses")
@@ -341,4 +465,53 @@ export async function addExpenseToInvoice(
   revalidatePath("/dashboard/expenses");
 
   return { success: true };
+}
+
+// Get monthly expense count for current user
+export async function getCurrentMonthExpenseCount(businessId: number) {
+  const { userId } = await auth();
+  if (!userId) return { count: 0, limit: 0, plan: "free_user" as AppPlan };
+
+  const supabase = await createClient();
+  const plan: AppPlan = await getCurrentPlan();
+
+  const now = new Date();
+  const firstDayISO = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    1
+  ).toISOString();
+  const nextMonthISO = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    1
+  ).toISOString();
+
+  const { count } = await supabase
+    .from("Expenses")
+    .select("id", { count: "exact", head: true })
+    .eq("author", userId)
+    .eq("business_id", businessId)
+    .gte("created_at", firstDayISO)
+    .lt("created_at", nextMonthISO);
+
+  // Get extra credits
+  const { data: business } = await supabase
+    .from("Businesses")
+    .select("extra_expense_credits")
+    .eq("id", businessId)
+    .single();
+
+  const extraCredits = business?.extra_expense_credits || 0;
+
+  // Free plan: pay-per-expense (no free limit), Professional: 10/month, Enterprise: unlimited
+  const limit =
+    plan === "free_user" ? 0 : plan === "professional" ? 10 : Infinity;
+
+  return {
+    count: count || 0,
+    limit,
+    plan,
+    extraCredits,
+  };
 }

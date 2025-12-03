@@ -65,17 +65,22 @@ export default function HelpCenterPage() {
         {
           question: "What limits apply to each plan?",
           answer:
-            "Free users can manage one business profile and create up to 3 invoices per month with unlimited clients. Professional users can manage up to three business profiles and send up to 15 invoices per month. Enterprise removes all limits and unlocks customizable templates.",
+            "Free users can manage one business profile and create up to 2 invoices total. Expenses and estimates are pay-as-you-go at £0.20 each. Professional users get up to 3 business profiles, 15 invoices per month, 10 expenses per month, and 10 estimates per month. Enterprise removes all limits and unlocks customizable templates.",
         },
         {
           question: "What happens when I hit my plan limits?",
           answer:
-            "The app highlights the relevant counters on the dashboard and invoice pages. You can still view historical data, but new invoices or companies are blocked until you upgrade or archive existing ones.",
+            "The app highlights the relevant counters on the dashboard. You can still view historical data, but new documents are blocked until you upgrade, purchase additional credits, or wait for the monthly reset (Professional plan resets monthly).",
         },
         {
           question: "How do I upgrade or manage my subscription?",
           answer:
             "Visit /upgrade (also available via the dashboard banners) to review plans and switch tiers. Changes take effect immediately and the dashboard refreshes as soon as the new plan activates.",
+        },
+        {
+          question: "Can I buy additional credits on the Free plan?",
+          answer:
+            "Yes! Free users can purchase invoice credits at £0.99 each, or expense/estimate credits at £0.20 each. These credits never expire and are available on a pay-as-you-go basis.",
         },
       ],
     },

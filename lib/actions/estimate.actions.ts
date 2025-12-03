@@ -6,6 +6,8 @@ import { createActivity } from "./userActivity.actions";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import type { Estimate } from "@/types";
+import { getCurrentPlan } from "@/lib/plan";
+import { type AppPlan } from "@/lib/utils";
 
 export interface CreateEstimateInput {
   business_id: number;
@@ -25,6 +27,128 @@ export async function createEstimate(input: CreateEstimateInput) {
   if (!author) redirect("/sign-in");
 
   const supabase = await createClient();
+
+  // Enforce plan limits before insert
+  try {
+    const plan: AppPlan = await getCurrentPlan();
+    const businessId = input.business_id;
+
+    // Get business extra estimate credits
+    const { data: business } = await supabase
+      .from("Businesses")
+      .select("extra_estimate_credits")
+      .eq("id", businessId)
+      .single();
+
+    const extraCredits = business?.extra_estimate_credits || 0;
+
+    if (plan === "free_user") {
+      // Free plan: Pay-as-you-go at £0.20 per estimate
+      if (extraCredits <= 0) {
+        return {
+          error:
+            "NEEDS_PAYMENT:Estimates require payment on Free plan. Purchase estimate credits (£0.20 each) to continue.",
+        };
+      }
+
+      // Decrement credits
+      const { error: creditError } = await supabase.rpc(
+        "decrement_estimate_credits",
+        { business_id_param: businessId }
+      );
+
+      if (creditError?.code === "PGRST202") {
+        // RPC not found - use optimistic update
+        const { data: updated, error: updateError } = await supabase
+          .from("Businesses")
+          .update({ extra_estimate_credits: extraCredits - 1 })
+          .eq("id", businessId)
+          .gt("extra_estimate_credits", 0)
+          .select("extra_estimate_credits")
+          .single();
+
+        if (updateError || !updated) {
+          return {
+            error:
+              "NEEDS_PAYMENT:Unable to use estimate credit. Please try again or purchase more credits.",
+          };
+        }
+      } else if (creditError) {
+        console.error("Failed to decrement estimate credits:", creditError);
+        return {
+          error:
+            "NEEDS_PAYMENT:Unable to use estimate credit. Please try again.",
+        };
+      }
+    } else if (plan === "professional") {
+      // Professional plan: 10 estimates per month, then pay-as-you-go at £0.20
+      const now = new Date();
+      const firstDayISO = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        1
+      ).toISOString();
+      const nextMonthISO = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        1
+      ).toISOString();
+
+      const { count } = await supabase
+        .from("Estimates")
+        .select("id", { count: "exact", head: true })
+        .eq("author", author)
+        .eq("business_id", businessId)
+        .gte("created_at", firstDayISO)
+        .lt("created_at", nextMonthISO);
+
+      const monthlyCount = count || 0;
+      const monthlyLimit = 10;
+
+      if (monthlyCount >= monthlyLimit && extraCredits <= 0) {
+        return {
+          error:
+            "NEEDS_PAYMENT:You've reached your 10 estimates this month. Purchase additional credits (£0.20 each) or upgrade to Enterprise.",
+        };
+      }
+
+      // If using extra credits, decrement
+      if (monthlyCount >= monthlyLimit && extraCredits > 0) {
+        const { error: creditError } = await supabase.rpc(
+          "decrement_estimate_credits",
+          { business_id_param: businessId }
+        );
+
+        if (creditError?.code === "PGRST202") {
+          const { data: updated, error: updateError } = await supabase
+            .from("Businesses")
+            .update({ extra_estimate_credits: extraCredits - 1 })
+            .eq("id", businessId)
+            .gt("extra_estimate_credits", 0)
+            .select("extra_estimate_credits")
+            .single();
+
+          if (updateError || !updated) {
+            return {
+              error:
+                "NEEDS_PAYMENT:Unable to use estimate credit. Please try again or purchase more credits.",
+            };
+          }
+        } else if (creditError) {
+          console.error("Failed to decrement estimate credits:", creditError);
+          return {
+            error:
+              "NEEDS_PAYMENT:Unable to use estimate credit. Please try again.",
+          };
+        }
+      }
+    }
+    // Enterprise plan: unlimited estimates, no checks needed
+  } catch (e) {
+    return {
+      error: e instanceof Error ? e.message : "Plan validation failed.",
+    };
+  }
 
   // Generate estimate number
   const { data: lastEstimate } = await supabase
@@ -387,4 +511,53 @@ export async function deleteEstimate(id: number) {
 
   revalidatePath("/dashboard/estimates");
   return { success: true };
+}
+
+// Get monthly estimate count for current user
+export async function getCurrentMonthEstimateCount(businessId: number) {
+  const { userId } = await auth();
+  if (!userId) return { count: 0, limit: 0, plan: "free_user" as AppPlan };
+
+  const supabase = await createClient();
+  const plan: AppPlan = await getCurrentPlan();
+
+  const now = new Date();
+  const firstDayISO = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    1
+  ).toISOString();
+  const nextMonthISO = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    1
+  ).toISOString();
+
+  const { count } = await supabase
+    .from("Estimates")
+    .select("id", { count: "exact", head: true })
+    .eq("author", userId)
+    .eq("business_id", businessId)
+    .gte("created_at", firstDayISO)
+    .lt("created_at", nextMonthISO);
+
+  // Get extra credits
+  const { data: business } = await supabase
+    .from("Businesses")
+    .select("extra_estimate_credits")
+    .eq("id", businessId)
+    .single();
+
+  const extraCredits = business?.extra_estimate_credits || 0;
+
+  // Free plan: pay-per-estimate (no free limit), Professional: 10/month, Enterprise: unlimited
+  const limit =
+    plan === "free_user" ? 0 : plan === "professional" ? 10 : Infinity;
+
+  return {
+    count: count || 0,
+    limit,
+    plan,
+    extraCredits,
+  };
 }
