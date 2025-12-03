@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   Trash2,
   Download,
@@ -16,6 +16,8 @@ import {
   Shield,
   Users,
   Folder,
+  Eye,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExpenseReceipt } from "./ExpenseReceipt";
@@ -70,8 +72,9 @@ interface ExpenseRowProps {
 export function ExpenseRow({ expense, business }: ExpenseRowProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showReceipt, setShowReceipt] = useState(false);
-  const receiptRef = useRef<HTMLDivElement>(null);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [downloadAfterOpen, setDownloadAfterOpen] = useState(false);
+  const modalReceiptRef = useRef<HTMLDivElement>(null);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-GB", {
@@ -83,30 +86,52 @@ export function ExpenseRow({ expense, business }: ExpenseRowProps) {
   const Icon = categoryIcons[expense.category] || Folder;
   const colorClass = categoryColors[expense.category] || categoryColors.other;
 
-  const handleDownloadPDF = async () => {
-    setIsDownloading(true);
-    setShowReceipt(true);
+  const handleViewReceipt = () => {
+    setShowReceiptModal(true);
+  };
 
-    // Wait for the receipt to render
-    await new Promise((resolve) => setTimeout(resolve, 100));
+  const handleDownloadFromModal = async () => {
+    setIsDownloading(true);
+
+    // Wait for the receipt to render fully
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     try {
-      if (receiptRef.current) {
-        await downloadElementAsPDF(receiptRef.current, {
+      if (modalReceiptRef.current) {
+        await downloadElementAsPDF(modalReceiptRef.current, {
           filename: `expense-${expense.id}-${expense.description.slice(0, 20).replace(/\s+/g, "-")}.pdf`,
           margin: 20,
           scale: 2,
         });
         toast.success("Expense receipt downloaded!");
+        setDownloadAfterOpen(false);
+      } else {
+        throw new Error("Receipt element not found");
       }
     } catch (error) {
       console.error("Failed to download PDF:", error);
       toast.error("Failed to download expense receipt");
     } finally {
       setIsDownloading(false);
-      setShowReceipt(false);
     }
   };
+
+  // Direct download opens modal first, then downloads
+  const handleDownloadPDF = () => {
+    setDownloadAfterOpen(true);
+    setShowReceiptModal(true);
+  };
+
+  // Trigger download when modal opens for download
+  useEffect(() => {
+    if (showReceiptModal && downloadAfterOpen) {
+      // Small delay to ensure modal content is fully rendered
+      const timer = setTimeout(() => {
+        handleDownloadFromModal();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showReceiptModal, downloadAfterOpen]);
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this expense?")) return;
@@ -157,6 +182,14 @@ export function ExpenseRow({ expense, business }: ExpenseRowProps) {
           <Button
             variant="ghost"
             size="sm"
+            onClick={handleViewReceipt}
+            className="text-slate-600 hover:text-purple-600 hover:bg-purple-50 dark:text-slate-400 dark:hover:text-purple-400 dark:hover:bg-purple-900/20"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleDownloadPDF}
             disabled={isDownloading}
             className="text-slate-600 hover:text-blue-600 hover:bg-blue-50 dark:text-slate-400 dark:hover:text-blue-400 dark:hover:bg-blue-900/20"
@@ -183,16 +216,58 @@ export function ExpenseRow({ expense, business }: ExpenseRowProps) {
         </div>
       </div>
 
-      {/* Hidden receipt for PDF generation */}
-      {showReceipt && (
-        <div className="fixed left-[-9999px] top-0">
-          <ExpenseReceipt
-            ref={receiptRef}
-            expense={expense}
-            business={business}
-          />
+      {/* Receipt Modal */}
+      {showReceiptModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                Expense Receipt
+              </h2>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadFromModal}
+                  disabled={isDownloading}
+                  className="gap-2"
+                >
+                  {isDownloading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                  Download PDF
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setShowReceiptModal(false);
+                    setDownloadAfterOpen(false);
+                  }}
+                  className="hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Modal Content - white background wrapper for PDF capture */}
+            <div className="flex-1 overflow-y-auto p-6 bg-slate-100 dark:bg-slate-800">
+              <div ref={modalReceiptRef}>
+                <ExpenseReceipt
+                  expense={expense}
+                  business={business}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </>
+  );
+}
   );
 }
