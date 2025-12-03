@@ -34,6 +34,7 @@ import {
   Hammer,
   Code,
   Repeat,
+  Plus,
 } from "lucide-react";
 import Image from "next/image";
 import {
@@ -941,9 +942,45 @@ const InvoiceForm = ({
                       name="client_id"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
-                            Select Client
-                          </FormLabel>
+                          <div className="flex items-center justify-between">
+                            <FormLabel className="text-sm font-medium text-gray-700 dark:text-slate-300">
+                              Select Client
+                            </FormLabel>
+                            <CustomModal
+                              heading="Create New Client"
+                              description="Add a new client to your business"
+                              customTrigger={
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/30"
+                                >
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  Add New
+                                </Button>
+                              }
+                            >
+                              <ClientForm
+                                business_id={company_data.id}
+                                onSuccess={(newClient) => {
+                                  setLocalClients((prev) => [
+                                    ...prev,
+                                    newClient,
+                                  ]);
+                                  form.setValue("client_id", newClient.id);
+                                  form.setValue("bill_to", {
+                                    name: newClient.name,
+                                    email: newClient.email,
+                                    address: newClient.address,
+                                    phone: newClient.phone,
+                                    id: newClient.id,
+                                    business_id: newClient.business_id,
+                                  });
+                                }}
+                              />
+                            </CustomModal>
+                          </div>
                           <FormControl>
                             <Select
                               onValueChange={(value) => {
