@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Trash2,
   Download,
@@ -21,7 +22,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ExpenseReceipt } from "./ExpenseReceipt";
-import { downloadElementAsPDF } from "@/lib/pdf";
+import { generateExpenseReceiptPDF } from "@/lib/expense-pdf";
 import { deleteExpense } from "@/lib/actions/expense.actions";
 import { toast } from "sonner";
 import type { Expense, BusinessType } from "@/types";
@@ -73,8 +74,6 @@ export function ExpenseRow({ expense, business }: ExpenseRowProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
-  const [downloadAfterOpen, setDownloadAfterOpen] = useState(false);
-  const modalReceiptRef = useRef<HTMLDivElement>(null);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-GB", {
@@ -90,24 +89,11 @@ export function ExpenseRow({ expense, business }: ExpenseRowProps) {
     setShowReceiptModal(true);
   };
 
-  const handleDownloadFromModal = async () => {
+  const handleDownloadPDF = async () => {
     setIsDownloading(true);
-
-    // Wait for the receipt to render fully
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
     try {
-      if (modalReceiptRef.current) {
-        await downloadElementAsPDF(modalReceiptRef.current, {
-          filename: `expense-${expense.id}-${expense.description.slice(0, 20).replace(/\s+/g, "-")}.pdf`,
-          margin: 20,
-          scale: 2,
-        });
-        toast.success("Expense receipt downloaded!");
-        setDownloadAfterOpen(false);
-      } else {
-        throw new Error("Receipt element not found");
-      }
+      await generateExpenseReceiptPDF(expense, business);
+      toast.success("Expense receipt downloaded!");
     } catch (error) {
       console.error("Failed to download PDF:", error);
       toast.error("Failed to download expense receipt");
@@ -115,23 +101,6 @@ export function ExpenseRow({ expense, business }: ExpenseRowProps) {
       setIsDownloading(false);
     }
   };
-
-  // Direct download opens modal first, then downloads
-  const handleDownloadPDF = () => {
-    setDownloadAfterOpen(true);
-    setShowReceiptModal(true);
-  };
-
-  // Trigger download when modal opens for download
-  useEffect(() => {
-    if (showReceiptModal && downloadAfterOpen) {
-      // Small delay to ensure modal content is fully rendered
-      const timer = setTimeout(() => {
-        handleDownloadFromModal();
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [showReceiptModal, downloadAfterOpen]);
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this expense?")) return;
@@ -216,53 +185,50 @@ export function ExpenseRow({ expense, business }: ExpenseRowProps) {
         </div>
       </div>
 
-      {/* Receipt Modal */}
-      {showReceiptModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                Expense Receipt
-              </h2>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="neutralOutline"
-                  size="sm"
-                  onClick={handleDownloadFromModal}
-                  disabled={isDownloading}
-                  className="gap-2"
-                >
-                  {isDownloading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Download className="h-4 w-4" />
-                  )}
-                  Download PDF
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setShowReceiptModal(false);
-                    setDownloadAfterOpen(false);
-                  }}
-                  className="hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
+      {/* Receipt Modal - using portal to render at body level */}
+      {showReceiptModal &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                  Expense Receipt
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="neutralOutline"
+                    size="sm"
+                    onClick={handleDownloadPDF}
+                    disabled={isDownloading}
+                    className="gap-2"
+                  >
+                    {isDownloading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Download className="h-4 w-4" />
+                    )}
+                    Download PDF
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowReceiptModal(false)}
+                    className="hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            {/* Modal Content - white background wrapper for PDF capture */}
-            <div className="flex-1 overflow-y-auto p-6 bg-slate-100 dark:bg-slate-800">
-              <div ref={modalReceiptRef}>
+              {/* Modal Content */}
+              <div className="flex-1 overflow-y-auto p-6 bg-slate-100 dark:bg-slate-800">
                 <ExpenseReceipt expense={expense} business={business} />
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </>
   );
 }
