@@ -15,7 +15,10 @@ import { Input } from "@/components/ui/input";
 import { useForm, useWatch } from "react-hook-form";
 import InvoiceItems from "./InvoiceItems";
 import { Textarea } from "../ui/textarea";
-import { createInvoice } from "@/lib/actions/invoice.actions";
+import {
+  createInvoice,
+  getLastInvoiceDefaults,
+} from "@/lib/actions/invoice.actions";
 import { createRecurringInvoice } from "@/lib/actions/recurring.actions";
 import { formSchema } from "@/schemas/invoiceSchema";
 import { redirect, useRouter } from "next/navigation";
@@ -983,7 +986,7 @@ const InvoiceForm = ({
                           </div>
                           <FormControl>
                             <Select
-                              onValueChange={(value) => {
+                              onValueChange={async (value) => {
                                 const selectedClient = localClients.find(
                                   (client) => client.id === Number(value)
                                 );
@@ -997,6 +1000,32 @@ const InvoiceForm = ({
                                     id: selectedClient.id,
                                     business_id: selectedClient.business_id,
                                   });
+
+                                  // Fetch last invoice defaults for this client-business pair
+                                  const defaults = await getLastInvoiceDefaults(
+                                    selectedClient.id,
+                                    company_data.id
+                                  );
+                                  if (defaults) {
+                                    // Only pre-fill if fields are currently empty
+                                    const currentBankDetails =
+                                      form.getValues("bank_details");
+                                    const currentNotes =
+                                      form.getValues("notes");
+
+                                    if (
+                                      !currentBankDetails &&
+                                      defaults.bank_details
+                                    ) {
+                                      form.setValue(
+                                        "bank_details",
+                                        defaults.bank_details
+                                      );
+                                    }
+                                    if (!currentNotes && defaults.notes) {
+                                      form.setValue("notes", defaults.notes);
+                                    }
+                                  }
                                 }
                                 field.onChange(Number(value));
                               }}

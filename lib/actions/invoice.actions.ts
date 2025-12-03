@@ -750,3 +750,36 @@ export const getMonthlyRevenue = async (businessId: number) => {
 
   return result;
 };
+
+/**
+ * Get the last invoice's bank_details and notes for a specific client-business pair.
+ * This helps pre-fill these fields when creating a new invoice for the same client.
+ */
+export const getLastInvoiceDefaults = async (
+  clientId: number,
+  businessId: number
+): Promise<{ bank_details: string; notes: string } | null> => {
+  const { userId: author } = await auth();
+  if (!author) return null;
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("Invoices")
+    .select("bank_details, notes")
+    .eq("business_id", businessId)
+    .eq("author", author)
+    .contains("bill_to", { id: clientId })
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return {
+    bank_details: data.bank_details || "",
+    notes: data.notes || "",
+  };
+};
