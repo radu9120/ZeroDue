@@ -65,18 +65,23 @@ type PartialBusiness = Pick<
 interface ExpenseRowProps {
   expense: Expense;
   business: PartialBusiness;
-  formatCurrency: (amount: number) => string;
 }
 
 export function ExpenseRow({
   expense,
   business,
-  formatCurrency,
 }: ExpenseRowProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
   const receiptRef = useRef<HTMLDivElement>(null);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-GB", {
+      style: "currency",
+      currency: business.currency || "GBP",
+    }).format(amount);
+  };
 
   const Icon = categoryIcons[expense.category] || Folder;
   const colorClass = categoryColors[expense.category] || categoryColors.other;

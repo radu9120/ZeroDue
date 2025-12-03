@@ -302,7 +302,6 @@ export default async function ExpensesPage({
                     key={expense.id}
                     expense={expense}
                     business={business}
-                    formatCurrency={formatCurrency}
                   />
                 ))}
               </div>
