@@ -63,16 +63,34 @@ export function InvoiceNotesSection({
             }}
           >
             {bankDetailsDisplay.type === "list" ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
                 {bankDetailsDisplay.entries.map((entry) => (
                   <div
                     key={`${entry.label}-${entry.value}`}
-                    style={{ display: "flex", justifyContent: "space-between", gap: "16px" }}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: "16px",
+                    }}
                   >
-                    <span style={{ fontSize: "14px", fontWeight: 500, color: "#4b5563" }}>
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        color: "#4b5563",
+                      }}
+                    >
                       {entry.label}
                     </span>
-                    <span style={{ fontSize: "14px", color: "#111827", textAlign: "right" }}>
+                    <span
+                      style={{
+                        fontSize: "14px",
+                        color: "#111827",
+                        textAlign: "right",
+                      }}
+                    >
                       {entry.value}
                     </span>
                   </div>

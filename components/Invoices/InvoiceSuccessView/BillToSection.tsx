@@ -55,7 +55,12 @@ export function BillToSection({ billTo }: BillToSectionProps) {
         )}
         {billTo?.email && (
           <p
-            style={{ fontSize: "14px", color: "#4b5563", marginTop: "4px", marginBottom: 0 }}
+            style={{
+              fontSize: "14px",
+              color: "#4b5563",
+              marginTop: "4px",
+              marginBottom: 0,
+            }}
           >
             {billTo.email as string}
           </p>
