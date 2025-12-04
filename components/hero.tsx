@@ -23,6 +23,7 @@ import CompanyBanner from "./companies-banner";
 import { useRef, useState, useEffect } from "react";
 import { HeroGlow } from "@/components/ui/hero-glow";
 import { FloatingPaths } from "@/components/ui/floating-paths";
+import { HeroMesh } from "@/components/ui/hero-mesh";
 
 export default function Hero() {
   const containerRef = useRef(null);
@@ -48,18 +49,19 @@ export default function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative pt-24 pb-16 md:pt-48 md:pb-32 overflow-hidden"
+      className="relative pt-24 pb-16 md:pt-48 md:pb-32 overflow-hidden bg-white dark:bg-slate-950"
     >
       {/* Background */}
-      <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 z-0">
+        <HeroMesh />
         <HeroGlow />
-        <div className="absolute inset-0 opacity-40 dark:opacity-30">
+        <div className="absolute inset-0 opacity-30 dark:opacity-20">
           <FloatingPaths position={1} />
           <FloatingPaths position={-1} />
         </div>
       </div>
 
-      <div className="container mx-auto px-4 text-center">
+      <div className="container mx-auto px-4 text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -67,9 +69,12 @@ export default function Hero() {
           className="max-w-4xl mx-auto space-y-8"
         >
           {/* Badge */}
-          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300 mb-4 gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse"></span>
-            <span>AI Assistant • Recurring Invoices • Expense Tracking</span>
+          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300 mb-4 gap-2">
+            <span className="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse shrink-0"></span>
+            <span className="hidden sm:inline">
+              AI Assistant • Recurring Invoices • Expense Tracking
+            </span>
+            <span className="sm:hidden">AI-Powered Invoicing</span>
           </div>
 
           {/* Headline */}
