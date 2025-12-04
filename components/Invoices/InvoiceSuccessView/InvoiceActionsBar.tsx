@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { FileText, Mail, Download } from "lucide-react";
+import { FileText, Mail, Download, Sun, Moon } from "lucide-react";
 import * as React from "react";
+import type { PDFTheme } from "@/lib/invoice-pdf";
 
 interface InvoiceActionsBarProps {
   isEditing: boolean;
@@ -16,6 +17,8 @@ interface InvoiceActionsBarProps {
   sending: boolean;
   onDownloadPDF: () => void;
   downloading: boolean;
+  pdfTheme: PDFTheme;
+  onPdfThemeChange: (theme: PDFTheme) => void;
 }
 
 const STATUS_OPTIONS = [
@@ -40,6 +43,8 @@ export function InvoiceActionsBar({
   sending,
   onDownloadPDF,
   downloading,
+  pdfTheme,
+  onPdfThemeChange,
 }: InvoiceActionsBarProps) {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -113,6 +118,33 @@ export function InvoiceActionsBar({
             <Mail className="h-4 w-4 mr-2" />
             {sending ? "Sending…" : "Send to Client"}
           </Button>
+
+          {/* PDF Theme Toggle + Download */}
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 rounded-xl p-1">
+            <button
+              onClick={() => onPdfThemeChange("light")}
+              className={`p-2 rounded-lg transition-colors ${
+                pdfTheme === "light"
+                  ? "bg-white dark:bg-slate-600 shadow-sm text-amber-500"
+                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+              }`}
+              title="Light PDF"
+            >
+              <Sun className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => onPdfThemeChange("dark")}
+              className={`p-2 rounded-lg transition-colors ${
+                pdfTheme === "dark"
+                  ? "bg-white dark:bg-slate-600 shadow-sm text-indigo-500"
+                  : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+              }`}
+              title="Dark PDF"
+            >
+              <Moon className="h-4 w-4" />
+            </button>
+          </div>
+
           <Button
             onClick={onDownloadPDF}
             className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl px-5 py-2.5 font-medium shadow-lg shadow-blue-500/20"

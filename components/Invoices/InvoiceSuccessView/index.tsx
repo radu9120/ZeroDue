@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CustomButton from "@/components/ui/CustomButton";
-import { generateInvoicePDF } from "@/lib/invoice-pdf";
+import { generateInvoicePDF, type PDFTheme } from "@/lib/invoice-pdf";
 import type { InvoiceListItem, BusinessType } from "@/types";
 import currencies from "@/lib/currencies.json";
 import {
@@ -472,6 +472,7 @@ export default function InvoiceSuccessView({
   const [showSuccess, setShowSuccess] = useState(!isPublicView);
   const [downloading, setDownloading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [pdfTheme, setPdfTheme] = useState<PDFTheme>("light");
 
   const items = useMemo(
     () => parseInvoiceItems(invoice.items),
@@ -498,7 +499,7 @@ export default function InvoiceSuccessView({
   const downloadPDF = useCallback(async () => {
     try {
       setDownloading(true);
-      await generateInvoicePDF(invoice, company);
+      await generateInvoicePDF(invoice, company, pdfTheme);
       toast.success("PDF downloaded");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -506,7 +507,7 @@ export default function InvoiceSuccessView({
     } finally {
       setDownloading(false);
     }
-  }, [invoice, company]);
+  }, [invoice, company, pdfTheme]);
 
   const sendToClient = useCallback(async () => {
     try {
@@ -691,6 +692,8 @@ export default function InvoiceSuccessView({
                 sending={sending}
                 onDownloadPDF={downloadPDF}
                 downloading={downloading}
+                pdfTheme={pdfTheme}
+                onPdfThemeChange={setPdfTheme}
               />
             </CardHeader>
           )}
