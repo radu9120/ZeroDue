@@ -48,12 +48,12 @@ export default function PrivacyPolicyPage() {
             </h2>
             <div className="space-y-4 text-primary-text leading-relaxed">
               <p>
-                At InvoiceFlow ("we", "our", or "us"), operated by VEROSITE LTD,
+                At ZeroDue ("we", "our", or "us"), operated by VEROSITE LTD,
                 Company number 16227585, we are committed to protecting and
-                respecting your privacy. InvoiceFlow is a trading name of
-                VEROSITE LTD. This Privacy Policy explains how we collect, use,
-                disclose, and safeguard your information when you visit our
-                website and use our invoicing services.
+                respecting your privacy. ZeroDue is a trading name of VEROSITE
+                LTD. This Privacy Policy explains how we collect, use, disclose,
+                and safeguard your information when you visit our website and
+                use our invoicing services.
               </p>
               <p>
                 This policy complies with the UK General Data Protection
@@ -74,7 +74,7 @@ export default function PrivacyPolicyPage() {
                 <strong>Company:</strong> VEROSITE LTD
               </p>
               <p>
-                <strong>Trading Name:</strong> InvoiceFlow
+                <strong>Trading Name:</strong> ZeroDue
               </p>
               <p>
                 <strong>Company Number:</strong> 16227585
@@ -84,10 +84,10 @@ export default function PrivacyPolicyPage() {
                 London, England, E14 9DQ
               </p>
               <p>
-                <strong>Email:</strong> support@invoiceflow.com
+                <strong>Email:</strong> support@zerodue.co
               </p>
               <p>
-                <strong>Data Protection Officer:</strong> dpo@invoiceflow.com
+                <strong>Data Protection Officer:</strong> dpo@zerodue.co
               </p>
             </div>
           </div>
@@ -381,8 +381,8 @@ export default function PrivacyPolicyPage() {
             <div className="mt-4 p-4 bg-neutral-50 rounded-lg">
               <p className="text-sm text-secondary-text dark:text-slate-400">
                 To exercise any of these rights, please contact us at{" "}
-                <strong>support@invoiceflow.com</strong>. We will respond within
-                one month of receiving your request.
+                <strong>support@zerodue.co</strong>. We will respond within one
+                month of receiving your request.
               </p>
             </div>
           </div>
@@ -461,15 +461,14 @@ export default function PrivacyPolicyPage() {
                   </p>
                   <div className="space-y-2 text-sm">
                     <p>
-                      InvoiceFlow is a trading name of VEROSITE LTD (Company
-                      number 16227585).
+                      ZeroDue is a trading name of VEROSITE LTD (Company number
+                      16227585).
                     </p>
                     <p>
-                      <strong>Email:</strong> support@invoiceflow.com
+                      <strong>Email:</strong> support@zerodue.co
                     </p>
                     <p>
-                      <strong>Data Protection Officer:</strong>{" "}
-                      dpo@invoiceflow.com
+                      <strong>Data Protection Officer:</strong> dpo@zerodue.co
                     </p>
                     <p>
                       <strong>Post:</strong> VEROSITE LTD, Flat 209, 1 Indescon

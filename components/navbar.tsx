@@ -86,14 +86,14 @@ export default function Navbar() {
               <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 transition-transform group-hover:scale-105">
                 <Image
                   src="/logo.png"
-                  alt="InvoiceFlow logo"
+                  alt="ZeroDue logo"
                   height={20}
                   width={20}
                   className="object-contain invert brightness-0"
                 />
               </div>
               <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                InvoiceFlow
+                ZeroDue
               </span>
             </Link>
           </div>

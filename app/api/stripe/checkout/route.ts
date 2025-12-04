@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: "usd",
             product_data: {
-              name: `InvoiceFlow ${planConfig.name} Plan`,
+              name: `ZeroDue ${planConfig.name} Plan`,
               description: `${planConfig.invoicesIncluded === Infinity ? "Unlimited" : planConfig.invoicesIncluded} invoices/month, ${planConfig.businessesIncluded === Infinity ? "Unlimited" : planConfig.businessesIncluded} business profiles`,
             },
             unit_amount: Math.round(planConfig.monthlyPrice * 100), // Convert to cents

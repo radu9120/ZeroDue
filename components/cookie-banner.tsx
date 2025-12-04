@@ -32,7 +32,7 @@ const cookieTypes = [
   {
     key: "analytics" as const,
     label: "Analytics",
-    description: "Help us understand how you use InvoiceFlow",
+    description: "Help us understand how you use ZeroDue",
     icon: BarChart3,
     alwaysOn: false,
   },

@@ -72,7 +72,7 @@ export default function SignInPage() {
             Welcome back
           </h1>
           <p className="text-gray-600 dark:text-slate-400">
-            Sign in to your InvoiceFlow account
+            Sign in to your ZeroDue account
           </p>
         </div>
 

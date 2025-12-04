@@ -85,7 +85,7 @@ export const sendInvoiceEmailAction = async (
   // Send email via Resend
   const { data: emailData, error: emailError } =
     await getResendClient().emails.send({
-      from: "InvoiceFlow <noreply@invoiceflow.net>",
+      from: "ZeroDue <noreply@zerodue.co>",
       to: [clientEmail],
       subject: `Invoice #${invoice.invoice_number} from ${business.name}`,
       html: emailWrapper(`

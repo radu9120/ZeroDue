@@ -27,7 +27,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 export function ThemeProvider({
   children,
   defaultTheme = "light",
-  storageKey = "invoiceflow-theme",
+  storageKey = "zerodue-theme",
   ...props
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {

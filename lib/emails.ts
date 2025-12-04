@@ -8,7 +8,7 @@ export function getResendClient(): Resend {
   return resend;
 }
 
-const FROM_EMAIL = "InvoiceFlow <noreply@invcyflow.com>";
+const FROM_EMAIL = "ZeroDue <noreply@zerodue.co>";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://invcyflow.com";
 
 // Base email template wrapper
@@ -82,14 +82,14 @@ export function emailWrapper(content: string): string {
     <body>
       <div class="container">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 class="header-title" style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">InvoiceFlow</h1>
+          <h1 class="header-title" style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">ZeroDue</h1>
           <p class="header-subtitle" style="margin: 8px 0 0 0; font-size: 14px;">Professional Invoicing Made Simple</p>
         </div>
         
         ${content}
         
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 12px;">
-          <p class="footer-text" style="margin: 0;">© ${new Date().getFullYear()} InvoiceFlow. All rights reserved.</p>
+          <p class="footer-text" style="margin: 0;">© ${new Date().getFullYear()} ZeroDue. All rights reserved.</p>
           <p style="margin: 8px 0 0 0;">
             <a href="${APP_URL}/privacy-policy" class="footer-link" style="text-decoration: none;">Privacy Policy</a> · 
             <a href="${APP_URL}/help" class="footer-link" style="text-decoration: none;">Help Center</a>
@@ -107,13 +107,13 @@ export async function sendWelcomeEmail(email: string, name?: string) {
 
   const content = `
     <div class="banner" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
-      <h2 class="banner-title" style="margin: 0 0 8px 0; color: #1e40af; font-size: 24px;">Welcome to InvoiceFlow! 🎉</h2>
+      <h2 class="banner-title" style="margin: 0 0 8px 0; color: #1e40af; font-size: 24px;">Welcome to ZeroDue! 🎉</h2>
       <p class="banner-text" style="margin: 0; color: #1e3a8a;">Your professional invoicing journey starts now</p>
     </div>
     
     <p>Hi ${firstName},</p>
     
-    <p>Thank you for joining InvoiceFlow! We're excited to help you create professional invoices in minutes.</p>
+    <p>Thank you for joining ZeroDue! We're excited to help you create professional invoices in minutes.</p>
     
     <div class="content-box" style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 24px 0;">
       <h3 class="content-title" style="margin: 0 0 16px 0; color: #334155;">Here's what you can do:</h3>
@@ -139,14 +139,14 @@ export async function sendWelcomeEmail(email: string, name?: string) {
     
     <p style="margin-top: 24px;">
       Welcome aboard!<br>
-      <strong>The InvoiceFlow Team</strong>
+      <strong>The ZeroDue Team</strong>
     </p>
   `;
 
   return getResendClient().emails.send({
     from: FROM_EMAIL,
     to: email,
-    subject: "Welcome to InvoiceFlow! 🎉",
+    subject: "Welcome to ZeroDue! 🎉",
     html: emailWrapper(content),
   });
 }
@@ -226,7 +226,7 @@ export async function sendPlanUpgradeEmail(
     
     <p style="margin-top: 24px;">
       Happy invoicing!<br>
-      <strong>The InvoiceFlow Team</strong>
+      <strong>The ZeroDue Team</strong>
     </p>
   `;
 
@@ -286,7 +286,7 @@ export async function sendCreditsEmail(
     
     <p style="margin-top: 24px;">
       Thanks for your purchase!<br>
-      <strong>The InvoiceFlow Team</strong>
+      <strong>The ZeroDue Team</strong>
     </p>
   `;
 
@@ -339,7 +339,7 @@ export async function sendDowngradeCompletedEmail(
     
     <p style="margin-top: 24px;">
       We're here if you need us!<br>
-      <strong>The InvoiceFlow Team</strong>
+      <strong>The ZeroDue Team</strong>
     </p>
   `;
 
@@ -373,7 +373,7 @@ export async function sendReactivationEmail(email: string, planName: string) {
     
     <p style="margin-top: 24px;">
       Happy invoicing!<br>
-      <strong>The InvoiceFlow Team</strong>
+      <strong>The ZeroDue Team</strong>
     </p>
   `;
 

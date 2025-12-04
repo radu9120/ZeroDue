@@ -25,14 +25,13 @@ export async function generateMetadata({
 
   if (!post) {
     return {
-      title: "Blog | InvoiceFlow",
-      description:
-        "Insights, playbooks, and stories from the InvoiceFlow team.",
+      title: "Blog | ZeroDue",
+      description: "Insights, playbooks, and stories from the ZeroDue team.",
     };
   }
 
   return {
-    title: `${post.title} | InvoiceFlow Blog`,
+    title: `${post.title} | ZeroDue Blog`,
     description: post.description,
   };
 }
@@ -87,7 +86,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
           <div className="mt-8 flex items-center gap-4">
             <div className="text-sm font-medium text-slate-900 dark:text-white">
-              InvoiceFlow Team
+              ZeroDue Team
             </div>
             <div className="text-sm text-slate-500 dark:text-slate-400">
               {post.publishedAt}
@@ -127,8 +126,8 @@ export default async function BlogPostPage({ params }: PageProps) {
                 Ready to streamline your invoicing?
               </h3>
               <p className="text-blue-100 text-lg mb-8 max-w-xl">
-                Join thousands of businesses using InvoiceFlow to get paid
-                faster and save time on admin work.
+                Join thousands of businesses using ZeroDue to get paid faster
+                and save time on admin work.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link

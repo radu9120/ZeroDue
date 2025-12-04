@@ -68,12 +68,12 @@ export default async function PublicInvoicePage({
           <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2">
             Powered by
             <a
-              href="https://invoiceflow.app"
+              href="https://zerodue.co"
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
-              InvoiceFlow
+              ZeroDue
             </a>
             <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
             <span className="text-xs">Simple, beautiful invoicing</span>

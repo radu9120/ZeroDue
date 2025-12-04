@@ -58,7 +58,7 @@ const faqs = [
   {
     question: "Do you have an AI assistant?",
     answer:
-      "Yes! InvoiceFlow includes a smart AI assistant available 24/7. Click the chat icon to get instant help with creating invoices, understanding features, troubleshooting issues, or any questions about your account. It's like having a support team member always ready to help.",
+      "Yes! ZeroDue includes a smart AI assistant available 24/7. Click the chat icon to get instant help with creating invoices, understanding features, troubleshooting issues, or any questions about your account. It's like having a support team member always ready to help.",
   },
 ] as const;
 
@@ -152,7 +152,7 @@ export default function FAQ() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-lg text-gray-600 dark:text-slate-400 max-w-2xl mx-auto"
           >
-            Everything you need to know about InvoiceFlow
+            Everything you need to know about ZeroDue
           </motion.p>
         </div>
 

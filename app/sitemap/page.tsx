@@ -181,7 +181,7 @@ const sections: Array<{
       {
         label: "Sign In",
         href: "/sign-in",
-        description: "Access your InvoiceFlow account",
+        description: "Access your ZeroDue account",
       },
       {
         label: "Create Account",
@@ -203,11 +203,11 @@ const sections: Array<{
 ];
 
 export const metadata = {
-  title: "Sitemap | InvoiceFlow - All Pages & Resources",
+  title: "Sitemap | ZeroDue - All Pages & Resources",
   description:
-    "Complete sitemap of InvoiceFlow. Find all pages including invoicing tools, client management, analytics, billing guides, blog posts, and support resources.",
+    "Complete sitemap of ZeroDue. Find all pages including invoicing tools, client management, analytics, billing guides, blog posts, and support resources.",
   keywords: [
-    "invoiceflow sitemap",
+    "zerodue sitemap",
     "invoice software pages",
     "billing tools",
     "freelancer invoicing",
@@ -217,9 +217,9 @@ export const metadata = {
     "payment tracking",
   ],
   openGraph: {
-    title: "Sitemap | InvoiceFlow",
+    title: "Sitemap | ZeroDue",
     description:
-      "Navigate all InvoiceFlow pages - invoicing tools, resources, and support.",
+      "Navigate all ZeroDue pages - invoicing tools, resources, and support.",
     type: "website",
   },
 };
@@ -233,12 +233,12 @@ export default function SitemapPage() {
             Site Navigation
           </p>
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
-            InvoiceFlow Sitemap
+            ZeroDue Sitemap
           </h1>
           <p className="text-slate-600 dark:text-slate-300 text-lg">
-            Explore all pages on InvoiceFlow. From creating professional
-            invoices to managing clients and tracking payments - find everything
-            you need below.
+            Explore all pages on ZeroDue. From creating professional invoices to
+            managing clients and tracking payments - find everything you need
+            below.
           </p>
         </header>
 

@@ -86,13 +86,13 @@ export async function POST(req: NextRequest) {
         console.log(`Found ${products.data.length} products in Stripe`);
 
         let product = products.data.find(
-          (p) => p.name === `InvoiceFlow ${planConfig.name} Plan`
+          (p) => p.name === `ZeroDue ${planConfig.name} Plan`
         );
 
         if (!product) {
           console.log(`Creating new product for ${planConfig.name}...`);
           product = await stripe.products.create({
-            name: `InvoiceFlow ${planConfig.name} Plan`,
+            name: `ZeroDue ${planConfig.name} Plan`,
             description: `${planConfig.invoicesIncluded === Infinity ? "Unlimited" : planConfig.invoicesIncluded} invoices/month`,
           });
           console.log(`Created product: ${product.id}`);

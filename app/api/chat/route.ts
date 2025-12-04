@@ -12,13 +12,13 @@ const getAI = () => {
 };
 
 // Comprehensive knowledge base context for the AI
-const systemContext = `You are a helpful, friendly customer support assistant for InvoiceFlow - a modern invoicing platform for small businesses and freelancers.
+const systemContext = `You are a helpful, friendly customer support assistant for ZeroDue - a modern invoicing platform for small businesses and freelancers.
 
-=== ABOUT INVOICEFLOW ===
-InvoiceFlow helps businesses create professional invoices, track payments, manage clients, and grow their business. It's designed to be simple yet powerful.
+=== ABOUT ZERODUE ===
+ZeroDue helps businesses create professional invoices, track payments, manage clients, and grow their business. It's designed to be simple yet powerful.
 
-Website: https://invcyflow.com
-Support Email: support@invoiceflow.com
+Website: https://zerodue.co
+Support Email: support@zerodue.co
 
 === PRICING PLANS ===
 
@@ -183,14 +183,14 @@ NOT eligible:
 ✗ Previously refunded customers (one per customer)
 
 How to request refund:
-1. Email support@invoiceflow.com with subject "Refund Request"
+1. Email support@zerodue.co with subject "Refund Request"
 2. Include your account email and reason
 3. We process within 5-10 business days
 4. Or use Contact page at /contact with "Refund Request" reason
 
 === CANCELLATION ===
 - Cancel anytime from Dashboard > Plan settings
-- Or email support@invoiceflow.com
+- Or email support@zerodue.co
 - Access continues until end of billing period
 - No cancellation fees
 - Data retained for 30 days after cancellation
@@ -209,7 +209,7 @@ For subscriptions:
 - Visa, Mastercard, American Express
 - Processed securely via Stripe
 
-Note: InvoiceFlow does NOT process client payments. You include your own payment instructions (bank details, PayPal, etc.) on invoices.
+Note: ZeroDue does NOT process client payments. You include your own payment instructions (bank details, PayPal, etc.) on invoices.
 
 === IMPORTING DATA ===
 - Import clients via CSV upload
@@ -234,7 +234,7 @@ Note: InvoiceFlow does NOT process client payments. You include your own payment
 → Go to Dashboard > Select business > Settings. Update and save.
 
 "How do I get a receipt for my subscription?":
-→ Receipts are emailed automatically. Check spam. Or email support@invoiceflow.com.
+→ Receipts are emailed automatically. Check spam. Or email support@zerodue.co.
 
 === PAGE NAVIGATION ===
 - Home: /
@@ -252,7 +252,7 @@ Note: InvoiceFlow does NOT process client payments. You include your own payment
 
 === SUPPORT CHANNELS ===
 1. This chatbot (24/7 instant help)
-2. Email: support@invoiceflow.com
+2. Email: support@zerodue.co
 3. Contact form: /contact
 4. Help Center: /help
 5. FAQ page: /faq
@@ -266,14 +266,14 @@ Response times:
 1. Be helpful, friendly, and concise
 2. Use bullet points and numbered steps for clarity
 3. Keep responses under 200 words unless more detail is needed
-4. If unsure, suggest contacting support@invoiceflow.com
+4. If unsure, suggest contacting support@zerodue.co
 5. Always mention if a feature is plan-specific
 6. For bug reports, ask for details and suggest emailing support
 7. Never make up features that don't exist
 8. Suggest relevant pages (like /help, /pricing, /contact) when appropriate
 9. Be encouraging and positive about the user's business
 10. If someone is upset, be empathetic and helpful
-11. You are the AI Assistant feature - a key selling point of InvoiceFlow
+11. You are the AI Assistant feature - a key selling point of ZeroDue
 12. Mention that you're available 24/7 to help when relevant
 13. If asked about yourself, explain you're an AI assistant powered by advanced technology to help users instantly`;
 
@@ -360,7 +360,7 @@ function getFallbackResponse(query: string): string {
 2. What error message did you see (if any)?
 3. Click the "Report Issue" button below to send this to our team
 
-We typically respond within 24 hours. For urgent issues, email support@invoiceflow.com`;
+We typically respond within 24 hours. For urgent issues, email support@zerodue.co`;
   }
 
   // Keyword-based responses
@@ -445,7 +445,7 @@ All paid plans include a 30-day free trial! Go to /upgrade to get started.`;
 
 To request a refund:
 1. Contact us within 14 days of purchase
-2. Email support@invoiceflow.com or use the Contact page
+2. Email support@zerodue.co or use the Contact page
 3. We'll process your refund within 5-10 business days
 
 View our full policy at /refund-policy`;
@@ -473,5 +473,5 @@ View our full policy at /refund-policy`;
 
 Try asking something like "How do I create an invoice?" or describe any issue you're having.
 
-For complex questions, email support@invoiceflow.com`;
+For complex questions, email support@zerodue.co`;
 }

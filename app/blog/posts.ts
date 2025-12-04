@@ -36,7 +36,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "How to get paid faster",
-        body: "Set clear payment terms upfront (Net 15, Net 30). Send invoices immediately after work completion. Offer multiple payment methods (bank transfer, credit card, PayPal). Send polite reminders before the due date. Add late payment fees in your terms. Use invoicing software like InvoiceFlow to automate reminders and track payment status in real-time.",
+        body: "Set clear payment terms upfront (Net 15, Net 30). Send invoices immediately after work completion. Offer multiple payment methods (bank transfer, credit card, PayPal). Send polite reminders before the due date. Add late payment fees in your terms. Use invoicing software like ZeroDue to automate reminders and track payment status in real-time.",
       },
       {
         heading: "Common invoicing mistakes to avoid",
@@ -44,7 +44,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Digital invoicing vs paper invoices",
-        body: "Digital invoices get paid 3x faster than paper invoices. They're easier to track, automatically remind clients, and integrate with accounting software. InvoiceFlow creates professional digital invoices with payment links, automated reminders, and real-time tracking—so you can focus on your work instead of chasing payments.",
+        body: "Digital invoices get paid 3x faster than paper invoices. They're easier to track, automatically remind clients, and integrate with accounting software. ZeroDue creates professional digital invoices with payment links, automated reminders, and real-time tracking—so you can focus on your work instead of chasing payments.",
       },
     ],
   },
@@ -61,7 +61,7 @@ export const blogPosts: BlogPost[] = [
     sections: [
       {
         heading: "Setting up your freelance invoicing system",
-        body: "Before sending your first invoice, you need the basics: a registered business name (or your legal name), business bank account, tax ID or VAT number if required, and professional invoicing software. InvoiceFlow helps freelancers create compliant invoices in minutes with automatic tax calculations and payment tracking.",
+        body: "Before sending your first invoice, you need the basics: a registered business name (or your legal name), business bank account, tax ID or VAT number if required, and professional invoicing software. ZeroDue helps freelancers create compliant invoices in minutes with automatic tax calculations and payment tracking.",
       },
       {
         heading: "Pricing strategies that work",
@@ -69,7 +69,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Understanding tax requirements",
-        body: "Freelancers must charge sales tax, VAT, or GST depending on location and income thresholds. In the UK, register for VAT if you earn over £85,000. In the US, sales tax varies by state. Keep accurate records of all income and expenses. InvoiceFlow automatically applies the correct tax rates based on your location and tracks everything for tax season.",
+        body: "Freelancers must charge sales tax, VAT, or GST depending on location and income thresholds. In the UK, register for VAT if you earn over £85,000. In the US, sales tax varies by state. Keep accurate records of all income and expenses. ZeroDue automatically applies the correct tax rates based on your location and tracks everything for tax season.",
       },
       {
         heading: "Creating a payment schedule",
@@ -81,7 +81,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Tools that save time and get you paid faster",
-        body: "Manual invoicing wastes hours every month. InvoiceFlow automates invoice creation, sends smart reminders, accepts online payments, tracks time and expenses, generates financial reports, and integrates with accounting software. Freelancers using InvoiceFlow save 5+ hours per week and get paid 40% faster on average.",
+        body: "Manual invoicing wastes hours every month. ZeroDue automates invoice creation, sends smart reminders, accepts online payments, tracks time and expenses, generates financial reports, and integrates with accounting software. Freelancers using ZeroDue save 5+ hours per week and get paid 40% faster on average.",
       },
     ],
   },
@@ -117,8 +117,8 @@ export const blogPosts: BlogPost[] = [
         body: "Use receipts when: payment is made immediately (in-store, online), confirming subscription payments, documenting cash transactions, providing proof for warranties or returns, or meeting tax documentation requirements. Retail stores, restaurants, e-commerce sites, and point-of-sale transactions require receipts.",
       },
       {
-        heading: "How InvoiceFlow handles both",
-        body: "InvoiceFlow automatically generates invoices with payment terms and professional branding. Once clients pay, it instantly creates receipts with payment confirmation and sends them to both you and your client. Everything is tracked in one place—no manual work needed. Perfect for businesses that need both invoicing and receipt management.",
+        heading: "How ZeroDue handles both",
+        body: "ZeroDue automatically generates invoices with payment terms and professional branding. Once clients pay, it instantly creates receipts with payment confirmation and sends them to both you and your client. Everything is tracked in one place—no manual work needed. Perfect for businesses that need both invoicing and receipt management.",
       },
     ],
   },
@@ -147,15 +147,15 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "US sales tax complexity",
-        body: "Sales tax varies by state (0% to 10%+). Some states have no sales tax (Alaska, Delaware, Montana, New Hampshire, Oregon). Nexus rules determine where you must collect tax (physical presence or economic nexus). Digital products have different rules. Must register in each state where you have nexus. InvoiceFlow automatically calculates the correct rates based on client location.",
+        body: "Sales tax varies by state (0% to 10%+). Some states have no sales tax (Alaska, Delaware, Montana, New Hampshire, Oregon). Nexus rules determine where you must collect tax (physical presence or economic nexus). Digital products have different rules. Must register in each state where you have nexus. ZeroDue automatically calculates the correct rates based on client location.",
       },
       {
         heading: "Cross-border invoicing rules",
         body: "B2B cross-border: Often zero-rated (reverse charge applies). B2C cross-border: Must charge tax based on customer location. Digital services: Special rules apply (EU MOSS, Norway VOEC). Include customer's tax ID on invoices. Document why tax was or wasn't charged. Keep records for 6+ years for audits.",
       },
       {
-        heading: "How InvoiceFlow simplifies tax compliance",
-        body: "InvoiceFlow automatically detects client location and applies correct tax rates for VAT, GST, HST, or sales tax. It validates tax IDs, generates compliant invoices with all required information, tracks tax collected for reporting, and updates rates when governments change them. Stop worrying about compliance—InvoiceFlow handles it automatically.",
+        heading: "How ZeroDue simplifies tax compliance",
+        body: "ZeroDue automatically detects client location and applies correct tax rates for VAT, GST, HST, or sales tax. It validates tax IDs, generates compliant invoices with all required information, tracks tax collected for reporting, and updates rates when governments change them. Stop worrying about compliance—ZeroDue handles it automatically.",
       },
     ],
   },
@@ -176,7 +176,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Strategy 2: Make payment incredibly easy",
-        body: "Friction kills payments. Include clickable payment links in invoices. Accept multiple payment methods (credit cards, ACH, PayPal, bank transfer). Save payment information for repeat clients. Use payment platforms that require minimal clicks. InvoiceFlow embeds payment buttons directly in invoices—clients can pay in under 30 seconds.",
+        body: "Friction kills payments. Include clickable payment links in invoices. Accept multiple payment methods (credit cards, ACH, PayPal, bank transfer). Save payment information for repeat clients. Use payment platforms that require minimal clicks. ZeroDue embeds payment buttons directly in invoices—clients can pay in under 30 seconds.",
       },
       {
         heading: "Strategy 3: Use strategic payment terms",
@@ -184,7 +184,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Strategy 4: Automate reminders (without being annoying)",
-        body: "Manual follow-ups waste time and feel awkward. Set up automatic reminders: 3 days before due date (friendly heads-up), on due date (payment due today), 3 days after (past due notice), 7 days after (escalation). InvoiceFlow sends professional reminders automatically, maintaining relationships while ensuring payment.",
+        body: "Manual follow-ups waste time and feel awkward. Set up automatic reminders: 3 days before due date (friendly heads-up), on due date (payment due today), 3 days after (past due notice), 7 days after (escalation). ZeroDue sends professional reminders automatically, maintaining relationships while ensuring payment.",
       },
       {
         heading: "Strategy 5: Perfect your invoice design",
@@ -196,7 +196,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Strategy 7: Build accountability into your process",
-        body: "Create payment expectations upfront. Discuss payment terms in proposals and contracts. Send a project kickoff email restating payment schedule. Track invoice status in real-time. Follow up personally on large overdue invoices. Use late fees when appropriate (1.5% per month is standard). InvoiceFlow provides a complete payment dashboard showing exactly who owes what.",
+        body: "Create payment expectations upfront. Discuss payment terms in proposals and contracts. Send a project kickoff email restating payment schedule. Track invoice status in real-time. Follow up personally on large overdue invoices. Use late fees when appropriate (1.5% per month is standard). ZeroDue provides a complete payment dashboard showing exactly who owes what.",
       },
     ],
   },
@@ -225,7 +225,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Pricing models explained",
-        body: "Free plans: Limited features, good for testing (1-5 invoices/month). Subscription: $10-$50/month based on features and volume. Per-invoice: $0.50-$2 per invoice sent. Percentage: 1-3% of processed payments. Most valuable model: flat subscription with unlimited invoices. InvoiceFlow offers unlimited invoices on all plans—no surprises as you grow.",
+        body: "Free plans: Limited features, good for testing (1-5 invoices/month). Subscription: $10-$50/month based on features and volume. Per-invoice: $0.50-$2 per invoice sent. Percentage: 1-3% of processed payments. Most valuable model: flat subscription with unlimited invoices. ZeroDue offers unlimited invoices on all plans—no surprises as you grow.",
       },
       {
         heading: "Integration capabilities matter",
@@ -233,41 +233,41 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "How to choose the right solution",
-        body: "Consider: your invoice volume (monthly and projected), number of team members needing access, international clients (multi-currency needs), industry-specific requirements, existing tools that need integration, budget constraints, and technical comfort level. Start with a free trial. Test the actual workflow. Check mobile experience. Read recent reviews. InvoiceFlow offers a 60-day free trial with full features—no credit card required.",
+        body: "Consider: your invoice volume (monthly and projected), number of team members needing access, international clients (multi-currency needs), industry-specific requirements, existing tools that need integration, budget constraints, and technical comfort level. Start with a free trial. Test the actual workflow. Check mobile experience. Read recent reviews. ZeroDue offers a 60-day free trial with full features—no credit card required.",
       },
       {
-        heading: "Why small businesses choose InvoiceFlow",
-        body: "InvoiceFlow is purpose-built for service businesses, agencies, and freelancers. Unlimited invoices on all plans. Beautiful, professional templates that impress clients. Payment processing built-in (no third-party accounts). Smart reminders that get you paid faster. Time and expense tracking included. Supports 135+ currencies and all major tax systems. Setup takes under 5 minutes. Try InvoiceFlow free for 60 days.",
+        heading: "Why small businesses choose ZeroDue",
+        body: "ZeroDue is purpose-built for service businesses, agencies, and freelancers. Unlimited invoices on all plans. Beautiful, professional templates that impress clients. Payment processing built-in (no third-party accounts). Smart reminders that get you paid faster. Time and expense tracking included. Supports 135+ currencies and all major tax systems. Setup takes under 5 minutes. Try ZeroDue free for 60 days.",
       },
     ],
   },
   {
-    title: "How InvoiceFlow Simplifies Service-Based Billing",
+    title: "How ZeroDue Simplifies Service-Based Billing",
     slug: "simplify-service-billing",
     description:
-      "Walk through a real-world client project to show how collecting details, logging billable hours, and sending polished invoices happens in minutes with InvoiceFlow.",
+      "Walk through a real-world client project to show how collecting details, logging billable hours, and sending polished invoices happens in minutes with ZeroDue.",
     publishedAt: "October 3, 2025",
     readTime: "6 min read",
     category: "Product Deep Dive",
     preview:
-      "From onboarding a new client to sending a final invoice, learn how service teams automate busywork and keep cash flowing with InvoiceFlow.",
+      "From onboarding a new client to sending a final invoice, learn how service teams automate busywork and keep cash flowing with ZeroDue.",
     sections: [
       {
         heading: "Capture project details once",
-        body: "InvoiceFlow centralises every project brief. Intake forms feed straight into client profiles, so your team never chases paperwork or double-enters data. Custom fields cover fixed fees, hourly rates, retainers, and expenses—you decide the billing structure and InvoiceFlow remembers it for next time.",
+        body: "ZeroDue centralises every project brief. Intake forms feed straight into client profiles, so your team never chases paperwork or double-enters data. Custom fields cover fixed fees, hourly rates, retainers, and expenses—you decide the billing structure and ZeroDue remembers it for next time.",
       },
       {
         heading: "Track billable work as it happens",
-        body: "Whether you invoice by milestone, deliverable, or time, InvoiceFlow keeps the numbers straight. Built-in timers sync with tasks, and expense uploads automatically convert into line items. Managers see profitability dashboards in real time, so quoting and forecasting stays on point.",
+        body: "Whether you invoice by milestone, deliverable, or time, ZeroDue keeps the numbers straight. Built-in timers sync with tasks, and expense uploads automatically convert into line items. Managers see profitability dashboards in real time, so quoting and forecasting stays on point.",
       },
       {
         heading: "Send polished invoices with a click",
-        body: "When it's time to bill, InvoiceFlow pulls approved hours, expenses, and taxes into a branded invoice. Automated reminders and payment pages remove the friction for clients. Once paid, revenue flows straight into analytics—no more spreadsheets or manual reconciliation.",
+        body: "When it's time to bill, ZeroDue pulls approved hours, expenses, and taxes into a branded invoice. Automated reminders and payment pages remove the friction for clients. Once paid, revenue flows straight into analytics—no more spreadsheets or manual reconciliation.",
       },
     ],
   },
   {
-    title: "Growing Agencies Use InvoiceFlow to Stay Cash-Flow Positive",
+    title: "Growing Agencies Use ZeroDue to Stay Cash-Flow Positive",
     slug: "agencies-stay-cash-flow-positive",
     description:
       "See how boutique agencies use live payment tracking, automated reminders, and smart dashboards to scale without hiring a finance team.",
@@ -282,7 +282,7 @@ export const blogPosts: BlogPost[] = [
         body: "Agencies juggle dozens of retainers and projects at once. Without visibility into who paid, who's overdue, and which deliverables are in scope, leaders end up reacting to cash crunches instead of steering growth.",
       },
       {
-        heading: "How InvoiceFlow helps",
+        heading: "How ZeroDue helps",
         body: "Shared dashboards show real-time payment status and upcoming renewals. Automated nudges keep clients on schedule, while finance teams collaborate asynchronously in approval workflows. Agency owners get margin insights by account to plan hiring with confidence.",
       },
       {
@@ -300,7 +300,7 @@ export const blogPosts: BlogPost[] = [
     readTime: "5 min read",
     category: "Insights",
     preview:
-      "Discover the financial impact of delayed billing, forgotten line items, and scattered payment follow-up—and how InvoiceFlow keeps revenue on track.",
+      "Discover the financial impact of delayed billing, forgotten line items, and scattered payment follow-up—and how ZeroDue keeps revenue on track.",
     sections: [
       {
         heading: "Revenue leaks add up",
@@ -308,11 +308,11 @@ export const blogPosts: BlogPost[] = [
       },
       {
         heading: "Automation protects margins",
-        body: "InvoiceFlow enforces approvals, captures expenses instantly, and applies the right taxes every time. Finance leads get alerts when an invoice stagnates, and clients have friendly reminders plus payment plans to stay compliant.",
+        body: "ZeroDue enforces approvals, captures expenses instantly, and applies the right taxes every time. Finance leads get alerts when an invoice stagnates, and clients have friendly reminders plus payment plans to stay compliant.",
       },
       {
         heading: "Build a growth-ready finance stack",
-        body: "Modernising billing unlocks better insights for sales, operations, and leadership. With InvoiceFlow, your invoicing layer becomes a growth engine—feeding data to CRMs, accounting tools, and KPI dashboards without manual effort.",
+        body: "Modernising billing unlocks better insights for sales, operations, and leadership. With ZeroDue, your invoicing layer becomes a growth engine—feeding data to CRMs, accounting tools, and KPI dashboards without manual effort.",
       },
     ],
   },

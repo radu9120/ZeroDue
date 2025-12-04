@@ -28,14 +28,14 @@ export default function Footer() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
                 <Image
                   src="/logo.png"
-                  alt="InvoiceFlow Logo"
+                  alt="ZeroDue Logo"
                   height={24}
                   width={24}
                   className="brightness-0 invert"
                 />
               </div>
               <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                InvoiceFlow
+                ZeroDue
               </span>
             </Link>
             <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
@@ -101,7 +101,7 @@ export default function Footer() {
             </h3>
             <div className="space-y-4">
               <a
-                href="mailto:support@invoiceflow.com"
+                href="mailto:support@zerodue.co"
                 className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800 transition-colors group"
               >
                 <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform shrink-0">
@@ -112,7 +112,7 @@ export default function Footer() {
                     Email us at
                   </div>
                   <div className="font-medium text-slate-900 dark:text-white truncate">
-                    support@invoiceflow.com
+                    support@zerodue.co
                   </div>
                 </div>
               </a>
@@ -159,7 +159,7 @@ export default function Footer() {
 
         <div className="py-8 text-center border-t border-slate-200 dark:border-slate-800">
           <p className="text-slate-500 dark:text-slate-400 text-sm">
-            © {new Date().getFullYear()} InvoiceFlow. All rights reserved.
+            © {new Date().getFullYear()} ZeroDue. All rights reserved.
           </p>
         </div>
       </div>

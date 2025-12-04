@@ -93,7 +93,7 @@ export async function POST() {
       });
 
       await resend.emails.send({
-        from: "InvoiceFlow <noreply@invcyflow.com>",
+        from: "ZeroDue <noreply@zerodue.co>",
         to: user.email,
         subject: "Your subscription cancellation is scheduled",
         html: `
@@ -105,7 +105,7 @@ export async function POST() {
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #2563eb; margin: 0;">InvoiceFlow</h1>
+              <h1 style="color: #2563eb; margin: 0;">ZeroDue</h1>
             </div>
             
             <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
@@ -135,11 +135,11 @@ export async function POST() {
             
             <p style="margin-top: 30px;">
               Best regards,<br>
-              <strong>The InvoiceFlow Team</strong>
+              <strong>The ZeroDue Team</strong>
             </p>
             
             <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 12px;">
-              <p>© ${new Date().getFullYear()} InvoiceFlow. All rights reserved.</p>
+              <p>© ${new Date().getFullYear()} ZeroDue. All rights reserved.</p>
             </div>
           </body>
           </html>

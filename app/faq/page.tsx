@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "InvoiceFlow FAQ",
+  title: "ZeroDue FAQ",
   description:
-    "Answers to the most common questions about pricing, security, billing, and onboarding with InvoiceFlow.",
+    "Answers to the most common questions about pricing, security, billing, and onboarding with ZeroDue.",
 };
 
 export default function FAQPage() {
@@ -20,8 +20,8 @@ export default function FAQPage() {
             Frequently Asked Questions
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-300 md:text-lg">
-            Everything you need to know about InvoiceFlow&apos;s pricing,
-            security, and billing workflows.
+            Everything you need to know about ZeroDue&apos;s pricing, security,
+            and billing workflows.
           </p>
           <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-3 text-sm font-semibold">
             <Link

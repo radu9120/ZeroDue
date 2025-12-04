@@ -59,12 +59,12 @@ export async function POST(req: NextRequest) {
     // Find or create the price
     const products = await stripe.products.list({ limit: 100 });
     let product = products.data.find(
-      (p) => p.name === `InvoiceFlow ${planConfig.name} Plan`
+      (p) => p.name === `ZeroDue ${planConfig.name} Plan`
     );
 
     if (!product) {
       product = await stripe.products.create({
-        name: `InvoiceFlow ${planConfig.name} Plan`,
+        name: `ZeroDue ${planConfig.name} Plan`,
         description: `${planConfig.invoicesIncluded === Infinity ? "Unlimited" : planConfig.invoicesIncluded} invoices/month`,
       });
     }

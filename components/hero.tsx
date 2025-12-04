@@ -74,16 +74,16 @@ export default function Hero() {
 
           {/* Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
-            Invoicing made <br />
+            Zero hassle. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-              beautifully simple.
+              Zero due.
             </span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Stop chasing payments. Start getting paid. The all-in-one invoicing
-            platform designed for freelancers and small businesses.
+            Create professional invoices in seconds, get paid faster, and never
+            chase payments again. The modern invoicing platform built for doers.
           </p>
 
           {/* Buttons */}

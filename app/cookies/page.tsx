@@ -23,7 +23,7 @@ export default function CookiesPage() {
 
   useEffect(() => {
     // Set page title
-    document.title = "Cookie Policy | InvoiceFlow";
+    document.title = "Cookie Policy | ZeroDue";
 
     // Mark as mounted to avoid hydration issues
     setMounted(true);
@@ -197,9 +197,9 @@ export default function CookiesPage() {
               visit easier and more useful.
             </p>
             <p className="text-primary-text leading-relaxed">
-              At InvoiceFlow, we use cookies to enhance your browsing
-              experience, analyze site traffic, and personalize content. This
-              policy explains what cookies we use and why.
+              At ZeroDue, we use cookies to enhance your browsing experience,
+              analyze site traffic, and personalize content. This policy
+              explains what cookies we use and why.
             </p>
           </div>
 

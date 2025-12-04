@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     // Send email using Resend
     const { data, error } = await getResendClient().emails.send({
-      from: "InvoiceFlow <contact@invcyflow.com>",
+      from: "ZeroDue <contact@zerodue.co>",
       to: ["verositeltd@gmail.com"],
       replyTo: email,
       subject: `Cookie Policy Question from ${name}`,
@@ -77,8 +77,8 @@ export async function POST(request: Request) {
 
             <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
               <p style="color: #6b7280; font-size: 12px; margin: 0;">
-                Sent from InvoiceFlow Cookie Policy Page<br>
-                <a href="https://invcyflow.com/cookies" style="color: #667eea;">View Cookie Policy</a>
+                Sent from ZeroDue Cookie Policy Page<br>
+                <a href="https://zerodue.co/cookies" style="color: #667eea;">View Cookie Policy</a>
               </p>
             </div>
           </body>

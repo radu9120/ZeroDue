@@ -44,7 +44,7 @@ export default function BlogPage() {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20 mb-8">
-              InvoiceFlow Blog
+              ZeroDue Blog
             </span>
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-white mb-6 tracking-tight">
               Insights for Modern <br className="hidden md:block" />
@@ -53,7 +53,7 @@ export default function BlogPage() {
               </span>
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Discover how ambitious teams use InvoiceFlow to automate billing,
+              Discover how ambitious teams use ZeroDue to automate billing,
               impress clients, and unlock new revenue.
             </p>
           </motion.div>
@@ -172,8 +172,8 @@ export default function BlogPage() {
                 Ready to streamline your invoicing?
               </h2>
               <p className="text-blue-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto">
-                Join thousands of businesses using InvoiceFlow to get paid
-                faster and save time on admin work.
+                Join thousands of businesses using ZeroDue to get paid faster
+                and save time on admin work.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const testimonials = [
   {
     quote:
-      "InvoiceFlow has completely transformed how we handle our billing. The automated reminders have reduced our late payments by 75%.",
+      "ZeroDue has completely transformed how we handle our billing. The automated reminders have reduced our late payments by 75%.",
     author: "Sarah Johnson",
     position: "CFO, TechStart Inc.",
     rating: 5,
@@ -30,7 +30,7 @@ const testimonials = [
   },
   {
     quote:
-      "Simple yet powerful. InvoiceFlow strikes the perfect balance and their customer support is exceptional.",
+      "Simple yet powerful. ZeroDue strikes the perfect balance and their customer support is exceptional.",
     author: "Emma Rodriguez",
     position: "Owner, Bright Ideas",
     rating: 4,
@@ -93,7 +93,7 @@ export default function Testimonials() {
             className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed"
           >
             Join thousands of freelancers and small businesses who trust
-            InvoiceFlow.
+            ZeroDue.
           </motion.p>
         </div>
 

@@ -12,8 +12,8 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 
 export const metadata = {
-  title: "Refund Policy | InvoiceFlow",
-  description: "InvoiceFlow 14-day money-back guarantee and refund policy",
+  title: "Refund Policy | ZeroDue",
+  description: "ZeroDue 14-day money-back guarantee and refund policy",
 };
 
 export default function RefundPolicyPage() {
@@ -73,7 +73,7 @@ export default function RefundPolicyPage() {
                 Overview
               </h2>
               <p className="text-slate-600 dark:text-slate-300 mt-4">
-                At InvoiceFlow, we want you to be completely satisfied with your
+                At ZeroDue, we want you to be completely satisfied with your
                 purchase. If you&apos;re not happy with our service for any
                 reason, you can request a full refund within{" "}
                 <strong>14 days</strong> of your initial purchase date.
@@ -180,10 +180,10 @@ export default function RefundPolicyPage() {
                       <p className="mt-1">
                         Email us at{" "}
                         <a
-                          href="mailto:support@invoiceflow.com"
+                          href="mailto:support@zerodue.co"
                           className="text-blue-600 dark:text-blue-400 hover:underline"
                         >
-                          support@invoiceflow.com
+                          support@zerodue.co
                         </a>{" "}
                         with the subject line &quot;Refund Request&quot;
                       </p>
@@ -264,10 +264,10 @@ export default function RefundPolicyPage() {
                 <li>
                   Email:{" "}
                   <a
-                    href="mailto:support@invoiceflow.com"
+                    href="mailto:support@zerodue.co"
                     className="text-blue-600 dark:text-blue-400 hover:underline"
                   >
-                    support@invoiceflow.com
+                    support@zerodue.co
                   </a>
                 </li>
                 <li>

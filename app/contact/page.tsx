@@ -122,7 +122,7 @@ export default function ContactPage() {
               </span>
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl">
-              Have questions about InvoiceFlow? We're here to help. Send us a
+              Have questions about ZeroDue? We're here to help. Send us a
               message and we'll respond as soon as possible.
             </p>
           </div>
@@ -145,7 +145,7 @@ export default function ContactPage() {
                         Email Us
                       </p>
                       <p className="text-sm text-slate-600 dark:text-slate-400">
-                        support@invoiceflow.com
+                        support@zerodue.co
                       </p>
                     </div>
                   </div>

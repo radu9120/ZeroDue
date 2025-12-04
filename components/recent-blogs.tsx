@@ -39,8 +39,7 @@ export default function RecentBlogs() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto"
           >
-            Fresh playbooks, templates, and customer wins from the InvoiceFlow
-            team.
+            Fresh playbooks, templates, and customer wins from the ZeroDue team.
           </motion.p>
         </div>
 

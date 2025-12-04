@@ -45,7 +45,7 @@ export default function HelpCenterPage() {
         {
           question: "How do I send an invoice to a client?",
           answer:
-            'After creating an invoice, open it from the invoice list and use the "Send to Client" option. InvoiceFlow emails the branded PDF and begins tracking delivery, opens, and clicks directly in the invoice table.',
+            'After creating an invoice, open it from the invoice list and use the "Send to Client" option. ZeroDue emails the branded PDF and begins tracking delivery, opens, and clicks directly in the invoice table.',
         },
         {
           question: "How do payment statuses update?",
@@ -53,7 +53,7 @@ export default function HelpCenterPage() {
             "Statuses move from Draft to Sent when you email the invoice. Mark it as Paid once you confirm payment, or set it to Overdue if the due date passes. These statuses flow through analytics on the dashboard automatically.",
         },
         {
-          question: "Can clients pay invoices online inside InvoiceFlow?",
+          question: "Can clients pay invoices online inside ZeroDue?",
           answer:
             "Not yet. Today, invoices include the payment instructions you provide (such as bank details). Once the client pays through your normal process, update the invoice status to keep records accurate.",
         },
@@ -95,12 +95,12 @@ export default function HelpCenterPage() {
         {
           question: "Can I export or download invoices?",
           answer:
-            'Yes. Every invoice has a "Download PDF" action on the success view and within the invoice table. You can share the PDF or attach it manually outside InvoiceFlow whenever needed.',
+            'Yes. Every invoice has a "Download PDF" action on the success view and within the invoice table. You can share the PDF or attach it manually outside ZeroDue whenever needed.',
         },
         {
           question: "How can I get support if something isn't working?",
           answer:
-            "Use the contact form, email support@invoiceflow.com, or submit feedback from within the dashboard. Our team monitors these channels and replies from Monday through Friday.",
+            "Use the contact form, email support@zerodue.co, or submit feedback from within the dashboard. Our team monitors these channels and replies from Monday through Friday.",
         },
       ],
     },
@@ -152,7 +152,7 @@ export default function HelpCenterPage() {
               </h1>
               <p className="text-secondary-text mt-1">
                 Find answers to frequently asked questions and get help with
-                InvoiceFlow.
+                ZeroDue.
               </p>
             </div>
           </div>
@@ -195,7 +195,7 @@ export default function HelpCenterPage() {
             </Link>
 
             <Link
-              href="mailto:support@invoiceflow.com"
+              href="mailto:support@zerodue.co"
               className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-blue-100 dark:border-slate-700 hover:shadow-xl transition-all group"
             >
               <div className="flex items-center gap-4">

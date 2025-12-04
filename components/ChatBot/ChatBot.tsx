@@ -156,7 +156,7 @@ To get more features like recurring invoices, estimates, and expense tracking, u
 
 To request a refund:
 1. Contact us within 14 days of purchase
-2. Email support@invoiceflow.com or use the Contact page
+2. Email support@zerodue.co or use the Contact page
 3. We'll process your refund within 5-10 business days
 
 View our full refund policy at /refund-policy`,
@@ -192,7 +192,7 @@ function findAnswer(query: string): string {
 2. What error message did you see (if any)?
 3. Click the "Report Issue" button below to send this to our team
 
-We typically respond within 24 hours. For urgent issues, email support@invoiceflow.com`;
+We typically respond within 24 hours. For urgent issues, email support@zerodue.co`;
   }
 
   // Search knowledge base
@@ -279,7 +279,7 @@ export default function ChatBot({
     {
       id: "welcome",
       type: "bot",
-      content: `Hi there! 👋 I'm your InvoiceFlow assistant. I can help you with:
+      content: `Hi there! 👋 I'm your ZeroDue assistant. I can help you with:
 
 • How to create and send invoices
 • Understanding features and pricing
@@ -371,7 +371,7 @@ What would you like to know?`,
         id: (Date.now() + 1).toString(),
         type: "bot",
         content:
-          "Sorry, I encountered an error. Please try again or contact support@invoiceflow.com",
+          "Sorry, I encountered an error. Please try again or contact support@zerodue.co",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -470,7 +470,7 @@ What would you like to know?`,
       }
     } catch (error) {
       toast.error(
-        "Failed to submit issue. Please try again or email support@invoiceflow.com"
+        "Failed to submit issue. Please try again or email support@zerodue.co"
       );
     } finally {
       setIsSubmitting(false);
@@ -512,7 +512,7 @@ What would you like to know?`,
                   <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">InvoiceFlow Help</h3>
+                  <h3 className="font-semibold text-white">ZeroDue Help</h3>
                   <p className="text-xs text-blue-100">
                     Ask anything or report issues
                   </p>
