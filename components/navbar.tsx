@@ -81,18 +81,15 @@ export default function Navbar() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-3 group">
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center group">
               <Image
                 src="/logo.png"
                 alt="ZeroDue"
-                width={64}
-                height={64}
-                className="transition-transform group-hover:scale-105"
+                width={140}
+                height={76}
+                className="transition-transform group-hover:scale-105 h-10 w-auto"
               />
-              <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                ZeroDue
-              </span>
             </Link>
           </div>
 
