@@ -86,8 +86,8 @@ export default function Navbar() {
               <Image
                 src="/logo.png"
                 alt="ZeroDue"
-                width={48}
-                height={48}
+                width={64}
+                height={64}
                 className="transition-transform group-hover:scale-105"
               />
               <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
