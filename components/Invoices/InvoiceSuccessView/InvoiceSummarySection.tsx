@@ -53,8 +53,8 @@ export function InvoiceSummarySection({
       <div
         style={{
           backgroundColor: "#fff",
-          borderRadius: "8px",
-          border: "1px solid #1f2937",
+          borderRadius: "12px",
+          border: "1px solid #e5e7eb",
           overflow: "hidden",
         }}
       >
@@ -62,6 +62,8 @@ export function InvoiceSummarySection({
           style={{
             backgroundColor: "#1f2937",
             padding: "12px 20px",
+            borderTopLeftRadius: "12px",
+            borderTopRightRadius: "12px",
           }}
         >
           <h4
@@ -90,11 +92,16 @@ export function InvoiceSummarySection({
               marginBottom: "8px",
             }}
           >
-            <span style={{ fontSize: "14px", fontWeight: 600, color: "#4b5563" }}>
+            <span
+              style={{ fontSize: "14px", fontWeight: 600, color: "#4b5563" }}
+            >
               Subtotal
             </span>
-            <span style={{ fontSize: "14px", fontWeight: "bold", color: "#111827" }}>
-              {symbol}{subtotal.toFixed(2)}
+            <span
+              style={{ fontSize: "14px", fontWeight: "bold", color: "#111827" }}
+            >
+              {symbol}
+              {subtotal.toFixed(2)}
             </span>
           </div>
 
@@ -104,15 +111,19 @@ export function InvoiceSummarySection({
               justifyContent: "space-between",
               alignItems: "center",
               paddingTop: "8px",
-              paddingBottom: "12px",
-              borderBottom: "1px solid #e5e7eb",
+              paddingBottom: "8px",
             }}
           >
-            <span style={{ fontSize: "14px", fontWeight: "bold", color: "#111827" }}>
+            <span
+              style={{ fontSize: "14px", fontWeight: "bold", color: "#111827" }}
+            >
               Total
             </span>
-            <span style={{ fontSize: "16px", fontWeight: "bold", color: "#111827" }}>
-              {symbol}{(Number.isFinite(total) ? total : 0).toFixed(2)}
+            <span
+              style={{ fontSize: "16px", fontWeight: "bold", color: "#111827" }}
+            >
+              {symbol}
+              {(Number.isFinite(total) ? total : 0).toFixed(2)}
             </span>
           </div>
         </div>

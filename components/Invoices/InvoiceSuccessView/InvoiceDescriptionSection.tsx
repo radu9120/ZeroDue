@@ -20,9 +20,8 @@ export function InvoiceDescriptionSection({
   }
 
   return (
-    <div className="mb-6" style={{ marginBottom: "24px" }}>
+    <div style={{ marginBottom: "24px" }}>
       <h4
-        className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2"
         style={{
           fontSize: "11px",
           fontWeight: "bold",
@@ -39,29 +38,39 @@ export function InvoiceDescriptionSection({
           value={description}
           onChange={(event) => onChange(event.target.value)}
           rows={2}
-          className="w-full bg-white rounded-lg p-3 border border-gray-300 text-sm text-gray-900"
           style={{
-            backgroundColor: "#ffffff",
-            borderRadius: "8px",
+            width: "100%",
+            backgroundColor: "#f9fafb",
+            borderRadius: "12px",
             padding: "12px 16px",
-            border: "1px solid #d1d5db",
+            border: "1px solid #e5e7eb",
+            fontSize: "14px",
+            color: "#111827",
+            resize: "none",
+            outline: "none",
           }}
           placeholder="Describe the invoice..."
         />
       ) : (
-        <p
-          className="text-sm text-gray-700 whitespace-pre-line bg-white rounded-lg p-3 border border-gray-300"
+        <div
           style={{
-            backgroundColor: "#ffffff",
-            borderRadius: "8px",
+            backgroundColor: "#f9fafb",
+            borderRadius: "12px",
             padding: "12px 16px",
-            border: "1px solid #d1d5db",
-            fontSize: "14px",
-            color: "#374151",
+            border: "1px solid #e5e7eb",
           }}
         >
-          {description || fallbackText}
-        </p>
+          <p
+            style={{
+              fontSize: "14px",
+              color: "#374151",
+              whiteSpace: "pre-line",
+              margin: 0,
+            }}
+          >
+            {description || fallbackText}
+          </p>
+        </div>
       )}
     </div>
   );

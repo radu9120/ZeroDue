@@ -20,18 +20,10 @@ export function InvoiceNotesSection({
   invoiceNotes,
 }: InvoiceNotesSectionProps) {
   return (
-    <div
-      className="space-y-5"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "20px",
-        minWidth: 0,
-      }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      {/* Bank Details */}
       <div>
         <h4
-          className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2"
           style={{
             fontSize: "11px",
             fontWeight: "bold",
@@ -48,53 +40,52 @@ export function InvoiceNotesSection({
             value={bankDetails}
             onChange={(event) => onBankDetailsChange(event.target.value)}
             rows={3}
-            className="w-full bg-white rounded-lg p-3 border border-gray-300 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
             style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "8px",
-              padding: "12px",
-              border: "1px solid #d1d5db",
+              width: "100%",
+              backgroundColor: "#f9fafb",
+              borderRadius: "12px",
+              padding: "12px 16px",
+              border: "1px solid #e5e7eb",
+              fontSize: "14px",
+              color: "#111827",
+              resize: "none",
+              outline: "none",
             }}
             placeholder="Add bank details..."
           />
         ) : (
           <div
-            className="bg-white rounded-lg p-3 border border-gray-300"
             style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "8px",
-              padding: "12px",
-              border: "1px solid #d1d5db",
+              backgroundColor: "#f9fafb",
+              borderRadius: "12px",
+              padding: "12px 16px",
+              border: "1px solid #e5e7eb",
             }}
           >
             {bankDetailsDisplay.type === "list" ? (
-              <dl className="space-y-2">
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 {bankDetailsDisplay.entries.map((entry) => (
                   <div
                     key={`${entry.label}-${entry.value}`}
-                    className="flex items-start justify-between gap-4"
+                    style={{ display: "flex", justifyContent: "space-between", gap: "16px" }}
                   >
-                    <dt className="text-sm font-medium text-gray-600">
+                    <span style={{ fontSize: "14px", fontWeight: 500, color: "#4b5563" }}>
                       {entry.label}
-                    </dt>
-                    <dd
-                      className="text-sm text-gray-900 text-right"
-                      style={{ maxWidth: "65%", wordBreak: "break-word" }}
-                    >
+                    </span>
+                    <span style={{ fontSize: "14px", color: "#111827", textAlign: "right" }}>
                       {entry.value}
-                    </dd>
+                    </span>
                   </div>
                 ))}
-              </dl>
+              </div>
             ) : (
               <p
-                className="text-sm text-gray-900 whitespace-pre-line leading-relaxed"
                 style={{
                   fontSize: "14px",
                   color: "#111827",
                   whiteSpace: "pre-line",
                   lineHeight: 1.6,
-                  wordBreak: "break-word",
+                  margin: 0,
                 }}
               >
                 {bankDetailsDisplay.type === "text"
@@ -106,9 +97,9 @@ export function InvoiceNotesSection({
         )}
       </div>
 
+      {/* Notes */}
       <div>
         <h4
-          className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2"
           style={{
             fontSize: "11px",
             fontWeight: "bold",
@@ -118,40 +109,42 @@ export function InvoiceNotesSection({
             marginBottom: "8px",
           }}
         >
-          NOTES & TERMS
+          NOTES
         </h4>
         {isEditing ? (
           <textarea
             value={notes}
             onChange={(event) => onNotesChange(event.target.value)}
             rows={3}
-            className="w-full bg-white rounded-lg p-3 border border-gray-300 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
             style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "8px",
-              padding: "12px",
-              border: "1px solid #d1d5db",
+              width: "100%",
+              backgroundColor: "#f9fafb",
+              borderRadius: "12px",
+              padding: "12px 16px",
+              border: "1px solid #e5e7eb",
+              fontSize: "14px",
+              color: "#111827",
+              resize: "none",
+              outline: "none",
             }}
             placeholder="Add notes..."
           />
         ) : (
           <div
-            className="bg-white rounded-lg p-3 border border-gray-300"
             style={{
-              backgroundColor: "#ffffff",
-              borderRadius: "8px",
-              padding: "12px",
-              border: "1px solid #d1d5db",
+              backgroundColor: "#f9fafb",
+              borderRadius: "12px",
+              padding: "12px 16px",
+              border: "1px solid #e5e7eb",
             }}
           >
             <p
-              className="text-sm text-gray-900 whitespace-pre-line leading-relaxed"
               style={{
                 fontSize: "14px",
                 color: "#111827",
                 whiteSpace: "pre-line",
                 lineHeight: 1.6,
-                wordBreak: "break-word",
+                margin: 0,
               }}
             >
               {invoiceNotes || "No additional notes"}

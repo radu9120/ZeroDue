@@ -68,11 +68,10 @@ export function InvoiceItemsTable({
         style={{ overflowX: isCompactLayout ? "auto" : "visible" }}
       >
         <div
-          className="overflow-hidden rounded-lg border border-gray-800"
           style={{
             overflow: "hidden",
-            borderRadius: "8px",
-            border: "1px solid #1f2937",
+            borderRadius: "12px",
+            border: "1px solid #e5e7eb",
           }}
         >
           <table
