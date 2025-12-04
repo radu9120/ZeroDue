@@ -3,10 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import CustomButton from "@/components/ui/CustomButton";
-import { generateInvoicePDF, type PDFTheme } from "@/lib/invoice-pdf";
+import { generateInvoicePDF } from "@/lib/invoice-pdf";
 import type { InvoiceListItem, BusinessType } from "@/types";
 import currencies from "@/lib/currencies.json";
 import {
@@ -498,10 +496,8 @@ export default function InvoiceSuccessView({
   const downloadPDF = useCallback(async () => {
     try {
       setDownloading(true);
-      // Detect site's dark mode
-      const isDarkMode = document.documentElement.classList.contains("dark");
-      const theme: PDFTheme = isDarkMode ? "dark" : "light";
-      await generateInvoicePDF(invoice, company, theme);
+      // Always use light theme for PDF - professional white background
+      await generateInvoicePDF(invoice, company, "light");
       toast.success("PDF downloaded");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -605,13 +601,6 @@ export default function InvoiceSuccessView({
     }
   }, [invoice?.id, isPublicView]);
 
-  const baseInvoiceContainerClass = isCompact
-    ? "w-full max-w-none bg-white px-4 py-6 sm:px-6 sm:py-8 rounded-xl"
-    : "mx-auto w-full max-w-[794px] bg-white px-8 py-10 sm:px-12 sm:py-12 rounded-2xl";
-  const invoiceContainerClass = isPublicView
-    ? `${baseInvoiceContainerClass} ${isCompact ? "shadow-md" : "shadow-lg"}`
-    : `${baseInvoiceContainerClass} ${isCompact ? "shadow-lg" : "shadow-xl"}`;
-
   const rawDescription = (invoice.description || "").trim();
   const isDefaultDescription =
     rawDescription.length === 0 ||
@@ -652,24 +641,20 @@ export default function InvoiceSuccessView({
   );
 
   return (
-    <main
-      className={`relative w-full ${
-        isPublicView ? "min-h-[100vh] py-12 bg-gray-50 dark:bg-slate-900" : ""
-      }`}
-    >
-      <div className="relative z-10 max-w-6xl mx-auto lg:p-4  space-y-6 md:space-y-8">
+    <main className="w-full min-h-full">
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        {/* Back link */}
         {!isPublicView && (
-          <div className="mb-6">
-            <Link
-              href={`/dashboard/invoices?business_id=${company.id}`}
-              className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors group"
-            >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Back to Invoices
-            </Link>
-          </div>
+          <Link
+            href={`/dashboard/invoices?business_id=${company.id}`}
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            Back to Invoices
+          </Link>
         )}
 
+        {/* Success Banner */}
         {!isPublicView && (
           <SuccessBanner
             invoiceNumber={invoice.invoice_number}
@@ -677,29 +662,31 @@ export default function InvoiceSuccessView({
           />
         )}
 
-        <Card className="shadow-2xl border-0 rounded-3xl overflow-hidden">
-          {!isPublicView && (
-            <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-b border-gray-200 dark:border-slate-700 p-6">
-              <InvoiceActionsBar
-                isEditing={isEditing}
-                status={status}
-                onStatusChange={setStatus}
-                onSave={saveChanges}
-                saving={saving}
-                onCancel={cancelEdit}
-                onEdit={enterEditMode}
-                onCopyPublicLink={copyPublicLink}
-                hasPublicLink={Boolean(invoice.public_token)}
-                onSendToClient={sendToClient}
-                sending={sending}
-                onDownloadPDF={downloadPDF}
-                downloading={downloading}
-              />
-            </CardHeader>
-          )}
+        {/* Actions Bar */}
+        {!isPublicView && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-700">
+            <InvoiceActionsBar
+              isEditing={isEditing}
+              status={status}
+              onStatusChange={setStatus}
+              onSave={saveChanges}
+              saving={saving}
+              onCancel={cancelEdit}
+              onEdit={enterEditMode}
+              onCopyPublicLink={copyPublicLink}
+              hasPublicLink={Boolean(invoice.public_token)}
+              onSendToClient={sendToClient}
+              sending={sending}
+              onDownloadPDF={downloadPDF}
+              downloading={downloading}
+            />
+          </div>
+        )}
 
-          {!isPublicView && (
-            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-700">
+        {/* Email Status */}
+        {!isPublicView &&
+          (emailBadges.length > 0 || emailTimeline.some((e) => e.value)) && (
+            <div className="pb-4 border-b border-slate-200 dark:border-slate-700">
               <InvoiceEmailStatus
                 badges={emailBadges}
                 timeline={emailTimeline}
@@ -707,181 +694,142 @@ export default function InvoiceSuccessView({
             </div>
           )}
 
-          <CardContent
-            className="bg-white p-4 sm:p-6"
-            style={{
-              backgroundColor: "#ffffff",
-              color: "#000000",
-              padding: isCompact ? "16px" : "24px",
-            }}
-          >
-            {isPublicView && (
-              <div className="flex justify-end mb-6">
-                <Button
-                  onClick={downloadPDF}
-                  className="bg-blue-600 hover:bg-blue-500 shadow-lg"
-                  disabled={downloading}
-                >
-                  {downloading ? "Generating…" : "Download PDF"}
-                </Button>
-              </div>
-            )}
-            <div
-              id="invoice-capture"
-              className={invoiceContainerClass}
-              style={{ backgroundColor: "#ffffff", color: "#000000" }}
+        {/* Public View Download Button */}
+        {isPublicView && (
+          <div className="flex justify-end">
+            <Button
+              onClick={downloadPDF}
+              className="bg-blue-600 hover:bg-blue-500"
+              disabled={downloading}
             >
-              <InvoiceHeaderSection
-                company={company}
-                invoice={invoice}
+              {downloading ? "Generating…" : "Download PDF"}
+            </Button>
+          </div>
+        )}
+
+        {/* Invoice Document */}
+        <div
+          id="invoice-capture"
+          className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden"
+        >
+          {/* Header accent bar */}
+          <div className="h-1.5 bg-slate-800 dark:bg-slate-600" />
+
+          {/* Invoice content */}
+          <div className={`${isCompact ? "p-4" : "p-6 md:p-8"}`}>
+            <InvoiceHeaderSection
+              company={company}
+              invoice={invoice}
+              isEditing={isEditing}
+              canEditFullInvoice={canEditFullInvoice}
+              issueDate={issueDate}
+              onIssueDateChange={setIssueDate}
+              dueDate={dueDate}
+              onDueDateChange={setDueDate}
+              currency={currency}
+              onCurrencyChange={handleCurrencyChange}
+              currencies={currencies}
+              isCompactLayout={isCompact}
+            />
+
+            <BillToSection billTo={billTo} />
+
+            <InvoiceMetaDetailsSection
+              invoice={invoice}
+              isCompactLayout={isCompact}
+            />
+
+            <InvoiceDescriptionSection
+              isEditing={isEditing}
+              canEditFullInvoice={canEditFullInvoice}
+              description={isEditing ? desc : currentDescription}
+              onChange={setDesc}
+              shouldRender={shouldRenderDescription}
+              fallbackText="No description"
+            />
+
+            <InvoiceItemsTable
+              isEditing={isEditing}
+              canEditFullInvoice={canEditFullInvoice}
+              itemRows={itemRows}
+              items={items}
+              onItemChange={updateItem}
+              onItemRemove={removeItem}
+              onAddItem={addItem}
+              onRecalculate={recalcAmounts}
+              currency={currency}
+              invoiceCurrency={normalizedInvoiceCurrency}
+              getCurrencySymbol={getCurrencySymbol}
+              isCompactLayout={isCompact}
+              taxLabel={
+                company.tax_label === "Tax number"
+                  ? "TAX"
+                  : company.tax_label || "VAT"
+              }
+              template={invoice.invoice_template}
+            />
+
+            {/* Notes and Summary side by side */}
+            <div
+              className={`grid gap-6 pt-6 ${isCompact ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}
+            >
+              <InvoiceNotesSection
                 isEditing={isEditing}
-                canEditFullInvoice={canEditFullInvoice}
-                issueDate={issueDate}
-                onIssueDateChange={setIssueDate}
-                dueDate={dueDate}
-                onDueDateChange={setDueDate}
-                currency={currency}
-                onCurrencyChange={handleCurrencyChange}
-                currencies={currencies}
-                isCompactLayout={isCompact}
+                bankDetails={bankAccountName}
+                onBankDetailsChange={setBankAccountName}
+                bankDetailsDisplay={bankDetailsDisplay}
+                notes={notes}
+                onNotesChange={setNotes}
+                invoiceNotes={invoice.notes || ""}
               />
 
-              <BillToSection billTo={billTo} />
-
-              <InvoiceMetaDetailsSection
-                invoice={invoice}
-                isCompactLayout={isCompact}
-              />
-
-              <InvoiceDescriptionSection
-                isEditing={isEditing}
-                canEditFullInvoice={canEditFullInvoice}
-                description={isEditing ? desc : currentDescription}
-                onChange={setDesc}
-                shouldRender={shouldRenderDescription}
-                fallbackText="No description"
-              />
-
-              <InvoiceItemsTable
+              <InvoiceSummarySection
                 isEditing={isEditing}
                 canEditFullInvoice={canEditFullInvoice}
                 itemRows={itemRows}
-                items={items}
-                onItemChange={updateItem}
-                onItemRemove={removeItem}
-                onAddItem={addItem}
-                onRecalculate={recalcAmounts}
+                shipping={shipping}
+                onShippingChange={setShipping}
+                discount={discount}
+                onDiscountChange={setDiscount}
                 currency={currency}
-                invoiceCurrency={normalizedInvoiceCurrency}
+                invoice={invoice}
                 getCurrencySymbol={getCurrencySymbol}
                 isCompactLayout={isCompact}
-                taxLabel={
-                  company.tax_label === "Tax number"
-                    ? "TAX"
-                    : company.tax_label || "VAT"
-                }
-                template={invoice.invoice_template}
               />
-
-              <div
-                className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: isCompact ? "1fr" : "1fr 1fr",
-                  gap: isCompact ? "20px" : "24px",
-                  paddingTop: "24px",
-                }}
-              >
-                <InvoiceNotesSection
-                  isEditing={isEditing}
-                  bankDetails={bankAccountName}
-                  onBankDetailsChange={setBankAccountName}
-                  bankDetailsDisplay={bankDetailsDisplay}
-                  notes={notes}
-                  onNotesChange={setNotes}
-                  invoiceNotes={invoice.notes || ""}
-                />
-
-                <InvoiceSummarySection
-                  isEditing={isEditing}
-                  canEditFullInvoice={canEditFullInvoice}
-                  itemRows={itemRows}
-                  shipping={shipping}
-                  onShippingChange={setShipping}
-                  discount={discount}
-                  onDiscountChange={setDiscount}
-                  currency={currency}
-                  invoice={invoice}
-                  getCurrencySymbol={getCurrencySymbol}
-                  isCompactLayout={isCompact}
-                />
-              </div>
-
-              {/* Footer - matching PDF */}
-              <div
-                style={{
-                  marginTop: "32px",
-                  paddingTop: "16px",
-                  borderTop: "1px solid #e5e7eb",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: "14px",
-                    fontStyle: "italic",
-                    color: "#6b7280",
-                    margin: 0,
-                  }}
-                >
-                  Thank you for your business!
-                </p>
-                <p
-                  style={{
-                    fontSize: "12px",
-                    color: "#9ca3af",
-                    margin: 0,
-                  }}
-                >
-                  Generated by InvoiceFlow
-                </p>
-              </div>
             </div>
-          </CardContent>
-        </Card>
-
-        <style jsx global>{`
-          @page {
-            size: A4 portrait;
-            margin: 12mm;
-          }
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            #invoice-capture,
-            #invoice-capture * {
-              visibility: visible;
-            }
-            #invoice-capture {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: calc(100% - 24mm);
-              margin: 0 auto;
-              padding: 12mm;
-              background: white !important;
-              color: black !important;
-              border: none !important;
-              box-shadow: none !important;
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-          }
-        `}</style>
+          </div>
+        </div>
       </div>
+
+      <style jsx global>{`
+        @page {
+          size: A4 portrait;
+          margin: 12mm;
+        }
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #invoice-capture,
+          #invoice-capture * {
+            visibility: visible;
+          }
+          #invoice-capture {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: calc(100% - 24mm);
+            margin: 0 auto;
+            padding: 12mm;
+            background: white !important;
+            color: black !important;
+            border: none !important;
+            box-shadow: none !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+      `}</style>
     </main>
   );
 }

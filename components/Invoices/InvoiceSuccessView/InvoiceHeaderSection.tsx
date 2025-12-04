@@ -52,7 +52,6 @@ export function InvoiceHeaderSection({
       gap: isCompactLayout ? "20px" : "32px",
       marginBottom: isCompactLayout ? "20px" : "24px",
       paddingBottom: isCompactLayout ? "20px" : "24px",
-      borderBottom: "2px solid #e5e7eb",
     }),
     [isCompactLayout]
   );
@@ -83,7 +82,6 @@ export function InvoiceHeaderSection({
   const labelTextStyle: React.CSSProperties = React.useMemo(
     () => ({
       fontWeight: 600,
-      color: "#374151",
       whiteSpace: isCompactLayout ? "normal" : "nowrap",
       justifySelf: "start",
       textAlign: "left",
@@ -93,7 +91,6 @@ export function InvoiceHeaderSection({
 
   const valueTextStyle: React.CSSProperties = React.useMemo(
     () => ({
-      color: "#111827",
       whiteSpace: isCompactLayout ? "normal" : "nowrap",
       textAlign: isCompactLayout ? "left" : "right",
       display: "block",
@@ -104,20 +101,8 @@ export function InvoiceHeaderSection({
 
   return (
     <>
-      {/* Dark header bar at top - matching PDF */}
       <div
-        style={{
-          backgroundColor: "#1f2937",
-          height: "8px",
-          width: "calc(100% + 48px)",
-          marginLeft: "-24px",
-          marginTop: "-24px",
-          marginBottom: "24px",
-        }}
-      />
-
-      <div
-        className="mb-6 pb-6 border-b-2 border-gray-200"
+        className="mb-6 pb-6 border-b-2 border-gray-200 dark:border-slate-700"
         style={containerStyle}
       >
         <div className="flex-1" style={{ flex: 1, textAlign: "left" }}>
@@ -152,11 +137,10 @@ export function InvoiceHeaderSection({
             </div>
           )}
           <h2
-            className="text-xl font-bold text-gray-900 mb-2"
+            className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-2"
             style={{
               fontSize: isCompactLayout ? "18px" : "20px",
               fontWeight: "bold",
-              color: "#111827",
               margin: "0 0 8px 0",
               textAlign: "left",
             }}
@@ -164,10 +148,9 @@ export function InvoiceHeaderSection({
             {company.name}
           </h2>
           <div
-            className="text-sm text-gray-600 space-y-0.5"
+            className="text-sm text-gray-600 dark:text-slate-400 space-y-0.5"
             style={{
               fontSize: "14px",
-              color: "#4b5563",
               lineHeight: 1.6,
               margin: 0,
             }}
@@ -202,11 +185,10 @@ export function InvoiceHeaderSection({
           style={metaStyle}
         >
           <h1
-            className="text-5xl font-bold text-gray-900 mb-6 tracking-tight"
+            className="text-5xl font-bold text-gray-900 dark:text-slate-100 mb-6 tracking-tight"
             style={{
               fontSize: isCompactLayout ? "32px" : "48px",
               fontWeight: "bold",
-              color: "#111827",
               marginBottom: isCompactLayout ? "16px" : "24px",
               letterSpacing: "-0.5px",
             }}
@@ -214,24 +196,22 @@ export function InvoiceHeaderSection({
             INVOICE
           </h1>
           <div
-            className="rounded-lg p-4 space-y-2 text-sm border border-gray-300"
+            className="rounded-lg p-4 space-y-2 text-sm border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700"
             style={{
-              backgroundColor: "#ffffff",
               borderRadius: "8px",
               padding: isCompactLayout ? "12px" : "16px",
               fontSize: isCompactLayout ? "13px" : "14px",
-              border: "1px solid #d1d5db",
             }}
           >
             <div className="flex justify-between items-center" style={rowStyle}>
               <span
-                className="font-semibold text-gray-700"
+                className="font-semibold text-gray-700 dark:text-slate-300"
                 style={labelTextStyle}
               >
                 Invoice #
               </span>
               <span
-                className="font-bold text-gray-900"
+                className="font-bold text-gray-900 dark:text-slate-100"
                 style={{
                   ...valueTextStyle,
                   fontWeight: "bold",
@@ -241,16 +221,15 @@ export function InvoiceHeaderSection({
               </span>
             </div>
             <div
-              className="h-px bg-gray-200"
+              className="h-px bg-gray-200 dark:bg-slate-600"
               style={{
                 height: "1px",
-                backgroundColor: "#e5e7eb",
                 margin: "8px 0",
               }}
             ></div>
             <div className="flex justify-between items-center" style={rowStyle}>
               <span
-                className="font-semibold text-gray-700"
+                className="font-semibold text-gray-700 dark:text-slate-300"
                 style={labelTextStyle}
               >
                 Date
@@ -260,21 +239,24 @@ export function InvoiceHeaderSection({
                   type="date"
                   value={(issueDate || "").slice(0, 10)}
                   onChange={(event) => onIssueDateChange(event.target.value)}
-                  className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+                  className="text-sm border border-gray-300 dark:border-slate-600 rounded px-2 py-1 bg-white dark:bg-slate-600 dark:text-slate-100"
                   style={{
                     justifySelf: isCompactLayout ? "start" : "end",
                     textAlign: "right",
                   }}
                 />
               ) : (
-                <span className="text-gray-900" style={valueTextStyle}>
+                <span
+                  className="text-gray-900 dark:text-slate-100"
+                  style={valueTextStyle}
+                >
                   {formatDate(invoice.issue_date)}
                 </span>
               )}
             </div>
             <div className="flex justify-between items-center" style={rowStyle}>
               <span
-                className="font-semibold text-gray-700"
+                className="font-semibold text-gray-700 dark:text-slate-300"
                 style={labelTextStyle}
               >
                 Due Date
@@ -286,14 +268,17 @@ export function InvoiceHeaderSection({
                     dueDate ? new Date(dueDate).toISOString().split("T")[0] : ""
                   }
                   onChange={(e) => onDueDateChange(e.target.value)}
-                  className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+                  className="text-sm border border-gray-300 dark:border-slate-600 rounded px-2 py-1 bg-white dark:bg-slate-600 dark:text-slate-100"
                   style={{
                     justifySelf: isCompactLayout ? "start" : "end",
                     textAlign: "right",
                   }}
                 />
               ) : (
-                <span className="text-gray-900" style={valueTextStyle}>
+                <span
+                  className="text-gray-900 dark:text-slate-100"
+                  style={valueTextStyle}
+                >
                   {formatDate(dueDate)}
                 </span>
               )}
@@ -302,59 +287,129 @@ export function InvoiceHeaderSection({
             {/* Dynamic Metadata Fields */}
             {metaData.origin && (
               <div style={rowStyle}>
-                <span style={labelTextStyle}>Origin:</span>
-                <span style={valueTextStyle}>{metaData.origin}</span>
+                <span
+                  className="font-semibold text-gray-700 dark:text-slate-300"
+                  style={labelTextStyle}
+                >
+                  Origin:
+                </span>
+                <span
+                  className="text-gray-900 dark:text-slate-100"
+                  style={valueTextStyle}
+                >
+                  {metaData.origin}
+                </span>
               </div>
             )}
             {metaData.destination && (
               <div style={rowStyle}>
-                <span style={labelTextStyle}>Destination:</span>
-                <span style={valueTextStyle}>{metaData.destination}</span>
+                <span
+                  className="font-semibold text-gray-700 dark:text-slate-300"
+                  style={labelTextStyle}
+                >
+                  Destination:
+                </span>
+                <span
+                  className="text-gray-900 dark:text-slate-100"
+                  style={valueTextStyle}
+                >
+                  {metaData.destination}
+                </span>
               </div>
             )}
             {metaData.bol_number && (
               <div style={rowStyle}>
-                <span style={labelTextStyle}>BOL #:</span>
-                <span style={valueTextStyle}>{metaData.bol_number}</span>
+                <span
+                  className="font-semibold text-gray-700 dark:text-slate-300"
+                  style={labelTextStyle}
+                >
+                  BOL #:
+                </span>
+                <span
+                  className="text-gray-900 dark:text-slate-100"
+                  style={valueTextStyle}
+                >
+                  {metaData.bol_number}
+                </span>
               </div>
             )}
             {metaData.truck_number && (
               <div style={rowStyle}>
-                <span style={labelTextStyle}>Truck #:</span>
-                <span style={valueTextStyle}>{metaData.truck_number}</span>
+                <span
+                  className="font-semibold text-gray-700 dark:text-slate-300"
+                  style={labelTextStyle}
+                >
+                  Truck #:
+                </span>
+                <span
+                  className="text-gray-900 dark:text-slate-100"
+                  style={valueTextStyle}
+                >
+                  {metaData.truck_number}
+                </span>
               </div>
             )}
             {metaData.project_name && (
               <div style={rowStyle}>
-                <span style={labelTextStyle}>Project:</span>
-                <span style={valueTextStyle}>{metaData.project_name}</span>
+                <span
+                  className="font-semibold text-gray-700 dark:text-slate-300"
+                  style={labelTextStyle}
+                >
+                  Project:
+                </span>
+                <span
+                  className="text-gray-900 dark:text-slate-100"
+                  style={valueTextStyle}
+                >
+                  {metaData.project_name}
+                </span>
               </div>
             )}
             {metaData.site_address && (
               <div style={rowStyle}>
-                <span style={labelTextStyle}>Site:</span>
-                <span style={valueTextStyle}>{metaData.site_address}</span>
+                <span
+                  className="font-semibold text-gray-700 dark:text-slate-300"
+                  style={labelTextStyle}
+                >
+                  Site:
+                </span>
+                <span
+                  className="text-gray-900 dark:text-slate-100"
+                  style={valueTextStyle}
+                >
+                  {metaData.site_address}
+                </span>
               </div>
             )}
             {metaData.po_number && (
               <div style={rowStyle}>
-                <span style={labelTextStyle}>PO #:</span>
-                <span style={valueTextStyle}>{metaData.po_number}</span>
+                <span
+                  className="font-semibold text-gray-700 dark:text-slate-300"
+                  style={labelTextStyle}
+                >
+                  PO #:
+                </span>
+                <span
+                  className="text-gray-900 dark:text-slate-100"
+                  style={valueTextStyle}
+                >
+                  {metaData.po_number}
+                </span>
               </div>
             )}
 
             {isEditing && canEditFullInvoice && (
               <div style={rowStyle}>
                 <span
-                  className="font-semibold text-gray-700"
-                  style={{ fontWeight: 600, color: "#374151" }}
+                  className="font-semibold text-gray-700 dark:text-slate-300"
+                  style={{ fontWeight: 600 }}
                 >
                   Currency
                 </span>
                 <select
                   value={currency}
                   onChange={(event) => onCurrencyChange(event.target.value)}
-                  className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+                  className="text-sm border border-gray-300 dark:border-slate-600 rounded px-2 py-1 bg-white dark:bg-slate-600 dark:text-slate-100"
                   style={{ justifySelf: isCompactLayout ? "start" : "end" }}
                 >
                   {currencies.map((curr) => (

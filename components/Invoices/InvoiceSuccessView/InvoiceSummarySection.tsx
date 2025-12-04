@@ -49,81 +49,34 @@ export function InvoiceSummarySection({
   const total = subtotal + shippingValue - (subtotal * discountValue) / 100;
 
   return (
-    <div>
-      <div
-        style={{
-          backgroundColor: "#fff",
-          borderRadius: "12px",
-          border: "1px solid #1f2937",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            backgroundColor: "#1f2937",
-            padding: "12px 20px",
-          }}
-        >
-          <h4
-            style={{
-              fontSize: "14px",
-              fontWeight: "bold",
-              color: "#ffffff",
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              margin: 0,
-            }}
-          >
-            INVOICE SUMMARY
-          </h4>
+    <div className="rounded-xl border border-slate-200 dark:border-slate-600 overflow-hidden shadow-sm">
+      {/* Header */}
+      <div className="bg-slate-800 dark:bg-slate-700 px-5 py-3">
+        <h4 className="text-sm font-bold text-white uppercase tracking-wide m-0">
+          Invoice Summary
+        </h4>
+      </div>
+
+      {/* Content */}
+      <div className="bg-white dark:bg-slate-800 p-5 space-y-3">
+        <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-700">
+          <span className="text-sm text-slate-500 dark:text-slate-400">
+            Subtotal
+          </span>
+          <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            {symbol}
+            {subtotal.toFixed(2)}
+          </span>
         </div>
 
-        <div style={{ padding: "16px 20px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingTop: "8px",
-              paddingBottom: "8px",
-              borderBottom: "1px solid #e5e7eb",
-              marginBottom: "8px",
-            }}
-          >
-            <span
-              style={{ fontSize: "14px", fontWeight: 600, color: "#4b5563" }}
-            >
-              Subtotal
-            </span>
-            <span
-              style={{ fontSize: "14px", fontWeight: "bold", color: "#111827" }}
-            >
-              {symbol}
-              {subtotal.toFixed(2)}
-            </span>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingTop: "8px",
-              paddingBottom: "8px",
-            }}
-          >
-            <span
-              style={{ fontSize: "14px", fontWeight: "bold", color: "#111827" }}
-            >
-              Total
-            </span>
-            <span
-              style={{ fontSize: "16px", fontWeight: "bold", color: "#111827" }}
-            >
-              {symbol}
-              {(Number.isFinite(total) ? total : 0).toFixed(2)}
-            </span>
-          </div>
+        <div className="flex justify-between items-center pt-1">
+          <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            Total
+          </span>
+          <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
+            {symbol}
+            {(Number.isFinite(total) ? total : 0).toFixed(2)}
+          </span>
         </div>
       </div>
     </div>

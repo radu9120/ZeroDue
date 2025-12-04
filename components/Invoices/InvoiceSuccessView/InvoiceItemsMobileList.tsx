@@ -49,7 +49,7 @@ export function InvoiceItemsMobileList({
   const renderEditableItems = () => {
     if (!itemRows.length) {
       return (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 text-center text-sm text-gray-500">
+        <div className="rounded-xl border border-dashed border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 p-4 text-center text-sm text-gray-500 dark:text-slate-400">
           No items yet
         </div>
       );
@@ -58,17 +58,17 @@ export function InvoiceItemsMobileList({
     return itemRows.map((item, index) => (
       <div
         key={index}
-        className="space-y-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+        className="space-y-4 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm"
       >
         <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-gray-700">
+          <span className="text-sm font-semibold text-gray-700 dark:text-slate-200">
             Item {index + 1}
           </span>
           <Button
             size="icon"
             variant="ghost"
             onClick={() => onItemRemove(index)}
-            className="text-gray-400 hover:text-red-600"
+            className="text-gray-400 dark:text-slate-500 hover:text-red-600"
             aria-label={`Remove item ${index + 1}`}
           >
             <Trash2 className="h-4 w-4" />
@@ -78,7 +78,7 @@ export function InvoiceItemsMobileList({
         <div className="space-y-3">
           {isTimesheet ? (
             <>
-              <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
                 Date
                 <input
                   type="date"
@@ -86,11 +86,11 @@ export function InvoiceItemsMobileList({
                   onChange={(event) =>
                     onItemChange(index, { description: event.target.value })
                   }
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  className="mt-1 w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 text-sm"
                 />
               </label>
               <div className="grid grid-cols-2 gap-3">
-                <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
                   Start Time
                   <input
                     type="time"
@@ -98,10 +98,10 @@ export function InvoiceItemsMobileList({
                     onChange={(event) =>
                       onItemChange(index, { start_time: event.target.value })
                     }
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 text-sm"
                   />
                 </label>
-                <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
                   End Time
                   <input
                     type="time"
@@ -109,13 +109,13 @@ export function InvoiceItemsMobileList({
                     onChange={(event) =>
                       onItemChange(index, { end_time: event.target.value })
                     }
-                    className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 text-sm"
                   />
                 </label>
               </div>
             </>
           ) : (
-            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
               Description
               <input
                 value={item.description || ""}
@@ -123,13 +123,13 @@ export function InvoiceItemsMobileList({
                   onItemChange(index, { description: event.target.value })
                 }
                 placeholder="Item description"
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 text-sm"
               />
             </label>
           )}
 
           <div className="grid grid-cols-2 gap-3">
-            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
               {qtyLabel}
               <input
                 type="number"
@@ -143,10 +143,10 @@ export function InvoiceItemsMobileList({
                   });
                   onRecalculate();
                 }}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 text-sm"
               />
             </label>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
               {priceLabel}
               <input
                 type="number"
@@ -160,13 +160,13 @@ export function InvoiceItemsMobileList({
                   });
                   onRecalculate();
                 }}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 text-sm"
               />
             </label>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
               {taxLabel} (%)
               <input
                 type="number"
@@ -181,14 +181,14 @@ export function InvoiceItemsMobileList({
                   });
                   onRecalculate();
                 }}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-3 py-2 text-sm"
               />
             </label>
             <div className="flex flex-col justify-end">
-              <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              <span className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
                 Amount
               </span>
-              <span className="mt-1 text-lg font-bold text-gray-900">
+              <span className="mt-1 text-lg font-bold text-gray-900 dark:text-slate-100">
                 {formatCurrency(
                   getCurrencySymbol,
                   currency,
@@ -205,7 +205,7 @@ export function InvoiceItemsMobileList({
   const renderReadonlyItems = () => {
     if (!items.length) {
       return (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4 text-center text-sm text-gray-500">
+        <div className="rounded-xl border border-dashed border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 p-4 text-center text-sm text-gray-500 dark:text-slate-400">
           No items found
         </div>
       );
@@ -214,9 +214,9 @@ export function InvoiceItemsMobileList({
     return items.map((item, index) => (
       <div
         key={index}
-        className="space-y-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+        className="space-y-3 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm"
       >
-        <div className="flex items-center justify-between text-sm font-semibold text-gray-700">
+        <div className="flex items-center justify-between text-sm font-semibold text-gray-700 dark:text-slate-200">
           <span>Item {index + 1}</span>
           <span>
             {Number(item.quantity || 0)} ×{" "}
@@ -227,11 +227,11 @@ export function InvoiceItemsMobileList({
             )}
           </span>
         </div>
-        <div className="space-y-2 text-sm text-gray-700">
+        <div className="space-y-2 text-sm text-gray-700 dark:text-slate-300">
           {isTimesheet ? (
             <>
               <div>
-                <span className="block text-xs uppercase tracking-wide text-gray-500">
+                <span className="block text-xs uppercase tracking-wide text-gray-500 dark:text-slate-400">
                   Date
                 </span>
                 <span>
@@ -247,13 +247,13 @@ export function InvoiceItemsMobileList({
               </div>
               <div className="flex justify-between">
                 <div>
-                  <span className="block text-xs uppercase tracking-wide text-gray-500">
+                  <span className="block text-xs uppercase tracking-wide text-gray-500 dark:text-slate-400">
                     Start
                   </span>
                   <span>{item.start_time || "-"}</span>
                 </div>
                 <div>
-                  <span className="block text-xs uppercase tracking-wide text-gray-500">
+                  <span className="block text-xs uppercase tracking-wide text-gray-500 dark:text-slate-400">
                     End
                   </span>
                   <span>{item.end_time || "-"}</span>
@@ -262,17 +262,17 @@ export function InvoiceItemsMobileList({
             </>
           ) : (
             <div>
-              <span className="block text-xs uppercase tracking-wide text-gray-500">
+              <span className="block text-xs uppercase tracking-wide text-gray-500 dark:text-slate-400">
                 Description
               </span>
               <span>{item.description || "No description"}</span>
             </div>
           )}
-          <div className="flex justify-between text-gray-600">
+          <div className="flex justify-between text-gray-600 dark:text-slate-400">
             <span>{taxLabel}</span>
             <span>{Number(item.tax || 0)}%</span>
           </div>
-          <div className="flex justify-between text-gray-900 font-semibold text-base">
+          <div className="flex justify-between text-gray-900 dark:text-slate-100 font-semibold text-base">
             <span>Amount</span>
             <span>
               {formatCurrency(

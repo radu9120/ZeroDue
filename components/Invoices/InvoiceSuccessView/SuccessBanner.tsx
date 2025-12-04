@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, X } from "lucide-react";
 import * as React from "react";
+import { useState, useEffect } from "react";
 
 interface SuccessBannerProps {
   invoiceNumber?: string | null;
@@ -8,28 +8,44 @@ interface SuccessBannerProps {
 }
 
 export function SuccessBanner({ invoiceNumber, visible }: SuccessBannerProps) {
-  if (!visible) {
+  const [show, setShow] = useState(visible);
+
+  useEffect(() => {
+    if (visible) {
+      setShow(true);
+      const timer = setTimeout(() => {
+        setShow(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
+
+  if (!show) {
     return null;
   }
 
   return (
-    <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-green-200 dark:border-green-800 shadow-xl">
-      <CardContent className="p-6 md:p-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6">
-          <div className="w-12 h-12 md:w-16 md:h-16 bg-green-100 dark:bg-green-800 rounded-2xl flex items-center justify-center flex-shrink-0">
-            <CheckCircle className="h-8 w-8 md:h-10 md:w-10 text-green-600 dark:text-green-400" />
-          </div>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-green-800 dark:text-green-300 mb-2">
-              Invoice Created Successfully!
-            </h1>
-            <p className="text-green-700 dark:text-green-400 text-base md:text-lg">
-              Invoice #{invoiceNumber || "N/A"} has been saved and is ready to
-              use.
-            </p>
-          </div>
+    <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-xl p-4 relative animate-in fade-in slide-in-from-top-2 duration-300">
+      <button
+        onClick={() => setShow(false)}
+        className="absolute top-3 right-3 text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200 transition-colors"
+      >
+        <X className="h-5 w-5" />
+      </button>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center flex-shrink-0">
+          <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
         </div>
-      </CardContent>
-    </Card>
+        <div>
+          <h2 className="text-base font-semibold text-green-800 dark:text-green-300">
+            Invoice Created Successfully!
+          </h2>
+          <p className="text-sm text-green-700 dark:text-green-400">
+            Invoice #{invoiceNumber || "N/A"} has been saved and is ready to
+            use.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -67,13 +67,7 @@ export function InvoiceItemsTable({
         className="overflow-x-auto"
         style={{ overflowX: isCompactLayout ? "auto" : "visible" }}
       >
-        <div
-          style={{
-            overflow: "hidden",
-            borderRadius: "12px",
-            border: "1px solid #1f2937",
-          }}
-        >
+        <div className="overflow-hidden rounded-xl border border-slate-700 dark:border-slate-600">
           <table
             style={{
               borderCollapse: "collapse",
@@ -82,7 +76,7 @@ export function InvoiceItemsTable({
             }}
           >
             <thead>
-              <tr style={{ backgroundColor: "#1f2937", color: "#fff" }}>
+              <tr className="bg-slate-800 dark:bg-slate-700 text-white">
                 {isTimesheet ? (
                   <>
                     <th
@@ -239,19 +233,19 @@ export function InvoiceItemsTable({
                 )}
               </tr>
             </thead>
-            <tbody className="bg-white" style={{ backgroundColor: "#fff" }}>
+            <tbody className="bg-white dark:bg-slate-800">
               {isEditing && canEditFullInvoice ? (
                 itemRows.length > 0 ? (
                   itemRows.map((item, index) => (
                     <tr
                       key={index}
-                      className="border-b border-gray-100 last:border-b-0"
+                      className="border-b border-gray-100 dark:border-slate-700 last:border-b-0"
                     >
                       {isTimesheet ? (
                         <>
-                          <td className="px-4 py-3 text-sm">
+                          <td className="px-4 py-3 text-sm dark:text-slate-200">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm text-gray-600 w-24">
+                              <span className="text-sm text-gray-600 dark:text-slate-400 w-24">
                                 {item.description
                                   ? new Date(
                                       item.description
@@ -271,7 +265,7 @@ export function InvoiceItemsTable({
                                   description: event.target.value,
                                 })
                               }
-                              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm"
+                              className="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded px-2 py-1.5 text-sm"
                             />
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -283,7 +277,7 @@ export function InvoiceItemsTable({
                                   start_time: event.target.value,
                                 })
                               }
-                              className="w-full text-center text-sm border border-gray-300 rounded px-2 py-1"
+                              className="w-full text-center text-sm border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded px-2 py-1"
                             />
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -295,7 +289,7 @@ export function InvoiceItemsTable({
                                   end_time: event.target.value,
                                 })
                               }
-                              className="w-full text-center text-sm border border-gray-300 rounded px-2 py-1"
+                              className="w-full text-center text-sm border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded px-2 py-1"
                             />
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -313,10 +307,10 @@ export function InvoiceItemsTable({
                                 });
                                 onRecalculate();
                               }}
-                              className="w-16 text-center text-sm border border-gray-300 rounded px-2 py-1"
+                              className="w-16 text-center text-sm border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded px-2 py-1"
                             />
                           </td>
-                          <td className="px-4 py-3 text-right font-bold text-gray-900">
+                          <td className="px-4 py-3 text-right font-bold text-gray-900 dark:text-slate-100">
                             {getCurrencySymbol(currency)}
                             {Number(item.amount || 0).toFixed(2)}
                           </td>
@@ -332,7 +326,7 @@ export function InvoiceItemsTable({
                         </>
                       ) : (
                         <>
-                          <td className="px-4 py-3 text-sm">
+                          <td className="px-4 py-3 text-sm dark:text-slate-200">
                             <div className="flex items-center gap-2">
                               <input
                                 value={item.description || ""}
@@ -342,7 +336,7 @@ export function InvoiceItemsTable({
                                   })
                                 }
                                 placeholder="Item description"
-                                className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm"
+                                className="w-full border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded px-2 py-1.5 text-sm"
                               />
                               <Button
                                 size="sm"
@@ -369,7 +363,7 @@ export function InvoiceItemsTable({
                                 });
                                 onRecalculate();
                               }}
-                              className="w-16 text-center text-sm border border-gray-300 rounded px-2 py-1"
+                              className="w-16 text-center text-sm border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded px-2 py-1"
                             />
                           </td>
                           <td className="px-4 py-3 text-right">
@@ -387,7 +381,7 @@ export function InvoiceItemsTable({
                                 });
                                 onRecalculate();
                               }}
-                              className="w-24 text-right text-sm border border-gray-300 rounded px-2 py-1"
+                              className="w-24 text-right text-sm border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded px-2 py-1"
                             />
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -406,10 +400,10 @@ export function InvoiceItemsTable({
                                 });
                                 onRecalculate();
                               }}
-                              className="w-16 text-center text-sm border border-gray-300 rounded px-2 py-1"
+                              className="w-16 text-center text-sm border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 rounded px-2 py-1"
                             />
                           </td>
-                          <td className="px-4 py-3 text-right font-bold text-gray-900">
+                          <td className="px-4 py-3 text-right font-bold text-gray-900 dark:text-slate-100">
                             {getCurrencySymbol(currency)}
                             {Number(item.amount || 0).toFixed(2)}
                           </td>
@@ -421,7 +415,7 @@ export function InvoiceItemsTable({
                   <tr>
                     <td
                       colSpan={isTimesheet ? 7 : 5}
-                      className="px-4 py-8 text-center text-sm text-gray-500"
+                      className="px-4 py-8 text-center text-sm text-gray-500 dark:text-slate-400"
                     >
                       No items yet
                     </td>
@@ -431,11 +425,11 @@ export function InvoiceItemsTable({
                 items.map((item, index) => (
                   <tr
                     key={index}
-                    className="border-b border-gray-100 last:border-b-0"
+                    className="border-b border-gray-100 dark:border-slate-700 last:border-b-0"
                   >
                     {isTimesheet ? (
                       <>
-                        <td className="px-4 py-3.5 text-sm text-gray-900">
+                        <td className="px-4 py-3.5 text-sm text-gray-900 dark:text-slate-200">
                           {item.description
                             ? new Date(item.description).toLocaleDateString(
                                 "en-US",
@@ -443,43 +437,43 @@ export function InvoiceItemsTable({
                               )
                             : "-"}
                         </td>
-                        <td className="px-4 py-3.5 text-sm text-gray-900">
+                        <td className="px-4 py-3.5 text-sm text-gray-900 dark:text-slate-200">
                           {item.description
                             ? new Date(item.description).toLocaleDateString(
                                 "en-US"
                               )
                             : "-"}
                         </td>
-                        <td className="px-4 py-3.5 text-center text-sm text-gray-900">
+                        <td className="px-4 py-3.5 text-center text-sm text-gray-900 dark:text-slate-200">
                           {item.start_time || "-"}
                         </td>
-                        <td className="px-4 py-3.5 text-center text-sm text-gray-900">
+                        <td className="px-4 py-3.5 text-center text-sm text-gray-900 dark:text-slate-200">
                           {item.end_time || "-"}
                         </td>
-                        <td className="px-4 py-3.5 text-center text-sm text-gray-900">
+                        <td className="px-4 py-3.5 text-center text-sm text-gray-900 dark:text-slate-200">
                           {Number(item.quantity || 0)}
                         </td>
-                        <td className="px-4 py-3.5 text-right font-bold text-gray-900">
+                        <td className="px-4 py-3.5 text-right font-bold text-gray-900 dark:text-slate-100">
                           {getCurrencySymbol(invoiceCurrency)}{" "}
                           {Number(item.amount || 0).toFixed(2)}
                         </td>
                       </>
                     ) : (
                       <>
-                        <td className="px-4 py-3.5 text-sm text-gray-900">
+                        <td className="px-4 py-3.5 text-sm text-gray-900 dark:text-slate-200">
                           {item.description || "No description"}
                         </td>
-                        <td className="px-4 py-3.5 text-center text-sm text-gray-900">
+                        <td className="px-4 py-3.5 text-center text-sm text-gray-900 dark:text-slate-200">
                           {Number(item.quantity || 0)}
                         </td>
-                        <td className="px-4 py-3.5 text-right text-sm text-gray-900">
+                        <td className="px-4 py-3.5 text-right text-sm text-gray-900 dark:text-slate-200">
                           {getCurrencySymbol(invoiceCurrency)}{" "}
                           {Number(item.unit_price || 0).toFixed(2)}
                         </td>
-                        <td className="px-4 py-3.5 text-center text-sm text-gray-900">
+                        <td className="px-4 py-3.5 text-center text-sm text-gray-900 dark:text-slate-200">
                           {Number(item.tax || 0)}%
                         </td>
-                        <td className="px-4 py-3.5 text-right font-bold text-gray-900">
+                        <td className="px-4 py-3.5 text-right font-bold text-gray-900 dark:text-slate-100">
                           {getCurrencySymbol(invoiceCurrency)}{" "}
                           {Number(item.amount || 0).toFixed(2)}
                         </td>
@@ -491,7 +485,7 @@ export function InvoiceItemsTable({
                 <tr>
                   <td
                     colSpan={isTimesheet ? 6 : 5}
-                    className="px-4 py-8 text-center text-sm text-gray-500"
+                    className="px-4 py-8 text-center text-sm text-gray-500 dark:text-slate-400"
                   >
                     No items found
                   </td>

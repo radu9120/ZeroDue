@@ -9,6 +9,8 @@ interface InvoiceItemRow {
   unit_price?: number;
   tax?: number;
   amount?: number;
+  start_time?: string;
+  end_time?: string;
 }
 
 interface ParsedBillTo {
@@ -148,26 +150,51 @@ export async function generateInvoicePDF(
 
   y = 22;
 
+  // Company logo (if present)
+  let logoHeight = 0;
+  if (company.logo) {
+    try {
+      // Add logo on the left
+      const logoMaxWidth = 50;
+      const logoMaxHeight = 25;
+      doc.addImage(
+        company.logo,
+        "AUTO",
+        margin,
+        y - 8,
+        logoMaxWidth,
+        logoMaxHeight,
+        undefined,
+        "FAST"
+      );
+      logoHeight = logoMaxHeight + 5;
+    } catch (e) {
+      // Logo failed to load, continue without it
+      console.warn("Failed to add logo to PDF:", e);
+    }
+  }
+
   // Company name - large and bold on the left
+  const companyNameY = logoHeight > 0 ? y + logoHeight : y;
   doc.setFontSize(22);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...colors.primaryText);
-  doc.text(company.name || "Company Name", margin, y);
+  doc.text(company.name || "Company Name", margin, companyNameY);
 
   // INVOICE title on the right
   doc.setFontSize(32);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...colors.accentText);
-  doc.text("INVOICE", pageWidth - margin, y, { align: "right" });
+  doc.text("INVOICE", pageWidth - margin, companyNameY, { align: "right" });
 
-  y += 6;
+  const afterNameY = companyNameY + 6;
 
   // Company address details on the left
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...colors.mutedText);
 
-  let companyY = y;
+  let companyY = afterNameY;
   if (company.address) {
     const addressLines = company.address
       .split(/[,\n]/)
@@ -186,10 +213,17 @@ export async function generateInvoicePDF(
     doc.text(company.phone, margin, companyY);
     companyY += 4;
   }
+  // Add VAT/Tax number if present
+  if (company.vat) {
+    const taxLabel =
+      company.tax_label === "Tax number" ? "TAX" : company.tax_label || "VAT";
+    doc.text(`${taxLabel}: ${company.vat}`, margin, companyY);
+    companyY += 4;
+  }
 
   // Invoice details box on the right
   const detailsBoxX = pageWidth - margin - 65;
-  const detailsBoxY = y - 2;
+  const detailsBoxY = afterNameY - 2;
   const detailsBoxWidth = 65;
   const detailsBoxHeight = 32;
 
@@ -346,6 +380,15 @@ export async function generateInvoicePDF(
   // ITEMS TABLE - Themed header with thick border
   // ============================================
 
+  // Determine template type for column layout
+  const template = invoice.invoice_template || "standard";
+  const isTimesheet = template === "timesheet";
+  const isHourly = template === "hourly" || template === "freelance";
+
+  // Get tax label from company settings
+  const taxLabel =
+    company.tax_label === "Tax number" ? "TAX" : company.tax_label || "VAT";
+
   const tableStartY = y;
   const headerHeight = 14;
   const rowHeight = 14;
@@ -366,53 +409,113 @@ export async function generateInvoicePDF(
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...colors.tableHeaderText);
 
-  // Column positions - matching preview (DESCRIPTION, QTY, UNIT PRICE, TAX, AMOUNT)
-  const colDesc = margin + 8;
-  const colQty = margin + contentWidth * 0.4;
-  const colPrice = margin + contentWidth * 0.54;
-  const colTax = margin + contentWidth * 0.7;
-  const colAmount = margin + contentWidth - 8;
+  // Column positions based on template type
+  if (isTimesheet) {
+    // Timesheet: DAY, DATE, START, FINISH, HOURS, AMOUNT
+    const colDay = margin + 8;
+    const colDate = margin + contentWidth * 0.18;
+    const colStart = margin + contentWidth * 0.36;
+    const colFinish = margin + contentWidth * 0.5;
+    const colHours = margin + contentWidth * 0.66;
+    const colAmount = margin + contentWidth - 8;
 
-  doc.text("DESCRIPTION", colDesc, y + 9);
-  doc.text("QTY", colQty, y + 9, { align: "center" });
-  doc.text("UNIT PRICE", colPrice, y + 9, { align: "center" });
-  doc.text("TAX", colTax, y + 9, { align: "center" });
-  doc.text("AMOUNT", colAmount, y + 9, { align: "right" });
+    doc.text("DAY", colDay, y + 9);
+    doc.text("DATE", colDate, y + 9, { align: "center" });
+    doc.text("START", colStart, y + 9, { align: "center" });
+    doc.text("FINISH", colFinish, y + 9, { align: "center" });
+    doc.text("HOURS", colHours, y + 9, { align: "center" });
+    doc.text("AMOUNT", colAmount, y + 9, { align: "right" });
 
-  y += headerHeight;
+    y += headerHeight;
 
-  // Table rows
-  items.forEach((item, index) => {
-    const rowY = y + 10;
+    // Timesheet rows
+    items.forEach((item) => {
+      const rowY = y + 10;
 
-    // Description
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...colors.primaryText);
-    const descText = item.description || "—";
-    doc.text(descText.substring(0, 45), colDesc, rowY);
+      // Parse date for day name
+      let dayName = "-";
+      let dateStr = "-";
+      if (item.description) {
+        try {
+          const date = new Date(item.description);
+          dayName = date.toLocaleDateString("en-US", { weekday: "long" });
+          dateStr = date.toLocaleDateString("en-US");
+        } catch {
+          dayName = "-";
+          dateStr = item.description;
+        }
+      }
 
-    // Quantity - centered
-    doc.setTextColor(...colors.mutedText);
-    doc.text(String(item.quantity || 0), colQty, rowY, { align: "center" });
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...colors.primaryText);
+      doc.text(dayName, colDay, rowY);
 
-    // Unit Price
-    doc.text(formatCurrency(item.unit_price || 0, currency), colPrice, rowY, {
+      doc.setTextColor(...colors.mutedText);
+      doc.text(dateStr, colDate, rowY, { align: "center" });
+      doc.text(item.start_time || "-", colStart, rowY, { align: "center" });
+      doc.text(item.end_time || "-", colFinish, rowY, { align: "center" });
+      doc.text(String(item.quantity || 0), colHours, rowY, { align: "center" });
+
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...colors.primaryText);
+      doc.text(formatCurrency(item.amount || 0, currency), colAmount, rowY, {
+        align: "right",
+      });
+
+      y += rowHeight;
+    });
+  } else {
+    // Standard/Hourly: DESCRIPTION, QTY/HOURS, UNIT PRICE/RATE, TAX, AMOUNT
+    const colDesc = margin + 8;
+    const colQty = margin + contentWidth * 0.4;
+    const colPrice = margin + contentWidth * 0.54;
+    const colTax = margin + contentWidth * 0.7;
+    const colAmount = margin + contentWidth - 8;
+
+    doc.text("DESCRIPTION", colDesc, y + 9);
+    doc.text(isHourly ? "HOURS" : "QTY", colQty, y + 9, { align: "center" });
+    doc.text(isHourly ? "RATE/HR" : "UNIT PRICE", colPrice, y + 9, {
       align: "center",
     });
+    doc.text(taxLabel, colTax, y + 9, { align: "center" });
+    doc.text("AMOUNT", colAmount, y + 9, { align: "right" });
 
-    // Tax
-    doc.text(`${item.tax || 0}%`, colTax, rowY, { align: "center" });
+    y += headerHeight;
 
-    // Amount - bold
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...colors.primaryText);
-    doc.text(formatCurrency(item.amount || 0, currency), colAmount, rowY, {
-      align: "right",
+    // Table rows
+    items.forEach((item) => {
+      const rowY = y + 10;
+
+      // Description
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...colors.primaryText);
+      const descText = item.description || "—";
+      doc.text(descText.substring(0, 45), colDesc, rowY);
+
+      // Quantity - centered
+      doc.setTextColor(...colors.mutedText);
+      doc.text(String(item.quantity || 0), colQty, rowY, { align: "center" });
+
+      // Unit Price
+      doc.text(formatCurrency(item.unit_price || 0, currency), colPrice, rowY, {
+        align: "center",
+      });
+
+      // Tax
+      doc.text(`${item.tax || 0}%`, colTax, rowY, { align: "center" });
+
+      // Amount - bold
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...colors.primaryText);
+      doc.text(formatCurrency(item.amount || 0, currency), colAmount, rowY, {
+        align: "right",
+      });
+
+      y += rowHeight;
     });
-
-    y += rowHeight;
-  });
+  }
 
   y += 20;
 
@@ -605,7 +708,8 @@ export async function generateInvoicePDF(
 
   if (totalTax > 0) {
     doc.setTextColor(...colors.mutedText);
-    doc.text("Tax", summaryContentX, summaryY);
+    doc.setFont("helvetica", "normal");
+    doc.text(taxLabel, summaryContentX, summaryY);
     doc.setTextColor(...colors.primaryText);
     doc.text(formatCurrency(totalTax, currency), summaryValueX, summaryY, {
       align: "right",
@@ -676,24 +780,6 @@ export async function generateInvoicePDF(
   // FOOTER
   // ============================================
   const footerY = pageHeight - 15;
-
-  // Footer line
-  doc.setDrawColor(...colors.border);
-  doc.setLineWidth(0.5);
-  doc.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
-
-  // Thank you message
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "italic");
-  doc.setTextColor(...colors.mutedText);
-  doc.text("Thank you for your business!", margin, footerY);
-
-  // Generated by
-  doc.setFontSize(8);
-  doc.setFont("helvetica", "normal");
-  doc.text("Generated by InvoiceFlow", pageWidth - margin, footerY, {
-    align: "right",
-  });
 
   // Save the PDF
   const filename = `Invoice-${invoice.invoice_number || invoice.id}.pdf`;

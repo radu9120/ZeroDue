@@ -20,7 +20,7 @@ export function InvoiceMetaDetailsSection({
   }
 
   const containerClass = cn(
-    "mb-6 p-4 sm:p-5 bg-slate-50 rounded-xl border border-slate-200",
+    "mb-6 p-4 sm:p-5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700",
     isCompactLayout && "mb-5 p-4"
   );
 
@@ -31,14 +31,16 @@ export function InvoiceMetaDetailsSection({
 
   const itemClass = "flex flex-col gap-1";
   const labelClass =
-    "text-xs font-semibold text-slate-500 uppercase tracking-wide";
-  const valueClass = "text-sm font-medium text-slate-900";
+    "text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide";
+  const valueClass = "text-sm font-medium text-slate-900 dark:text-slate-100";
 
   const renderTruckingDetails = () => (
     <div className={containerClass}>
       <div className="flex items-center gap-2 mb-4">
         <Truck className="h-[18px] w-[18px] text-blue-500" />
-        <span className="font-semibold text-slate-800">Logistics Details</span>
+        <span className="font-semibold text-slate-800 dark:text-slate-200">
+          Logistics Details
+        </span>
       </div>
       <div className={gridClass}>
         {metaData.origin && (
@@ -73,7 +75,9 @@ export function InvoiceMetaDetailsSection({
     <div className={containerClass}>
       <div className="flex items-center gap-2 mb-4">
         <Hammer className="h-[18px] w-[18px] text-orange-500" />
-        <span className="font-semibold text-slate-800">Project Details</span>
+        <span className="font-semibold text-slate-800 dark:text-slate-200">
+          Project Details
+        </span>
       </div>
       <div className={gridClass}>
         {metaData.project_name && (
@@ -96,7 +100,9 @@ export function InvoiceMetaDetailsSection({
     <div className={containerClass}>
       <div className="flex items-center gap-2 mb-4">
         <Code className="h-[18px] w-[18px] text-purple-500" />
-        <span className="font-semibold text-slate-800">Project Details</span>
+        <span className="font-semibold text-slate-800 dark:text-slate-200">
+          Project Details
+        </span>
       </div>
       <div className={gridClass}>
         {metaData.project_name && (

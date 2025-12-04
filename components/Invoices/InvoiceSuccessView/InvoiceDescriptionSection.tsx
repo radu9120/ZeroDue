@@ -20,17 +20,8 @@ export function InvoiceDescriptionSection({
   }
 
   return (
-    <div style={{ marginBottom: "24px" }}>
-      <h4
-        style={{
-          fontSize: "11px",
-          fontWeight: "bold",
-          color: "#6b7280",
-          textTransform: "uppercase",
-          letterSpacing: "0.8px",
-          marginBottom: "8px",
-        }}
-      >
+    <div className="mb-6">
+      <h4 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">
         DESCRIPTION
       </h4>
       {isEditing && canEditFullInvoice ? (
@@ -38,36 +29,12 @@ export function InvoiceDescriptionSection({
           value={description}
           onChange={(event) => onChange(event.target.value)}
           rows={2}
-          style={{
-            width: "100%",
-            backgroundColor: "#f9fafb",
-            borderRadius: "12px",
-            padding: "12px 16px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            color: "#111827",
-            resize: "none",
-            outline: "none",
-          }}
+          className="w-full bg-gray-50 dark:bg-slate-700/50 rounded-xl px-4 py-3 border border-gray-200 dark:border-slate-600 text-sm text-gray-900 dark:text-slate-100 resize-none outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Describe the invoice..."
         />
       ) : (
-        <div
-          style={{
-            backgroundColor: "#f9fafb",
-            borderRadius: "12px",
-            padding: "12px 16px",
-            border: "1px solid #e5e7eb",
-          }}
-        >
-          <p
-            style={{
-              fontSize: "14px",
-              color: "#374151",
-              whiteSpace: "pre-line",
-              margin: 0,
-            }}
-          >
+        <div className="bg-gray-50 dark:bg-slate-700/50 rounded-xl px-4 py-3 border border-gray-200 dark:border-slate-600">
+          <p className="text-sm text-gray-700 dark:text-slate-300 whitespace-pre-line m-0">
             {description || fallbackText}
           </p>
         </div>

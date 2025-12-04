@@ -7,61 +7,21 @@ interface BillToSectionProps {
 
 export function BillToSection({ billTo }: BillToSectionProps) {
   return (
-    <div style={{ marginBottom: "24px" }}>
-      <h3
-        style={{
-          fontSize: "11px",
-          fontWeight: "bold",
-          color: "#6b7280",
-          textTransform: "uppercase",
-          letterSpacing: "0.8px",
-          marginBottom: "8px",
-        }}
-      >
+    <div className="mb-6">
+      <h3 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-2">
         BILL TO
       </h3>
-      <div
-        style={{
-          backgroundColor: "#f9fafb",
-          borderRadius: "12px",
-          padding: "16px",
-          border: "1px solid #e5e7eb",
-        }}
-      >
-        <p
-          style={{
-            fontWeight: "bold",
-            color: "#111827",
-            fontSize: "16px",
-            marginBottom: "4px",
-            margin: 0,
-          }}
-        >
+      <div className="bg-gray-50 dark:bg-slate-700/50 rounded-xl p-4 border border-gray-200 dark:border-slate-600">
+        <p className="font-bold text-gray-900 dark:text-slate-100 text-base mb-1">
           {billTo?.name || "Client"}
         </p>
         {billTo?.address && (
-          <p
-            style={{
-              fontSize: "14px",
-              color: "#4b5563",
-              whiteSpace: "pre-line",
-              lineHeight: 1.6,
-              marginTop: "4px",
-              marginBottom: 0,
-            }}
-          >
+          <p className="text-sm text-gray-600 dark:text-slate-300 whitespace-pre-line leading-relaxed mt-1">
             {billTo.address as string}
           </p>
         )}
         {billTo?.email && (
-          <p
-            style={{
-              fontSize: "14px",
-              color: "#4b5563",
-              marginTop: "4px",
-              marginBottom: 0,
-            }}
-          >
+          <p className="text-sm text-gray-600 dark:text-slate-300 mt-1">
             {billTo.email as string}
           </p>
         )}
