@@ -24,13 +24,13 @@ export default function Footer() {
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-6">
+            <Link href="/" className="flex items-center mb-6">
               <Image
                 src="/logo.png"
                 alt="ZeroDue"
                 width={200}
                 height={109}
-                className="h-16 w-auto"
+                className="h-16 w-auto -mr-1"
               />
               <span className="text-3xl font-bold text-slate-900 dark:text-white">
                 ZeroDue
