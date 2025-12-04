@@ -54,7 +54,7 @@ export function InvoiceSummarySection({
         style={{
           backgroundColor: "#fff",
           borderRadius: "12px",
-          border: "1px solid #e5e7eb",
+          border: "1px solid #1f2937",
           overflow: "hidden",
         }}
       >
@@ -62,8 +62,6 @@ export function InvoiceSummarySection({
           style={{
             backgroundColor: "#1f2937",
             padding: "12px 20px",
-            borderTopLeftRadius: "12px",
-            borderTopRightRadius: "12px",
           }}
         >
           <h4

@@ -71,11 +71,10 @@ export function InvoiceItemsTable({
           style={{
             overflow: "hidden",
             borderRadius: "12px",
-            border: "1px solid #e5e7eb",
+            border: "1px solid #1f2937",
           }}
         >
           <table
-            className="w-full"
             style={{
               borderCollapse: "collapse",
               width: "100%",
@@ -83,10 +82,7 @@ export function InvoiceItemsTable({
             }}
           >
             <thead>
-              <tr
-                className="bg-gray-800 text-white"
-                style={{ backgroundColor: "#1f2937", color: "#fff" }}
-              >
+              <tr style={{ backgroundColor: "#1f2937", color: "#fff" }}>
                 {isTimesheet ? (
                   <>
                     <th
