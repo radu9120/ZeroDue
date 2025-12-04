@@ -472,7 +472,6 @@ export default function InvoiceSuccessView({
   const [showSuccess, setShowSuccess] = useState(!isPublicView);
   const [downloading, setDownloading] = useState(false);
   const [sending, setSending] = useState(false);
-  const [pdfTheme, setPdfTheme] = useState<PDFTheme>("light");
 
   const items = useMemo(
     () => parseInvoiceItems(invoice.items),
@@ -499,7 +498,10 @@ export default function InvoiceSuccessView({
   const downloadPDF = useCallback(async () => {
     try {
       setDownloading(true);
-      await generateInvoicePDF(invoice, company, pdfTheme);
+      // Detect site's dark mode
+      const isDarkMode = document.documentElement.classList.contains("dark");
+      const theme: PDFTheme = isDarkMode ? "dark" : "light";
+      await generateInvoicePDF(invoice, company, theme);
       toast.success("PDF downloaded");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -507,7 +509,7 @@ export default function InvoiceSuccessView({
     } finally {
       setDownloading(false);
     }
-  }, [invoice, company, pdfTheme]);
+  }, [invoice, company]);
 
   const sendToClient = useCallback(async () => {
     try {
@@ -692,8 +694,6 @@ export default function InvoiceSuccessView({
                 sending={sending}
                 onDownloadPDF={downloadPDF}
                 downloading={downloading}
-                pdfTheme={pdfTheme}
-                onPdfThemeChange={setPdfTheme}
               />
             </CardHeader>
           )}
