@@ -25,12 +25,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 lg:col-span-1">
             <Link href="/" className="flex items-center space-x-2 mb-6">
-              <Image
-                src="/logo.png"
-                alt="ZeroDue"
-                width={40}
-                height={40}
-              />
+              <Image src="/logo.png" alt="ZeroDue" width={40} height={40} />
               <span className="text-2xl font-bold text-slate-900 dark:text-white">
                 ZeroDue
               </span>
