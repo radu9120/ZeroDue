@@ -474,7 +474,10 @@ export async function generateInvoicePDF(
     ) {
       // Show raw bank details as text lines
       doc.setTextColor(...colors.primaryText);
-      const bankLines = invoice.bank_details.split(/[\n,]/).map(l => l.trim()).filter(Boolean);
+      const bankLines = invoice.bank_details
+        .split(/[\n,]/)
+        .map((l) => l.trim())
+        .filter(Boolean);
       bankLines.forEach((line) => {
         doc.text(line, margin + 4, bankContentY);
         bankContentY += 5;
