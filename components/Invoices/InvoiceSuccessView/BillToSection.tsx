@@ -16,18 +16,18 @@ export function BillToSection({ billTo }: BillToSectionProps) {
           color: "#6b7280",
           textTransform: "uppercase",
           letterSpacing: "0.8px",
-          marginBottom: "12px",
+          marginBottom: "8px",
         }}
       >
-        Bill To
+        BILL TO
       </h3>
       <div
-        className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+        className="bg-white rounded-lg p-4 border border-gray-300"
         style={{
-          backgroundColor: "#f9fafb",
+          backgroundColor: "#ffffff",
           borderRadius: "8px",
           padding: "16px",
-          border: "1px solid #e5e7eb",
+          border: "1px solid #d1d5db",
         }}
       >
         <p

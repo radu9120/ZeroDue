@@ -41,24 +41,30 @@ export function InvoiceNotesSection({
             marginBottom: "8px",
           }}
         >
-          Bank Details
+          BANK DETAILS
         </h4>
         {isEditing ? (
           <textarea
             value={bankDetails}
             onChange={(event) => onBankDetailsChange(event.target.value)}
             rows={3}
-            className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+            className="w-full bg-white rounded-lg p-3 border border-gray-300 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+            style={{
+              backgroundColor: "#ffffff",
+              borderRadius: "8px",
+              padding: "12px",
+              border: "1px solid #d1d5db",
+            }}
             placeholder="Add bank details..."
           />
         ) : (
           <div
-            className="bg-gray-50 rounded-lg p-3 border border-gray-200"
+            className="bg-white rounded-lg p-3 border border-gray-300"
             style={{
-              backgroundColor: "#f9fafb",
+              backgroundColor: "#ffffff",
               borderRadius: "8px",
               padding: "12px",
-              border: "1px solid #e5e7eb",
+              border: "1px solid #d1d5db",
             }}
           >
             {bankDetailsDisplay.type === "list" ? (
@@ -112,24 +118,30 @@ export function InvoiceNotesSection({
             marginBottom: "8px",
           }}
         >
-          Notes & Terms
+          NOTES & TERMS
         </h4>
         {isEditing ? (
           <textarea
             value={notes}
             onChange={(event) => onNotesChange(event.target.value)}
             rows={3}
-            className="w-full bg-gray-50 rounded-lg p-3 border border-gray-200 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+            className="w-full bg-white rounded-lg p-3 border border-gray-300 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+            style={{
+              backgroundColor: "#ffffff",
+              borderRadius: "8px",
+              padding: "12px",
+              border: "1px solid #d1d5db",
+            }}
             placeholder="Add notes..."
           />
         ) : (
           <div
-            className="bg-gray-50 rounded-lg p-3 border border-gray-200"
+            className="bg-white rounded-lg p-3 border border-gray-300"
             style={{
-              backgroundColor: "#f9fafb",
+              backgroundColor: "#ffffff",
               borderRadius: "8px",
               padding: "12px",
-              border: "1px solid #e5e7eb",
+              border: "1px solid #d1d5db",
             }}
           >
             <p

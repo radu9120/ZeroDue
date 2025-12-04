@@ -103,10 +103,23 @@ export function InvoiceHeaderSection({
   );
 
   return (
-    <div
-      className="mb-6 pb-6 border-b-2 border-gray-200"
-      style={containerStyle}
-    >
+    <>
+      {/* Dark header bar at top - matching PDF */}
+      <div
+        style={{
+          backgroundColor: "#1f2937",
+          height: "8px",
+          width: "calc(100% + 48px)",
+          marginLeft: "-24px",
+          marginTop: "-24px",
+          marginBottom: "24px",
+        }}
+      />
+      
+      <div
+        className="mb-6 pb-6 border-b-2 border-gray-200"
+        style={containerStyle}
+      >
       <div className="flex-1" style={{ flex: 1, textAlign: "left" }}>
         {company.logo && (
           <div
@@ -201,12 +214,13 @@ export function InvoiceHeaderSection({
           INVOICE
         </h1>
         <div
-          className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm"
+          className="rounded-lg p-4 space-y-2 text-sm border border-gray-300"
           style={{
-            backgroundColor: "#f9fafb",
+            backgroundColor: "#ffffff",
             borderRadius: "8px",
             padding: isCompactLayout ? "12px" : "16px",
             fontSize: isCompactLayout ? "13px" : "14px",
+            border: "1px solid #d1d5db",
           }}
         >
           <div className="flex justify-between items-center" style={rowStyle}>
@@ -354,5 +368,6 @@ export function InvoiceHeaderSection({
         </div>
       </div>
     </div>
+    </>
   );
 }
