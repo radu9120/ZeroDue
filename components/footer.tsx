@@ -28,9 +28,9 @@ export default function Footer() {
               <Image
                 src="/logo.png"
                 alt="ZeroDue"
-                width={220}
-                height={120}
-                className="h-14 w-auto"
+                width={320}
+                height={175}
+                className="h-20 w-auto"
               />
             </Link>
             <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
