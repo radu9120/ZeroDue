@@ -351,9 +351,9 @@ export async function generateInvoicePDF(
   const rowHeight = 14;
   const tableHeight = headerHeight + items.length * rowHeight;
 
-  // Draw the outer border first (thick rounded rect)
+  // Draw the outer border first
   doc.setDrawColor(...colors.tableHeader);
-  doc.setLineWidth(1.5);
+  doc.setLineWidth(0.75);
   doc.roundedRect(margin, y, contentWidth, tableHeight, 3, 3, "S");
 
   // Table header with themed background
@@ -472,9 +472,13 @@ export async function generateInvoicePDF(
       typeof invoice.bank_details === "string" &&
       invoice.bank_details.trim()
     ) {
-      doc.setTextColor(...colors.mutedText);
-      doc.text("No bank details provided", margin + 4, bankContentY);
-      bankContentY += 5;
+      // Show raw bank details as text lines
+      doc.setTextColor(...colors.primaryText);
+      const bankLines = invoice.bank_details.split(/[\n,]/).map(l => l.trim()).filter(Boolean);
+      bankLines.forEach((line) => {
+        doc.text(line, margin + 4, bankContentY);
+        bankContentY += 5;
+      });
     }
 
     bankDetailsHeight = bankContentY - bankBoxY + 5;
@@ -628,10 +632,10 @@ export async function generateInvoicePDF(
 
   summaryY += 12;
 
-  // Draw thick border around summary content area
+  // Draw border around summary content area
   const summaryContentHeight = summaryY - (summaryBoxY + summaryHeaderHeight);
   doc.setDrawColor(...colors.tableHeader);
-  doc.setLineWidth(1.5);
+  doc.setLineWidth(0.75);
   doc.rect(
     rightColumnX,
     summaryBoxY + summaryHeaderHeight,

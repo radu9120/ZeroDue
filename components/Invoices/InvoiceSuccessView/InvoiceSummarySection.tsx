@@ -51,11 +51,11 @@ export function InvoiceSummarySection({
   return (
     <div>
       <div
-        className={`bg-white rounded-lg overflow-hidden ${isCompactLayout ? "border border-gray-200" : "border-2 border-gray-800"}`}
+        className={`bg-white rounded-lg overflow-hidden ${isCompactLayout ? "border border-gray-200" : "border border-gray-800"}`}
         style={{
           backgroundColor: "#fff",
           borderRadius: "8px",
-          border: isCompactLayout ? "1px solid #e5e7eb" : "2px solid #1f2937",
+          border: isCompactLayout ? "1px solid #e5e7eb" : "1px solid #1f2937",
           overflow: "hidden",
         }}
       >
