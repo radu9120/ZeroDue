@@ -86,13 +86,10 @@ export default function Navbar() {
               <Image
                 src="/logo.png"
                 alt="ZeroDue"
-                width={180}
-                height={98}
-                className="transition-transform group-hover:scale-105 h-14 w-auto -mr-1"
+                width={200}
+                height={109}
+                className="transition-transform group-hover:scale-105 h-12 w-auto"
               />
-              <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-                ZeroDue
-              </span>
             </Link>
           </div>
 

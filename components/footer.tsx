@@ -28,13 +28,10 @@ export default function Footer() {
               <Image
                 src="/logo.png"
                 alt="ZeroDue"
-                width={200}
-                height={109}
-                className="h-16 w-auto -mr-1"
+                width={220}
+                height={120}
+                className="h-14 w-auto"
               />
-              <span className="text-3xl font-bold text-slate-900 dark:text-white">
-                ZeroDue
-              </span>
             </Link>
             <p className="text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
               Streamline your invoicing process with our powerful, intuitive
