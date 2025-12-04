@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Mail, Globe, Shield, Clock, ArrowRight } from "lucide-react";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 export default function Footer() {
@@ -25,15 +25,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 lg:col-span-1">
             <Link href="/" className="flex items-center space-x-2 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <Image
-                  src="/logo.png"
-                  alt="ZeroDue Logo"
-                  height={24}
-                  width={24}
-                  className="brightness-0 invert"
-                />
-              </div>
+              <Image
+                src="/logo.png"
+                alt="ZeroDue"
+                width={40}
+                height={40}
+              />
               <span className="text-2xl font-bold text-slate-900 dark:text-white">
                 ZeroDue
               </span>

@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { MenuIcon, XIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   SignInButton,
@@ -83,15 +83,13 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 transition-transform group-hover:scale-105">
-                <Image
-                  src="/logo.png"
-                  alt="ZeroDue logo"
-                  height={20}
-                  width={20}
-                  className="object-contain invert brightness-0"
-                />
-              </div>
+              <Image
+                src="/logo.png"
+                alt="ZeroDue"
+                width={36}
+                height={36}
+                className="transition-transform group-hover:scale-105"
+              />
               <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                 ZeroDue
               </span>
