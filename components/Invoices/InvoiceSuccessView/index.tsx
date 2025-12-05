@@ -713,7 +713,7 @@ export default function InvoiceSuccessView({
           className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden"
         >
           {/* Header accent bar */}
-          <div className="h-1.5 bg-slate-800 dark:bg-slate-600" />
+          <div className="h-1.5 bg-blue-600 dark:bg-blue-500" />
 
           {/* Invoice content */}
           <div className={`${isCompact ? "p-4" : "p-6 md:p-8"}`}>

@@ -129,7 +129,7 @@ function FAQItem({ faq, index }: { faq: FAQ; index: number }) {
 
 export default function FAQ() {
   return (
-    <section className="py-24 bg-gray-50 dark:bg-slate-800 transition-colors">
+    <section className="py-24 bg-slate-50 dark:bg-slate-950 transition-colors">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
           <motion.h2
