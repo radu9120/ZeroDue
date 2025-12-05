@@ -835,7 +835,7 @@ export default function InvoiceTable({
 
   return (
     <Card>
-      <CardHeader className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <CardHeader className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <h2 className="text-xl font-bold text-header-text dark:text-slate-100">
           All Invoices
         </h2>
@@ -858,7 +858,7 @@ export default function InvoiceTable({
       </CardHeader>
       <CardContent>
         <div className="w-full">
-          <div className="hidden border-b w-full py-3 px-4 border-blue-100 dark:border-slate-700 md:grid md:grid-cols-7 md:gap-2">
+          <div className="hidden border-b w-full py-3 px-4 border-blue-100 dark:border-slate-700 lg:grid lg:grid-cols-7 lg:gap-2">
             <div className="font-medium text-secondary-text dark:text-slate-400">
               Invoice
             </div>
@@ -883,9 +883,9 @@ export default function InvoiceTable({
           </div>
 
           {invoiceRows.length > 0 ? (
-            <div className="space-y-3 md:space-y-0 md:divide-y md:divide-blue-100 dark:md:divide-slate-700">
+            <div className="space-y-3 lg:space-y-0 lg:divide-y lg:divide-blue-100 dark:lg:divide-slate-700">
               {invoiceRows.map((invoice) => (
-                <div key={invoice.id} className="md:hidden">
+                <div key={invoice.id} className="lg:hidden">
                   {/* Mobile Card - Improved Design */}
                   <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden shadow-sm">
                     {/* Card Header - Invoice Number, Status & Amount */}
@@ -1056,10 +1056,10 @@ export default function InvoiceTable({
               {invoiceRows.map((invoice) => (
                 <div
                   key={`desktop-${invoice.id}`}
-                  className="hidden md:grid w-full grid-cols-7 gap-2 px-4 py-3 hover:bg-blue-50/50 dark:hover:bg-slate-800"
+                  className="hidden lg:grid w-full grid-cols-7 gap-2 px-4 py-3 hover:bg-blue-50/50 dark:hover:bg-slate-800"
                 >
-                  <div className="col-span-2 min-w-0 md:col-span-1">
-                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                  <div className="col-span-2 min-w-0 lg:col-span-1">
+                    <span className="lg:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Invoice
                     </span>
                     <p className="font-medium text-header-text dark:text-slate-100">
@@ -1069,24 +1069,24 @@ export default function InvoiceTable({
                       {invoice.description || "No description"}
                     </p>
                   </div>
-                  <div className="col-span-1 md:col-span-1">
-                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                  <div className="col-span-1 lg:col-span-1">
+                    <span className="lg:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Amount
                     </span>
                     <p className="font-semibold text-header-text dark:text-slate-100">
                       {formatInvoiceAmount(invoice.total, invoice.currency)}
                     </p>
                   </div>
-                  <div className="col-span-1 md:col-span-1">
-                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                  <div className="col-span-1 lg:col-span-1">
+                    <span className="lg:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Status
                     </span>
-                    <div className="mt-1 md:mt-0">
+                    <div className="mt-1 lg:mt-0">
                       {getStatusBadge(invoice?.status || "draft")}
                     </div>
                   </div>
-                  <div className="col-span-1 md:col-span-1">
-                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                  <div className="col-span-1 lg:col-span-1">
+                    <span className="lg:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Issue Date
                     </span>
                     <p className="text-header-text dark:text-slate-100">
@@ -1095,8 +1095,8 @@ export default function InvoiceTable({
                         : "N/A"}
                     </p>
                   </div>
-                  <div className="col-span-1 md:col-span-1">
-                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                  <div className="col-span-1 lg:col-span-1">
+                    <span className="lg:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Due Date
                     </span>
                     <p className="text-header-text dark:text-slate-100">
@@ -1105,11 +1105,11 @@ export default function InvoiceTable({
                   </div>
 
                   {/* Email Status Column */}
-                  <div className="col-span-2 md:col-span-1">
-                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                  <div className="col-span-2 lg:col-span-1">
+                    <span className="lg:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Email Status
                     </span>
-                    <div className="mt-2 flex flex-wrap items-center gap-1 md:mt-0">
+                    <div className="mt-2 flex flex-wrap items-center gap-1 lg:mt-0">
                       {(() => {
                         const badges = buildEmailStatusBadges(invoice);
 
@@ -1137,11 +1137,11 @@ export default function InvoiceTable({
                     </div>
                   </div>
 
-                  <div className="col-span-2 border-t border-blue-100 pt-3 md:col-span-1 md:border-none md:pt-0 md:text-right dark:border-slate-700">
-                    <span className="md:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
+                  <div className="col-span-2 border-t border-blue-100 pt-3 lg:col-span-1 lg:border-none lg:pt-0 lg:text-right dark:border-slate-700">
+                    <span className="lg:hidden text-xs font-semibold uppercase tracking-wide text-secondary-text dark:text-slate-400">
                       Actions
                     </span>
-                    <div className="mt-3 flex flex-wrap items-center justify-start gap-2 md:mt-0 md:justify-end">
+                    <div className="mt-3 flex flex-wrap items-center justify-start gap-2 lg:mt-0 lg:justify-end">
                       <Link
                         href={`/dashboard/invoices/success?business_id=${business_id}&invoice_id=${invoice.id}`}
                       >

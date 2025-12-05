@@ -59,13 +59,13 @@ export function AnimatedButton({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`
-          relative h-14 px-8 rounded-full text-base font-medium
+          relative h-12 sm:h-14 px-6 sm:px-8 rounded-full text-sm sm:text-base font-medium
           bg-slate-900 hover:bg-slate-800 
           dark:bg-white dark:hover:bg-slate-100 
           text-white dark:text-slate-900 
           shadow-lg transition-colors
           flex items-center justify-center gap-2
-          overflow-hidden
+          overflow-hidden cursor-pointer
           ${className}
         `}
         whileHover={{ scale: 1.02 }}
