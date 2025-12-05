@@ -23,6 +23,7 @@ import CompanyBanner from "./companies-banner";
 import { useRef, useState, useEffect } from "react";
 import { HeroGlow } from "@/components/ui/hero-glow";
 import { HeroMesh } from "@/components/ui/hero-mesh";
+import { AnimatedButton } from "@/components/ui/animated-button";
 
 export default function Hero() {
   const containerRef = useRef(null);
@@ -48,9 +49,9 @@ export default function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-white dark:bg-slate-950"
+      className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-white dark:bg-black"
     >
-      {/* Minimal Background */}
+      {/* Vercel-style Grid Background */}
       <div className="absolute inset-0 z-0">
         <HeroMesh />
         <HeroGlow />
@@ -85,21 +86,17 @@ export default function Hero() {
             chase payments again. The modern invoicing platform built for doers.
           </p>
 
-          {/* Buttons - clean */}
+          {/* Buttons - Vercel style */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6 w-full sm:w-auto">
-            <Button
-              size="lg"
-              className="h-14 px-8 rounded-full text-base font-medium bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 shadow-lg transition-all w-full sm:w-auto"
-              asChild
-            >
-              <Link href="/sign-up">
-                Get Started <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            <AnimatedButton
+              text="Start Invoicing"
+              href="/sign-up"
+              className="w-full sm:w-auto"
+            />
             <Button
               size="lg"
               variant="ghost"
-              className="h-14 px-8 rounded-full text-base font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all w-full sm:w-auto"
+              className="h-14 px-8 rounded-full text-base font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all w-full sm:w-auto border border-slate-200 dark:border-slate-800"
               asChild
             >
               <Link href="#features">Learn more</Link>

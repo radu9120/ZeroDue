@@ -1,14 +1,40 @@
 "use client";
 
-// Clean, minimal background - just a subtle gradient
+// Vercel-style minimal grid background
 export function HeroMesh() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* Very subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-white to-white dark:from-slate-950 dark:via-slate-950 dark:to-slate-950" />
+      {/* Base background */}
+      <div className="absolute inset-0 bg-white dark:bg-[#0a0a0a]" />
 
-      {/* Optional: very faint radial gradient for depth */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[500px] bg-gradient-radial from-blue-50/50 via-transparent to-transparent dark:from-blue-950/30 dark:via-transparent dark:to-transparent" />
+      {/* Grid pattern - Vercel style large squares - Light mode */}
+      <div
+        className="absolute inset-0 dark:hidden"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(0,0,0,0.08) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.08) 1px, transparent 1px)
+          `,
+          backgroundSize: "140px 140px",
+        }}
+      />
+      {/* Dark mode grid - more visible */}
+      <div
+        className="absolute inset-0 hidden dark:block"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)
+          `,
+          backgroundSize: "140px 140px",
+        }}
+      />
+
+      {/* Subtle radial fade from center - less aggressive */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(255,255,255,0.5)_80%)] dark:bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(10,10,10,0.6)_80%)]" />
+
+      {/* Very subtle glow at top */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-radial from-blue-100/40 via-transparent to-transparent dark:from-blue-900/20 dark:via-transparent dark:to-transparent blur-3xl" />
     </div>
   );
 }
