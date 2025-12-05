@@ -22,7 +22,6 @@ import {
 import CompanyBanner from "./companies-banner";
 import { useRef, useState, useEffect } from "react";
 import { HeroGlow } from "@/components/ui/hero-glow";
-import { FloatingPaths } from "@/components/ui/floating-paths";
 import { HeroMesh } from "@/components/ui/hero-mesh";
 
 export default function Hero() {
@@ -49,16 +48,12 @@ export default function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative pt-24 pb-16 md:pt-48 md:pb-32 overflow-hidden bg-white dark:bg-slate-950"
+      className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-white dark:bg-slate-950"
     >
-      {/* Background */}
+      {/* Minimal Background */}
       <div className="absolute inset-0 z-0">
         <HeroMesh />
         <HeroGlow />
-        <div className="absolute inset-0 opacity-30 dark:opacity-20">
-          <FloatingPaths position={1} />
-          <FloatingPaths position={-1} />
-        </div>
       </div>
 
       <div className="container mx-auto px-4 text-center relative z-10">
@@ -66,66 +61,63 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto space-y-8"
+          className="max-w-4xl mx-auto space-y-6"
         >
-          {/* Badge */}
-          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 md:px-4 py-1.5 text-xs md:text-sm font-medium text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300 mb-4 gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-blue-500 animate-pulse shrink-0"></span>
-            <span className="hidden sm:inline">
-              AI Assistant • Recurring Invoices • Expense Tracking
-            </span>
-            <span className="sm:hidden">AI-Powered Invoicing</span>
-          </div>
+          {/* Small subtle badge */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 tracking-wide uppercase"
+          >
+            Modern Invoicing Platform
+          </motion.p>
 
-          {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
-            Zero hassle. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-              Zero due.
-            </span>
+          {/* Headline - clean and bold */}
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
+            Zero hassle.{" "}
+            <span className="text-blue-600 dark:text-blue-500">Zero due.</span>
           </h1>
 
-          {/* Subheadline */}
-          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+          {/* Subheadline - more spacious */}
+          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed pt-2">
             Create professional invoices in seconds, get paid faster, and never
             chase payments again. The modern invoicing platform built for doers.
           </p>
 
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 w-full sm:w-auto">
+          {/* Buttons - clean */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6 w-full sm:w-auto">
             <Button
               size="lg"
-              className="h-12 px-8 rounded-xl text-lg bg-blue-600 hover:bg-blue-500 text-white shadow-lg hover:shadow-blue-500/25 transition-all w-full sm:w-auto"
+              className="h-14 px-8 rounded-full text-base font-medium bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 shadow-lg transition-all w-full sm:w-auto"
               asChild
             >
               <Link href="/sign-up">
-                Start for free <ArrowRight className="ml-2 h-4 w-4" />
+                Get Started <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button
               size="lg"
-              variant="neutralOutline"
-              className="hidden sm:inline-flex h-12 px-8 rounded-xl text-lg border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+              variant="ghost"
+              className="h-14 px-8 rounded-full text-base font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all w-full sm:w-auto"
               asChild
             >
-              <Link href="/blog/simplify-service-billing">Learn more</Link>
+              <Link href="#features">Learn more</Link>
             </Button>
           </div>
 
-          {/* Trust Badges */}
-          <div className="pt-8 flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 gap-y-4 text-sm text-slate-500 dark:text-slate-400">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
-              <CheckCircle className="h-4 w-4 text-blue-500" /> No credit card
-              required
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
-              <CheckCircle className="h-4 w-4 text-blue-500" /> 30-day free
-              trial
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300">
-              <CheckCircle className="h-4 w-4 text-emerald-500" /> AI Assistant
-              included
-            </div>
+          {/* Trust indicators - minimal */}
+          <div className="pt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 dark:text-slate-400">
+            <span className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-emerald-500" /> Free to start
+            </span>
+            <span className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-emerald-500" /> No credit
+              card
+            </span>
+            <span className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-emerald-500" /> AI-powered
+            </span>
           </div>
         </motion.div>
 

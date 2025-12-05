@@ -898,8 +898,8 @@ export default function Pricing({
                     : "cursor-pointer hover:scale-[1.03]"
                 } ${
                   plan.popular
-                    ? "border-2 border-blue-500 dark:border-blue-400 bg-slate-900 dark:bg-slate-800 shadow-lg shadow-blue-500/20 scale-[1.02]"
-                    : "border border-slate-700 bg-slate-900/80 dark:bg-slate-800/80 hover:border-slate-600"
+                    ? "border-2 border-blue-500 dark:border-blue-400 bg-white dark:bg-slate-800 shadow-xl shadow-blue-500/10 dark:shadow-blue-500/20 scale-[1.02]"
+                    : "border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/80 hover:border-slate-300 dark:hover:border-slate-600"
                 }`}
               >
                 {plan.popular && (
@@ -921,10 +921,10 @@ export default function Pricing({
                       <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-xl lg:text-2xl font-bold text-white">
+                      <h3 className="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white">
                         {plan.name}
                       </h3>
-                      <p className="text-xs lg:text-sm text-slate-400">
+                      <p className="text-xs lg:text-sm text-slate-500 dark:text-slate-400">
                         {plan.description}
                       </p>
                     </div>
@@ -933,27 +933,27 @@ export default function Pricing({
                   {/* Price */}
                   <div className="mb-6 lg:mb-8">
                     <div className="flex items-baseline gap-1 lg:gap-2">
-                      <span className="text-4xl lg:text-5xl font-bold text-white">
+                      <span className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white">
                         {displayPrice}
                       </span>
-                      <span className="text-base lg:text-lg text-slate-400">
+                      <span className="text-base lg:text-lg text-slate-500 dark:text-slate-400">
                         {displayPeriod}
                       </span>
                     </div>
                     {plan.yearlyNote && billingPeriod === "monthly" && (
-                      <p className="text-xs lg:text-sm text-slate-500 mt-1">
+                      <p className="text-xs lg:text-sm text-slate-500 dark:text-slate-500 mt-1">
                         {plan.yearlyNote}
                       </p>
                     )}
                     {billingPeriod === "yearly" && plan.id !== "free_user" && (
-                      <p className="text-xs lg:text-sm text-green-400 mt-1">
+                      <p className="text-xs lg:text-sm text-green-600 dark:text-green-400 mt-1">
                         Save 20% with yearly billing
                       </p>
                     )}
                     {/* Trial note for paid plans */}
                     {(plan as any).trialNote && plan.id !== "free_user" && (
-                      <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1">
-                        <span className="inline-block w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1">
+                        <span className="inline-block w-1.5 h-1.5 bg-emerald-500 dark:bg-emerald-400 rounded-full"></span>
                         {(plan as any).trialNote}
                       </p>
                     )}
@@ -964,7 +964,7 @@ export default function Pricing({
                     {plan.features.map((feature) => (
                       <li
                         key={feature}
-                        className="flex items-center gap-2 lg:gap-3 text-sm lg:text-base text-slate-300"
+                        className="flex items-center gap-2 lg:gap-3 text-sm lg:text-base text-slate-600 dark:text-slate-300"
                       >
                         <div
                           className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-gradient-to-br ${plan.gradient} flex items-center justify-center flex-shrink-0`}
@@ -978,10 +978,10 @@ export default function Pricing({
                     {(plan as any).excluded?.map((feature: string) => (
                       <li
                         key={feature}
-                        className="flex items-center gap-2 lg:gap-3 text-sm lg:text-base text-slate-500"
+                        className="flex items-center gap-2 lg:gap-3 text-sm lg:text-base text-slate-400 dark:text-slate-500"
                       >
-                        <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-slate-700 flex items-center justify-center flex-shrink-0">
-                          <X className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-slate-500" />
+                        <div className="w-4 h-4 lg:w-5 lg:h-5 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
+                          <X className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-slate-400 dark:text-slate-500" />
                         </div>
                         <span className="line-through">{feature}</span>
                       </li>
@@ -1032,7 +1032,7 @@ export default function Pricing({
                             ? "bg-orange-600 hover:bg-orange-500 text-white"
                             : plan.popular
                               ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/25 hover:scale-[1.02]"
-                              : "bg-slate-800 text-white hover:bg-slate-700 border border-slate-700"
+                              : "bg-slate-900 dark:bg-slate-700 text-white hover:bg-slate-800 dark:hover:bg-slate-600"
                       }`}
                     >
                       {loading === plan.id ? (
@@ -1065,7 +1065,7 @@ export default function Pricing({
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-16 flex flex-wrap items-center justify-center gap-8 text-slate-400"
+          className="mt-16 flex flex-wrap items-center justify-center gap-8 text-slate-500 dark:text-slate-400"
         >
           <span className="text-sm flex items-center gap-2">
             <Check className="w-5 h-5 text-green-500" /> No card for free plan
