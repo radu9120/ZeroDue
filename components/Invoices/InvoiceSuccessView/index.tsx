@@ -146,11 +146,17 @@ export default function InvoiceSuccessView({
   userPlan = "free",
   publicView = false,
 }: InvoiceSuccessViewProps) {
-  const { theme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const canEditFullInvoice = userPlan !== "free_user";
   const isPublicView = publicView;
   const [isEditing, setIsEditing] = useState(editMode);
   const [status, setStatus] = useState<string>(invoice.status || "draft");
+
+  // Wait for theme to be available (next-themes hydration)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [saving, setSaving] = useState(false);
   const [emailStatus, setEmailStatus] = useState<EmailStatusState>(() =>
     toEmailStatusState({
@@ -498,8 +504,18 @@ export default function InvoiceSuccessView({
   const downloadPDF = useCallback(async () => {
     try {
       setDownloading(true);
-      // Use the current theme for PDF generation
-      const pdfTheme: PDFTheme = resolvedTheme === "dark" ? "dark" : "light";
+      // Use the current theme for PDF generation (wait for hydration)
+      // resolvedTheme is undefined until mounted, so default to light
+      const pdfTheme: PDFTheme =
+        mounted && resolvedTheme === "dark" ? "dark" : "light";
+      console.log(
+        "[PDF Download] mounted:",
+        mounted,
+        "resolvedTheme:",
+        resolvedTheme,
+        "pdfTheme:",
+        pdfTheme
+      );
       await generateInvoicePDF(invoice, company, pdfTheme);
       toast.success("PDF downloaded");
     } catch (error) {
@@ -508,7 +524,7 @@ export default function InvoiceSuccessView({
     } finally {
       setDownloading(false);
     }
-  }, [invoice, company, resolvedTheme]);
+  }, [invoice, company, resolvedTheme, mounted]);
 
   const sendToClient = useCallback(async () => {
     try {

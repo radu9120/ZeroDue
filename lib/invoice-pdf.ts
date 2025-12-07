@@ -133,7 +133,11 @@ export async function generateInvoicePDF(
   doc.setFillColor(...hexToRgb(c.bg));
   doc.rect(0, 0, pageWidth, doc.internal.pageSize.getHeight(), "F");
 
-  let y = margin;
+  // Blue border at top (like preview)
+  doc.setFillColor(...hexToRgb(c.accent));
+  doc.rect(0, 0, pageWidth, 4, "F");
+
+  let y = margin + 4;
 
   // ============================================================
   // HEADER: Company name (left) | INVOICE title (right)
@@ -145,9 +149,9 @@ export async function generateInvoicePDF(
   doc.setTextColor(...hexToRgb(c.text));
   doc.text(company.name || "Company Name", margin, y + 5);
 
-  // INVOICE title - right aligned
+  // INVOICE title - right aligned (black/white text, not blue)
   doc.setFontSize(28);
-  doc.setTextColor(...hexToRgb(c.accent));
+  doc.setTextColor(...hexToRgb(c.text));
   doc.text("INVOICE", rightEdge, y + 5, { align: "right" });
 
   y += 12;
@@ -371,7 +375,20 @@ export async function generateInvoicePDF(
     doc.text("BANK DETAILS", margin, y);
     y += 5;
 
-    const bankCardH = 20;
+    // Calculate bank card height based on content
+    let bankLines: string[] = [];
+    if (bankData) {
+      bankLines = Object.entries(bankData)
+        .filter(([_, v]) => v)
+        .map(([_, v]) => String(v));
+    } else if (typeof invoice.bank_details === "string") {
+      bankLines = invoice.bank_details
+        .split(/[\n,]/)
+        .map((l) => l.trim())
+        .filter(Boolean);
+    }
+
+    const bankCardH = Math.max(20, bankLines.length * 5 + 10);
     doc.setFillColor(...hexToRgb(c.cardBg));
     doc.roundedRect(margin, y, halfWidth, bankCardH, 3, 3, "F");
 
@@ -379,15 +396,11 @@ export async function generateInvoicePDF(
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...hexToRgb(c.text));
 
-    if (bankData) {
-      const bankText = Object.entries(bankData)
-        .filter(([_, v]) => v)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join(", ");
-      doc.text(bankText.substring(0, 50), margin + 5, y + 12);
-    } else if (typeof invoice.bank_details === "string") {
-      doc.text(invoice.bank_details.substring(0, 50), margin + 5, y + 12);
-    }
+    let bankTextY = y + 8;
+    bankLines.slice(0, 4).forEach((line) => {
+      doc.text(line.substring(0, 40), margin + 5, bankTextY);
+      bankTextY += 5;
+    });
   }
 
   // INVOICE SUMMARY (right side)
@@ -425,7 +438,7 @@ export async function generateInvoicePDF(
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.textMuted));
   doc.text("Total", summaryX + 5, sumY);
-  doc.setTextColor(...hexToRgb(c.accent));
+  doc.setTextColor(...hexToRgb(c.text));
   doc.text(
     formatMoney(parseFloat(String(invoice.total)) || 0, currency),
     summaryX + summaryW - 5,
