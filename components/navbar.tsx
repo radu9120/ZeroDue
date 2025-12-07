@@ -15,11 +15,13 @@ import {
   UserButton,
 } from "@/components/auth/UserButton";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useTheme } from "next-themes";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { resolvedTheme } = useTheme();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const businessId = searchParams?.get("business_id");
@@ -82,15 +84,18 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center group">
-              <Image
-                src="/logo.png"
-                alt="ZeroDue"
-                width={280}
-                height={153}
-                className="transition-transform group-hover:scale-105 h-12 w-auto"
-              />
-              <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight -ml-3">
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="flex items-center justify-center h-8 w-8">
+                <Image
+                  src="/logo.png"
+                  alt="ZeroDue"
+                  width={32}
+                  height={32}
+                  className="transition-transform group-hover:scale-105 h-7 w-7 object-contain"
+                  priority
+                />
+              </div>
+              <span className="text-2xl font-bold transition-colors text-slate-900 dark:text-white flex items-center h-8">
                 ZeroDue
               </span>
             </Link>

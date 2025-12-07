@@ -1,13 +1,22 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Mail, Globe, Shield, Clock, ArrowRight } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 
 export default function Footer() {
   const pathname = usePathname();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (pathname && pathname.startsWith("/invoice")) {
     return null;
   }
@@ -24,15 +33,17 @@ export default function Footer() {
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 lg:col-span-1">
-            <Link href="/" className="flex items-center mb-6">
-              <Image
-                src="/logo.png"
-                alt="ZeroDue"
-                width={320}
-                height={175}
-                className="h-14 w-auto"
-              />
-              <span className="text-3xl font-bold text-slate-900 dark:text-white -ml-4">
+            <Link href="/" className="flex items-center gap-2.5 mb-6">
+              <div className="flex items-center justify-center h-8 w-8">
+                <Image
+                  src="/logo.png"
+                  alt="ZeroDue"
+                  width={32}
+                  height={32}
+                  className="h-7 w-7 object-contain"
+                />
+              </div>
+              <span className="text-2xl font-bold text-slate-900 dark:text-white flex items-center h-8">
                 ZeroDue
               </span>
             </Link>

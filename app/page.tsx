@@ -9,6 +9,9 @@ import RecentBlogs from "@/components/recent-blogs";
 import { getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
+// Force dynamic rendering to check auth status on every request
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const user = await getUser();
   if (user) {

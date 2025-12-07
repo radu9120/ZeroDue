@@ -29,11 +29,38 @@ const paymentMethodLabels: Record<string, string> = {
   other: "Other",
 };
 
+// Currency symbols that work with standard PDF fonts
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  GBP: "GBP ",
+  USD: "$",
+  EUR: "EUR ",
+  CAD: "CA$",
+  AUD: "A$",
+  JPY: "JPY ",
+  CHF: "CHF ",
+  CNY: "CNY ",
+  INR: "INR ",
+  NZD: "NZ$",
+  SGD: "S$",
+  HKD: "HK$",
+  SEK: "SEK ",
+  NOK: "NOK ",
+  DKK: "DKK ",
+  PLN: "PLN ",
+  ZAR: "R",
+  MXN: "MX$",
+  BRL: "R$",
+  AED: "AED ",
+  SAR: "SAR ",
+};
+
 function formatCurrency(amount: number, currency: string = "GBP"): string {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: currency,
+  const symbol = CURRENCY_SYMBOLS[currency.toUpperCase()] || currency + " ";
+  const formatted = new Intl.NumberFormat("en-GB", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
+  return symbol + formatted;
 }
 
 function formatDate(dateString: string): string {
