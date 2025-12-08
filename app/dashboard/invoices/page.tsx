@@ -28,6 +28,8 @@ import {
   Download,
   MoreVertical,
   ArrowLeft,
+  ArrowUpRight,
+  TrendingUp,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -163,90 +165,94 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
           </Link>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards - Modern Dashboard Style */}
         <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 xl:gap-6">
-          <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent dark:from-blue-500/10" />
-            <CardContent className="p-3 sm:p-4 xl:p-6 relative">
-              <div className="flex items-center justify-between mb-2 sm:mb-4">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 xl:w-12 xl:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 text-white">
-                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 xl:h-6 xl:w-6" />
+          {/* Total Invoices Card */}
+          <Card className="relative overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-slate-900 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-60" />
+            <CardContent className="p-4 sm:p-5 xl:p-6 relative">
+              <div className="flex items-start justify-between mb-3">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 xl:w-12 xl:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 text-white group-hover:scale-105 transition-transform">
+                  <FileText className="h-5 w-5 sm:h-5 sm:w-5 xl:h-6 xl:w-6" />
                 </div>
-                <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30">
-                  Total
-                </span>
+                <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 shadow-inner">
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </div>
               </div>
               <div>
-                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
                   Total Invoices
                 </p>
-                <h3 className="text-xl sm:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1">
+                <h3 className="text-2xl sm:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
                   {stats.total}
                 </h3>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent dark:from-emerald-500/10" />
-            <CardContent className="p-3 sm:p-4 xl:p-6 relative">
-              <div className="flex items-center justify-between mb-2 sm:mb-4">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 xl:w-12 xl:h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
-                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 xl:h-6 xl:w-6" />
+          {/* Paid Invoices Card */}
+          <Card className="relative overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-slate-900 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-60" />
+            <CardContent className="p-4 sm:p-5 xl:p-6 relative">
+              <div className="flex items-start justify-between mb-3">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 xl:w-12 xl:h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25 text-white group-hover:scale-105 transition-transform">
+                  <DollarSign className="h-5 w-5 sm:h-5 sm:w-5 xl:h-6 xl:w-6" />
                 </div>
-                <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
-                  Paid
-                </span>
+                <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shadow-inner">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                </div>
               </div>
               <div>
-                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
                   Paid Invoices
                 </p>
-                <h3 className="text-xl sm:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1">
+                <h3 className="text-2xl sm:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
                   {stats.paid}
                 </h3>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent dark:from-amber-500/10" />
-            <CardContent className="p-3 sm:p-4 xl:p-6 relative">
-              <div className="flex items-center justify-between mb-2 sm:mb-4">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 xl:w-12 xl:h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 text-white">
-                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 xl:h-6 xl:w-6" />
+          {/* Pending Invoices Card */}
+          <Card className="relative overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-slate-900 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent opacity-60" />
+            <CardContent className="p-4 sm:p-5 xl:p-6 relative">
+              <div className="flex items-start justify-between mb-3">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 xl:w-12 xl:h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/25 text-white group-hover:scale-105 transition-transform">
+                  <Calendar className="h-5 w-5 sm:h-5 sm:w-5 xl:h-6 xl:w-6" />
                 </div>
-                <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
                   Pending
                 </span>
               </div>
               <div>
-                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
                   Pending Invoices
                 </p>
-                <h3 className="text-xl sm:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1">
+                <h3 className="text-2xl sm:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
                   {stats.pending}
                 </h3>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden border-0 shadow-lg bg-white dark:bg-slate-900">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent dark:from-purple-500/10" />
-            <CardContent className="p-3 sm:p-4 xl:p-6 relative">
-              <div className="flex items-center justify-between mb-2 sm:mb-4">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 xl:w-12 xl:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20 text-white">
-                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 xl:h-6 xl:w-6" />
+          {/* Total Amount Card */}
+          <Card className="relative overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-slate-900 group">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-transparent opacity-60" />
+            <CardContent className="p-4 sm:p-5 xl:p-6 relative">
+              <div className="flex items-start justify-between mb-3">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 xl:w-12 xl:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25 text-white group-hover:scale-105 transition-transform">
+                  <DollarSign className="h-5 w-5 sm:h-5 sm:w-5 xl:h-6 xl:w-6" />
                 </div>
-                <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300">
                   Revenue
                 </span>
               </div>
               <div>
-                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
                   Total Amount
                 </p>
-                <h3 className="text-xl sm:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-0.5 sm:mt-1">
+                <h3 className="text-2xl sm:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
                   £{stats.totalAmount.toFixed(2)}
                 </h3>
               </div>
