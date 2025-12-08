@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { generateEstimatePDF } from "@/lib/estimate-pdf";
+import { generateEstimatePDF, type PDFTheme } from "@/lib/estimate-pdf";
 import type { Estimate } from "@/types";
 
 interface EstimateViewProps {
@@ -99,7 +99,10 @@ export default function EstimateView({
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
-      await generateEstimatePDF(estimate);
+      // Detect current theme
+      const isDark = document.documentElement.classList.contains("dark");
+      const theme: PDFTheme = isDark ? "dark" : "light";
+      await generateEstimatePDF(estimate, theme);
       toast.success("PDF downloaded successfully!");
     } catch (error) {
       toast.error("Failed to download PDF");
