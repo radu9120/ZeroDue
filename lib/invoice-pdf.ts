@@ -308,29 +308,39 @@ export async function generateInvoicePDF(
   // ============================================================
   // ITEMS TABLE
   // ============================================================
-  const colDesc = margin;
-  const colQty = margin + contentWidth * 0.45;
-  const colPrice = margin + contentWidth * 0.58;
-  const colTax = margin + contentWidth * 0.75;
-  const colAmount = rightEdge;
 
-  // Table header
+  // Table header with background
+  const tableHeaderH = 10;
+  doc.setFillColor(...hexToRgb(c.cardBg));
+  doc.roundedRect(margin, y - 2, contentWidth, tableHeaderH, 2, 2, "F");
+
+  const colDesc = margin + 5;
+  const colQty = margin + contentWidth * 0.48;
+  const colPrice = margin + contentWidth * 0.62;
+  const colTax = margin + contentWidth * 0.78;
+  const colAmount = rightEdge - 5;
+
+  // Table header text
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.textMuted));
-  doc.text("DESCRIPTION", colDesc, y);
-  doc.text("QTY", colQty, y, { align: "center" });
-  doc.text("UNIT PRICE", colPrice, y, { align: "center" });
-  doc.text("TAX", colTax, y, { align: "center" });
-  doc.text("AMOUNT", colAmount, y, { align: "right" });
+  doc.text("DESCRIPTION", colDesc, y + 4);
+  doc.text("QTY", colQty, y + 4, { align: "center" });
+  doc.text("UNIT PRICE", colPrice, y + 4, { align: "center" });
+  doc.text("TAX", colTax, y + 4, { align: "center" });
+  doc.text("AMOUNT", colAmount, y + 4, { align: "right" });
 
-  y += 4;
-  doc.setDrawColor(...hexToRgb(c.border));
-  doc.line(margin, y, rightEdge, y);
-  y += 8;
+  y += tableHeaderH + 6;
 
   // Table rows
-  items.forEach((item) => {
+  items.forEach((item, index) => {
+    // Row separator line
+    if (index > 0) {
+      doc.setDrawColor(...hexToRgb(c.border));
+      doc.setLineWidth(0.2);
+      doc.line(margin, y - 4, rightEdge, y - 4);
+    }
+
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...hexToRgb(c.text));
@@ -403,22 +413,42 @@ export async function generateInvoicePDF(
     });
   }
 
-  // INVOICE SUMMARY (right side)
+  // INVOICE SUMMARY (right side) - with header bar like preview
   const summaryX = margin + halfWidth + 10;
   const summaryW = halfWidth;
-  const summaryH = 35;
+  const summaryHeaderH = 10;
+  const summaryBodyH = 28;
+  const summaryH = summaryHeaderH + summaryBodyH;
 
+  // Summary header bar (darker)
   doc.setFillColor(...hexToRgb(c.cardBg));
-  doc.roundedRect(summaryX, summaryStartY, summaryW, summaryH, 3, 3, "F");
+  doc.roundedRect(summaryX, summaryStartY, summaryW, summaryHeaderH, 3, 3, "F");
+  // Fill the bottom corners
+  doc.rect(summaryX, summaryStartY + summaryHeaderH - 3, summaryW, 3, "F");
 
-  // Summary header
-  doc.setFontSize(10);
+  // Summary body (slightly lighter in dark mode)
+  const bodyBg = theme === "dark" ? "#1e293b" : "#f1f5f9";
+  doc.setFillColor(...hexToRgb(bodyBg));
+  doc.roundedRect(
+    summaryX,
+    summaryStartY + summaryHeaderH,
+    summaryW,
+    summaryBodyH,
+    3,
+    3,
+    "F"
+  );
+  // Fill the top corners
+  doc.rect(summaryX, summaryStartY + summaryHeaderH, summaryW, 3, "F");
+
+  // Summary header text
+  doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.text));
-  doc.text("INVOICE SUMMARY", summaryX + 5, summaryStartY + 8);
+  doc.text("INVOICE SUMMARY", summaryX + 5, summaryStartY + 7);
 
   // Subtotal
-  let sumY = summaryStartY + 18;
+  let sumY = summaryStartY + summaryHeaderH + 10;
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...hexToRgb(c.textMuted));
@@ -431,14 +461,13 @@ export async function generateInvoicePDF(
     { align: "right" }
   );
 
-  sumY += 8;
+  sumY += 10;
 
   // Total
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(...hexToRgb(c.textMuted));
-  doc.text("Total", summaryX + 5, sumY);
   doc.setTextColor(...hexToRgb(c.text));
+  doc.text("Total", summaryX + 5, sumY);
   doc.text(
     formatMoney(parseFloat(String(invoice.total)) || 0, currency),
     summaryX + summaryW - 5,

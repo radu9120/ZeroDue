@@ -305,7 +305,7 @@ export default function Hero() {
                   {/* Chart & Recent Activity Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full min-h-0">
                     {/* Chart Area */}
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.7, duration: 0.5 }}
@@ -338,10 +338,10 @@ export default function Hero() {
                                   className="absolute bottom-0 left-0 right-0 bg-blue-500 dark:bg-blue-500 rounded-t-sm group-hover:bg-blue-600"
                                   initial={{ height: 0 }}
                                   animate={{ height: `${h}%` }}
-                                  transition={{ 
-                                    delay: 0.8 + i * 0.05, 
-                                    duration: 0.8, 
-                                    ease: [0.34, 1.56, 0.64, 1] 
+                                  transition={{
+                                    delay: 0.8 + i * 0.05,
+                                    duration: 0.8,
+                                    ease: [0.34, 1.56, 0.64, 1],
                                   }}
                                 >
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -372,7 +372,7 @@ export default function Hero() {
                     </motion.div>
 
                     {/* Recent Invoices Table */}
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.9, duration: 0.5 }}
@@ -424,7 +424,10 @@ export default function Hero() {
                               key={i}
                               initial={{ opacity: 0, x: 20 }}
                               animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 1.2 + i * 0.1, duration: 0.4 }}
+                              transition={{
+                                delay: 1.2 + i * 0.1,
+                                duration: 0.4,
+                              }}
                               className="px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
                             >
                               <div className="flex items-center gap-3">

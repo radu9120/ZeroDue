@@ -504,13 +504,13 @@ export default function InvoiceSuccessView({
   const downloadPDF = useCallback(async () => {
     try {
       setDownloading(true);
-      // Use the current theme for PDF generation (wait for hydration)
-      // resolvedTheme is undefined until mounted, so default to light
-      const pdfTheme: PDFTheme =
-        mounted && resolvedTheme === "dark" ? "dark" : "light";
+      // Use the current theme for PDF generation
+      // Check if document has dark class (more reliable than resolvedTheme)
+      const isDark = document.documentElement.classList.contains("dark");
+      const pdfTheme: PDFTheme = isDark ? "dark" : "light";
       console.log(
-        "[PDF Download] mounted:",
-        mounted,
+        "[PDF Download] isDark:",
+        isDark,
         "resolvedTheme:",
         resolvedTheme,
         "pdfTheme:",
@@ -524,7 +524,7 @@ export default function InvoiceSuccessView({
     } finally {
       setDownloading(false);
     }
-  }, [invoice, company, resolvedTheme, mounted]);
+  }, [invoice, company, resolvedTheme]);
 
   const sendToClient = useCallback(async () => {
     try {

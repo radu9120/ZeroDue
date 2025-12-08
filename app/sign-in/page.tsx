@@ -37,7 +37,7 @@ export default function SignInPage() {
       // Refresh first to sync auth state, then navigate
       router.refresh();
       // Small delay to ensure cookies are set before navigation
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       window.location.href = redirectUrl;
     } catch {
       toast.error("An unexpected error occurred");
