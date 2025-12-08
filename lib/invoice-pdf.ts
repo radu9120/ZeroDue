@@ -257,28 +257,42 @@ export async function generateInvoicePDF(
   doc.text("BILL TO", margin, y);
   y += 5;
 
+  // Calculate card height based on address lines
+  const addressLines = billTo?.address
+    ? billTo.address
+        .split(/[,\n]/)
+        .map((l) => l.trim())
+        .filter(Boolean)
+    : [];
+  const billCardH = Math.max(
+    32,
+    18 + addressLines.length * 4 + (billTo?.email ? 4 : 0)
+  );
+
   // Bill To card background
-  const billCardH = 28;
   doc.setFillColor(...hexToRgb(c.cardBg));
   doc.roundedRect(margin, y, contentWidth, billCardH, 3, 3, "F");
 
   // Bill To content
-  let billY = y + 7;
-  doc.setFontSize(12);
+  let billY = y + 8;
+  doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.text));
-  doc.text(billTo?.name || "Client Name", margin + 5, billY);
-  billY += 5;
+  doc.text(billTo?.name || "Client Name", margin + 8, billY);
+  billY += 6;
 
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...hexToRgb(c.textMuted));
-  if (billTo?.address) {
-    doc.text(billTo.address, margin + 5, billY);
+
+  // Show each address line separately
+  addressLines.forEach((line) => {
+    doc.text(line, margin + 8, billY);
     billY += 4;
-  }
+  });
+
   if (billTo?.email) {
-    doc.text(billTo.email, margin + 5, billY);
+    doc.text(billTo.email, margin + 8, billY);
   }
 
   y += billCardH + 10;
@@ -368,12 +382,12 @@ export async function generateInvoicePDF(
     y += 10;
   });
 
-  // Line under items table
+  // Line under items table - more visible
   doc.setDrawColor(...hexToRgb(c.border));
-  doc.setLineWidth(0.3);
-  doc.line(margin, y - 2, rightEdge, y - 2);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y + 2, rightEdge, y + 2);
 
-  y += 12;
+  y += 18;
 
   // ============================================================
   // BANK DETAILS (left) & INVOICE SUMMARY (right)

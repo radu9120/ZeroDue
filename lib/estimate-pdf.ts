@@ -326,28 +326,42 @@ export async function generateEstimatePDF(
   doc.text("PREPARED FOR", margin, y);
   y += 5;
 
+  // Calculate card height based on address lines
+  const addressLines = client?.address
+    ? client.address
+        .split(/[,\n]/)
+        .map((l) => l.trim())
+        .filter(Boolean)
+    : [];
+  const clientCardH = Math.max(
+    32,
+    18 + addressLines.length * 4 + (client?.email ? 4 : 0)
+  );
+
   // Client card background
-  const clientCardH = 28;
   doc.setFillColor(...hexToRgb(c.cardBg));
   doc.roundedRect(margin, y, contentWidth, clientCardH, 3, 3, "F");
 
   // Client content
-  let clientY = y + 7;
-  doc.setFontSize(12);
+  let clientY = y + 8;
+  doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.text));
-  doc.text(client?.name || "Client Name", margin + 5, clientY);
-  clientY += 5;
+  doc.text(client?.name || "Client Name", margin + 8, clientY);
+  clientY += 6;
 
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...hexToRgb(c.textMuted));
-  if (client?.address) {
-    doc.text(client.address.substring(0, 60), margin + 5, clientY);
+
+  // Show each address line separately
+  addressLines.forEach((line) => {
+    doc.text(line, margin + 8, clientY);
     clientY += 4;
-  }
+  });
+
   if (client?.email) {
-    doc.text(client.email, margin + 5, clientY);
+    doc.text(client.email, margin + 8, clientY);
   }
 
   y += clientCardH + 10;
@@ -442,12 +456,12 @@ export async function generateEstimatePDF(
     y += 10;
   });
 
-  // Line under items table
+  // Line under items table - more visible
   doc.setDrawColor(...hexToRgb(c.border));
-  doc.setLineWidth(0.3);
-  doc.line(margin, y - 2, rightEdge, y - 2);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y + 2, rightEdge, y + 2);
 
-  y += 12;
+  y += 18;
 
   // ============================================================
   // NOTES (left) & ESTIMATE SUMMARY (right)
