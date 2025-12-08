@@ -18,7 +18,7 @@ interface ParsedBillTo {
   phone?: string;
 }
 
-// Dark theme colors matching the preview
+// Theme colors
 const COLORS = {
   dark: {
     bg: "#0f172a",
@@ -27,6 +27,7 @@ const COLORS = {
     textMuted: "#94a3b8",
     border: "#334155",
     accent: "#3b82f6",
+    tableHeader: "#334155",
   },
   light: {
     bg: "#ffffff",
@@ -35,6 +36,7 @@ const COLORS = {
     textMuted: "#64748b",
     border: "#e2e8f0",
     accent: "#3b82f6",
+    tableHeader: "#1e293b",
   },
 };
 
@@ -51,25 +53,14 @@ function hexToRgb(hex: string): [number, number, number] {
 
 function getCurrencySymbol(currency: string): string {
   const code = currency.toUpperCase();
-  const symbols: Record<string, string> = {
-    GBP: "£",
-    EUR: "€",
-    USD: "$",
-    JPY: "¥",
-    CAD: "CA$",
-    AUD: "A$",
-    CHF: "CHF ",
-    INR: "₹",
-  };
-  // For PDF, use text-safe versions
   const pdfSymbols: Record<string, string> = {
-    GBP: "GBP ",
-    EUR: "EUR ",
-    JPY: "JPY ",
-    INR: "INR ",
-    CHF: "CHF ",
+    GBP: "£ ",
+    EUR: "€ ",
+    USD: "$ ",
+    CAD: "CA$ ",
+    AUD: "A$ ",
   };
-  return pdfSymbols[code] || symbols[code] || code + " ";
+  return pdfSymbols[code] || code + " ";
 }
 
 function formatMoney(amount: number, currency: string): string {
@@ -133,28 +124,25 @@ export async function generateInvoicePDF(
   doc.setFillColor(...hexToRgb(c.bg));
   doc.rect(0, 0, pageWidth, doc.internal.pageSize.getHeight(), "F");
 
-  // Blue border at top (like preview)
+  // Blue accent bar at top
   doc.setFillColor(...hexToRgb(c.accent));
   doc.rect(0, 0, pageWidth, 4, "F");
 
-  let y = margin + 4;
+  let y = margin + 6;
 
   // ============================================================
   // HEADER: Company name (left) | INVOICE title (right)
   // ============================================================
-
-  // Company name - bold, large
   doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.text));
-  doc.text(company.name || "Company Name", margin, y + 5);
+  doc.text(company.name || "Company Name", margin, y);
 
-  // INVOICE title - right aligned (black/white text, not blue)
   doc.setFontSize(28);
   doc.setTextColor(...hexToRgb(c.text));
-  doc.text("INVOICE", rightEdge, y + 5, { align: "right" });
+  doc.text("INVOICE", rightEdge, y, { align: "right" });
 
-  y += 12;
+  y += 8;
 
   // Company address lines
   doc.setFontSize(9);
@@ -177,14 +165,13 @@ export async function generateInvoicePDF(
   }
 
   // ============================================================
-  // INVOICE DETAILS BOX (right side, next to company info)
+  // INVOICE DETAILS BOX (right side)
   // ============================================================
   const detailsBoxX = margin + halfWidth + 10;
-  const detailsBoxY = margin + 12;
+  const detailsBoxY = margin + 14;
   const detailsBoxW = halfWidth;
-  const detailsBoxH = 32;
+  const detailsBoxH = 30;
 
-  // Box background
   doc.setFillColor(...hexToRgb(c.cardBg));
   doc.roundedRect(
     detailsBoxX,
@@ -196,134 +183,134 @@ export async function generateInvoicePDF(
     "F"
   );
 
-  // Box content
   let detY = detailsBoxY + 8;
   doc.setFontSize(9);
 
   // Invoice #
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...hexToRgb(c.textMuted));
-  doc.text("Invoice #", detailsBoxX + 5, detY);
+  doc.text("Invoice #", detailsBoxX + 6, detY);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.text));
   doc.text(
     invoice.invoice_number || "INV0001",
-    detailsBoxX + detailsBoxW - 5,
+    detailsBoxX + detailsBoxW - 6,
     detY,
     { align: "right" }
   );
-  detY += 8;
+  detY += 7;
 
   // Date
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...hexToRgb(c.textMuted));
-  doc.text("Date", detailsBoxX + 5, detY);
+  doc.text("Date", detailsBoxX + 6, detY);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.text));
   doc.text(
     formatDate(invoice.issue_date || new Date().toISOString()),
-    detailsBoxX + detailsBoxW - 5,
+    detailsBoxX + detailsBoxW - 6,
     detY,
     { align: "right" }
   );
-  detY += 8;
+  detY += 7;
 
   // Due Date
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...hexToRgb(c.textMuted));
-  doc.text("Due Date", detailsBoxX + 5, detY);
+  doc.text("Due Date", detailsBoxX + 6, detY);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.text));
-  doc.text(formatDate(invoice.due_date), detailsBoxX + detailsBoxW - 5, detY, {
+  doc.text(formatDate(invoice.due_date), detailsBoxX + detailsBoxW - 6, detY, {
     align: "right",
   });
 
-  y = Math.max(y, detailsBoxY + detailsBoxH) + 10;
+  y = Math.max(y, detailsBoxY + detailsBoxH) + 8;
 
   // ============================================================
-  // DIVIDER LINE (under invoice details)
+  // DIVIDER LINE
   // ============================================================
   doc.setDrawColor(...hexToRgb(c.border));
   doc.setLineWidth(0.3);
   doc.line(margin, y, rightEdge, y);
-  y += 10;
+  y += 12;
 
   // ============================================================
-  // BILL TO CARD
+  // BILL TO
   // ============================================================
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.textMuted));
   doc.text("BILL TO", margin, y);
-  y += 5;
+  y += 6;
 
-  // Calculate card height based on address lines
+  // Parse address into lines
   const addressLines = billTo?.address
     ? billTo.address
         .split(/[,\n]/)
         .map((l) => l.trim())
         .filter(Boolean)
     : [];
-  const billCardH = Math.max(
-    32,
-    18 + addressLines.length * 4 + (billTo?.email ? 4 : 0)
-  );
 
-  // Bill To card background
+  // Calculate card height - generous spacing
+  const billCardH = 24 + addressLines.length * 5 + (billTo?.email ? 5 : 0);
+
+  // Card background
   doc.setFillColor(...hexToRgb(c.cardBg));
   doc.roundedRect(margin, y, contentWidth, billCardH, 3, 3, "F");
 
-  // Bill To card border
+  // Card border
   doc.setDrawColor(...hexToRgb(c.border));
   doc.setLineWidth(0.3);
   doc.roundedRect(margin, y, contentWidth, billCardH, 3, 3, "S");
 
-  // Bill To content
-  let billY = y + 8;
+  // Content
+  let billY = y + 10;
+
+  // Client name - larger and bold
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.text));
-  doc.text(billTo?.name || "Client Name", margin + 8, billY);
-  billY += 6;
+  doc.text(billTo?.name || "Client Name", margin + 10, billY);
+  billY += 7;
 
+  // Address lines with proper spacing
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...hexToRgb(c.textMuted));
 
-  // Show each address line separately
   addressLines.forEach((line) => {
-    doc.text(line, margin + 8, billY);
-    billY += 4;
+    doc.text(line, margin + 10, billY);
+    billY += 5;
   });
 
+  // Email
   if (billTo?.email) {
-    doc.text(billTo.email, margin + 8, billY);
+    doc.text(billTo.email, margin + 10, billY);
   }
 
-  y += billCardH + 10;
+  y += billCardH + 12;
 
   // ============================================================
-  // DESCRIPTION CARD (if exists)
+  // DESCRIPTION (if exists)
   // ============================================================
   if (invoice.description?.trim()) {
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...hexToRgb(c.textMuted));
     doc.text("DESCRIPTION", margin, y);
-    y += 5;
+    y += 6;
 
-    // Calculate height based on text
     const descLines = doc.splitTextToSize(
       invoice.description,
-      contentWidth - 16
+      contentWidth - 20
     );
-    const descCardH = Math.max(16, descLines.length * 5 + 10);
+    const descCardH = Math.max(18, descLines.length * 5 + 12);
 
-    // Card background
+    // Card background only - no border, no accent
     doc.setFillColor(...hexToRgb(c.cardBg));
     doc.roundedRect(margin, y, contentWidth, descCardH, 3, 3, "F");
 
-    // Card border
+    // Border
     doc.setDrawColor(...hexToRgb(c.border));
     doc.setLineWidth(0.3);
     doc.roundedRect(margin, y, contentWidth, descCardH, 3, 3, "S");
@@ -331,50 +318,44 @@ export async function generateInvoicePDF(
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...hexToRgb(c.text));
-    doc.text(descLines, margin + 8, y + 10);
+    doc.text(descLines, margin + 10, y + 11);
 
-    y += descCardH + 8;
+    y += descCardH + 10;
   }
 
   // ============================================================
   // ITEMS TABLE
   // ============================================================
 
-  // Table header with dark navy background (like preview)
-  const tableHeaderH = 12;
-  const tableHeaderBg = theme === "dark" ? "#334155" : "#1e293b";
-  doc.setFillColor(...hexToRgb(tableHeaderBg));
-  doc.roundedRect(margin, y - 2, contentWidth, tableHeaderH, 2, 2, "F");
+  // Table header - dark background
+  const tableHeaderH = 10;
+  doc.setFillColor(...hexToRgb(c.tableHeader));
+  doc.roundedRect(margin, y, contentWidth, tableHeaderH, 2, 2, "F");
 
   const colDesc = margin + 8;
   const colQty = margin + contentWidth * 0.48;
   const colPrice = margin + contentWidth * 0.62;
-  const colTax = margin + contentWidth * 0.78;
+  const colTax = margin + contentWidth * 0.76;
   const colAmount = rightEdge - 8;
 
-  // Table header text - WHITE on dark background
+  // Header text - white
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(255, 255, 255);
-  doc.text("DESCRIPTION", colDesc, y + 5);
-  doc.text("QTY", colQty, y + 5, { align: "center" });
-  doc.text("UNIT PRICE", colPrice, y + 5, { align: "center" });
-  doc.text("TAX", colTax, y + 5, { align: "center" });
-  doc.text("AMOUNT", colAmount, y + 5, { align: "right" });
+  doc.text("DESCRIPTION", colDesc, y + 6.5);
+  doc.text("QTY", colQty, y + 6.5, { align: "center" });
+  doc.text("UNIT PRICE", colPrice, y + 6.5, { align: "center" });
+  doc.text("TAX", colTax, y + 6.5, { align: "center" });
+  doc.text("AMOUNT", colAmount, y + 6.5, { align: "right" });
 
-  y += tableHeaderH + 8;
+  y += tableHeaderH;
 
-  // Draw table border - left accent line (blue)
-  const tableStartY = y - 2;
+  // Table body background
+  const tableBodyStartY = y;
 
   // Table rows
   items.forEach((item, index) => {
-    // Row separator line
-    if (index > 0) {
-      doc.setDrawColor(...hexToRgb(c.border));
-      doc.setLineWidth(0.3);
-      doc.line(margin, y - 5, rightEdge, y - 5);
-    }
+    y += 10;
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
@@ -393,29 +374,24 @@ export async function generateInvoicePDF(
     doc.text(formatMoney(item.amount || 0, currency), colAmount, y, {
       align: "right",
     });
-
-    y += 12;
   });
 
-  // Draw table border around items
+  y += 8;
+
+  // Table border around body
   doc.setDrawColor(...hexToRgb(c.border));
   doc.setLineWidth(0.3);
   doc.roundedRect(
     margin,
-    tableStartY - 6 - tableHeaderH,
+    tableBodyStartY,
     contentWidth,
-    y - tableStartY + tableHeaderH + 4,
+    y - tableBodyStartY,
     2,
     2,
     "S"
   );
 
-  // Blue accent line on left of table
-  doc.setDrawColor(...hexToRgb(c.accent));
-  doc.setLineWidth(2);
-  doc.line(margin, tableStartY - 6 - tableHeaderH + 1, margin, y - 2);
-
-  y += 12;
+  y += 15;
 
   // ============================================================
   // BANK DETAILS (left) & INVOICE SUMMARY (right)
@@ -436,9 +412,8 @@ export async function generateInvoicePDF(
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...hexToRgb(c.textMuted));
     doc.text("BANK DETAILS", margin, y);
-    y += 5;
+    y += 6;
 
-    // Calculate bank card height based on content
     let bankLines: string[] = [];
     if (bankData) {
       bankLines = Object.entries(bankData)
@@ -451,7 +426,7 @@ export async function generateInvoicePDF(
         .filter(Boolean);
     }
 
-    const bankCardH = Math.max(20, bankLines.length * 5 + 10);
+    const bankCardH = Math.max(22, bankLines.length * 5 + 12);
     doc.setFillColor(...hexToRgb(c.cardBg));
     doc.roundedRect(margin, y, halfWidth, bankCardH, 3, 3, "F");
 
@@ -459,25 +434,23 @@ export async function generateInvoicePDF(
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...hexToRgb(c.text));
 
-    let bankTextY = y + 8;
+    let bankTextY = y + 10;
     bankLines.slice(0, 4).forEach((line) => {
-      doc.text(line.substring(0, 40), margin + 5, bankTextY);
+      doc.text(line.substring(0, 40), margin + 8, bankTextY);
       bankTextY += 5;
     });
   }
 
-  // INVOICE SUMMARY (right side) - with header bar like preview
+  // INVOICE SUMMARY (right side)
   const summaryX = margin + halfWidth + 10;
   const summaryW = halfWidth;
   const summaryHeaderH = 10;
-  const summaryBodyH = 32;
+  const summaryBodyH = 30;
   const summaryH = summaryHeaderH + summaryBodyH;
 
-  // Summary header bar (darker slate-800)
-  const headerBg = theme === "dark" ? "#334155" : "#1e293b";
-  doc.setFillColor(...hexToRgb(headerBg));
+  // Summary header bar
+  doc.setFillColor(...hexToRgb(c.tableHeader));
   doc.roundedRect(summaryX, summaryStartY, summaryW, summaryHeaderH, 3, 3, "F");
-  // Fill the bottom corners
   doc.rect(summaryX, summaryStartY + summaryHeaderH - 3, summaryW, 3, "F");
 
   // Summary body
@@ -492,50 +465,48 @@ export async function generateInvoicePDF(
     3,
     "F"
   );
-  // Fill the top corners
   doc.rect(summaryX, summaryStartY + summaryHeaderH, summaryW, 3, "F");
 
-  // Border around the whole summary
+  // Border
   doc.setDrawColor(...hexToRgb(c.border));
   doc.setLineWidth(0.3);
   doc.roundedRect(summaryX, summaryStartY, summaryW, summaryH, 3, 3, "S");
 
-  // Summary header text
+  // Header text
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(255, 255, 255); // White text on dark header
-  doc.text("INVOICE SUMMARY", summaryX + 5, summaryStartY + 7);
+  doc.setTextColor(255, 255, 255);
+  doc.text("INVOICE SUMMARY", summaryX + 8, summaryStartY + 7);
 
   // Subtotal
   let sumY = summaryStartY + summaryHeaderH + 10;
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...hexToRgb(c.textMuted));
-  doc.text("Subtotal", summaryX + 5, sumY);
+  doc.text("Subtotal", summaryX + 8, sumY);
   doc.setTextColor(...hexToRgb(c.text));
   doc.text(
     formatMoney(invoice.subtotal || 0, currency),
-    summaryX + summaryW - 5,
+    summaryX + summaryW - 8,
     sumY,
     { align: "right" }
   );
 
-  // Line under subtotal
+  // Line
   sumY += 5;
   doc.setDrawColor(...hexToRgb(c.border));
   doc.setLineWidth(0.2);
-  doc.line(summaryX + 5, sumY, summaryX + summaryW - 5, sumY);
-
-  sumY += 8;
+  doc.line(summaryX + 8, sumY, summaryX + summaryW - 8, sumY);
 
   // Total
+  sumY += 8;
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.text));
-  doc.text("Total", summaryX + 5, sumY);
+  doc.text("Total", summaryX + 8, sumY);
   doc.text(
     formatMoney(parseFloat(String(invoice.total)) || 0, currency),
-    summaryX + summaryW - 5,
+    summaryX + summaryW - 8,
     sumY,
     { align: "right" }
   );
@@ -550,16 +521,16 @@ export async function generateInvoicePDF(
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...hexToRgb(c.textMuted));
     doc.text("NOTES", margin, y);
-    y += 5;
+    y += 6;
 
-    const notesCardH = 18;
+    const notesCardH = 20;
     doc.setFillColor(...hexToRgb(c.cardBg));
     doc.roundedRect(margin, y, halfWidth, notesCardH, 3, 3, "F");
 
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...hexToRgb(c.text));
-    doc.text(invoice.notes.substring(0, 60), margin + 5, y + 10);
+    doc.text(invoice.notes.substring(0, 60), margin + 8, y + 12);
   }
 
   // ============================================================
