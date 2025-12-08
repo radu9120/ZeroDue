@@ -110,13 +110,19 @@ export function generateInvoiceHTML(
       line-height: 1.5;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
+      margin: 0;
+      padding: 0;
+    }
+    
+    @page {
+      size: A4;
+      margin: 0;
     }
     
     .page {
-      max-width: 800px;
-      margin: 0 auto;
-      background: #1e293b;
+      width: 100%;
       min-height: 100vh;
+      background: #0f172a;
     }
     
     .accent-bar {
@@ -143,11 +149,13 @@ export function generateInvoiceHTML(
     }
     
     .logo {
-      max-width: 140px;
-      max-height: 100px;
+      max-width: 160px;
+      max-height: 80px;
       margin-bottom: 16px;
       display: block;
       border-radius: 8px;
+      object-fit: contain;
+      object-position: left;
     }
     
     .company-name {
@@ -259,6 +267,7 @@ export function generateInvoiceHTML(
     table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: fixed;
     }
     
     thead {
@@ -273,6 +282,7 @@ export function generateInvoiceHTML(
       text-transform: uppercase;
       letter-spacing: 0.8px;
       text-align: left;
+      white-space: nowrap;
     }
     
     th.c { text-align: center; }
@@ -291,6 +301,7 @@ export function generateInvoiceHTML(
       font-size: 14px;
       color: #e2e8f0;
       background: #334155;
+      white-space: nowrap;
     }
     
     td.c { text-align: center; }
@@ -341,15 +352,18 @@ export function generateInvoiceHTML(
     
     /* ===== SUMMARY ===== */
     .summary-wrap {
-      width: 280px;
+      width: 320px;
+      min-width: 320px;
       border-radius: 12px;
       overflow: hidden;
       background: #334155;
+      flex-shrink: 0;
     }
     
     .summary-header {
       background: #475569;
       padding: 14px 18px;
+      white-space: nowrap;
     }
     
     .summary-header-text {
@@ -358,6 +372,7 @@ export function generateInvoiceHTML(
       color: #e2e8f0;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      white-space: nowrap;
     }
     
     .summary-body {
@@ -368,8 +383,9 @@ export function generateInvoiceHTML(
     .sum-row {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 8px 0;
-      border-bottom: 1px solid #475569;
+      white-space: nowrap;
     }
     
     .sum-row:last-of-type {
@@ -379,12 +395,14 @@ export function generateInvoiceHTML(
     .sum-label {
       font-size: 14px;
       color: #94a3b8;
+      white-space: nowrap;
     }
     
     .sum-value {
       font-size: 14px;
       font-weight: 600;
       color: #f1f5f9;
+      white-space: nowrap;
     }
     
     .sum-row.green .sum-value {
@@ -397,13 +415,14 @@ export function generateInvoiceHTML(
       align-items: center;
       padding-top: 14px;
       margin-top: 10px;
-      border-top: 2px solid #475569;
+      white-space: nowrap;
     }
     
     .total-label {
       font-size: 14px;
       font-weight: 700;
       color: #f1f5f9;
+      white-space: nowrap;
     }
     
     .total-value {
@@ -476,11 +495,11 @@ export function generateInvoiceHTML(
         <table>
           <thead>
             <tr>
-              <th>Description</th>
-              <th class="c" style="width:70px;">Qty</th>
-              <th class="r" style="width:100px;">Unit Price</th>
-              <th class="c" style="width:60px;">${taxLabel}</th>
-              <th class="r" style="width:100px;">Amount</th>
+              <th style="width:40%;">Description</th>
+              <th class="c" style="width:10%;">Qty</th>
+              <th class="r" style="width:18%;">Unit Price</th>
+              <th class="c" style="width:12%;">${taxLabel}</th>
+              <th class="r" style="width:20%;">Amount</th>
             </tr>
           </thead>
           <tbody>
@@ -529,7 +548,7 @@ export function generateInvoiceHTML(
         
         <div class="summary-wrap">
           <div class="summary-header">
-            <div class="summary-header-text">Invoice Summary</div>
+            <div class="summary-header-text">SUMMARY</div>
           </div>
           <div class="summary-body">
             <div class="sum-row">

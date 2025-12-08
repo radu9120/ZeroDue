@@ -7,9 +7,22 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/dashboard";
 
+  console.log(
+    "[Auth Callback] code:",
+    code ? "present" : "missing",
+    "next:",
+    next
+  );
+
   if (code) {
     const supabase = await createClient();
     const { error, data } = await supabase.auth.exchangeCodeForSession(code);
+
+    console.log(
+      "[Auth Callback] exchangeCodeForSession result:",
+      error ? `ERROR: ${error.message}` : "SUCCESS"
+    );
+
     if (!error) {
       // Check if this is a new user (first login) and send welcome email
       const user = data?.user;

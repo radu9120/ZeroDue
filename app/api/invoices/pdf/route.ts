@@ -50,6 +50,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Generate HTML
+    console.log(
+      "[PDF] Company logo URL:",
+      business.logo ? business.logo.substring(0, 100) : "NO LOGO"
+    );
     const html = generateInvoiceHTML(invoice, business);
 
     // Dynamic import puppeteer to avoid build issues
@@ -69,19 +73,19 @@ export async function GET(request: NextRequest) {
 
     const page = await browser.newPage();
     await page.setContent(html, {
-      waitUntil: "domcontentloaded",
-      timeout: 10000,
+      waitUntil: "networkidle0",
+      timeout: 15000,
     });
 
-    // Generate PDF
+    // Generate PDF - no margins for full-bleed design
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
       margin: {
-        top: "15mm",
-        right: "15mm",
-        bottom: "15mm",
-        left: "15mm",
+        top: "0",
+        right: "0",
+        bottom: "0",
+        left: "0",
       },
     });
 
