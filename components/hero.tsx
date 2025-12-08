@@ -243,8 +243,11 @@ export default function Hero() {
                         color: "red",
                       },
                     ].map((stat, i) => (
-                      <div
+                      <motion.div
                         key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
                         className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm relative overflow-hidden group"
                       >
                         <div
@@ -295,14 +298,19 @@ export default function Hero() {
                             </span>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
 
                   {/* Chart & Recent Activity Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full min-h-0">
                     {/* Chart Area */}
-                    <div className="md:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7, duration: 0.5 }}
+                      className="md:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col"
+                    >
                       <div className="flex justify-between items-center mb-6">
                         <div>
                           <div className="text-sm font-semibold text-slate-900 dark:text-white">
@@ -326,12 +334,18 @@ export default function Hero() {
                               className="w-full flex flex-col gap-2 group cursor-pointer"
                             >
                               <div className="relative w-full bg-slate-100 dark:bg-slate-800 rounded-sm h-32 md:h-40 overflow-hidden">
-                                <div
-                                  className="absolute bottom-0 left-0 right-0 bg-blue-500 dark:bg-blue-500 rounded-t-sm transition-all duration-500 ease-out group-hover:bg-blue-600"
-                                  style={{ height: `${h}%` }}
+                                <motion.div
+                                  className="absolute bottom-0 left-0 right-0 bg-blue-500 dark:bg-blue-500 rounded-t-sm group-hover:bg-blue-600"
+                                  initial={{ height: 0 }}
+                                  animate={{ height: `${h}%` }}
+                                  transition={{ 
+                                    delay: 0.8 + i * 0.05, 
+                                    duration: 0.8, 
+                                    ease: [0.34, 1.56, 0.64, 1] 
+                                  }}
                                 >
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                                </div>
+                                </motion.div>
                               </div>
                               <div className="text-[10px] text-center text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
                                 {
@@ -355,10 +369,15 @@ export default function Hero() {
                           )
                         )}
                       </div>
-                    </div>
+                    </motion.div>
 
                     {/* Recent Invoices Table */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.9, duration: 0.5 }}
+                      className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col"
+                    >
                       <div className="px-4 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                         <div className="text-sm font-semibold text-slate-900 dark:text-white">
                           Recent Invoices
@@ -401,8 +420,11 @@ export default function Hero() {
                               initials: "UC",
                             },
                           ].map((invoice, i) => (
-                            <div
+                            <motion.div
                               key={i}
+                              initial={{ opacity: 0, x: 20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 1.2 + i * 0.1, duration: 0.4 }}
                               className="px-4 py-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
                             >
                               <div className="flex items-center gap-3">
@@ -434,7 +456,7 @@ export default function Hero() {
                                   {invoice.status}
                                 </div>
                               </div>
-                            </div>
+                            </motion.div>
                           ))}
                         </div>
                       </div>
@@ -443,7 +465,7 @@ export default function Hero() {
                           View All Invoices
                         </span>
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
               </div>

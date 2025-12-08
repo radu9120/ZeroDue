@@ -34,8 +34,11 @@ export default function SignInPage() {
       }
 
       toast.success("Signed in successfully!");
-      router.push(redirectUrl);
+      // Refresh first to sync auth state, then navigate
       router.refresh();
+      // Small delay to ensure cookies are set before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      window.location.href = redirectUrl;
     } catch {
       toast.error("An unexpected error occurred");
     } finally {
