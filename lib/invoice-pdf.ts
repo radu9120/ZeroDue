@@ -18,7 +18,7 @@ interface ParsedBillTo {
   phone?: string;
 }
 
-// Theme colors
+// Theme colors - optimized for clean professional PDFs
 const COLORS = {
   dark: {
     bg: "#0f172a",
@@ -31,12 +31,12 @@ const COLORS = {
   },
   light: {
     bg: "#ffffff",
-    cardBg: "#f8fafc",
-    text: "#0f172a",
-    textMuted: "#64748b",
-    border: "#e2e8f0",
+    cardBg: "#ffffff",
+    text: "#111827",
+    textMuted: "#6b7280",
+    border: "#e5e7eb",
     accent: "#3b82f6",
-    tableHeader: "#1e293b",
+    tableHeader: "#f9fafb",
   },
 };
 
@@ -108,7 +108,8 @@ export async function generateInvoicePDF(
   theme: PDFTheme = "light"
 ): Promise<void> {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  const c = theme === "dark" ? COLORS.dark : COLORS.light;
+  // Always use light theme for PDFs - better for printing and professional look
+  const c = COLORS.light;
 
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 20;
@@ -120,15 +121,11 @@ export async function generateInvoicePDF(
   const items = parseItems(invoice.items);
   const billTo = parseBillTo(invoice.bill_to);
 
-  // Background
-  doc.setFillColor(...hexToRgb(c.bg));
+  // White background for clean professional look
+  doc.setFillColor(255, 255, 255);
   doc.rect(0, 0, pageWidth, doc.internal.pageSize.getHeight(), "F");
 
-  // Blue accent bar at top
-  doc.setFillColor(...hexToRgb(c.accent));
-  doc.rect(0, 0, pageWidth, 4, "F");
-
-  let y = margin + 6;
+  let y = margin;
 
   // ============================================================
   // HEADER: Company name (left) | INVOICE title (right)
@@ -165,14 +162,15 @@ export async function generateInvoicePDF(
   }
 
   // ============================================================
-  // INVOICE DETAILS BOX (right side)
+  // INVOICE DETAILS BOX (right side) - clean with border
   // ============================================================
   const detailsBoxX = margin + halfWidth + 10;
   const detailsBoxY = margin + 14;
   const detailsBoxW = halfWidth;
   const detailsBoxH = 30;
 
-  doc.setFillColor(...hexToRgb(c.cardBg));
+  // Light background with border
+  doc.setFillColor(...hexToRgb(c.tableHeader));
   doc.roundedRect(
     detailsBoxX,
     detailsBoxY,
@@ -181,6 +179,17 @@ export async function generateInvoicePDF(
     3,
     3,
     "F"
+  );
+  doc.setDrawColor(...hexToRgb(c.border));
+  doc.setLineWidth(0.3);
+  doc.roundedRect(
+    detailsBoxX,
+    detailsBoxY,
+    detailsBoxW,
+    detailsBoxH,
+    3,
+    3,
+    "S"
   );
 
   let detY = detailsBoxY + 8;
@@ -327,7 +336,7 @@ export async function generateInvoicePDF(
   // ITEMS TABLE
   // ============================================================
 
-  // Table header - dark background
+  // Table header - light gray background
   const tableHeaderH = 10;
   doc.setFillColor(...hexToRgb(c.tableHeader));
   doc.roundedRect(margin, y, contentWidth, tableHeaderH, 2, 2, "F");
@@ -338,10 +347,10 @@ export async function generateInvoicePDF(
   const colTax = margin + contentWidth * 0.76;
   const colAmount = rightEdge - 8;
 
-  // Header text - white
+  // Header text - dark gray for readability
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(255, 255, 255);
+  doc.setTextColor(...hexToRgb(c.text));
   doc.text("DESCRIPTION", colDesc, y + 6.5);
   doc.text("QTY", colQty, y + 6.5, { align: "center" });
   doc.text("UNIT PRICE", colPrice, y + 6.5, { align: "center" });
@@ -444,42 +453,19 @@ export async function generateInvoicePDF(
   // INVOICE SUMMARY (right side)
   const summaryX = margin + halfWidth + 10;
   const summaryW = halfWidth;
-  const summaryHeaderH = 10;
-  const summaryBodyH = 30;
-  const summaryH = summaryHeaderH + summaryBodyH;
+  const summaryH = 40;
 
-  // Summary header bar
+  // Summary box with light gray background
   doc.setFillColor(...hexToRgb(c.tableHeader));
-  doc.roundedRect(summaryX, summaryStartY, summaryW, summaryHeaderH, 3, 3, "F");
-  doc.rect(summaryX, summaryStartY + summaryHeaderH - 3, summaryW, 3, "F");
-
-  // Summary body
-  const bodyBg = theme === "dark" ? "#1e293b" : "#ffffff";
-  doc.setFillColor(...hexToRgb(bodyBg));
-  doc.roundedRect(
-    summaryX,
-    summaryStartY + summaryHeaderH,
-    summaryW,
-    summaryBodyH,
-    3,
-    3,
-    "F"
-  );
-  doc.rect(summaryX, summaryStartY + summaryHeaderH, summaryW, 3, "F");
+  doc.roundedRect(summaryX, summaryStartY, summaryW, summaryH, 3, 3, "F");
 
   // Border
   doc.setDrawColor(...hexToRgb(c.border));
   doc.setLineWidth(0.3);
   doc.roundedRect(summaryX, summaryStartY, summaryW, summaryH, 3, 3, "S");
 
-  // Header text
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(255, 255, 255);
-  doc.text("INVOICE SUMMARY", summaryX + 8, summaryStartY + 7);
-
   // Subtotal
-  let sumY = summaryStartY + summaryHeaderH + 10;
+  let sumY = summaryStartY + 12;
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...hexToRgb(c.textMuted));
@@ -498,12 +484,13 @@ export async function generateInvoicePDF(
   doc.setLineWidth(0.2);
   doc.line(summaryX + 8, sumY, summaryX + summaryW - 8, sumY);
 
-  // Total
-  sumY += 8;
+  // Total - blue color for emphasis
+  sumY += 10;
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...hexToRgb(c.text));
   doc.text("Total", summaryX + 8, sumY);
+  doc.setTextColor(...hexToRgb(c.accent)); // Blue for total amount
   doc.text(
     formatMoney(parseFloat(String(invoice.total)) || 0, currency),
     summaryX + summaryW - 8,
