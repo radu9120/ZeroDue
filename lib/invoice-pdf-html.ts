@@ -146,16 +146,16 @@ export function generateInvoiceHTML(
     
     .company-block {
       flex: 1;
+      text-align: left;
     }
     
     .logo {
-      max-width: 160px;
-      max-height: 80px;
-      margin-bottom: 16px;
+      max-width: 180px;
+      max-height: 100px;
+      margin: 0 0 16px 0;
       display: block;
       border-radius: 8px;
       object-fit: contain;
-      object-position: left;
     }
     
     .company-name {
@@ -415,6 +415,7 @@ export function generateInvoiceHTML(
       align-items: center;
       padding-top: 14px;
       margin-top: 10px;
+      border-top: 1px solid #475569;
       white-space: nowrap;
     }
     
