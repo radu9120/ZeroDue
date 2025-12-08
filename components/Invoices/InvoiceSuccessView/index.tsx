@@ -4,7 +4,6 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { generateInvoicePDF, type PDFTheme } from "@/lib/invoice-pdf";
 import type { InvoiceListItem, BusinessType } from "@/types";
 import { useTheme } from "next-themes";
 import currencies from "@/lib/currencies.json";
@@ -504,19 +503,26 @@ export default function InvoiceSuccessView({
   const downloadPDF = useCallback(async () => {
     try {
       setDownloading(true);
-      // Use the current theme for PDF generation
-      // Check if document has dark class (more reliable than resolvedTheme)
-      const isDark = document.documentElement.classList.contains("dark");
-      const pdfTheme: PDFTheme = isDark ? "dark" : "light";
-      console.log(
-        "[PDF Download] isDark:",
-        isDark,
-        "resolvedTheme:",
-        resolvedTheme,
-        "pdfTheme:",
-        pdfTheme
+
+      // Use the Puppeteer API for professional PDF generation
+      const response = await fetch(
+        `/api/invoices/pdf?invoice_id=${invoice.id}&business_id=${company.id}`
       );
-      await generateInvoicePDF(invoice, company, pdfTheme);
+
+      if (!response.ok) {
+        throw new Error("Failed to generate PDF");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Invoice-${invoice.invoice_number || invoice.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
       toast.success("PDF downloaded");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -524,7 +530,7 @@ export default function InvoiceSuccessView({
     } finally {
       setDownloading(false);
     }
-  }, [invoice, company, resolvedTheme]);
+  }, [invoice, company]);
 
   const sendToClient = useCallback(async () => {
     try {
