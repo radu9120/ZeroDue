@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -13,9 +13,31 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect_url") || "/dashboard";
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+          // User is already logged in, redirect to dashboard
+          window.location.href = redirectUrl;
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+    checkAuth();
+  }, [redirectUrl]);
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,25 +45,24 @@ export default function SignInPage() {
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
         toast.error(error.message);
+        setIsLoading(false);
         return;
       }
 
-      toast.success("Signed in successfully!");
-      // Refresh first to sync auth state, then navigate
-      router.refresh();
-      // Small delay to ensure cookies are set before navigation
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      window.location.href = redirectUrl;
+      if (data.user) {
+        toast.success("Signed in successfully!");
+        // Force a hard navigation to ensure cookies are properly set
+        window.location.href = redirectUrl;
+      }
     } catch {
       toast.error("An unexpected error occurred");
-    } finally {
       setIsLoading(false);
     }
   };
@@ -66,6 +87,15 @@ export default function SignInPage() {
       setIsGoogleLoading(false);
     }
   };
+
+  // Show loading while checking auth
+  if (isCheckingAuth) {
+    return (
+      <main className="min-h-screen pt-24 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center py-12 px-4 transition-colors">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen pt-24 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center py-12 px-4 transition-colors">
