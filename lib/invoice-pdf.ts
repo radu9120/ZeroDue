@@ -273,6 +273,11 @@ export async function generateInvoicePDF(
   doc.setFillColor(...hexToRgb(c.cardBg));
   doc.roundedRect(margin, y, contentWidth, billCardH, 3, 3, "F");
 
+  // Bill To card border
+  doc.setDrawColor(...hexToRgb(c.border));
+  doc.setLineWidth(0.3);
+  doc.roundedRect(margin, y, contentWidth, billCardH, 3, 3, "S");
+
   // Bill To content
   let billY = y + 8;
   doc.setFontSize(14);
@@ -298,7 +303,7 @@ export async function generateInvoicePDF(
   y += billCardH + 10;
 
   // ============================================================
-  // DESCRIPTION CARD (if exists) - smaller height
+  // DESCRIPTION CARD (if exists)
   // ============================================================
   if (invoice.description?.trim()) {
     doc.setFontSize(8);
@@ -310,17 +315,23 @@ export async function generateInvoicePDF(
     // Calculate height based on text
     const descLines = doc.splitTextToSize(
       invoice.description,
-      contentWidth - 10
+      contentWidth - 16
     );
-    const descCardH = Math.max(12, descLines.length * 5 + 6);
+    const descCardH = Math.max(16, descLines.length * 5 + 10);
 
+    // Card background
     doc.setFillColor(...hexToRgb(c.cardBg));
     doc.roundedRect(margin, y, contentWidth, descCardH, 3, 3, "F");
+
+    // Card border
+    doc.setDrawColor(...hexToRgb(c.border));
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin, y, contentWidth, descCardH, 3, 3, "S");
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...hexToRgb(c.text));
-    doc.text(descLines, margin + 5, y + 7);
+    doc.text(descLines, margin + 8, y + 10);
 
     y += descCardH + 8;
   }
@@ -329,36 +340,40 @@ export async function generateInvoicePDF(
   // ITEMS TABLE
   // ============================================================
 
-  // Table header with background
-  const tableHeaderH = 10;
-  doc.setFillColor(...hexToRgb(c.cardBg));
+  // Table header with dark navy background (like preview)
+  const tableHeaderH = 12;
+  const tableHeaderBg = theme === "dark" ? "#334155" : "#1e293b";
+  doc.setFillColor(...hexToRgb(tableHeaderBg));
   doc.roundedRect(margin, y - 2, contentWidth, tableHeaderH, 2, 2, "F");
 
-  const colDesc = margin + 5;
+  const colDesc = margin + 8;
   const colQty = margin + contentWidth * 0.48;
   const colPrice = margin + contentWidth * 0.62;
   const colTax = margin + contentWidth * 0.78;
-  const colAmount = rightEdge - 5;
+  const colAmount = rightEdge - 8;
 
-  // Table header text
+  // Table header text - WHITE on dark background
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(...hexToRgb(c.textMuted));
-  doc.text("DESCRIPTION", colDesc, y + 4);
-  doc.text("QTY", colQty, y + 4, { align: "center" });
-  doc.text("UNIT PRICE", colPrice, y + 4, { align: "center" });
-  doc.text("TAX", colTax, y + 4, { align: "center" });
-  doc.text("AMOUNT", colAmount, y + 4, { align: "right" });
+  doc.setTextColor(255, 255, 255);
+  doc.text("DESCRIPTION", colDesc, y + 5);
+  doc.text("QTY", colQty, y + 5, { align: "center" });
+  doc.text("UNIT PRICE", colPrice, y + 5, { align: "center" });
+  doc.text("TAX", colTax, y + 5, { align: "center" });
+  doc.text("AMOUNT", colAmount, y + 5, { align: "right" });
 
-  y += tableHeaderH + 6;
+  y += tableHeaderH + 8;
+
+  // Draw table border - left accent line (blue)
+  const tableStartY = y - 2;
 
   // Table rows
   items.forEach((item, index) => {
     // Row separator line
     if (index > 0) {
       doc.setDrawColor(...hexToRgb(c.border));
-      doc.setLineWidth(0.2);
-      doc.line(margin, y - 4, rightEdge, y - 4);
+      doc.setLineWidth(0.3);
+      doc.line(margin, y - 5, rightEdge, y - 5);
     }
 
     doc.setFontSize(10);
@@ -379,15 +394,28 @@ export async function generateInvoicePDF(
       align: "right",
     });
 
-    y += 10;
+    y += 12;
   });
 
-  // Line under items table - more visible
+  // Draw table border around items
   doc.setDrawColor(...hexToRgb(c.border));
-  doc.setLineWidth(0.5);
-  doc.line(margin, y + 2, rightEdge, y + 2);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(
+    margin,
+    tableStartY - 6 - tableHeaderH,
+    contentWidth,
+    y - tableStartY + tableHeaderH + 4,
+    2,
+    2,
+    "S"
+  );
 
-  y += 18;
+  // Blue accent line on left of table
+  doc.setDrawColor(...hexToRgb(c.accent));
+  doc.setLineWidth(2);
+  doc.line(margin, tableStartY - 6 - tableHeaderH + 1, margin, y - 2);
+
+  y += 12;
 
   // ============================================================
   // BANK DETAILS (left) & INVOICE SUMMARY (right)
