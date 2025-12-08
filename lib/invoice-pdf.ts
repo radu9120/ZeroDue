@@ -238,15 +238,15 @@ export async function generateInvoicePDF(
     align: "right",
   });
 
-  y = Math.max(y, detailsBoxY + detailsBoxH) + 15;
+  y = Math.max(y, detailsBoxY + detailsBoxH) + 10;
 
   // ============================================================
-  // DIVIDER
+  // DIVIDER LINE (under invoice details)
   // ============================================================
   doc.setDrawColor(...hexToRgb(c.border));
   doc.setLineWidth(0.3);
   doc.line(margin, y, rightEdge, y);
-  y += 12;
+  y += 10;
 
   // ============================================================
   // BILL TO CARD
@@ -284,7 +284,7 @@ export async function generateInvoicePDF(
   y += billCardH + 10;
 
   // ============================================================
-  // DESCRIPTION CARD (if exists)
+  // DESCRIPTION CARD (if exists) - smaller height
   // ============================================================
   if (invoice.description?.trim()) {
     doc.setFontSize(8);
@@ -293,16 +293,22 @@ export async function generateInvoicePDF(
     doc.text("DESCRIPTION", margin, y);
     y += 5;
 
-    const descCardH = 15;
+    // Calculate height based on text
+    const descLines = doc.splitTextToSize(
+      invoice.description,
+      contentWidth - 10
+    );
+    const descCardH = Math.max(12, descLines.length * 5 + 6);
+
     doc.setFillColor(...hexToRgb(c.cardBg));
     doc.roundedRect(margin, y, contentWidth, descCardH, 3, 3, "F");
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...hexToRgb(c.text));
-    doc.text(invoice.description, margin + 5, y + 9);
+    doc.text(descLines, margin + 5, y + 7);
 
-    y += descCardH + 10;
+    y += descCardH + 8;
   }
 
   // ============================================================
@@ -362,7 +368,12 @@ export async function generateInvoicePDF(
     y += 10;
   });
 
-  y += 10;
+  // Line under items table
+  doc.setDrawColor(...hexToRgb(c.border));
+  doc.setLineWidth(0.3);
+  doc.line(margin, y - 2, rightEdge, y - 2);
+
+  y += 12;
 
   // ============================================================
   // BANK DETAILS (left) & INVOICE SUMMARY (right)
@@ -417,17 +428,18 @@ export async function generateInvoicePDF(
   const summaryX = margin + halfWidth + 10;
   const summaryW = halfWidth;
   const summaryHeaderH = 10;
-  const summaryBodyH = 28;
+  const summaryBodyH = 32;
   const summaryH = summaryHeaderH + summaryBodyH;
 
-  // Summary header bar (darker)
-  doc.setFillColor(...hexToRgb(c.cardBg));
+  // Summary header bar (darker slate-800)
+  const headerBg = theme === "dark" ? "#334155" : "#1e293b";
+  doc.setFillColor(...hexToRgb(headerBg));
   doc.roundedRect(summaryX, summaryStartY, summaryW, summaryHeaderH, 3, 3, "F");
   // Fill the bottom corners
   doc.rect(summaryX, summaryStartY + summaryHeaderH - 3, summaryW, 3, "F");
 
-  // Summary body (slightly lighter in dark mode)
-  const bodyBg = theme === "dark" ? "#1e293b" : "#f1f5f9";
+  // Summary body
+  const bodyBg = theme === "dark" ? "#1e293b" : "#ffffff";
   doc.setFillColor(...hexToRgb(bodyBg));
   doc.roundedRect(
     summaryX,
@@ -441,10 +453,15 @@ export async function generateInvoicePDF(
   // Fill the top corners
   doc.rect(summaryX, summaryStartY + summaryHeaderH, summaryW, 3, "F");
 
+  // Border around the whole summary
+  doc.setDrawColor(...hexToRgb(c.border));
+  doc.setLineWidth(0.3);
+  doc.roundedRect(summaryX, summaryStartY, summaryW, summaryH, 3, 3, "S");
+
   // Summary header text
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(...hexToRgb(c.text));
+  doc.setTextColor(255, 255, 255); // White text on dark header
   doc.text("INVOICE SUMMARY", summaryX + 5, summaryStartY + 7);
 
   // Subtotal
@@ -461,7 +478,13 @@ export async function generateInvoicePDF(
     { align: "right" }
   );
 
-  sumY += 10;
+  // Line under subtotal
+  sumY += 5;
+  doc.setDrawColor(...hexToRgb(c.border));
+  doc.setLineWidth(0.2);
+  doc.line(summaryX + 5, sumY, summaryX + summaryW - 5, sumY);
+
+  sumY += 8;
 
   // Total
   doc.setFontSize(11);
