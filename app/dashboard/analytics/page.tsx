@@ -219,45 +219,27 @@ export default async function AnalyticsPage({
                   Revenue will appear here once you have paid invoices. Create
                   and send your first invoice to get started!
                 </p>
-                {/* Placeholder chart bars */}
-                <div className="w-full h-32 mt-6 flex items-end justify-between gap-2 opacity-30">
-                  {[30, 45, 25, 60, 40, 55].map((h, i) => (
-                    <div
-                      key={i}
-                      className="flex-1 flex flex-col items-center gap-2"
-                    >
-                      <div
-                        className="w-full bg-slate-200 dark:bg-slate-700 rounded-t-lg"
-                        style={{ height: `${h}%` }}
-                      />
-                      <span className="text-xs text-slate-400">
-                        {revenueData[i]?.month || ""}
-                      </span>
-                    </div>
-                  ))}
-                </div>
               </div>
             ) : (
-              <div className="h-64 flex items-end justify-between gap-3">
+              <div className="h-64 flex items-end justify-between gap-4 pt-8 pb-2">
                 {revenueData.map((item, i) => {
                   const height = maxRevenue
                     ? (item.amount / maxRevenue) * 100
                     : 0;
+                  const barHeight = Math.max(height, 8);
                   return (
                     <div
                       key={i}
-                      className="flex-1 flex flex-col items-center gap-2 group cursor-pointer"
+                      className="flex-1 flex flex-col items-center gap-3 group"
                     >
-                      <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-lg relative h-full flex items-end overflow-hidden transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                      {/* Bar container */}
+                      <div className="w-full h-48 flex items-end justify-center">
                         <div
-                          className="w-full bg-gradient-to-t from-blue-600 to-blue-400 dark:from-blue-500 dark:to-blue-400 rounded-lg transition-all duration-700 ease-out group-hover:from-blue-500 group-hover:to-blue-300 relative"
-                          style={{
-                            height: `${Math.max(height, 4)}%`,
-                            animation: `growUp 0.8s ease-out ${i * 0.1}s both`,
-                          }}
+                          className="w-full max-w-12 bg-gradient-to-t from-blue-600 to-blue-400 dark:from-blue-500 dark:to-blue-400 rounded-t-lg transition-all duration-300 group-hover:from-blue-500 group-hover:to-blue-300 relative cursor-pointer shadow-sm"
+                          style={{ height: `${barHeight}%` }}
                         >
                           {/* Value tooltip on hover */}
-                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-slate-700 text-white text-xs font-medium px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
+                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-slate-700 text-white text-xs font-medium px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg z-10">
                             £
                             {item.amount.toLocaleString("en-GB", {
                               minimumFractionDigits: 2,
@@ -265,6 +247,7 @@ export default async function AnalyticsPage({
                           </div>
                         </div>
                       </div>
+                      {/* Month label */}
                       <span className="text-xs text-slate-500 dark:text-slate-400 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {item.month}
                       </span>
