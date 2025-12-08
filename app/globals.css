@@ -153,6 +153,16 @@
   }
 }
 
+@keyframes growUp {
+  0% {
+    height: 0%;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 /* Custom utilities */
 .text-balance {
   text-wrap: balance;

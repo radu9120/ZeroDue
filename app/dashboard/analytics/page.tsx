@@ -199,23 +199,46 @@ export default async function AnalyticsPage({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Revenue Trend */}
           <div className="lg:col-span-2 relative overflow-hidden border-0 shadow-lg bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-slate-800/50 rounded-xl p-6">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-6">
-              Revenue Trend
-            </h3>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                Revenue Trend
+              </h3>
+              <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                Last 6 months
+              </div>
+            </div>
             {maxRevenue === 0 ? (
               <div className="h-64 flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                  <BarChart3 className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500/10 to-blue-600/10 dark:from-blue-500/20 dark:to-blue-600/20 rounded-2xl flex items-center justify-center mb-4">
+                  <BarChart3 className="h-8 w-8 text-blue-500 dark:text-blue-400" />
                 </div>
-                <p className="text-slate-500 dark:text-slate-400 font-medium">
+                <p className="text-slate-600 dark:text-slate-300 font-semibold">
                   No revenue data yet
                 </p>
-                <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
-                  Revenue will appear here once you have paid invoices
+                <p className="text-sm text-slate-400 dark:text-slate-500 mt-1 max-w-xs">
+                  Revenue will appear here once you have paid invoices. Create
+                  and send your first invoice to get started!
                 </p>
+                {/* Placeholder chart bars */}
+                <div className="w-full h-32 mt-6 flex items-end justify-between gap-2 opacity-30">
+                  {[30, 45, 25, 60, 40, 55].map((h, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 flex flex-col items-center gap-2"
+                    >
+                      <div
+                        className="w-full bg-slate-200 dark:bg-slate-700 rounded-t-lg"
+                        style={{ height: `${h}%` }}
+                      />
+                      <span className="text-xs text-slate-400">
+                        {revenueData[i]?.month || ""}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
-              <div className="h-64 flex items-end justify-between gap-2">
+              <div className="h-64 flex items-end justify-between gap-3">
                 {revenueData.map((item, i) => {
                   const height = maxRevenue
                     ? (item.amount / maxRevenue) * 100
@@ -223,26 +246,39 @@ export default async function AnalyticsPage({
                   return (
                     <div
                       key={i}
-                      className="flex-1 flex flex-col items-center gap-2 group"
+                      className="flex-1 flex flex-col items-center gap-2 group cursor-pointer"
                     >
-                      <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg relative h-full flex items-end overflow-hidden">
+                      <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-lg relative h-full flex items-end overflow-hidden transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50">
                         <div
-                          className="w-full bg-gradient-to-t from-blue-600 to-blue-400 dark:from-blue-600 dark:to-blue-400 transition-all duration-500 group-hover:from-blue-500 group-hover:to-blue-300 rounded-t-lg"
-                          style={{ height: `${Math.max(height, 2)}%` }}
+                          className="w-full bg-gradient-to-t from-blue-600 to-blue-400 dark:from-blue-500 dark:to-blue-400 rounded-lg transition-all duration-700 ease-out group-hover:from-blue-500 group-hover:to-blue-300 relative"
+                          style={{
+                            height: `${Math.max(height, 4)}%`,
+                            animation: `growUp 0.8s ease-out ${i * 0.1}s both`,
+                          }}
                         >
-                          {height > 15 && (
-                            <span className="absolute top-2 left-1/2 -translate-x-1/2 text-xs font-medium text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                              £{item.amount.toFixed(0)}
-                            </span>
-                          )}
+                          {/* Value tooltip on hover */}
+                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-slate-700 text-white text-xs font-medium px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
+                            £
+                            {item.amount.toLocaleString("en-GB", {
+                              minimumFractionDigits: 2,
+                            })}
+                          </div>
                         </div>
                       </div>
-                      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {item.month}
                       </span>
                     </div>
                   );
                 })}
+              </div>
+            )}
+            {/* Y-axis labels */}
+            {maxRevenue > 0 && (
+              <div className="absolute left-2 top-16 bottom-12 flex flex-col justify-between text-xs text-slate-400 dark:text-slate-500">
+                <span>£{Math.round(maxRevenue).toLocaleString()}</span>
+                <span>£{Math.round(maxRevenue / 2).toLocaleString()}</span>
+                <span>£0</span>
               </div>
             )}
           </div>
