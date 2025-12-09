@@ -690,7 +690,7 @@ export default function InvoiceSuccessView({
 
         {/* Actions Bar */}
         {!isPublicView && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-700">
+          <div className="w-full pb-4 border-b border-slate-200 dark:border-slate-700">
             <InvoiceActionsBar
               isEditing={isEditing}
               status={status}

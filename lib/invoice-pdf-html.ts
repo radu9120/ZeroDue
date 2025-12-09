@@ -178,7 +178,6 @@ export function generateInvoiceHTML(
     .header-row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
       margin-bottom: 32px;
       padding-bottom: 24px;
       border-bottom: 1px solid #e2e8f0;

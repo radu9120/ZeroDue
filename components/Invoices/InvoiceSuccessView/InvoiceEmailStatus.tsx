@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import * as React from "react";
 import type { EmailStatusBadge } from "@/lib/email-status";
 import type { EmailStatusTimelineEntry } from "./types";
@@ -64,33 +63,46 @@ export function InvoiceEmailStatus({
   badges,
   timeline,
 }: InvoiceEmailStatusProps) {
-  if (!badges.length && timeline.every((entry) => !entry.value)) {
-    return null;
-  }
+  const badgeMap = React.useMemo(() => {
+    const map: Record<string, string> = {};
+    badges.forEach((badge) => {
+      map[badge.key.toLowerCase()] = badge.label;
+    });
+    return map;
+  }, [badges]);
 
-  // Build timeline events from badges
-  const events = badges.map((badge, index) => {
-    const key = badge.key.toLowerCase();
+  const orderedKeys: Array<{ key: string; fallback: string }> = [
+    { key: "sent", fallback: "Sent" },
+    { key: "delivered", fallback: "Delivered" },
+    { key: "opened", fallback: "Opened" },
+    { key: "clicked", fallback: "Clicked" },
+  ];
+
+  const events = orderedKeys.map(({ key, fallback }, idx) => {
+    const entry = timeline.find((t) => t.label.toLowerCase().includes(key));
     const config = statusConfig[key] || statusConfig.sent;
-    const timelineEntry = timeline.find(
-      (t) =>
-        t.label.toLowerCase().includes(key) ||
-        key.includes(t.label.toLowerCase())
-    );
+    const label = badgeMap[key] || fallback;
+    const time = entry?.value || null;
+    const isCompleted = Boolean(time || badgeMap[key]);
 
     return {
-      ...badge,
+      key,
+      label,
+      time,
+      isCompleted,
+      isLast: idx === orderedKeys.length - 1,
       ...config,
-      time: timelineEntry?.value || null,
-      isLast: index === badges.length - 1,
-      isCompleted: true,
     };
   });
+
+  if (events.every((e) => !e.isCompleted)) {
+    return null;
+  }
 
   return (
     <div className="py-4">
       {/* Email Events Header */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-5">
         <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500" />
         <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Email Events
@@ -98,46 +110,57 @@ export function InvoiceEmailStatus({
       </div>
 
       {/* Timeline */}
-      <div className="flex items-center gap-0">
-        {events.length > 0 ? (
-          events.map((event, index) => {
+      <div className="overflow-x-auto -mx-4 px-4 pb-3">
+        <div className="flex items-start gap-6 sm:gap-8 md:gap-10 min-w-max">
+          {events.map((event) => {
             const Icon = event.icon;
+            const isCompleted = event.isCompleted;
+
             return (
-              <React.Fragment key={event.key}>
-                {/* Event Node */}
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-10 h-10 rounded-full ${event.bgColor} flex items-center justify-center`}
-                  >
-                    <Icon className={`w-5 h-5 ${event.color}`} />
-                  </div>
-                  <span className={`mt-2 text-xs font-semibold ${event.color}`}>
-                    {event.label}
-                  </span>
-                  {event.time && (
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
-                      {event.time}
-                    </span>
-                  )}
+              <div
+                key={event.key}
+                className="relative flex flex-col items-center z-10"
+                style={{ minWidth: 130 }}
+              >
+                {/* Icon circle */}
+                <div
+                  className={[
+                    "w-12 h-12 rounded-full border-2 flex items-center justify-center",
+                    "transition-all duration-200",
+                    isCompleted
+                      ? `${event.bgColor} ${event.color} border-current shadow-lg`
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-slate-300 dark:border-slate-600 opacity-50",
+                  ].join(" ")}
+                >
+                  <Icon className="w-5 h-5" />
                 </div>
 
-                {/* Connector Line */}
-                {!event.isLast && (
-                  <div
-                    className={`h-0.5 w-12 sm:w-16 md:w-20 ${event.lineColor} mx-1`}
-                  />
+                {/* Label */}
+                <span
+                  className={[
+                    "mt-2 text-xs font-semibold text-center",
+                    isCompleted
+                      ? event.color
+                      : "text-slate-400 dark:text-slate-500",
+                  ].join(" ")}
+                >
+                  {event.label}
+                </span>
+
+                {/* Timestamp */}
+                {event.time ? (
+                  <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 text-center">
+                    {event.time}
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-slate-300 dark:text-slate-600 mt-0.5">
+                    —
+                  </span>
                 )}
-              </React.Fragment>
+              </div>
             );
-          })
-        ) : (
-          <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500">
-            <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-              <Clock className="w-5 h-5" />
-            </div>
-            <span className="text-sm">Not sent yet</span>
-          </div>
-        )}
+          })}
+        </div>
       </div>
     </div>
   );

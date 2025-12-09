@@ -278,44 +278,55 @@ function EmailStatusVisual() {
   }, [total]);
 
   return (
-    <div className="relative w-full bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 md:p-6 overflow-hidden">
-      <div className="absolute top-10 left-4 right-4 h-px bg-slate-100 dark:bg-slate-800 pointer-events-none" />
-      <div className="relative flex items-start gap-6 md:gap-8 overflow-x-auto pb-2 px-1 min-w-full">
-        <div className="flex items-start gap-6 md:gap-8 min-w-max">
-          {timeline.map((event, index) => {
-            const Icon = event.icon;
-            const isActive = index === activeIndex;
-            const isPassed = index < activeIndex;
+    <div className="relative w-full bg-slate-950/70 dark:bg-slate-900 rounded-xl border border-slate-800 shadow-sm p-4 md:p-6 overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-50 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0)",
+          backgroundSize: "20px 20px",
+        }}
+      />
 
-            return (
-              <div
-                key={`${event.label}-${index}`}
-                className="relative flex flex-col items-center min-w-[120px]"
-              >
-                {index !== timeline.length - 1 && (
-                  <div className="absolute left-1/2 top-5 w-[140%] h-px bg-slate-200 dark:bg-slate-800 -z-10" />
-                )}
+      <div className="overflow-x-auto -mx-3 px-3">
+        <div className="relative py-6 min-w-max">
+          <div className="absolute left-0 right-4 top-9 h-[2px] bg-slate-800 rounded-full" />
+          <div className="flex items-center gap-8 md:gap-12 pr-6">
+            {timeline.map((event, index) => {
+              const Icon = event.icon;
+              const isActive = index === activeIndex;
+              const isPassed = index < activeIndex;
+
+              return (
                 <div
-                  className={cn(
-                    "w-12 h-12 rounded-xl border flex items-center justify-center text-slate-600 dark:text-slate-300 shadow-sm transition-all duration-300",
-                    event.color,
-                    event.accent,
-                    isActive &&
-                      "scale-105 ring-2 ring-purple-200 dark:ring-purple-800 text-purple-700 dark:text-purple-200",
-                    isPassed && "opacity-80"
-                  )}
+                  key={`${event.label}-${index}`}
+                  className="relative flex flex-col items-center min-w-[120px]"
                 >
-                  <Icon className="w-5 h-5" />
+                  {index !== timeline.length - 1 && (
+                    <div className="absolute left-1/2 top-9 w-[145%] h-[2px] bg-slate-800" />
+                  )}
+
+                  <div
+                    className={cn(
+                      "w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-br flex items-center justify-center text-slate-100 shadow-lg transition-all duration-300",
+                      isActive
+                        ? "from-purple-500/80 to-blue-500/80 ring-2 ring-purple-300/50"
+                        : isPassed
+                          ? "from-slate-700 to-slate-800 opacity-90"
+                          : "from-slate-800 to-slate-900"
+                    )}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </div>
+
+                  <div className="mt-3 text-sm font-semibold text-slate-50">
+                    {event.label}
+                  </div>
+                  <div className="text-[11px] text-slate-400">{event.time}</div>
                 </div>
-                <div className="mt-3 text-sm font-semibold text-slate-900 dark:text-white">
-                  {event.label}
-                </div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                  {event.time}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
