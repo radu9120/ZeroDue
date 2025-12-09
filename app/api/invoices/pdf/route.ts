@@ -66,9 +66,10 @@ export async function GET(request: NextRequest) {
       // Vercel/AWS Lambda environment
       browser = await puppeteer.launch({
         args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
+        // chromium.defaultViewport is not exposed; set our own explicit viewport
+        defaultViewport: { width: 1280, height: 1800 },
         executablePath: await chromium.executablePath(),
-        headless: chromium.headless,
+        headless: true,
       });
     } else {
       // Local development - use regular puppeteer
