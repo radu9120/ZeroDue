@@ -9,7 +9,11 @@ import { createSupabaseAdminClient } from "@/lib/supabase";
 let resend: Resend | null = null;
 function getResendClient(): Resend {
   if (!resend) {
-    resend = new Resend(process.env.RESEND_API_KEY);
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+    resend = new Resend(apiKey);
   }
   return resend;
 }
@@ -105,9 +109,19 @@ export async function POST(req: NextRequest) {
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
     }/invoice/${publicToken}`;
 
+    // Ensure Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.error("RESEND_API_KEY is missing. Configure the env variable.");
+      return NextResponse.json(
+        { error: "Email provider not configured" },
+        { status: 500 }
+      );
+    }
+
     // Send email using Resend
+    // Use verified sender domain to avoid provider rejection
     const { data, error } = await getResendClient().emails.send({
-      from: `${business.name} <invoices@invcyflow.com>`,
+      from: `${business.name || "ZeroDue"} <noreply@zerodue.co>`,
       to: [clientEmail],
       subject: `Invoice ${invoice.invoice_number} from ${business.name}`,
       html: `
