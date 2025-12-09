@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase";
 import { generateInvoiceHTML } from "@/lib/invoice-pdf-html";
 import { getCurrentPlan } from "@/lib/plan";
 import puppeteer from "puppeteer-core";
@@ -23,7 +23,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
+    // Use service role to generate PDFs for public invoice links (no user session on mobile Safari)
+    const supabase = createSupabaseAdminClient();
 
     // Fetch invoice
     const { data: invoice, error: invoiceError } = await supabase
