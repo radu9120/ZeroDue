@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
     // Send email using Resend
     // Use verified sender domain to avoid provider rejection
     const { data, error } = await getResendClient().emails.send({
-      from: `${business.name || "ZeroDue"} <noreply@zerodue.co>`,
+      from: `${business.name || "ZeroDue"} <hello@zerodue.co>`,
       to: [clientEmail],
       subject: `Invoice ${invoice.invoice_number} from ${business.name}`,
       html: `
@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
               
               <div style="font-size: 14px; color: #6b7280;">
                 <p style="margin: 5px 0;"><strong>${business.name}</strong></p>
-                <p style="margin: 5px 0;">Email: ${business.email}</p>
+                <p style="margin: 5px 0;">Email: hello@zerodue.co</p>
                 ${
                   business.phone
                     ? `<p style="margin: 5px 0;">Phone: ${business.phone}</p>`
