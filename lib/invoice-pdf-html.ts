@@ -74,10 +74,22 @@ function parseBankDetails(bankDetails: unknown): Record<string, string> | null {
   return null;
 }
 
+export interface PDFCustomization {
+  accentColor: string; // hex color for headers, accents
+  showAccentBar: boolean;
+}
+
+export const defaultPDFCustomization: PDFCustomization = {
+  accentColor: "#0f172a", // slate-900 (dark)
+  showAccentBar: true,
+};
+
 export function generateInvoiceHTML(
   invoice: InvoiceListItem,
-  company: BusinessType
+  company: BusinessType,
+  customization: PDFCustomization = defaultPDFCustomization
 ): string {
+  const { accentColor, showAccentBar } = customization;
   const currency = invoice.currency || company.currency || "GBP";
   const items = parseItems(invoice.items);
   const billTo = parseBillTo(invoice.bill_to);
@@ -99,6 +111,10 @@ export function generateInvoiceHTML(
   <meta charset="UTF-8">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    
+    :root {
+      --accent-color: ${accentColor};
+    }
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -127,7 +143,8 @@ export function generateInvoiceHTML(
     
     .accent-bar {
       height: 6px;
-      background: linear-gradient(90deg, #06b6d4, #3b82f6);
+      background: var(--accent-color);
+      display: ${showAccentBar ? "block" : "none"};
     }
     
     .content {
@@ -150,9 +167,9 @@ export function generateInvoiceHTML(
     }
     
     .logo {
-      max-width: 180px;
+      max-width: 200px;
       max-height: 100px;
-      margin-left: -40px;
+      margin-left: -38px;
       margin-right: auto;
       margin-bottom: 16px;
       display: block;
@@ -180,18 +197,14 @@ export function generateInvoiceHTML(
     .invoice-title {
       font-size: 42px;
       font-weight: 800;
-      color: #0f172a;
+      color: var(--accent-color);
       letter-spacing: -1px;
       margin-bottom: 16px;
     }
     
-    /* Invoice details box */
+    /* Invoice details box - no background, just clean rows */
     .invoice-details-box {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 16px 20px;
-      min-width: 240px;
+      min-width: 260px;
       text-align: left;
     }
     
