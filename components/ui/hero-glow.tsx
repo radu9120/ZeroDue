@@ -1,16 +1,22 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 export function HeroGlow() {
   return (
     <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-      {/* Very subtle, clean gradient */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-gradient-to-b from-blue-100/50 to-transparent dark:from-blue-900/20 dark:to-transparent blur-3xl rounded-full"
+      {/* Very subtle, clean gradient - no blur for Safari compatibility */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1400px] h-[700px] rounded-full opacity-60"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%)",
+        }}
+      />
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1400px] h-[700px] rounded-full opacity-60 dark:opacity-30 hidden dark:block"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, rgba(59, 130, 246, 0.2) 0%, transparent 70%)",
+        }}
       />
     </div>
   );

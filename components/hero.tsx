@@ -123,7 +123,6 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, type: "spring" }}
-          style={{ y: parallaxY }}
           className="mt-12 md:mt-20 relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
         >
           <div className="relative rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl dark:border-slate-800 dark:bg-slate-950 ring-1 ring-slate-900/5">

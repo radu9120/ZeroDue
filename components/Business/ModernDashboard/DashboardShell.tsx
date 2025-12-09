@@ -52,6 +52,63 @@ import {
   AnimatedSettingsIcon,
 } from "@/components/ui/animated-icon";
 
+// NavItem component with hover state for icon animations
+function NavItem({
+  href,
+  isActive,
+  onClick,
+  AnimatedIconComponent,
+  label,
+  badge,
+  compact = false,
+}: {
+  href: string;
+  isActive: boolean;
+  onClick?: () => void;
+  AnimatedIconComponent: React.ComponentType<{
+    className?: string;
+    isActive?: boolean;
+    isHovered?: boolean;
+  }>;
+  label: string;
+  badge?: number;
+  compact?: boolean;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`${compact ? "h-9 md:h-10" : "h-10"} w-full rounded-lg flex items-center ${compact ? "px-2 md:px-3 gap-2 md:gap-3" : "px-3 gap-3"} transition-all duration-200 group ${
+        isActive
+          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
+          : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
+      }`}
+    >
+      <AnimatedIconComponent
+        className={`${compact ? "w-4 h-4 md:w-5 md:h-5" : "w-5 h-5"} ${
+          isActive
+            ? "text-blue-600 dark:text-blue-400"
+            : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+        }`}
+        isActive={isActive}
+        isHovered={isHovered}
+      />
+      <span className={compact ? "text-sm md:text-base" : "text-base"}>
+        {label}
+      </span>
+      {badge !== undefined && badge > 0 && (
+        <span className="ml-auto text-[10px] font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded-full">
+          {badge}
+        </span>
+      )}
+    </Link>
+  );
+}
+
 interface DashboardShellProps {
   children: ReactNode;
   business: any;
@@ -332,31 +389,17 @@ export function DashboardShell({
           {navItems
             .filter((item) => item.primary)
             .map((item) => (
-              <Link
+              <NavItem
                 key={item.id}
                 href={item.href}
+                isActive={activePage === item.id}
                 onClick={() => setIsSidebarOpen(false)}
-                className={`h-10 w-full rounded-lg flex items-center px-3 gap-3 transition-all duration-200 group ${
-                  activePage === item.id
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
-                    : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
-                }`}
-              >
-                <item.animatedIcon
-                  className={`w-5 h-5 ${
-                    activePage === item.id
-                      ? "text-blue-600 dark:text-blue-400"
-                      : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
-                  }`}
-                  isActive={activePage === item.id}
-                />
-                <span className="text-base">{item.label}</span>
-                {item.label === "Invoices" && pendingInvoicesCount > 0 && (
-                  <span className="ml-auto text-[10px] font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 px-1.5 py-0.5 rounded-full">
-                    {pendingInvoicesCount}
-                  </span>
-                )}
-              </Link>
+                AnimatedIconComponent={item.animatedIcon}
+                label={item.label}
+                badge={
+                  item.label === "Invoices" ? pendingInvoicesCount : undefined
+                }
+              />
             ))}
 
           {/* Divider */}
@@ -367,26 +410,15 @@ export function DashboardShell({
             {navItems
               .filter((item) => !item.primary)
               .map((item) => (
-                <Link
+                <NavItem
                   key={item.id}
                   href={item.href}
+                  isActive={activePage === item.id}
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`h-9 md:h-10 w-full rounded-lg flex items-center px-2 md:px-3 gap-2 md:gap-3 transition-all duration-200 group ${
-                    activePage === item.id
-                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
-                      : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
-                  }`}
-                >
-                  <item.animatedIcon
-                    className={`w-4 h-4 md:w-5 md:h-5 ${
-                      activePage === item.id
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
-                    }`}
-                    isActive={activePage === item.id}
-                  />
-                  <span className="text-sm md:text-base">{item.label}</span>
-                </Link>
+                  AnimatedIconComponent={item.animatedIcon}
+                  label={item.label}
+                  compact
+                />
               ))}
           </div>
         </div>
