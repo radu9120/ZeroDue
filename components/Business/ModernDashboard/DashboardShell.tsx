@@ -40,6 +40,7 @@ import { Badge } from "@/components/ui/badge";
 import Pricing from "@/components/pricing";
 import { ThemeToggle } from "@/components/theme-toggle";
 import ChatBot from "@/components/ChatBot/ChatBot";
+import { AnimatedIcon } from "@/components/ui/animated-icon";
 
 interface DashboardShellProps {
   children: ReactNode;
@@ -323,12 +324,14 @@ export function DashboardShell({
                     : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
                 }`}
               >
-                <item.icon
+                <AnimatedIcon
+                  icon={item.icon}
                   className={`w-5 h-5 ${
                     activePage === item.id
                       ? "text-blue-600 dark:text-blue-400"
                       : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
                   }`}
+                  isActive={activePage === item.id}
                 />
                 <span className="text-base">{item.label}</span>
                 {item.label === "Invoices" && pendingInvoicesCount > 0 && (
@@ -357,12 +360,14 @@ export function DashboardShell({
                       : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
                   }`}
                 >
-                  <item.icon
+                  <AnimatedIcon
+                    icon={item.icon}
                     className={`w-4 h-4 md:w-5 md:h-5 ${
                       activePage === item.id
                         ? "text-blue-600 dark:text-blue-400"
                         : "text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
                     }`}
+                    isActive={activePage === item.id}
                   />
                   <span className="text-sm md:text-base">{item.label}</span>
                 </Link>
@@ -556,8 +561,10 @@ export function DashboardShell({
             href={`/dashboard/business?business_id=${business.id}`}
             className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all ${activePage === "dashboard" ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
           >
-            <LayoutDashboard
+            <AnimatedIcon
+              icon={LayoutDashboard}
               className={`w-5 h-5 ${activePage === "dashboard" ? "stroke-[2.5px]" : ""}`}
+              isActive={activePage === "dashboard"}
             />
             <span className="text-[10px] font-medium">Home</span>
           </Link>
@@ -567,8 +574,10 @@ export function DashboardShell({
             href={`/dashboard/invoices?business_id=${business.id}`}
             className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all ${activePage === "invoices" ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
           >
-            <FileText
+            <AnimatedIcon
+              icon={FileText}
               className={`w-5 h-5 ${activePage === "invoices" ? "stroke-[2.5px]" : ""}`}
+              isActive={activePage === "invoices"}
             />
             <span className="text-[10px] font-medium">Invoices</span>
           </Link>
@@ -578,8 +587,10 @@ export function DashboardShell({
             href={`/dashboard/clients?business_id=${business.id}`}
             className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all ${activePage === "clients" ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
           >
-            <Users
+            <AnimatedIcon
+              icon={Users}
               className={`w-5 h-5 ${activePage === "clients" ? "stroke-[2.5px]" : ""}`}
+              isActive={activePage === "clients"}
             />
             <span className="text-[10px] font-medium">Clients</span>
           </Link>

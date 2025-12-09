@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { generateInvoiceHTML } from "@/lib/invoice-pdf-html";
+import { getCurrentPlan } from "@/lib/plan";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
@@ -51,12 +52,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Fetch user plan
+    const userPlan = await getCurrentPlan();
+
     // Generate HTML
     console.log(
       "[PDF] Company logo URL:",
       business.logo ? business.logo.substring(0, 100) : "NO LOGO"
     );
-    const html = generateInvoiceHTML(invoice, business);
+    const html = generateInvoiceHTML(invoice, business, undefined, userPlan);
 
     // For Vercel serverless, use @sparticuz/chromium
     const isVercel =

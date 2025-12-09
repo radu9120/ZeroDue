@@ -135,7 +135,8 @@ export async function generateInvoicePDF(
   theme: PDFTheme = "light"
 ): Promise<void> {
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  const c = THEMES[theme];
+  // Force light theme for printed invoices to avoid dark backgrounds in downloads
+  const c = THEMES["light"];
 
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -304,6 +305,33 @@ export async function generateInvoicePDF(
   const datesX = margin + contentWidth * 0.55;
   let datesY = billToStartY;
 
+  // Invoice details card (rounded border)
+  const detailsBoxX = datesX - 6;
+  const detailsBoxY = billToStartY - 4;
+  const detailsBoxW = rightEdge - detailsBoxX;
+  const detailsBoxH = 26;
+  doc.setFillColor(...c.borderMedium);
+  doc.setDrawColor(...c.borderMedium);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(
+    detailsBoxX,
+    detailsBoxY,
+    detailsBoxW,
+    detailsBoxH,
+    3,
+    3,
+    "FD"
+  );
+  // Divider lines inside the card (slightly lighter)
+  doc.setDrawColor(...c.borderTable);
+  doc.line(detailsBoxX + 6, billToStartY + 6, rightEdge - 6, billToStartY + 6);
+  doc.line(
+    detailsBoxX + 6,
+    billToStartY + 13,
+    rightEdge - 6,
+    billToStartY + 13
+  );
+
   // Issue Date row
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
@@ -364,22 +392,28 @@ export async function generateInvoicePDF(
   const colRate = margin + contentWidth * 0.78;
   const colAmount = rightEdge;
 
-  // Table header - text-xs font-medium uppercase tracking-wider text-slate-500
+  // Table header with light fill matching border color
+  const headerTop = y - 5;
+  const headerHeight = 12;
+  doc.setFillColor(...c.borderMedium);
+  doc.rect(margin, headerTop, contentWidth, headerHeight, "F");
+
   doc.setFontSize(7);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(...c.textMuted);
-  doc.text("DESCRIPTION", colDesc, y);
-  doc.text("QTY", colQty, y, { align: "right" });
-  doc.text("RATE", colRate, y, { align: "right" });
-  doc.text("AMOUNT", colAmount, y, { align: "right" });
+  doc.setTextColor(...c.textSecondary);
+  const headerTextY = headerTop + 8;
+  doc.text("DESCRIPTION", colDesc, headerTextY);
+  doc.text("QTY", colQty, headerTextY, { align: "right" });
+  doc.text("RATE", colRate, headerTextY, { align: "right" });
+  doc.text("AMOUNT", colAmount, headerTextY, { align: "right" });
 
-  y += 3;
+  y = headerTop + headerHeight;
 
   // Header border (border-gray-200 dark:border-slate-700)
   doc.setDrawColor(...c.borderTable);
   doc.setLineWidth(0.4);
   doc.line(margin, y, rightEdge, y);
-  y += 6;
+  y += 8;
 
   // Table rows
   items.forEach((item, index) => {

@@ -87,13 +87,15 @@ export const defaultPDFCustomization: PDFCustomization = {
 export function generateInvoiceHTML(
   invoice: InvoiceListItem,
   company: BusinessType,
-  customization: PDFCustomization = defaultPDFCustomization
+  customization: PDFCustomization = defaultPDFCustomization,
+  userPlan: "free_user" | "professional" | "enterprise" = "free_user"
 ): string {
   const { accentColor, showAccentBar } = customization;
   const currency = invoice.currency || company.currency || "GBP";
   const items = parseItems(invoice.items);
   const billTo = parseBillTo(invoice.bill_to);
   const bankDetails = parseBankDetails(invoice.bank_details);
+  const isFreePlan = userPlan === "free_user";
 
   const subtotal =
     Number(invoice.subtotal) ||
@@ -139,16 +141,22 @@ export function generateInvoiceHTML(
       width: 100%;
       min-height: 100vh;
       background: #ffffff;
+      display: flex;
+      flex-direction: column;
     }
     
     .accent-bar {
       height: 6px;
       background: var(--accent-color);
       display: ${showAccentBar ? "block" : "none"};
+      flex-shrink: 0;
     }
     
     .content {
       padding: 40px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
     
     /* ===== HEADER ROW ===== */
@@ -202,16 +210,21 @@ export function generateInvoiceHTML(
       margin-bottom: 16px;
     }
     
-    /* Invoice details box - no background, just clean rows */
+    /* Invoice details box - rounded border with light background */
     .invoice-details-box {
       min-width: 260px;
       text-align: left;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 4px 16px;
+      overflow: hidden;
     }
     
     .invoice-details-row {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
+      padding: 10px 0;
     }
     
     .invoice-details-row:not(:last-child) {
@@ -290,14 +303,14 @@ export function generateInvoiceHTML(
     }
     
     thead {
-      background: #f1f5f9;
+      background: var(--accent-color);
     }
     
     th {
       padding: 14px 16px;
       font-size: 11px;
       font-weight: 700;
-      color: #475569;
+      color: #ffffff;
       text-transform: uppercase;
       letter-spacing: 0.8px;
       text-align: left;
@@ -333,7 +346,7 @@ export function generateInvoiceHTML(
     
     td.item-amount {
       font-weight: 700;
-      color: #3b82f6;
+      color: #0f172a;
     }
     
     /* ===== BOTTOM GRID ===== */
@@ -383,7 +396,7 @@ export function generateInvoiceHTML(
     }
     
     .summary-header {
-      background: #f1f5f9;
+      background: var(--accent-color);
       padding: 14px 18px;
       white-space: nowrap;
       border-bottom: 1px solid #e2e8f0;
@@ -392,7 +405,7 @@ export function generateInvoiceHTML(
     .summary-header-text {
       font-size: 12px;
       font-weight: 700;
-      color: #475569;
+      color: #ffffff;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       white-space: nowrap;
@@ -452,7 +465,7 @@ export function generateInvoiceHTML(
     .total-value {
       font-size: 20px;
       font-weight: 700;
-      color: #3b82f6;
+      color: #0f172a;
     }
   </style>
 </head>
@@ -607,7 +620,16 @@ export function generateInvoiceHTML(
         </div>
       </div>
       
+      <!-- FOOTER -->
+      <div style="margin-top: auto; padding-top: 30px;">
+        <div style="border-top: 1px solid #e2e8f0; padding: 20px 0; text-align: center;">
+          <p style="font-size: 12px; color: #94a3b8; margin: 0;">Thank you for your business</p>
+          ${isFreePlan ? `<p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Powered by <a href="https://zerodue.co" style="color: #3b82f6; text-decoration: none; font-weight: 500;">zerodue.co</a></p>` : ""}
+        </div>
+      </div>
+      
     </div>
+    <div class="accent-bar"></div>
   </div>
 </body>
 </html>
