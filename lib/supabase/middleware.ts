@@ -67,6 +67,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/api/health") ||
     request.nextUrl.pathname.startsWith("/api/webhooks") ||
     request.nextUrl.pathname.startsWith("/api/invoices/download") ||
+    request.nextUrl.pathname.startsWith("/api/invoices/pdf") ||
     request.nextUrl.pathname.startsWith("/api/contact");
 
   const isInvoiceViewRoute = request.nextUrl.pathname.startsWith("/invoice/");

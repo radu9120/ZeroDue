@@ -221,114 +221,152 @@ function SendButtonVisual() {
 }
 
 function EmailStatusVisual() {
-  const timeline = [
-    {
-      label: "Sent",
-      time: "Dec 09, 1:54 PM",
-      icon: Send,
-      color: "bg-slate-200 dark:bg-slate-800",
-      accent: "border-slate-200 dark:border-slate-700",
-    },
-    {
-      label: "Delivered",
-      time: "Dec 09, 1:54 PM",
-      icon: Check,
-      color: "bg-green-100 dark:bg-green-900/30",
-      accent: "border-green-200 dark:border-green-800",
-    },
-    {
-      label: "Opened",
-      time: "Dec 09, 1:54 PM",
-      icon: Eye,
-      color: "bg-blue-100 dark:bg-blue-900/30",
-      accent: "border-blue-200 dark:border-blue-800",
-    },
-    {
-      label: "Clicked",
-      time: "Dec 09, 1:54 PM",
-      icon: Zap,
-      color: "bg-purple-100 dark:bg-purple-900/30",
-      accent: "border-purple-200 dark:border-purple-800",
-    },
-    {
-      label: "Opened",
-      time: "Dec 09, 2:01 PM",
-      icon: Eye,
-      color: "bg-blue-100 dark:bg-blue-900/30",
-      accent: "border-blue-200 dark:border-blue-800",
-    },
-    {
-      label: "Clicked",
-      time: "Dec 09, 2:01 PM",
-      icon: Zap,
-      color: "bg-purple-100 dark:bg-purple-900/30",
-      accent: "border-purple-200 dark:border-purple-800",
-    },
-  ];
-
-  const total = timeline.length;
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [status, setStatus] = useState<"sent" | "delivered" | "opened">("sent");
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % total);
-    }, 1400);
+    let timeout: NodeJS.Timeout;
 
-    return () => clearInterval(interval);
-  }, [total]);
+    const runAnimation = () => {
+      setStatus("sent");
+
+      timeout = setTimeout(() => {
+        setStatus("delivered");
+
+        timeout = setTimeout(() => {
+          setStatus("opened");
+
+          timeout = setTimeout(runAnimation, 3000);
+        }, 1500);
+      }, 1500);
+    };
+
+    runAnimation();
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const getStatusConfig = () => {
+    switch (status) {
+      case "sent":
+        return {
+          icon: Send,
+          text: "Invoice Sent",
+          subtext: "Just now",
+          badge: "Sent",
+          bg: "bg-blue-100 dark:bg-blue-900/30",
+          textCol: "text-blue-600 dark:text-blue-400",
+        };
+      case "delivered":
+        return {
+          icon: Check,
+          text: "Invoice Delivered",
+          subtext: "1m ago",
+          badge: "Delivered",
+          bg: "bg-purple-100 dark:bg-purple-900/30",
+          textCol: "text-purple-600 dark:text-purple-400",
+        };
+      case "opened":
+        return {
+          icon: Eye,
+          text: "Invoice Opened",
+          subtext: "Just now",
+          badge: "Read",
+          bg: "bg-green-100 dark:bg-green-900/30",
+          textCol: "text-green-600 dark:text-green-400",
+        };
+    }
+  };
+
+  const config = getStatusConfig();
+  const Icon = config.icon;
 
   return (
-    <div className="relative w-full bg-slate-950/70 dark:bg-slate-900 rounded-xl border border-slate-800 shadow-sm p-4 md:p-6 overflow-hidden">
-      <div
-        className="absolute inset-0 opacity-50 pointer-events-none"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0)",
-          backgroundSize: "20px 20px",
-        }}
-      />
+    <div className="relative w-full h-48 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col justify-center overflow-hidden">
+      <div className="space-y-4 relative z-10">
+        {/* Notification Card */}
+        <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 transition-all duration-500">
+          <div className="flex items-center gap-3">
+            <div
+              className={cn(
+                "w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-500",
+                config.bg
+              )}
+            >
+              <Icon
+                className={cn(
+                  "w-5 h-5 transition-all duration-500",
+                  config.textCol
+                )}
+              />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-slate-900 dark:text-white transition-all duration-300">
+                {config.text}
+              </div>
+              <div className="text-[10px] text-slate-500 transition-all duration-300">
+                {config.subtext}
+              </div>
+            </div>
+          </div>
+          <div
+            className={cn(
+              "text-xs font-bold px-2 py-1 rounded-full transition-colors duration-500",
+              config.bg,
+              config.textCol
+            )}
+          >
+            {config.badge}
+          </div>
+        </div>
 
-      <div className="overflow-x-auto -mx-3 px-3">
-        <div className="relative py-6 min-w-max">
-          <div className="absolute left-0 right-4 top-9 h-[2px] bg-slate-800 rounded-full" />
-          <div className="flex items-center gap-8 md:gap-12 pr-6">
-            {timeline.map((event, index) => {
-              const Icon = event.icon;
-              const isActive = index === activeIndex;
-              const isPassed = index < activeIndex;
-
-              return (
-                <div
-                  key={`${event.label}-${index}`}
-                  className="relative flex flex-col items-center min-w-[120px]"
-                >
-                  {index !== timeline.length - 1 && (
-                    <div className="absolute left-1/2 top-9 w-[145%] h-[2px] bg-slate-800" />
-                  )}
-
-                  <div
-                    className={cn(
-                      "w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-br flex items-center justify-center text-slate-100 shadow-lg transition-all duration-300",
-                      isActive
-                        ? "from-purple-500/80 to-blue-500/80 ring-2 ring-purple-300/50"
-                        : isPassed
-                          ? "from-slate-700 to-slate-800 opacity-90"
-                          : "from-slate-800 to-slate-900"
-                    )}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
-
-                  <div className="mt-3 text-sm font-semibold text-slate-50">
-                    {event.label}
-                  </div>
-                  <div className="text-[11px] text-slate-400">{event.time}</div>
-                </div>
-              );
-            })}
+        {/* Timeline Visualization */}
+        <div className="px-2">
+          <div className="flex items-center gap-1 w-full">
+            <div
+              className={cn(
+                "h-1 flex-1 rounded-full transition-colors duration-500",
+                status === "sent" ||
+                  status === "delivered" ||
+                  status === "opened"
+                  ? "bg-blue-500"
+                  : "bg-slate-100 dark:bg-slate-800"
+              )}
+            />
+            <div
+              className={cn(
+                "h-1 flex-1 rounded-full transition-colors duration-500",
+                status === "delivered" || status === "opened"
+                  ? "bg-purple-500"
+                  : "bg-slate-100 dark:bg-slate-800"
+              )}
+            />
+            <div
+              className={cn(
+                "h-1 flex-1 rounded-full transition-colors duration-500",
+                status === "opened"
+                  ? "bg-green-500"
+                  : "bg-slate-100 dark:bg-slate-800"
+              )}
+            />
+          </div>
+          <div className="flex justify-between mt-1">
+            <span className="text-[8px] text-slate-400">Sent</span>
+            <span className="text-[8px] text-slate-400">Delivered</span>
+            <span className="text-[8px] text-slate-400">Opened</span>
           </div>
         </div>
       </div>
+
+      {/* Background Glow */}
+      <div
+        className={cn(
+          "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full blur-3xl transition-colors duration-1000 opacity-20",
+          status === "sent"
+            ? "bg-blue-500"
+            : status === "delivered"
+              ? "bg-purple-500"
+              : "bg-green-500"
+        )}
+      />
     </div>
   );
 }
@@ -445,8 +483,11 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        <div className="relative max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12">
+        <div className="relative max-w-5xl mx-auto">
+          {/* Connecting Line (Desktop) */}
+          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 via-purple-500 to-green-500 opacity-20 -translate-x-1/2" />
+
+          <div className="space-y-12 md:space-y-24">
             {steps.map((step, index) => (
               <motion.div
                 key={index}
@@ -454,36 +495,48 @@ export default function HowItWorks() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full flex flex-col"
+                className={cn(
+                  "relative flex flex-col md:flex-row gap-8 md:gap-16 items-center",
+                  index % 2 === 1 ? "md:flex-row-reverse" : ""
+                )}
               >
-                <div className="flex items-start gap-4">
-                  <div
-                    className={cn(
-                      "w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-sm",
-                      step.color
-                    )}
-                  >
-                    <step.icon className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-base md:text-lg">
-                      {step.description}
-                    </p>
-                  </div>
+                {/* Center Dot (Desktop) */}
+                <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white dark:bg-slate-950 border-4 border-slate-100 dark:border-slate-800 items-center justify-center z-10 shadow-sm">
+                  <div className={cn("w-3 h-3 rounded-full", step.color)} />
                 </div>
 
-                <div className="relative mt-6">
+                {/* Content Side */}
+                <div className="flex-1 text-center md:text-left">
                   <div
                     className={cn(
-                      "absolute inset-0 rounded-2xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-500",
-                      step.color
+                      "inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 shadow-sm",
+                      "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800",
+                      "md:hidden" // Hide icon on desktop as it's in the center or visual
                     )}
-                  />
-                  <div className="relative bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-2 shadow-lg overflow-hidden">
-                    {step.visual}
+                  >
+                    <step.icon className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                    {step.title}
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg">
+                    {step.description}
+                  </p>
+                </div>
+
+                {/* Visual Side */}
+                <div className="flex-1 w-full">
+                  <div className="relative group">
+                    <div
+                      className={cn(
+                        "absolute inset-0 rounded-2xl blur-xl opacity-20 transition-opacity duration-500 group-hover:opacity-30",
+                        step.color
+                      )}
+                    />
+                    <div className="relative bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-2 shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                      {step.visual}
+                    </div>
                   </div>
                 </div>
               </motion.div>
