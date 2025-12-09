@@ -16,6 +16,7 @@ import {
   toEmailStatusState,
 } from "@/lib/email-status";
 import { getCurrencySymbol, normalizeCurrencyCode } from "@/lib/utils";
+import { generateInvoicePDF } from "@/lib/invoice-pdf";
 import { SuccessBanner } from "./SuccessBanner";
 import { InvoiceActionsBar } from "./InvoiceActionsBar";
 import { InvoiceEmailStatus } from "./InvoiceEmailStatus";
@@ -504,24 +505,9 @@ export default function InvoiceSuccessView({
     try {
       setDownloading(true);
 
-      // Use the Puppeteer API for professional PDF generation
-      const response = await fetch(
-        `/api/invoices/pdf?invoice_id=${invoice.id}&business_id=${company.id}`
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to generate PDF");
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `Invoice-${invoice.invoice_number || invoice.id}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      // Use client-side jsPDF generation (works on Vercel)
+      // Always use light theme for professional printed invoices
+      await generateInvoicePDF(invoice, company, "light");
 
       toast.success("PDF downloaded");
     } catch (error) {
