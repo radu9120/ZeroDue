@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { Resend } from "resend";
-import { getInvoicesByAuthor } from "@/lib/actions/invoice.actions";
 import { getBusinessById } from "@/lib/actions/business.actions";
 import { createSupabaseAdminClient } from "@/lib/supabase";
 
