@@ -16,7 +16,6 @@ import {
   toEmailStatusState,
 } from "@/lib/email-status";
 import { getCurrencySymbol, normalizeCurrencyCode } from "@/lib/utils";
-import { generateInvoicePDF } from "@/lib/invoice-pdf";
 import { SuccessBanner } from "./SuccessBanner";
 import { InvoiceActionsBar } from "./InvoiceActionsBar";
 import { InvoiceEmailStatus } from "./InvoiceEmailStatus";

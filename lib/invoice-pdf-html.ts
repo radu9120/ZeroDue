@@ -621,8 +621,8 @@ export function generateInvoiceHTML(
       </div>
       
       <!-- FOOTER -->
-      <div style="margin-top: auto; padding-top: 30px;">
-        <div style="border-top: 1px solid #e2e8f0; padding: 20px 0; text-align: center;">
+      <div style="margin-top: auto; padding-top: 60px;">
+        <div style="border-top: 1px solid #e2e8f0; padding: 24px 0 16px 0; text-align: center;">
           <p style="font-size: 12px; color: #94a3b8; margin: 0;">Thank you for your business</p>
           ${isFreePlan ? `<p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Powered by <a href="https://zerodue.co" style="color: #3b82f6; text-decoration: none; font-weight: 500;">zerodue.co</a></p>` : ""}
         </div>

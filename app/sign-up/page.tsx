@@ -59,7 +59,8 @@ export default function SignUpPage() {
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signUp({
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -73,6 +74,20 @@ export default function SignUpPage() {
 
       if (error) {
         toast.error(error.message);
+        return;
+      }
+
+      // Check if user already exists (Supabase returns user with identities array empty or user has confirmed email)
+      // When a user already exists with OAuth, data.user exists but data.user.identities is empty array
+      if (
+        data.user &&
+        data.user.identities &&
+        data.user.identities.length === 0
+      ) {
+        toast.error(
+          "An account with this email already exists. Try signing in instead."
+        );
+        setIsLoading(false);
         return;
       }
 
