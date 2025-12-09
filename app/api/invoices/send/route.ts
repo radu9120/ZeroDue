@@ -104,9 +104,10 @@ export async function POST(req: NextRequest) {
       currency === "USD" ? "$" : currency === "EUR" ? "€" : "£";
 
     // Create public invoice URL (no auth required) - opens printable view
-    const invoiceUrl = `${
-      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    }/invoice/${publicToken}`;
+    const appBaseUrl = (
+      process.env.NEXT_PUBLIC_APP_URL || "https://www.zerodue.co"
+    ).replace(/\/$/, "");
+    const invoiceUrl = `${appBaseUrl}/invoice/${publicToken}`;
 
     // Ensure Resend is configured
     if (!process.env.RESEND_API_KEY) {
