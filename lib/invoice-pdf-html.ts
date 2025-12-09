@@ -139,10 +139,11 @@ export function generateInvoiceHTML(
     
     .page {
       width: 100%;
-      min-height: 100vh;
+      min-height: 297mm; /* A4 height */
       background: #ffffff;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
     
     .accent-bar {
@@ -152,11 +153,25 @@ export function generateInvoiceHTML(
       flex-shrink: 0;
     }
     
+    .accent-bar-bottom {
+      height: 6px;
+      background: var(--accent-color);
+      display: ${showAccentBar ? "block" : "none"};
+      margin-top: auto;
+    }
+    
     .content {
       padding: 40px;
       flex: 1;
       display: flex;
       flex-direction: column;
+    }
+    
+    .footer {
+      margin-top: auto;
+      padding: 24px 40px 16px 40px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center;
     }
     
     /* ===== HEADER ROW ===== */
@@ -620,16 +635,14 @@ export function generateInvoiceHTML(
         </div>
       </div>
       
-      <!-- FOOTER -->
-      <div style="margin-top: auto; padding-top: 60px;">
-        <div style="border-top: 1px solid #e2e8f0; padding: 24px 0 16px 0; text-align: center;">
-          <p style="font-size: 12px; color: #94a3b8; margin: 0;">Thank you for your business</p>
-          ${isFreePlan ? `<p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Powered by <a href="https://zerodue.co" style="color: #3b82f6; text-decoration: none; font-weight: 500;">zerodue.co</a></p>` : ""}
-        </div>
-      </div>
-      
     </div>
-    <div class="accent-bar"></div>
+    
+    <!-- FOOTER - Always at bottom -->
+    <div class="footer">
+      <p style="font-size: 12px; color: #94a3b8; margin: 0;">Thank you for your business</p>
+      ${isFreePlan ? `<p style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Powered by <a href="https://zerodue.co" style="color: #3b82f6; text-decoration: none; font-weight: 500;">zerodue.co</a></p>` : ""}
+    </div>
+    <div class="accent-bar-bottom"></div>
   </div>
 </body>
 </html>

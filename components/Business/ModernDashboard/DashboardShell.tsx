@@ -40,7 +40,17 @@ import { Badge } from "@/components/ui/badge";
 import Pricing from "@/components/pricing";
 import { ThemeToggle } from "@/components/theme-toggle";
 import ChatBot from "@/components/ChatBot/ChatBot";
-import { AnimatedIcon } from "@/components/ui/animated-icon";
+import {
+  AnimatedIcon,
+  AnimatedDashboardIcon,
+  AnimatedDocumentIcon,
+  AnimatedUsersIcon,
+  AnimatedChartIcon,
+  AnimatedRefreshIcon,
+  AnimatedReceiptIcon,
+  AnimatedClipboardIcon,
+  AnimatedSettingsIcon,
+} from "@/components/ui/animated-icon";
 
 interface DashboardShellProps {
   children: ReactNode;
@@ -104,6 +114,7 @@ export function DashboardShell({
     {
       label: "Dashboard",
       icon: LayoutDashboard,
+      animatedIcon: AnimatedDashboardIcon,
       id: "dashboard",
       href: `/dashboard/business?business_id=${business.id}`,
       primary: true,
@@ -111,6 +122,7 @@ export function DashboardShell({
     {
       label: "Invoices",
       icon: FileText,
+      animatedIcon: AnimatedDocumentIcon,
       id: "invoices",
       href: `/dashboard/invoices?business_id=${business.id}`,
       primary: true,
@@ -118,6 +130,7 @@ export function DashboardShell({
     {
       label: "Clients",
       icon: Users,
+      animatedIcon: AnimatedUsersIcon,
       id: "clients",
       href: `/dashboard/clients?business_id=${business.id}`,
       primary: true,
@@ -125,6 +138,7 @@ export function DashboardShell({
     {
       label: "Estimates",
       icon: ClipboardList,
+      animatedIcon: AnimatedClipboardIcon,
       id: "estimates",
       href: `/dashboard/estimates?business_id=${business.id}`,
       primary: false,
@@ -132,6 +146,7 @@ export function DashboardShell({
     {
       label: "Recurring",
       icon: RefreshCw,
+      animatedIcon: AnimatedRefreshIcon,
       id: "recurring",
       href: `/dashboard/invoices/recurring?business_id=${business.id}`,
       primary: false,
@@ -139,6 +154,7 @@ export function DashboardShell({
     {
       label: "Expenses",
       icon: Receipt,
+      animatedIcon: AnimatedReceiptIcon,
       id: "expenses",
       href: `/dashboard/expenses?business_id=${business.id}`,
       primary: false,
@@ -146,6 +162,7 @@ export function DashboardShell({
     {
       label: "Analytics",
       icon: BarChart3,
+      animatedIcon: AnimatedChartIcon,
       id: "analytics",
       href: `/dashboard/analytics?business_id=${business.id}`,
       primary: false,
@@ -153,6 +170,7 @@ export function DashboardShell({
     {
       label: "Settings",
       icon: Settings,
+      animatedIcon: AnimatedSettingsIcon,
       id: "settings",
       href: `/dashboard/business/settings?business_id=${business.id}`,
       primary: false,
@@ -324,8 +342,7 @@ export function DashboardShell({
                     : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
                 }`}
               >
-                <AnimatedIcon
-                  icon={item.icon}
+                <item.animatedIcon
                   className={`w-5 h-5 ${
                     activePage === item.id
                       ? "text-blue-600 dark:text-blue-400"
@@ -360,8 +377,7 @@ export function DashboardShell({
                       : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
                   }`}
                 >
-                  <AnimatedIcon
-                    icon={item.icon}
+                  <item.animatedIcon
                     className={`w-4 h-4 md:w-5 md:h-5 ${
                       activePage === item.id
                         ? "text-blue-600 dark:text-blue-400"
@@ -561,8 +577,7 @@ export function DashboardShell({
             href={`/dashboard/business?business_id=${business.id}`}
             className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all ${activePage === "dashboard" ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
           >
-            <AnimatedIcon
-              icon={LayoutDashboard}
+            <AnimatedDashboardIcon
               className={`w-5 h-5 ${activePage === "dashboard" ? "stroke-[2.5px]" : ""}`}
               isActive={activePage === "dashboard"}
             />
@@ -574,8 +589,7 @@ export function DashboardShell({
             href={`/dashboard/invoices?business_id=${business.id}`}
             className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all ${activePage === "invoices" ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
           >
-            <AnimatedIcon
-              icon={FileText}
+            <AnimatedDocumentIcon
               className={`w-5 h-5 ${activePage === "invoices" ? "stroke-[2.5px]" : ""}`}
               isActive={activePage === "invoices"}
             />
@@ -587,8 +601,7 @@ export function DashboardShell({
             href={`/dashboard/clients?business_id=${business.id}`}
             className={`flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all ${activePage === "clients" ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
           >
-            <AnimatedIcon
-              icon={Users}
+            <AnimatedUsersIcon
               className={`w-5 h-5 ${activePage === "clients" ? "stroke-[2.5px]" : ""}`}
               isActive={activePage === "clients"}
             />
