@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { generateInvoiceHTML } from "@/lib/invoice-pdf-html";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
   let browser = null;
@@ -56,25 +58,36 @@ export async function GET(request: NextRequest) {
     );
     const html = generateInvoiceHTML(invoice, business);
 
-    // Dynamic import puppeteer to avoid build issues
-    const puppeteer = await import("puppeteer");
+    // For Vercel serverless, use @sparticuz/chromium
+    const isVercel =
+      process.env.VERCEL === "1" || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
-    // Launch Puppeteer with more options for macOS
-    browser = await puppeteer.default.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--single-process",
-      ],
-    });
+    if (isVercel) {
+      // Vercel/AWS Lambda environment
+      browser = await puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
+      });
+    } else {
+      // Local development - use regular puppeteer
+      const puppeteerFull = await import("puppeteer");
+      browser = await puppeteerFull.default.launch({
+        headless: true,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-gpu",
+        ],
+      });
+    }
 
     const page = await browser.newPage();
     await page.setContent(html, {
       waitUntil: "networkidle0",
-      timeout: 15000,
+      timeout: 20000,
     });
 
     // Generate PDF - no margins for full-bleed design

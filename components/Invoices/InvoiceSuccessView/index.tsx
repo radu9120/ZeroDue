@@ -505,9 +505,25 @@ export default function InvoiceSuccessView({
     try {
       setDownloading(true);
 
-      // Use client-side jsPDF generation (works on Vercel)
-      // Always use light theme for professional printed invoices
-      await generateInvoicePDF(invoice, company, "light");
+      // Use the Puppeteer API for professional PDF generation
+      const response = await fetch(
+        `/api/invoices/pdf?invoice_id=${invoice.id}&business_id=${company.id}`
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.details || "Failed to generate PDF");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Invoice-${invoice.invoice_number || invoice.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
 
       toast.success("PDF downloaded");
     } catch (error) {
