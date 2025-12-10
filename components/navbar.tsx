@@ -84,18 +84,18 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2.5 group">
+            <Link href="/" className="flex items-center gap-2 group">
               <div className="flex items-center justify-center h-8 w-8">
                 <Image
                   src="/logo.png"
                   alt="ZeroDue"
                   width={32}
                   height={32}
-                  className="transition-transform group-hover:scale-105 h-7 w-7 object-contain"
+                  className="transition-transform group-hover:scale-105 object-contain"
                   priority
                 />
               </div>
-              <span className="text-2xl font-bold transition-colors text-slate-900 dark:text-white flex items-center h-8">
+              <span className="text-[26px] font-bold transition-colors text-slate-900 dark:text-white flex items-center h-10">
                 ZeroDue
               </span>
             </Link>

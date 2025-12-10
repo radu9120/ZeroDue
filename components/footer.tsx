@@ -33,17 +33,18 @@ export default function Footer() {
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2.5 mb-6">
-              <div className="flex items-center justify-center h-8 w-8">
+            <Link href="/" className="flex items-center gap-2 mb-6">
+              <div className="flex items-center justify-center h-9 w-9">
                 <Image
                   src="/logo.png"
                   alt="ZeroDue"
-                  width={32}
-                  height={32}
-                  className="h-7 w-7 object-contain"
+                  width={36}
+                  height={36}
+                  className="transition-transform group-hover:scale-105 object-contain"
+                  priority
                 />
               </div>
-              <span className="text-2xl font-bold text-slate-900 dark:text-white flex items-center h-8">
+              <span className="text-[30px] font-bold transition-colors text-slate-900 dark:text-white flex items-center h-10">
                 ZeroDue
               </span>
             </Link>
@@ -89,7 +90,7 @@ export default function Footer() {
                 { name: "Privacy Policy", href: "/privacy-policy" },
                 { name: "Refund Policy", href: "/refund-policy" },
                 { name: "Cookie Policy", href: "/cookies" },
-                { name: "Sitemap", href: "/sitemap" },
+                { name: "Sitemap", href: "/site-map" },
               ].map((item) => (
                 <li key={item.name}>
                   <Link
