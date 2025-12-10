@@ -1,10 +1,22 @@
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Pricing - Free & Professional Plans",
+  description:
+    "Simple, transparent pricing for ZeroDue invoicing software. Start free forever, upgrade when you need more. No hidden fees, cancel anytime.",
+  openGraph: {
+    title: "ZeroDue Pricing - Free Invoice Software",
+    description:
+      "Start invoicing for free. Upgrade to Professional for unlimited invoices and advanced features.",
+    url: "https://www.zerodue.co/pricing",
+  },
+  alternates: {
+    canonical: "https://www.zerodue.co/pricing",
+  },
+};
+
 export default function PricingPage() {
-  // The app uses a Pricing section on the homepage via Clerk's PricingTable.
-  // Redirect users to the dedicated upgrade page for upgrades.
-  return (
-    <main className="max-w-4xl mx-auto p-8">
-      <meta httpEquiv="refresh" content="0; url=/upgrade" />
-      <p className="text-gray-700">Redirecting to upgrade…</p>
-    </main>
-  );
+  // Redirect to upgrade page which has the full pricing UI
+  redirect("/upgrade");
 }

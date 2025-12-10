@@ -13,27 +13,63 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import HideOnRoutes from "@/components/layout/HideOnRoutes";
 import ChatBot from "@/components/ChatBot/ChatBot";
+import {
+  OrganizationSchema,
+  SoftwareApplicationSchema,
+  WebsiteSchema,
+} from "@/components/seo/StructuredData";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ZeroDue - Zero Hassle Invoicing",
+  metadataBase: new URL("https://www.zerodue.co"),
+  title: {
+    default:
+      "ZeroDue - Free Invoice Generator & Professional Invoicing Software",
+    template: "%s | ZeroDue",
+  },
   description:
-    "Send professional invoices, automate follow-up, and get paid faster with ZeroDue.",
+    "Create professional invoices for free with ZeroDue. Send invoices, automate payment reminders, track payments, and get paid faster. Perfect for freelancers and small businesses.",
+  keywords: [
+    "invoice generator",
+    "free invoicing software",
+    "invoice template",
+    "online invoicing",
+    "freelancer invoices",
+    "small business invoicing",
+    "payment tracking",
+    "invoice automation",
+    "professional invoices",
+    "billing software",
+  ],
+  authors: [{ name: "ZeroDue" }],
+  creator: "ZeroDue",
+  publisher: "ZeroDue",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "en_GB",
-    url: "https://zerodue.co",
-    title: "ZeroDue • Zero Hassle Invoicing",
+    url: "https://www.zerodue.co",
+    title: "ZeroDue - Free Invoice Generator & Professional Invoicing",
     description:
-      "ZeroDue automates invoices, tracks payments, and gives you the insights to stay cash-flow positive.",
+      "Create and send professional invoices for free. Automate payment reminders, track payments, and manage cash flow with ZeroDue.",
     siteName: "ZeroDue",
     images: [
       {
-        url: "https://zerodue.co/og-cover.png",
+        url: "https://www.zerodue.co/og-cover.png",
         width: 1200,
         height: 630,
-        alt: "ZeroDue dashboard preview",
+        alt: "ZeroDue - Professional Invoice Generator Dashboard",
       },
     ],
   },
@@ -41,10 +77,16 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@zerodueco",
     creator: "@zerodueco",
-    title: "ZeroDue • Zero Hassle Invoicing",
+    title: "ZeroDue - Free Invoice Generator",
     description:
-      "Send professional invoices, automate follow-up, and monitor cash flow in one place.",
-    images: ["https://zerodue.co/og-cover.png"],
+      "Create professional invoices for free. Automate follow-ups and get paid faster.",
+    images: ["https://www.zerodue.co/og-cover.png"],
+  },
+  alternates: {
+    canonical: "https://www.zerodue.co",
+  },
+  verification: {
+    google: "your-google-verification-code", // Add your Google Search Console verification code
   },
 };
 
@@ -55,6 +97,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <OrganizationSchema />
+        <SoftwareApplicationSchema />
+        <WebsiteSchema />
+      </head>
       <body
         className={`${inter.className} bg-white dark:bg-slate-900 transition-colors`}
       >

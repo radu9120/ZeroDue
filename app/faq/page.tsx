@@ -3,9 +3,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "ZeroDue FAQ",
+  title: "Frequently Asked Questions - Pricing, Security & Billing",
   description:
-    "Answers to the most common questions about pricing, security, billing, and onboarding with ZeroDue.",
+    "Get answers to common questions about ZeroDue invoicing software. Learn about pricing, security, billing workflows, payment methods, and how to get started.",
+  openGraph: {
+    title: "ZeroDue FAQ - Common Questions Answered",
+    description:
+      "Find answers about pricing, security, and billing with ZeroDue invoicing.",
+    url: "https://www.zerodue.co/faq",
+  },
+  alternates: {
+    canonical: "https://www.zerodue.co/faq",
+  },
 };
 
 export default function FAQPage() {
