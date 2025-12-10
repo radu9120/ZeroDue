@@ -583,15 +583,14 @@ export function DashboardShell({
               </div>
 
               {mounted ? (
-                <div className="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border-2 border-slate-200/50 dark:border-slate-700/50">
-                  <UserButton
-                    appearance={{
-                      elements: {
-                        avatarBox: "w-8 h-8",
-                      },
-                    }}
-                  />
-                </div>
+                <UserButton
+                  appearance={{
+                    elements: {
+                      avatarBox:
+                        "w-8 h-8 rounded-xl shadow-sm hover:shadow-md transition-shadow border-2 border-slate-200/50 dark:border-slate-700/50",
+                    },
+                  }}
+                />
               ) : (
                 <div className="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 animate-pulse border border-slate-200/50 dark:border-slate-700/50" />
               )}
