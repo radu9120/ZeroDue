@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Mail, Globe, Shield, Clock, ArrowRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
