@@ -220,3 +220,220 @@
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
+
+/* ========================================
+   DEPTH SYSTEM - Professional shadows & highlights
+   ======================================== */
+
+:root {
+  /* Light mode shadows - soft, professional depth */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+
+  /* Inner highlights for light mode */
+  --highlight-top: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --highlight-subtle: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+  /* Combined depth shadows */
+  --depth-card: var(--shadow-sm), var(--highlight-top);
+  --depth-card-hover: var(--shadow-md), var(--highlight-top);
+  --depth-elevated: var(--shadow-md), var(--highlight-top);
+  --depth-modal: var(--shadow-xl);
+  --depth-button: var(--shadow-xs), var(--highlight-subtle);
+  --depth-button-hover: var(--shadow-sm), var(--highlight-top);
+  --depth-input:
+    inset 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.dark {
+  /* Dark mode shadows - subtle glow and depth */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+
+  /* Inner highlights for dark mode - subtle top edge */
+  --highlight-top: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --highlight-subtle: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  /* Combined depth shadows */
+  --depth-card: var(--shadow-sm), var(--highlight-top);
+  --depth-card-hover: var(--shadow-md), var(--highlight-top);
+  --depth-elevated: var(--shadow-md), var(--highlight-top);
+  --depth-modal: var(--shadow-xl);
+  --depth-button: var(--shadow-xs), var(--highlight-subtle);
+  --depth-button-hover: var(--shadow-sm), var(--highlight-top);
+  --depth-input: inset 0 1px 2px rgba(0, 0, 0, 0.3), var(--highlight-subtle);
+}
+
+/* Depth utility classes */
+.depth-card {
+  box-shadow: var(--depth-card);
+  transition:
+    box-shadow 0.2s ease-in-out,
+    transform 0.2s ease-in-out;
+}
+
+.depth-card:hover {
+  box-shadow: var(--depth-card-hover);
+}
+
+.depth-card-interactive {
+  box-shadow: var(--depth-card);
+  transition:
+    box-shadow 0.2s ease-in-out,
+    transform 0.2s ease-in-out;
+}
+
+.depth-card-interactive:hover {
+  box-shadow: var(--depth-card-hover);
+  transform: translateY(-1px);
+}
+
+.depth-elevated {
+  box-shadow: var(--depth-elevated);
+}
+
+.depth-modal {
+  box-shadow: var(--depth-modal);
+}
+
+.depth-button {
+  box-shadow: var(--depth-button);
+  transition:
+    box-shadow 0.15s ease-in-out,
+    transform 0.15s ease-in-out;
+}
+
+.depth-button:hover {
+  box-shadow: var(--depth-button-hover);
+}
+
+.depth-button:active {
+  box-shadow: var(--shadow-xs);
+  transform: translateY(1px);
+}
+
+.depth-input {
+  box-shadow: var(--depth-input);
+}
+
+/* Gradient overlays for extra polish */
+.gradient-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.dark .gradient-shine::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03),
+    transparent
+  );
+}
+
+/* Subtle border glow for focus states */
+.glow-ring {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.glow-ring:focus-within {
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.15),
+    var(--depth-card);
+}
+
+.dark .glow-ring:focus-within {
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.25),
+    var(--depth-card);
+}
+
+/* Stat card specific styling */
+.stat-card {
+  box-shadow: var(--depth-card);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+  box-shadow: var(--depth-card-hover);
+  border-color: rgba(59, 130, 246, 0.1);
+}
+
+.dark .stat-card {
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.dark .stat-card:hover {
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+/* Table row hover depth */
+.table-row-depth {
+  transition:
+    background-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+}
+
+.table-row-depth:hover {
+  background-color: rgba(59, 130, 246, 0.02);
+  box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.08);
+}
+
+.dark .table-row-depth:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.15);
+}
+
+/* Sidebar nav item depth */
+.nav-item-depth {
+  transition: all 0.15s ease-in-out;
+}
+
+.nav-item-depth:hover {
+  box-shadow: var(--shadow-xs);
+}
+
+.nav-item-depth.active {
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 0 0 1px rgba(59, 130, 246, 0.2);
+}
+
+/* Icon container depth */
+.icon-container-depth {
+  box-shadow: var(--shadow-xs), var(--highlight-subtle);
+  transition: all 0.15s ease-in-out;
+}
+
+.icon-container-depth:hover {
+  box-shadow: var(--shadow-sm), var(--highlight-top);
+  transform: scale(1.02);
+}

@@ -82,10 +82,10 @@ function NavItem({
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`${compact ? "h-9 md:h-10" : "h-10"} w-full rounded-lg flex items-center ${compact ? "px-2 md:px-3 gap-2 md:gap-3" : "px-3 gap-3"} transition-all duration-200 group ${
+      className={`${compact ? "h-9 md:h-10" : "h-10"} w-full rounded-lg flex items-center ${compact ? "px-2 md:px-3 gap-2 md:gap-3" : "px-3 gap-3"} transition-all duration-200 group nav-item-depth ${
         isActive
-          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium"
-          : "text-slate-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200"
+          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium active"
+          : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-slate-200"
       }`}
     >
       <AnimatedIconComponent
@@ -250,7 +250,7 @@ export function DashboardShell({
       {/* Modals */}
       {isUpgradeOpen && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-950 rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto relative border border-slate-800">
+          <div className="bg-white dark:bg-slate-950 rounded-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto relative border border-slate-200/60 dark:border-slate-800/50 depth-modal">
             <button
               onClick={() => setIsUpgradeOpen(false)}
               className="absolute top-4 right-4 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors z-10"
@@ -298,7 +298,7 @@ export function DashboardShell({
       {/* Sidebar */}
       <aside
         className={`
-          fixed md:sticky top-0 left-0 z-[100] h-[100dvh] w-[80vw] sm:w-80 md:w-72 flex flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 gap-6 transition-transform duration-300 ease-in-out overflow-y-auto
+          fixed md:sticky top-0 left-0 z-[100] h-[100dvh] w-[80vw] sm:w-80 md:w-72 flex flex-col border-r border-gray-200/60 dark:border-slate-800/50 bg-white dark:bg-slate-950 p-4 gap-6 transition-transform duration-300 ease-in-out overflow-y-auto depth-elevated
           ${
             isSidebarOpen
               ? "translate-x-0"
@@ -492,7 +492,7 @@ export function DashboardShell({
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header */}
-        <header className="h-14 md:h-16 border-b border-gray-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between px-4 md:px-6">
+        <header className="h-14 md:h-16 border-b border-gray-200/60 dark:border-slate-800/50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between px-4 md:px-6 depth-card">
           <div className="flex items-center gap-3">
             {/* Mobile: Business Name & Logo */}
             <div className="flex items-center gap-2.5 md:hidden">
@@ -550,46 +550,50 @@ export function DashboardShell({
             {/* Search - Desktop only */}
             <form
               onSubmit={handleSearch}
-              className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-slate-900 rounded-md border border-gray-200 dark:border-slate-800 w-48 lg:w-64 focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/50 transition-all"
+              className="hidden md:flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-900/80 rounded-xl border border-slate-200/80 dark:border-slate-700/50 w-48 lg:w-64 focus-within:border-blue-500/50 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:bg-white dark:focus-within:bg-slate-900 transition-all shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600"
             >
-              <Search className="w-4 h-4 text-slate-500" />
+              <Search className="w-4 h-4 text-slate-400 dark:text-slate-500" />
               <input
                 ref={searchInputRef}
                 type="text"
                 placeholder="Search invoices..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none text-xs text-slate-900 dark:text-slate-300 placeholder:text-slate-500 dark:placeholder:text-slate-600 w-full"
+                className="bg-transparent border-none outline-none text-sm text-slate-900 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 w-full"
               />
-              <div className="ml-auto text-[10px] font-mono text-slate-500 dark:text-slate-600 border border-gray-200 dark:border-slate-800 rounded px-1">
+              <div className="ml-auto text-[10px] font-medium text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-1.5 py-0.5 shadow-sm">
                 ⌘K
               </div>
             </form>
 
             {/* Actions */}
-            <div className="flex items-center gap-2 md:gap-3">
+            <div className="flex items-center gap-2 md:gap-2.5">
               {/* Help/Chat Button - Desktop only */}
               <button
                 onClick={() => setIsChatOpen(true)}
-                className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors relative"
+                className="hidden md:flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all shadow-sm hover:shadow-md border border-slate-200/50 dark:border-slate-700/50 relative"
                 title="Help & Support"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full" />
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-950 shadow-sm" />
               </button>
 
-              <ThemeToggle />
+              <div className="flex items-center justify-center">
+                <ThemeToggle />
+              </div>
 
               {mounted ? (
-                <UserButton
-                  appearance={{
-                    elements: {
-                      avatarBox: "w-8 h-8",
-                    },
-                  }}
-                />
+                <div className="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border-2 border-slate-200/50 dark:border-slate-700/50">
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-8 h-8",
+                      },
+                    }}
+                  />
+                </div>
               ) : (
-                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse" />
+                <div className="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 animate-pulse border border-slate-200/50 dark:border-slate-700/50" />
               )}
             </div>
           </div>
@@ -602,7 +606,7 @@ export function DashboardShell({
       </main>
 
       {/* Mobile Bottom Navigation - Only 5 key items */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-t border-gray-200 dark:border-slate-800 z-50 px-2 py-2 pb-6 safe-area-inset-bottom">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-t border-gray-200/60 dark:border-slate-800/50 z-50 px-2 py-2 pb-6 safe-area-inset-bottom depth-elevated">
         <div className="flex justify-around items-center max-w-md mx-auto">
           {/* Dashboard */}
           <Link
