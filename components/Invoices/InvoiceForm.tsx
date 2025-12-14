@@ -192,9 +192,49 @@ const InvoiceForm = ({
   // Autosave key based on business ID
   const autosaveKey = `invoice_draft_${company_data.id}`;
 
-  // Load draft from localStorage on mount
+  // Load pending invoice from guest flow OR draft from localStorage on mount
   useEffect(() => {
     try {
+      // First, check for pending invoice from guest flow (takes priority)
+      const pendingInvoice = localStorage.getItem("zerodue_pending_invoice");
+      if (pendingInvoice) {
+        const parsed = JSON.parse(pendingInvoice);
+        // Clear the pending invoice immediately so it's not reloaded
+        localStorage.removeItem("zerodue_pending_invoice");
+
+        // Reset form with guest invoice data
+        form.reset({
+          ...form.getValues(),
+          invoice_number: parsed.invoice_number || "INV-0001",
+          bill_to: {
+            name: parsed.client_name || "",
+            email: parsed.client_email || "",
+            address: parsed.client_address || "",
+            phone: "",
+          },
+          issue_date: parsed.issue_date
+            ? new Date(parsed.issue_date)
+            : new Date(),
+          due_date: parsed.due_date ? new Date(parsed.due_date) : new Date(),
+          items: parsed.items || [
+            { description: "", quantity: 1, unit_price: 0, tax: 0, amount: 0 },
+          ],
+          notes: parsed.notes || "",
+          bank_details: parsed.bank_details || "",
+          subtotal: parsed.subtotal || 0,
+          discount: parsed.discount || 0,
+          shipping: parsed.shipping || 0,
+          total: parsed.total || 0,
+        });
+
+        toast.success("Invoice data loaded!", {
+          description: "Your invoice from the try flow has been loaded.",
+          duration: 4000,
+        });
+        return; // Don't load draft if we loaded from guest flow
+      }
+
+      // Otherwise, try to load regular draft
       const savedDraft = localStorage.getItem(autosaveKey);
       if (savedDraft) {
         const parsed = JSON.parse(savedDraft);
