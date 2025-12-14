@@ -7,13 +7,18 @@ import { Input } from "@/components/ui/input";
 import {
   X,
   Mail,
+  Lock,
+  User,
   Sparkles,
   CheckCircle,
   ArrowRight,
   Loader2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -26,16 +31,19 @@ export function SignupModal({
   onClose,
   invoiceData,
 }: SignupModalProps) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleGoogleSignup = async () => {
     try {
       setIsGoogleLoading(true);
       const supabase = createClient();
 
-      // Store invoice data in localStorage for retrieval after auth
       if (invoiceData) {
         localStorage.setItem(
           "zerodue_pending_invoice",
@@ -46,7 +54,7 @@ export function SignupModal({
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard/invoices/new?from_guest=true`,
+          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard?from_guest=true`,
         },
       });
 
@@ -62,13 +70,17 @@ export function SignupModal({
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !password) return;
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
 
     try {
       setIsLoading(true);
       const supabase = createClient();
 
-      // Store invoice data in localStorage for retrieval after auth
       if (invoiceData) {
         localStorage.setItem(
           "zerodue_pending_invoice",
@@ -76,22 +88,40 @@ export function SignupModal({
         );
       }
 
-      const { error } = await supabase.auth.signInWithOtp({
+      const { data, error } = await supabase.auth.signUp({
         email,
+        password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard/invoices/new?from_guest=true`,
+          data: {
+            full_name: name,
+            name: name,
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard?from_guest=true`,
         },
       });
 
       if (error) {
-        throw error;
+        toast.error(error.message);
+        return;
       }
 
-      toast.success("Check your email for the login link!");
-      onClose();
+      if (
+        data.user &&
+        data.user.identities &&
+        data.user.identities.length === 0
+      ) {
+        toast.error(
+          "An account with this email already exists. Try signing in instead."
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      setEmailSent(true);
+      toast.success("Check your email to confirm your account!");
     } catch (error) {
       console.error("Email signup error:", error);
-      toast.error("Failed to send login link. Please try again.");
+      toast.error("Failed to create account. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -106,10 +136,62 @@ export function SignupModal({
 
   if (!isOpen) return null;
 
+  if (emailSent) {
+    return (
+      <AnimatePresence>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative w-full max-w-md mx-4 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden"
+          >
+            <div className="p-8 text-center">
+              <button
+                onClick={onClose}
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                Check your email
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">
+                We&apos;ve sent a confirmation link to{" "}
+                <strong className="text-slate-900 dark:text-white">
+                  {email}
+                </strong>
+              </p>
+              <p className="text-sm text-slate-500 dark:text-slate-500 mb-6">
+                Click the link in your email to verify your account and your
+                invoice will be created automatically.
+              </p>
+              <button
+                onClick={() => setEmailSent(false)}
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-sm"
+              >
+                ← Use a different email
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </AnimatePresence>
+    );
+  }
+
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -118,14 +200,12 @@ export function SignupModal({
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         />
 
-        {/* Modal */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md mx-4 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden"
+          className="relative w-full max-w-md mx-4 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
         >
-          {/* Gradient Header */}
           <div className="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-8 text-center relative">
             <button
               onClick={onClose}
@@ -144,10 +224,8 @@ export function SignupModal({
             </p>
           </div>
 
-          {/* Content */}
-          <div className="p-6 space-y-6">
-            {/* Benefits */}
-            <div className="space-y-3">
+          <div className="p-6 space-y-5">
+            <div className="space-y-2">
               {benefits.map((benefit, index) => (
                 <motion.div
                   key={index}
@@ -156,7 +234,7 @@ export function SignupModal({
                   transition={{ delay: index * 0.1 }}
                   className="flex items-center gap-3"
                 >
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm text-slate-600 dark:text-slate-300">
                     {benefit}
                   </span>
@@ -164,7 +242,6 @@ export function SignupModal({
               ))}
             </div>
 
-            {/* Google Sign Up */}
             <Button
               type="button"
               variant="neutralOutline"
@@ -198,7 +275,6 @@ export function SignupModal({
               Continue with Google
             </Button>
 
-            {/* Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-200 dark:border-slate-700" />
@@ -210,52 +286,93 @@ export function SignupModal({
               </div>
             </div>
 
-            {/* Email Sign Up */}
             <form onSubmit={handleEmailSignup} className="space-y-3">
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Input
+                  type="text"
+                  placeholder="Full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="pl-10 h-12 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                />
+              </div>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <Input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 h-12 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
                   required
                 />
               </div>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password (min 6 characters)"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10 pr-10 h-12 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
               <Button
                 type="submit"
                 size="lg"
-                disabled={isLoading || !email}
+                disabled={isLoading || !email || !password}
                 className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 gap-2"
               >
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    Continue with Email
+                    Create Account
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </Button>
             </form>
 
-            {/* Terms */}
+            <p className="text-sm text-center text-slate-600 dark:text-slate-400">
+              Already have an account?{" "}
+              <Link
+                href="/sign-in"
+                className="text-blue-600 hover:underline font-medium"
+                onClick={onClose}
+              >
+                Sign in
+              </Link>
+            </p>
+
             <p className="text-xs text-center text-slate-500">
               By continuing, you agree to our{" "}
-              <a
+              <Link
                 href="/privacy-policy"
                 className="text-blue-600 hover:underline"
               >
                 Privacy Policy
-              </a>{" "}
+              </Link>{" "}
               and{" "}
-              <a
+              <Link
                 href="/refund-policy"
                 className="text-blue-600 hover:underline"
               >
                 Terms of Service
-              </a>
+              </Link>
             </p>
           </div>
         </motion.div>
