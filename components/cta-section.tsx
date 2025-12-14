@@ -41,13 +41,13 @@ export default function CTASection() {
             Start creating professional invoices today.
           </motion.p>
 
-          {/* CTA Button */}
+          {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex justify-center items-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <a
               href="/sign-up"
@@ -56,28 +56,11 @@ export default function CTASection() {
               Get Started Free
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </a>
-          </motion.div>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
             <a
-              href="/sign-up"
-              className="inline-flex items-center px-8 py-4 bg-white dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-200 group"
-            >
-              Start Free Trial
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </a>
-            <a
-              href="/pricing"
+              href="/try"
               className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 border-2 border-white/30 text-white font-semibold rounded-xl transition-all duration-200"
             >
-              View Pricing
+              Try Without Signup
             </a>
           </motion.div>
 

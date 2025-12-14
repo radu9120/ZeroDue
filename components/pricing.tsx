@@ -424,19 +424,19 @@ export default function Pricing({
         setShowDowngradeModal(true);
         return;
       }
-      // If auth state is still loading or user is not authenticated, go to sign-up
+      // If auth state is still loading or user is not authenticated, go to try page
       if (isAuthenticated === true) {
         // User is logged in, go to dashboard
         window.location.href = "/dashboard";
       } else {
-        // User is not logged in or auth is still loading, go to sign-up
-        window.location.href = "/sign-up";
+        // User is not logged in - send to try page for instant value
+        window.location.href = "/try";
       }
       return;
     }
 
     if (!isAuthenticated) {
-      router.push("/sign-up");
+      router.push("/try");
       return;
     }
 

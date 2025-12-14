@@ -89,7 +89,7 @@ export default function Hero() {
           {/* Buttons - Vercel style */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-6 w-full sm:w-auto px-4 sm:px-0">
             <AnimatedButton
-              text="Start Invoicing"
+              text="Get Started"
               href="/sign-up"
               className="w-full sm:w-auto"
             />
@@ -99,7 +99,7 @@ export default function Hero() {
               className="h-12 sm:h-14 px-6 sm:px-8 rounded-full text-sm sm:text-base font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all w-full sm:w-auto border border-slate-200 dark:border-slate-800"
               asChild
             >
-              <Link href="#features">Learn more</Link>
+              <Link href="/try">Try Free</Link>
             </Button>
           </div>
 
