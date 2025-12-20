@@ -429,14 +429,14 @@ export default function Pricing({
         // User is logged in, go to dashboard
         window.location.href = "/dashboard";
       } else {
-        // User is not logged in - send to try page for instant value
-        window.location.href = "/try";
+        // User is not logged in - send to sign-up page
+        window.location.href = "/sign-up";
       }
       return;
     }
 
     if (!isAuthenticated) {
-      router.push("/try");
+      router.push("/sign-up");
       return;
     }
 

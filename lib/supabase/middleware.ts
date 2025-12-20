@@ -42,7 +42,6 @@ export async function updateSession(request: NextRequest) {
     "/",
     "/sign-in",
     "/sign-up",
-    "/try",
     "/auth/callback",
     "/auth/confirm",
     "/pricing",

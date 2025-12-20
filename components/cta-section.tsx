@@ -57,10 +57,10 @@ export default function CTASection() {
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </a>
             <a
-              href="/try"
+              href="/sign-up"
               className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 border-2 border-white/30 text-white font-semibold rounded-xl transition-all duration-200"
             >
-              Try Without Signup
+              Sign Up Now
             </a>
           </motion.div>
 
