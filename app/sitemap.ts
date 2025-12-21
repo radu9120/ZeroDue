@@ -2,6 +2,7 @@ import { MetadataRoute } from "next";
 
 // Blog post IDs from your posts.ts
 const blogPostIds = [
+  "why-zerodue-beats-ai-invoice-generators",
   "free-invoice-template-2025",
   "how-to-invoice-freelancer-guide",
   "invoice-vs-receipt-difference",
