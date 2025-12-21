@@ -17,9 +17,14 @@ import {
   OrganizationSchema,
   SoftwareApplicationSchema,
   WebsiteSchema,
+  LocalBusinessSchema,
 } from "@/components/seo/StructuredData";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap", // Improves font loading performance
+  preload: true,
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.zerodue.co"),
@@ -31,26 +36,46 @@ export const metadata: Metadata = {
   description:
     "Create professional invoices for free with ZeroDue. Send invoices, automate payment reminders, track payments, and get paid faster. Perfect for freelancers and small businesses.",
   keywords: [
+    // Primary keywords
     "invoice generator",
     "free invoicing software",
     "invoice template",
     "online invoicing",
+    // Target audience keywords
     "freelancer invoices",
     "small business invoicing",
+    "contractor billing",
+    "self-employed invoice",
+    // Feature keywords
     "payment tracking",
     "invoice automation",
     "professional invoices",
     "billing software",
+    "automated payment reminders",
+    // Long-tail keywords
+    "create invoice online free",
+    "send invoice to client",
+    "invoice generator UK",
+    "best invoice software 2025",
+    "how to invoice clients",
+    // Related terms
+    "estimates",
+    "quotes",
+    "expense tracking",
+    "cash flow management",
   ],
   authors: [{ name: "ZeroDue" }],
   creator: "ZeroDue",
   publisher: "ZeroDue",
+  category: "Business Software",
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
+      noimageindex: false,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
@@ -84,9 +109,18 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://www.zerodue.co",
+    languages: {
+      "en-GB": "https://www.zerodue.co",
+    },
   },
   verification: {
     google: "your-google-verification-code", // Add your Google Search Console verification code
+    // yandex: "your-yandex-verification-code", // Optional: Yandex Webmaster
+    // bing: "your-bing-verification-code", // Optional: Bing Webmaster
+  },
+  other: {
+    "msapplication-TileColor": "#2563eb",
+    "theme-color": "#ffffff",
   },
 };
 
@@ -98,9 +132,26 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Preconnect to external domains for faster loading */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+
+        {/* PWA Manifest */}
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="ZeroDue" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
+
+        {/* Structured Data */}
         <OrganizationSchema />
         <SoftwareApplicationSchema />
         <WebsiteSchema />
+        <LocalBusinessSchema />
         {/* Google Tag Manager */}
         <Script id="gtm-script" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

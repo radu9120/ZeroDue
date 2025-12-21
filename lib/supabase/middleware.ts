@@ -52,8 +52,15 @@ export async function updateSession(request: NextRequest) {
     "/refund-policy",
     "/cookies",
     "/sitemap",
+    "/site-map",
     "/blog",
     "/faq",
+    "/industries",
+    "/tools",
+    "/templates",
+    "/uk",
+    "/forgot-password",
+    "/reset-password",
   ];
 
   const isPublicRoute = publicRoutes.some(

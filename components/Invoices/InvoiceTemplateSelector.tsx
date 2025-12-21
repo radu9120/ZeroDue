@@ -13,6 +13,13 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
+  Briefcase,
+  Sparkles,
+  Zap,
+  Wrench,
+  Camera,
+  Palette,
+  Trees,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -22,7 +29,14 @@ export type InvoiceTemplateType =
   | "construction"
   | "freelance"
   | "hourly"
-  | "timesheet";
+  | "timesheet"
+  | "cleaning"
+  | "electrical"
+  | "plumbing"
+  | "photography"
+  | "design"
+  | "landscaping"
+  | "consultant";
 
 interface InvoiceTemplateSelectorProps {
   selectedTemplate: InvoiceTemplateType;
@@ -41,16 +55,16 @@ export const InvoiceTemplateSelector = ({
       description: "General purpose invoice for any business.",
     },
     {
-      id: "timesheet",
-      name: "Weekly Timesheet",
-      icon: Clock,
-      description: "Track daily shifts with start/finish times and rates.",
-    },
-    {
       id: "hourly",
       name: "Hourly / Time",
       icon: Clock,
       description: "Bill by the hour. Great for consultants and contractors.",
+    },
+    {
+      id: "timesheet",
+      name: "Weekly Timesheet",
+      icon: Clock,
+      description: "Track daily shifts with start/finish times and rates.",
     },
     {
       id: "trucking",
@@ -60,15 +74,57 @@ export const InvoiceTemplateSelector = ({
     },
     {
       id: "construction",
-      name: "Construction",
+      name: "Construction / Contractor",
       icon: Hammer,
-      description: "Includes Project Location, Materials vs Labor, Retainage.",
+      description: "Project billing with materials, labor, and retainage.",
     },
     {
       id: "freelance",
-      name: "Freelance / Web",
+      name: "Freelance / Creative",
+      icon: Briefcase,
+      description: "Milestone-based billing for freelancers and agencies.",
+    },
+    {
+      id: "consultant",
+      name: "Consulting Services",
       icon: Code,
-      description: "Includes Hourly Rates, Milestones, and Hosting fees.",
+      description: "Professional services with hourly or project rates.",
+    },
+    {
+      id: "cleaning",
+      name: "Cleaning Services",
+      icon: Sparkles,
+      description: "Property-based billing with recurring service options.",
+    },
+    {
+      id: "electrical",
+      name: "Electrical Services",
+      icon: Zap,
+      description: "Job-based invoicing with parts and labor breakdown.",
+    },
+    {
+      id: "plumbing",
+      name: "Plumbing Services",
+      icon: Wrench,
+      description: "Service calls with parts, labor, and emergency rates.",
+    },
+    {
+      id: "photography",
+      name: "Photography",
+      icon: Camera,
+      description: "Session-based billing with package and print options.",
+    },
+    {
+      id: "design",
+      name: "Design Services",
+      icon: Palette,
+      description: "Project-based design work with revisions and assets.",
+    },
+    {
+      id: "landscaping",
+      name: "Landscaping",
+      icon: Trees,
+      description: "Property maintenance with materials and labor split.",
     },
   ] as const;
 

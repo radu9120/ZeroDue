@@ -118,8 +118,58 @@ export default function Navbar() {
                   >
                     Features
                   </Link>
+                  <div className="relative group">
+                    <button className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium flex items-center gap-1">
+                      Industries
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+                    <div className="absolute left-0 top-full mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <div className="p-2">
+                        {[
+                          {
+                            name: "Freelancers",
+                            href: "/industries/freelancers",
+                          },
+                          {
+                            name: "Contractors",
+                            href: "/industries/contractors",
+                          },
+                          {
+                            name: "Consultants",
+                            href: "/industries/consultants",
+                          },
+                          { name: "Cleaning", href: "/industries/cleaning" },
+                          {
+                            name: "Electricians",
+                            href: "/industries/electricians",
+                          },
+                          { name: "Plumbers", href: "/industries/plumbers" },
+                        ].map((item) => (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-colors"
+                          >
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                   <Link
-                    href="/upgrade"
+                    href="#pricing"
                     className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
                   >
                     Pricing
@@ -256,27 +306,69 @@ export default function Navbar() {
                 <div className="flex flex-col space-y-2">
                   {/* Mobile Navigation Links - Different for auth states */}
                   <SignedOut>
-                    {["Features", "Pricing", "Testimonials", "Contact"].map(
-                      (item) => (
-                        <Link
-                          key={item}
-                          href={
-                            item === "Pricing"
-                              ? "/upgrade"
-                              : item === "Contact"
-                                ? "/contact"
-                                : `#${item.toLowerCase()}`
+                    {[
+                      "Features",
+                      "Industries",
+                      "Pricing",
+                      "Testimonials",
+                      "Contact",
+                    ].map((item) => (
+                      <Link
+                        key={item}
+                        href={
+                          item === "Contact"
+                            ? "/contact"
+                            : item === "Industries"
+                              ? "#"
+                              : `#${item.toLowerCase()}`
+                        }
+                        className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-xl transition-all duration-200 font-medium flex items-center justify-between group"
+                        onClick={(e) => {
+                          if (item === "Industries") {
+                            e.preventDefault();
+                          } else {
+                            closeMenu();
                           }
-                          className="px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-xl transition-all duration-200 font-medium flex items-center justify-between group"
+                        }}
+                      >
+                        {item}
+                        <span className="text-slate-400 group-hover:text-blue-500 transition-colors">
+                          →
+                        </span>
+                      </Link>
+                    ))}
+                    {/* Industries submenu in mobile */}
+                    <div className="pl-4 space-y-1">
+                      {[
+                        {
+                          name: "Freelancers",
+                          href: "/industries/freelancers",
+                        },
+                        {
+                          name: "Contractors",
+                          href: "/industries/contractors",
+                        },
+                        {
+                          name: "Consultants",
+                          href: "/industries/consultants",
+                        },
+                        { name: "Cleaning", href: "/industries/cleaning" },
+                        {
+                          name: "Electricians",
+                          href: "/industries/electricians",
+                        },
+                        { name: "Plumbers", href: "/industries/plumbers" },
+                      ].map((industry) => (
+                        <Link
+                          key={industry.name}
+                          href={industry.href}
+                          className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
                           onClick={closeMenu}
                         >
-                          {item}
-                          <span className="text-slate-400 group-hover:text-blue-500 transition-colors">
-                            →
-                          </span>
+                          {industry.name}
                         </Link>
-                      )
-                    )}
+                      ))}
+                    </div>
                   </SignedOut>
 
                   <SignedIn>

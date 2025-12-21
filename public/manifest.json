@@ -1,0 +1,27 @@
+{
+  "name": "ZeroDue - Invoice Generator",
+  "short_name": "ZeroDue",
+  "description": "Create professional invoices for free. Send invoices, automate payment reminders, track payments, and get paid faster.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "lang": "en-GB",
+  "dir": "ltr"
+}

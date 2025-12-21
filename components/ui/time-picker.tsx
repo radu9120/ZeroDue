@@ -20,7 +20,9 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
 
   // Parse current value or default to current time/00:00
-  const [hours, minutes] = (value || "00:00").split(":").map(Number);
+  // Ensure value is a string before splitting
+  const timeString = typeof value === "string" ? value : "00:00";
+  const [hours, minutes] = timeString.split(":").map(Number);
 
   const hoursList = Array.from({ length: 24 }, (_, i) => i);
   const minutesList = Array.from({ length: 60 }, (_, i) => i);

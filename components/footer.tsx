@@ -30,7 +30,7 @@ export default function Footer() {
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
           <div className="col-span-1 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-6">
               <div className="flex items-center justify-center h-9 w-9">
@@ -64,6 +64,32 @@ export default function Footer() {
                 { name: "Pricing", href: "/upgrade" },
                 { name: "Blog", href: "/blog" },
                 { name: "Testimonials", href: "#testimonials" },
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2 group"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600/0 group-hover:bg-blue-600 dark:group-hover:bg-blue-400 transition-all" />
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-6">
+              Industries
+            </h3>
+            <ul className="space-y-4">
+              {[
+                { name: "Freelancers", href: "/industries/freelancers" },
+                { name: "Contractors", href: "/industries/contractors" },
+                { name: "Consultants", href: "/industries/consultants" },
+                { name: "Cleaning Services", href: "/industries/cleaning" },
+                { name: "Electricians", href: "/industries/electricians" },
+                { name: "Plumbers", href: "/industries/plumbers" },
               ].map((item) => (
                 <li key={item.name}>
                   <Link

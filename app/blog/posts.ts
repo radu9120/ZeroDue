@@ -316,6 +316,81 @@ export const blogPosts: BlogPost[] = [
       },
     ],
   },
+  {
+    title: "Best Free Invoice Software UK 2025: Complete Comparison Guide",
+    slug: "best-free-invoice-software-uk-2025",
+    description:
+      "Compare the top free invoice software options for UK businesses in 2025. Features, pricing, VAT compliance, and which one is right for your business.",
+    publishedAt: "December 15, 2025",
+    readTime: "12 min read",
+    category: "Guides",
+    preview:
+      "Looking for free invoicing software in the UK? We compare the best options including ZeroDue, Wave, and others to help you choose the right tool.",
+    sections: [
+      {
+        heading: "What to look for in free invoice software",
+        body: "Not all free invoice software is created equal. Key features to consider include: VAT/MTD compliance for HMRC, professional template customization, payment tracking and reminders, multi-currency support for international clients, and integration with accounting software like Xero or QuickBooks.",
+      },
+      {
+        heading: "ZeroDue: Best for freelancers and small businesses",
+        body: "ZeroDue offers a generous free tier with 3 invoices per month, professional templates, automated payment reminders, and full VAT compliance. The AI assistant helps you create invoices faster and answers questions 24/7. Upgrade to Professional for unlimited invoices at just £9.99/month.",
+      },
+      {
+        heading: "Making the right choice for your business",
+        body: "Consider your monthly invoice volume, need for automation, and growth plans. ZeroDue scales with you from freelancer to enterprise, with transparent pricing and no hidden fees. Start free today and upgrade when you need more features.",
+      },
+    ],
+  },
+  {
+    title: "How to Create an Invoice: Step-by-Step Guide for Beginners",
+    slug: "how-to-create-invoice-beginners-guide",
+    description:
+      "Learn how to create a professional invoice from scratch. Complete beginner's guide covering invoice elements, best practices, and common mistakes to avoid.",
+    publishedAt: "December 10, 2025",
+    readTime: "8 min read",
+    category: "Tutorials",
+    preview:
+      "New to invoicing? This complete guide walks you through creating your first professional invoice, from essential elements to sending and follow-up.",
+    sections: [
+      {
+        heading: "Essential elements every invoice needs",
+        body: "A professional invoice must include: your business name and contact details, client name and address, unique invoice number, invoice date and due date, itemized list of products or services, quantities and unit prices, subtotal, taxes (VAT/GST), and total amount due. Don't forget payment instructions and terms.",
+      },
+      {
+        heading: "Step-by-step invoice creation",
+        body: "1. Open ZeroDue and click 'Create Invoice'. 2. Select or add your client. 3. Add line items with descriptions and prices. 4. Set payment terms (Net 15, Net 30, etc.). 5. Add any applicable taxes. 6. Preview and customize the design. 7. Send directly to your client's email. ZeroDue tracks when they view it and sends automatic reminders.",
+      },
+      {
+        heading: "Common invoicing mistakes to avoid",
+        body: "Never send an invoice without proofreading for errors. Always use sequential invoice numbers for accounting. Include clear payment instructions. Don't wait too long after completing work to send the invoice. Set up automatic reminders to reduce late payments by up to 40%.",
+      },
+    ],
+  },
+  {
+    title: "Invoice Payment Terms Explained: Net 30, Due on Receipt & More",
+    slug: "invoice-payment-terms-explained",
+    description:
+      "Understand invoice payment terms like Net 30, Net 15, Due on Receipt, and more. Learn which terms work best for different business situations.",
+    publishedAt: "December 5, 2025",
+    readTime: "7 min read",
+    category: "Business Basics",
+    preview:
+      "Confused by invoice payment terms? Learn what Net 30, Due on Receipt, and other terms mean and how to choose the right ones for your business.",
+    sections: [
+      {
+        heading: "What do payment terms mean?",
+        body: "Payment terms specify when you expect to be paid after sending an invoice. Common terms include: Due on Receipt (pay immediately), Net 15 (pay within 15 days), Net 30 (pay within 30 days), Net 60 (pay within 60 days), and 2/10 Net 30 (2% discount if paid within 10 days, otherwise due in 30).",
+      },
+      {
+        heading: "Choosing the right terms for your business",
+        body: "For new clients, start with shorter terms like Net 15 or require a deposit upfront. Established clients with good payment history can have Net 30. Large enterprises often expect Net 60. Always put payment terms in writing in your contract and on every invoice.",
+      },
+      {
+        heading: "How to enforce payment terms",
+        body: "Clearly state terms on every invoice. Send reminders before the due date. Follow up promptly when payments are late. Consider late payment fees (1-2% per month is standard). ZeroDue automates all of this—set it once and the system handles reminders for you.",
+      },
+    ],
+  },
 ];
 
 export const findBlogPost = (slug: string) =>
