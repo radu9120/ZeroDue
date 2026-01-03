@@ -14,7 +14,7 @@ describe("Authentication API Routes", () => {
 
       const response = await whoami();
       expect(response.status).toBe(401);
-      
+
       const text = await response.text();
       expect(text).toBe("Unauthorized");
     });
@@ -25,19 +25,21 @@ describe("Authentication API Routes", () => {
 
       const response = await whoami();
       expect(response.status).toBe(200);
-      
+
       const data = await response.json();
       expect(data).toEqual({ userId: "user-123" });
     });
 
     it("should handle different user ids", async () => {
       const { auth } = await import("@/lib/auth");
-      
+
       // Test with different user ID
-      vi.mocked(auth).mockResolvedValue({ userId: "different-user-456" } as any);
+      vi.mocked(auth).mockResolvedValue({
+        userId: "different-user-456",
+      } as any);
       const response = await whoami();
       const data = await response.json();
-      
+
       expect(data.userId).toBe("different-user-456");
     });
   });

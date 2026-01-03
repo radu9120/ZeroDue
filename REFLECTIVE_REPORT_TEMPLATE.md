@@ -25,6 +25,7 @@
 ## 1. Executive Summary (200 words)
 
 [Provide a brief overview of your web application project, including:]
+
 - **Project Topic**: InvoiceFlow - A comprehensive invoice management system for freelancers and small businesses
 - **Key Technologies**: Next.js 15, React 19, TypeScript, Supabase (PostgreSQL), Stripe API
 - **Main Features**: Invoice creation, client management, payment tracking, PDF generation, email notifications
@@ -46,6 +47,7 @@
 4. **Modern Features**: Built-in support for ES modules, top-level await, and modern JavaScript features
 
 **References:**
+
 - Vitest Documentation (2024) 'Getting Started with Vitest', Available at: https://vitest.dev
 
 ### 2.2 Test Suite Architecture
@@ -53,13 +55,16 @@
 The test suite is organized into several key categories:
 
 #### 2.2.1 API Route Testing (33 tests)
+
 API endpoints were tested using mock implementations to ensure:
+
 - **Authentication**: Verifying user session validation
 - **Authorization**: Checking permission controls
 - **Input Validation**: Testing parameter validation and error responses
 - **Error Handling**: Verifying appropriate HTTP status codes (400, 401, 403, 404, 500)
 
 Example test scenario:
+
 ```typescript
 describe("GET /api/invoices/list", () => {
   it("should return 400 if business_id is missing", async () => {
@@ -71,47 +76,59 @@ describe("GET /api/invoices/list", () => {
 ```
 
 **References:**
-- Richardson, L. and Ruby, S. (2007) *RESTful Web Services*. O'Reilly Media
+
+- Richardson, L. and Ruby, S. (2007) _RESTful Web Services_. O'Reilly Media
 
 #### 2.2.2 Component Testing (23 tests)
+
 UI components were tested for:
+
 - **Rendering**: Ensuring components render without errors
 - **User Interactions**: Testing button clicks, form submissions
 - **Props Validation**: Verifying component behavior with different props
 - **Accessibility**: Checking ARIA attributes and semantic HTML
 
 **References:**
+
 - React Testing Library Documentation (2024)
 
 #### 2.2.3 Business Logic Testing (30 tests)
+
 Core business logic including:
+
 - **Client Actions** (10 tests): CRUD operations for client management
 - **Invoice Actions** (11 tests): Invoice creation, updates, calculations
 - **Estimate Actions** (9 tests): Estimate generation and conversion
 
 #### 2.2.4 Schema Validation Testing (11 tests)
+
 Using Zod schema validation library:
+
 - Invoice data structure validation
 - Required field enforcement
 - Type safety checks
 - Business rule validation
 
 **References:**
+
 - Zod Documentation (2024) 'TypeScript-first schema validation', Available at: https://zod.dev
 
 #### 2.2.5 Utility Functions Testing (34 tests)
+
 - **Calculation Functions** (20 tests): Tax calculations, totals, discounts
 - **Email Utilities** (14 tests): Email formatting, validation, delivery status
 
 ### 2.3 Test Coverage Analysis
 
 **Coverage Report Summary:**
+
 - Total Tests: 158 passing
 - Test Files: 11
 - Execution Time: 3.70 seconds
 - Coverage Tool: v8
 
 **Coverage Metrics:**
+
 - Statements: 0.57%
 - Branches: 70.42%
 - Functions: 67.77%
@@ -121,12 +138,14 @@ Using Zod schema validation library:
 
 **Critical Analysis:**
 While the overall coverage appears low, this metric includes:
+
 1. Server-rendered pages not executed in test environment
 2. Client-side only components
 3. Configuration files
 4. Build artifacts
 
 The **actual tested functionality** shows excellent coverage:
+
 - API Routes: 83-100% coverage
 - Tested Actions: 100% function coverage
 - Schemas: 100% statement coverage
@@ -137,20 +156,21 @@ The **actual tested functionality** shows excellent coverage:
 **Challenge 1: Mocking Supabase Client**
 The Supabase database client needed to be mocked to avoid actual database calls during testing.
 
-*Solution:* Implemented comprehensive mock factories that simulate database responses while maintaining type safety.
+_Solution:_ Implemented comprehensive mock factories that simulate database responses while maintaining type safety.
 
 **References:**
-- Fowler, M. (2007) *Mocks Aren't Stubs*, Available at: https://martinfowler.com/articles/mocksArentStubs.html
+
+- Fowler, M. (2007) _Mocks Aren't Stubs_, Available at: https://martinfowler.com/articles/mocksArentStubs.html
 
 **Challenge 2: Asynchronous Testing**
 Many operations involve async/await patterns with external services.
 
-*Solution:* Utilized Vitest's built-in async testing capabilities and careful promise handling.
+_Solution:_ Utilized Vitest's built-in async testing capabilities and careful promise handling.
 
 **Challenge 3: Next.js API Route Testing**
 Testing Next.js API routes required understanding Request/Response patterns.
 
-*Solution:* Created request mocks using native `Request` objects and tested response objects directly.
+_Solution:_ Created request mocks using native `Request` objects and tested response objects directly.
 
 ### 2.5 Continuous Integration
 
@@ -158,11 +178,13 @@ Testing Next.js API routes required understanding Request/Response patterns.
 Automated testing integrated into CI/CD pipeline using GitHub Actions to run tests on every push and pull request.
 
 **References:**
+
 - GitHub Actions Documentation (2024)
 
 ### 2.6 Test Results and Effectiveness
 
 **Effectiveness Metrics:**
+
 1. **Bug Detection**: Tests caught 12 authorization bugs during development
 2. **Regression Prevention**: 100% of regression issues caught by existing tests
 3. **Development Confidence**: Tests enable safe refactoring
@@ -170,13 +192,15 @@ Automated testing integrated into CI/CD pipeline using GitHub Actions to run tes
 
 **Learning Reflection:**
 The testing process revealed the importance of:
+
 - Writing tests before fixing bugs (TDD approach)
 - Testing edge cases and error scenarios
 - Maintaining test independence and isolation
 - Clear test descriptions for maintainability
 
 **References:**
-- Beck, K. (2003) *Test-Driven Development: By Example*. Addison-Wesley
+
+- Beck, K. (2003) _Test-Driven Development: By Example_. Addison-Wesley
 
 ---
 
@@ -185,12 +209,14 @@ The testing process revealed the importance of:
 ### 3.1 Performance Testing Methodology
 
 **Google Lighthouse** was selected as the primary performance auditing tool because:
+
 1. Industry-standard metrics (Core Web Vitals)
 2. Comprehensive analysis (Performance, Accessibility, SEO, Best Practices)
 3. Actionable recommendations
 4. Integration with Chrome DevTools
 
 **References:**
+
 - Google (2024) 'Lighthouse Documentation', Available at: https://developers.google.com/web/tools/lighthouse
 
 ### 3.2 Initial Performance Baseline
@@ -198,6 +224,7 @@ The testing process revealed the importance of:
 [Fill this section after running Lighthouse on deployed app]
 
 **Test Environment:**
+
 - Date: [Date]
 - URL: [Your deployed URL]
 - Device: Desktop
@@ -205,14 +232,15 @@ The testing process revealed the importance of:
 
 **Initial Scores:**
 
-| Metric | Score | Target | Status |
-|--------|-------|--------|--------|
-| Performance | [X]/100 | >90 | [Pass/Fail] |
-| Accessibility | [X]/100 | >90 | [Pass/Fail] |
-| Best Practices | [X]/100 | >90 | [Pass/Fail] |
-| SEO | [X]/100 | >90 | [Pass/Fail] |
+| Metric         | Score   | Target | Status      |
+| -------------- | ------- | ------ | ----------- |
+| Performance    | [X]/100 | >90    | [Pass/Fail] |
+| Accessibility  | [X]/100 | >90    | [Pass/Fail] |
+| Best Practices | [X]/100 | >90    | [Pass/Fail] |
+| SEO            | [X]/100 | >90    | [Pass/Fail] |
 
 **Core Web Vitals:**
+
 - **First Contentful Paint (FCP)**: [X]s (Target: <1.8s)
 - **Largest Contentful Paint (LCP)**: [X]s (Target: <2.5s)
 - **Total Blocking Time (TBT)**: [X]ms (Target: <200ms)
@@ -222,14 +250,16 @@ The testing process revealed the importance of:
 ### 3.3 Performance Optimization Strategies Implemented
 
 #### 3.3.1 Image Optimization
+
 **Technique**: Next.js Image Component with automatic optimization
 
 **Implementation:**
+
 ```typescript
 import Image from 'next/image';
 
-<Image 
-  src="/logo.png" 
+<Image
+  src="/logo.png"
   alt="Company Logo"
   width={200}
   height={50}
@@ -239,12 +269,14 @@ import Image from 'next/image';
 ```
 
 **Benefits:**
+
 - Automatic WebP/AVIF format conversion
 - Responsive image sizing
 - Lazy loading for off-screen images
 - Reduced bandwidth usage
 
 **References:**
+
 - Next.js Image Optimization (2024), Available at: https://nextjs.org/docs/basic-features/image-optimization
 
 #### 3.3.2 Code Splitting and Dynamic Imports
@@ -252,6 +284,7 @@ import Image from 'next/image';
 **Technique**: React.lazy() and dynamic imports for heavy components
 
 **Implementation:**
+
 ```typescript
 const PDFViewer = dynamic(() => import('@/components/PDFViewer'), {
   loading: () => <Skeleton />,
@@ -260,23 +293,27 @@ const PDFViewer = dynamic(() => import('@/components/PDFViewer'), {
 ```
 
 **Impact:**
+
 - Reduced initial bundle size
 - Faster initial page load
 - On-demand loading of features
 
 **References:**
-- Osmani, A. (2017) 'JavaScript Start-up Optimization', *Web.dev*
+
+- Osmani, A. (2017) 'JavaScript Start-up Optimization', _Web.dev_
 
 #### 3.3.3 Server-Side Rendering (SSR)
 
 **Technique**: Next.js SSR for improved initial load time
 
 **Benefits:**
+
 - Faster First Contentful Paint
 - Better SEO
 - Improved perceived performance
 
 **References:**
+
 - Next.js Documentation (2024) 'Data Fetching'
 
 #### 3.3.4 Database Query Optimization
@@ -284,23 +321,27 @@ const PDFViewer = dynamic(() => import('@/components/PDFViewer'), {
 **Technique**: Efficient Supabase queries with proper indexing
 
 **Implementation:**
+
 - Limited data fetching (pagination)
 - Selective column retrieval
 - Query result caching
 - Connection pooling
 
 **References:**
-- Karwin, B. (2010) *SQL Antipatterns*. Pragmatic Bookshelf
+
+- Karwin, B. (2010) _SQL Antipatterns_. Pragmatic Bookshelf
 
 #### 3.3.5 Caching Strategies
 
 **Implemented Caching:**
+
 1. **Static Asset Caching**: 1-year cache for immutable assets
 2. **API Response Caching**: React Query for client-side caching
 3. **CDN Caching**: Vercel Edge Network
 
 **References:**
-- Grigorik, I. (2013) *High Performance Browser Networking*. O'Reilly Media
+
+- Grigorik, I. (2013) _High Performance Browser Networking_. O'Reilly Media
 
 ### 3.4 Post-Optimization Results
 
@@ -308,22 +349,24 @@ const PDFViewer = dynamic(() => import('@/components/PDFViewer'), {
 
 **Performance Improvements:**
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Performance Score | [X] | [Y] | [+Z%] |
-| FCP | [X]s | [Y]s | [Z]s faster |
-| LCP | [X]s | [Y]s | [Z]s faster |
-| TBT | [X]ms | [Y]ms | [Z]ms less |
-| CLS | [X] | [Y] | [Z] improvement |
+| Metric            | Before | After | Improvement     |
+| ----------------- | ------ | ----- | --------------- |
+| Performance Score | [X]    | [Y]   | [+Z%]           |
+| FCP               | [X]s   | [Y]s  | [Z]s faster     |
+| LCP               | [X]s   | [Y]s  | [Z]s faster     |
+| TBT               | [X]ms  | [Y]ms | [Z]ms less      |
+| CLS               | [X]    | [Y]   | [Z] improvement |
 
 ### 3.5 Performance Monitoring
 
 **Tools Implemented:**
+
 1. **Vercel Analytics**: Real user monitoring (RUM)
 2. **Speed Insights**: Core Web Vitals tracking
 3. **Custom Performance Marks**: JavaScript performance.mark() API
 
 **References:**
+
 - Vercel Analytics Documentation (2024)
 
 ### 3.6 Accessibility Improvements
@@ -337,22 +380,26 @@ Based on Lighthouse accessibility audit:
 5. **Focus Indicators**: Visible focus states
 
 **References:**
+
 - W3C (2018) 'Web Content Accessibility Guidelines (WCAG) 2.1'
 
 ### 3.7 Performance Learning Outcomes
 
 **Key Learnings:**
+
 1. **Measurement First**: Cannot optimize what you don't measure
 2. **User-Centric Metrics**: Focus on user experience (Core Web Vitals)
 3. **Progressive Enhancement**: Build fast baseline, then enhance
 4. **Trade-offs**: Balance between features and performance
 
 **Challenges Faced:**
+
 - Large PDF generation impacting performance
 - Third-party script loading delays
 - Database query optimization complexity
 
 **Solutions Applied:**
+
 - Background PDF generation with web workers
 - Async script loading with defer attribute
 - Query result caching and indexing
@@ -365,12 +412,14 @@ Based on Lighthouse accessibility audit:
 
 **Justification:**
 Next.js was selected for its hybrid rendering capabilities, combining:
+
 - **Server-Side Rendering (SSR)**: For SEO and initial load performance
 - **Static Site Generation (SSG)**: For marketing pages
 - **Client-Side Rendering (CSR)**: For interactive features
 - **API Routes**: Integrated backend without separate server
 
 **Advantages:**
+
 1. File-based routing system
 2. Automatic code splitting
 3. Image optimization
@@ -378,6 +427,7 @@ Next.js was selected for its hybrid rendering capabilities, combining:
 5. Excellent developer experience
 
 **References:**
+
 - Vercel (2024) 'Next.js Documentation'
 - React Team (2024) 'React 19 Release Notes'
 
@@ -385,34 +435,40 @@ Next.js was selected for its hybrid rendering capabilities, combining:
 
 **Architecture Decision:**
 Instead of traditional PHP backend (Laravel/CodeIgniter), chose modern TypeScript backend for:
+
 - **Type Safety**: Shared types between frontend and backend
 - **Developer Efficiency**: Single language across stack
 - **Modern Features**: Async/await, ES modules
 - **Better Error Handling**: TypeScript compile-time checking
 
 **Database: Supabase (PostgreSQL)**
+
 - Real-time subscriptions
 - Row-level security
 - RESTful API
 - Authentication built-in
 
 **References:**
+
 - Supabase Documentation (2024)
 - PostgreSQL Documentation
 
 ### 4.3 State Management
 
 **Approach**: React 19 Server Components + Client State
+
 - Server state managed by Next.js data fetching
 - Client state using React hooks (useState, useContext)
 - Form state managed by React Hook Form
 
 **References:**
+
 - React Hook Form (2024) Documentation
 
 ### 4.4 Styling: Tailwind CSS
 
 **Justification:**
+
 - Utility-first approach
 - Excellent developer experience
 - Built-in responsive design
@@ -420,22 +476,26 @@ Instead of traditional PHP backend (Laravel/CodeIgniter), chose modern TypeScrip
 - Consistent design system
 
 **References:**
+
 - Tailwind CSS Documentation (2024)
 
 ### 4.5 Payment Processing: Stripe
 
 **Integration:**
+
 - Secure payment handling
 - Subscription management
 - Webhook integration
 - PCI compliance
 
 **References:**
+
 - Stripe Documentation (2024) 'Payment Intents API'
 
 ### 4.6 Email System: Resend + React Email
 
 **Features:**
+
 - Programmatic email sending
 - React-based email templates
 - Delivery tracking
@@ -462,16 +522,17 @@ Instead of traditional PHP backend (Laravel/CodeIgniter), chose modern TypeScrip
 
 ### 4.8 Technology Comparison
 
-| Aspect | Traditional (React + PHP) | Chosen (Next.js) |
-|--------|---------------------------|------------------|
-| Languages | JavaScript + PHP | TypeScript only |
-| Type Safety | Partial | Full stack |
-| Deployment | Separate frontend/backend | Unified |
-| API Design | Manual RESTful | API Routes |
-| Performance | Client-side only | SSR + CSR hybrid |
+| Aspect      | Traditional (React + PHP) | Chosen (Next.js) |
+| ----------- | ------------------------- | ---------------- |
+| Languages   | JavaScript + PHP          | TypeScript only  |
+| Type Safety | Partial                   | Full stack       |
+| Deployment  | Separate frontend/backend | Unified          |
+| API Design  | Manual RESTful            | API Routes       |
+| Performance | Client-side only          | SSR + CSR hybrid |
 
 **References:**
-- Flanagan, D. (2020) *JavaScript: The Definitive Guide, 7th Edition*. O'Reilly Media
+
+- Flanagan, D. (2020) _JavaScript: The Definitive Guide, 7th Edition_. O'Reilly Media
 
 ---
 
@@ -482,16 +543,18 @@ Instead of traditional PHP backend (Laravel/CodeIgniter), chose modern TypeScrip
 **Problem**: Generating invoices as PDFs caused significant UI blocking.
 
 **Solution**: Implemented background PDF generation using Puppeteer with Chromium:
+
 ```typescript
 const browser = await puppeteer.launch({ headless: true });
 const page = await browser.newPage();
 await page.setContent(htmlContent);
-const pdf = await page.pdf({ format: 'A4' });
+const pdf = await page.pdf({ format: "A4" });
 ```
 
 **Learning**: Always handle heavy operations asynchronously to maintain UI responsiveness.
 
 **References:**
+
 - Puppeteer Documentation (2024)
 
 ### 5.2 Challenge: Authentication Security
@@ -499,12 +562,14 @@ const pdf = await page.pdf({ format: 'A4' });
 **Problem**: Implementing secure authentication with proper session management.
 
 **Solution**: Utilized Supabase Auth with:
+
 - Server-side session validation
 - HTTP-only cookies
 - CSRF protection
 - Row-level security policies
 
 **References:**
+
 - OWASP (2021) 'Authentication Cheat Sheet'
 
 ### 5.3 Challenge: Real-time Updates
@@ -532,6 +597,7 @@ const pdf = await page.pdf({ format: 'A4' });
 ### 6.1 Module Learning Outcome MO1: Web Application Development
 
 **Achievement**: Successfully developed a fully functional web application with:
+
 - Complex frontend using modern React patterns
 - RESTful API with proper HTTP methods and status codes
 - Persistent data storage with PostgreSQL
@@ -546,6 +612,7 @@ This project deepened my understanding of full-stack development. The most signi
 ### 6.2 Module Learning Outcome MO2: Testing and Performance
 
 **Achievement**: Implemented comprehensive testing suite and performance optimization:
+
 - 158 automated tests covering critical functionality
 - Lighthouse performance auditing
 - Measurable performance improvements
@@ -561,6 +628,7 @@ Performance optimization taught me that user experience extends beyond features.
 ### 6.3 Module Learning Outcome MO3: Professional Development Practices
 
 **Achievement**: Utilized professional tools and workflows:
+
 - Git version control with meaningful commits
 - GitHub issues and project management
 - Code review practices
@@ -575,12 +643,14 @@ Using Git effectively was more challenging than expected. Learning to write mean
 ### 6.4 Personal Growth
 
 **Technical Growth:**
+
 - Mastered TypeScript's advanced features
 - Understood database query optimization
 - Learned security best practices
 - Gained confidence in testing methodologies
 
 **Soft Skills Growth:**
+
 - Problem-solving persistence
 - Breaking large problems into manageable tasks
 - Time management and prioritization
@@ -599,6 +669,7 @@ These skills transfer directly to professional software development. The testing
 This project successfully demonstrated the development of a modern, full-stack web application meeting all assessment requirements:
 
 **Technical Achievements:**
+
 - Fully functional invoice management system
 - Comprehensive automated testing (158 tests)
 - Performance-optimized application
@@ -608,12 +679,14 @@ This project successfully demonstrated the development of a modern, full-stack w
 - Payment processing integration
 
 **Learning Achievements:**
+
 - Mastered modern web development frameworks
 - Developed testing expertise
 - Gained performance optimization skills
 - Adopted professional development practices
 
 **Assessment Alignment:**
+
 - ✅ Client-side framework (React/Next.js)
 - ✅ Server-side API (Next.js API Routes with TypeScript)
 - ✅ Persistent data storage (Supabase PostgreSQL)
@@ -625,6 +698,7 @@ This project successfully demonstrated the development of a modern, full-stack w
 - ✅ Critical reflection on development process
 
 **Future Enhancements:**
+
 - Additional integration tests
 - Multi-language support
 - Advanced reporting features
@@ -636,25 +710,25 @@ This project solidified my understanding of modern web development and prepared 
 
 ## 8. References
 
-Beck, K. (2003) *Test-Driven Development: By Example*. Addison-Wesley Professional.
+Beck, K. (2003) _Test-Driven Development: By Example_. Addison-Wesley Professional.
 
-Flanagan, D. (2020) *JavaScript: The Definitive Guide, 7th Edition*. O'Reilly Media.
+Flanagan, D. (2020) _JavaScript: The Definitive Guide, 7th Edition_. O'Reilly Media.
 
-Fowler, M. (2007) *Mocks Aren't Stubs*. Available at: https://martinfowler.com/articles/mocksArentStubs.html (Accessed: [Date]).
+Fowler, M. (2007) _Mocks Aren't Stubs_. Available at: https://martinfowler.com/articles/mocksArentStubs.html (Accessed: [Date]).
 
 GitHub Actions Documentation (2024). Available at: https://docs.github.com/en/actions (Accessed: [Date]).
 
-Google (2024) *Lighthouse Documentation*. Available at: https://developers.google.com/web/tools/lighthouse (Accessed: [Date]).
+Google (2024) _Lighthouse Documentation_. Available at: https://developers.google.com/web/tools/lighthouse (Accessed: [Date]).
 
-Grigorik, I. (2013) *High Performance Browser Networking*. O'Reilly Media.
+Grigorik, I. (2013) _High Performance Browser Networking_. O'Reilly Media.
 
-Karwin, B. (2010) *SQL Antipatterns: Avoiding the Pitfalls of Database Programming*. Pragmatic Bookshelf.
+Karwin, B. (2010) _SQL Antipatterns: Avoiding the Pitfalls of Database Programming_. Pragmatic Bookshelf.
 
 Next.js Documentation (2024). Available at: https://nextjs.org/docs (Accessed: [Date]).
 
-OWASP (2021) *Authentication Cheat Sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html (Accessed: [Date]).
+OWASP (2021) _Authentication Cheat Sheet_. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html (Accessed: [Date]).
 
-Osmani, A. (2017) *JavaScript Start-up Optimization*. Available at: https://web.dev/optimizing-content-efficiency-javascript-startup-optimization/ (Accessed: [Date]).
+Osmani, A. (2017) _JavaScript Start-up Optimization_. Available at: https://web.dev/optimizing-content-efficiency-javascript-startup-optimization/ (Accessed: [Date]).
 
 PostgreSQL Documentation (2024). Available at: https://www.postgresql.org/docs/ (Accessed: [Date]).
 
@@ -666,23 +740,23 @@ React Hook Form (2024). Available at: https://react-hook-form.com/ (Accessed: [D
 
 React Testing Library (2024). Available at: https://testing-library.com/docs/react-testing-library/intro/ (Accessed: [Date]).
 
-Richardson, L. and Ruby, S. (2007) *RESTful Web Services*. O'Reilly Media.
+Richardson, L. and Ruby, S. (2007) _RESTful Web Services_. O'Reilly Media.
 
-Stripe Documentation (2024) *Payment Intents API*. Available at: https://stripe.com/docs/api/payment_intents (Accessed: [Date]).
+Stripe Documentation (2024) _Payment Intents API_. Available at: https://stripe.com/docs/api/payment_intents (Accessed: [Date]).
 
 Supabase Documentation (2024). Available at: https://supabase.com/docs (Accessed: [Date]).
 
 Tailwind CSS Documentation (2024). Available at: https://tailwindcss.com/docs (Accessed: [Date]).
 
-Vercel (2024) *Next.js Documentation*. Available at: https://vercel.com/docs (Accessed: [Date]).
+Vercel (2024) _Next.js Documentation_. Available at: https://vercel.com/docs (Accessed: [Date]).
 
 Vercel Analytics Documentation (2024). Available at: https://vercel.com/docs/analytics (Accessed: [Date]).
 
-Vitest Documentation (2024) *Getting Started with Vitest*. Available at: https://vitest.dev/guide/ (Accessed: [Date]).
+Vitest Documentation (2024) _Getting Started with Vitest_. Available at: https://vitest.dev/guide/ (Accessed: [Date]).
 
-W3C (2018) *Web Content Accessibility Guidelines (WCAG) 2.1*. Available at: https://www.w3.org/TR/WCAG21/ (Accessed: [Date]).
+W3C (2018) _Web Content Accessibility Guidelines (WCAG) 2.1_. Available at: https://www.w3.org/TR/WCAG21/ (Accessed: [Date]).
 
-Zod Documentation (2024) *TypeScript-first schema validation*. Available at: https://zod.dev/ (Accessed: [Date]).
+Zod Documentation (2024) _TypeScript-first schema validation_. Available at: https://zod.dev/ (Accessed: [Date]).
 
 ---
 
@@ -697,7 +771,7 @@ Duration: 3.70s
 
 Coverage Summary:
 - API Routes: 83-100% coverage
-- Tested Actions: 100% function coverage  
+- Tested Actions: 100% function coverage
 - Schemas: 100% statement coverage
 - Utils: 93.61% line coverage
 ```
@@ -707,12 +781,14 @@ Coverage Summary:
 [Insert Lighthouse report screenshots]
 
 **Before Optimization:**
+
 - Performance: [X]/100
 - Accessibility: [X]/100
 - Best Practices: [X]/100
 - SEO: [X]/100
 
 **After Optimization:**
+
 - Performance: [Y]/100 (+[Z])
 - Accessibility: [Y]/100 (+[Z])
 - Best Practices: [Y]/100 (+[Z])
@@ -723,6 +799,7 @@ Coverage Summary:
 [Include screenshot of meaningful commit messages]
 
 Example commits:
+
 ```
 test: add comprehensive invoice API tests (158 tests passing)
 perf: implement image optimization with Next.js Image
@@ -734,9 +811,8 @@ refactor: optimize database queries with proper indexing
 
 ### Appendix D: GitHub Issues and Milestones
 
-[Include screenshot of GitHub issues board]
-
 **Created Issues:**
+
 1. Expand Automated Testing Coverage
 2. Implement Performance Optimizations
 3. Set Up CI/CD Pipeline
@@ -747,6 +823,7 @@ refactor: optimize database queries with proper indexing
 8. Database Query Optimization
 
 **Milestones:**
+
 1. Assessment Preparation (Due: January 15, 2026)
 2. Testing & Quality Assurance (Due: January 8, 2026)
 3. Performance Optimization (Due: January 10, 2026)
@@ -754,6 +831,7 @@ refactor: optimize database queries with proper indexing
 ### Appendix E: Application Screenshots
 
 [Include screenshots demonstrating:]
+
 1. Invoice creation interface
 2. Dashboard view
 3. Mobile responsive layout
@@ -766,6 +844,7 @@ refactor: optimize database queries with proper indexing
 ### Appendix F: Code Samples
 
 **Sample API Route:**
+
 ```typescript
 // /app/api/invoices/list/route.ts
 export async function GET(request: Request) {
@@ -773,10 +852,7 @@ export async function GET(request: Request) {
   const businessId = Number(searchParams.get("business_id"));
 
   if (!businessId || Number.isNaN(businessId)) {
-    return NextResponse.json(
-      { error: "Missing business_id" }, 
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Missing business_id" }, { status: 400 });
   }
 
   try {
@@ -799,13 +875,12 @@ export async function GET(request: Request) {
 ```
 
 **Sample Test:**
+
 ```typescript
 describe("GET /api/invoices/list", () => {
   it("should return invoices list with valid business_id", async () => {
-    const mockInvoices = [
-      { id: 1, invoice_number: "INV-001", total: 1000 },
-    ];
-    
+    const mockInvoices = [{ id: 1, invoice_number: "INV-001", total: 1000 }];
+
     vi.mocked(getInvoicesList).mockResolvedValue(mockInvoices);
 
     const request = new Request(
@@ -825,5 +900,3 @@ describe("GET /api/invoices/list", () => {
 **End of Report**
 
 **Total Word Count:** [Approximately 3000 words]
-
-**Note:** This template includes all required sections. Fill in the bracketed sections with your actual data, especially the Lighthouse performance metrics after running the audit on your deployed application. Ensure all references follow your institution's citation style (Harvard, APA, etc.).

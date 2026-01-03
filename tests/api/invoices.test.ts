@@ -42,9 +42,7 @@ describe("Invoice API Routes", () => {
     });
 
     it("should return invoices list with valid business_id", async () => {
-      const { getInvoicesList } = await import(
-        "@/lib/actions/invoice.actions"
-      );
+      const { getInvoicesList } = await import("@/lib/actions/invoice.actions");
       const mockInvoices = [
         { id: 1, invoice_number: "INV-001", total: 1000 },
         { id: 2, invoice_number: "INV-002", total: 2000 },
@@ -70,9 +68,7 @@ describe("Invoice API Routes", () => {
     });
 
     it("should handle search and filter parameters", async () => {
-      const { getInvoicesList } = await import(
-        "@/lib/actions/invoice.actions"
-      );
+      const { getInvoicesList } = await import("@/lib/actions/invoice.actions");
       vi.mocked(getInvoicesList).mockResolvedValue([] as any);
 
       const request = new Request(
@@ -90,12 +86,8 @@ describe("Invoice API Routes", () => {
     });
 
     it("should return 500 on server error", async () => {
-      const { getInvoicesList } = await import(
-        "@/lib/actions/invoice.actions"
-      );
-      vi.mocked(getInvoicesList).mockRejectedValue(
-        new Error("Database error")
-      );
+      const { getInvoicesList } = await import("@/lib/actions/invoice.actions");
+      vi.mocked(getInvoicesList).mockRejectedValue(new Error("Database error"));
 
       const request = new Request(
         "http://localhost:3000/api/invoices/list?business_id=1"
@@ -117,10 +109,9 @@ describe("Invoice API Routes", () => {
       const { auth } = await import("@/lib/auth");
       vi.mocked(auth).mockResolvedValue({ userId: null } as any);
 
-      const request = new Request(
-        "http://localhost:3000/api/invoices/1",
-        { method: "DELETE" }
-      );
+      const request = new Request("http://localhost:3000/api/invoices/1", {
+        method: "DELETE",
+      });
       const response = await deleteInvoice(request, {
         params: Promise.resolve({ id: "1" }),
       });
@@ -168,10 +159,9 @@ describe("Invoice API Routes", () => {
 
       vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
-      const request = new Request(
-        "http://localhost:3000/api/invoices/999",
-        { method: "DELETE" }
-      );
+      const request = new Request("http://localhost:3000/api/invoices/999", {
+        method: "DELETE",
+      });
       const response = await deleteInvoice(request, {
         params: Promise.resolve({ id: "999" }),
       });
@@ -206,10 +196,9 @@ describe("Invoice API Routes", () => {
 
       vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
-      const request = new Request(
-        "http://localhost:3000/api/invoices/1",
-        { method: "DELETE" }
-      );
+      const request = new Request("http://localhost:3000/api/invoices/1", {
+        method: "DELETE",
+      });
       const response = await deleteInvoice(request, {
         params: Promise.resolve({ id: "1" }),
       });
@@ -222,9 +211,8 @@ describe("Invoice API Routes", () => {
     it("should successfully delete invoice", async () => {
       const { auth } = await import("@/lib/auth");
       const { createClient } = await import("@/lib/supabase/server");
-      const { createActivity } = await import(
-        "@/lib/actions/userActivity.actions"
-      );
+      const { createActivity } =
+        await import("@/lib/actions/userActivity.actions");
 
       vi.mocked(auth).mockResolvedValue({ userId: "user123" } as any);
       vi.mocked(createActivity).mockResolvedValue(undefined);
@@ -258,10 +246,9 @@ describe("Invoice API Routes", () => {
 
       vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
-      const request = new Request(
-        "http://localhost:3000/api/invoices/1",
-        { method: "DELETE" }
-      );
+      const request = new Request("http://localhost:3000/api/invoices/1", {
+        method: "DELETE",
+      });
       const response = await deleteInvoice(request, {
         params: Promise.resolve({ id: "1" }),
       });

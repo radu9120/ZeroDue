@@ -1,12 +1,14 @@
 # Performance Testing Documentation
 
 ## Test Coverage Summary
+
 **Date**: January 3, 2026  
 **Total Tests**: 158 passed  
 **Test Files**: 11  
 **Coverage Tool**: Vitest with v8
 
 ### Coverage Breakdown
+
 - **Statements**: 0.57%
 - **Branches**: 70.42%
 - **Functions**: 67.77%
@@ -15,29 +17,34 @@
 ### Tested Components
 
 #### API Routes (100% Coverage)
+
 - `/api/whoami` - Authentication endpoint
 - `/api/invoices/list` - Invoice listing with pagination
 - `/api/invoices/[id]` - Invoice deletion with authorization
 
 #### Actions (Full Test Suite)
+
 - Client actions: 10 tests
-- Invoice actions: 11 tests  
+- Invoice actions: 11 tests
 - Estimate actions: 9 tests
 - Total: 33 API route tests
 
 #### Components (23 UI Tests)
+
 - Button components
 - Form elements
 - Dialog/Modal components
 - UI primitives
 
 #### Business Logic
+
 - Calculations: 20 tests
 - Invoice schema validation: 11 tests
 - Utility functions: 14 tests
 - Email functions: 14 tests
 
 ### Key Test Scenarios Covered
+
 1. **Authentication & Authorization**
    - Unauthorized access handling
    - User session validation
@@ -63,9 +70,11 @@
 ## Lighthouse Performance Audit
 
 ### Pre-Optimization Baseline
+
 **Status**: Requires deployed application URL
 
 To run Lighthouse audit:
+
 ```bash
 # Option 1: Chrome DevTools
 1. Open deployed app in Chrome
@@ -80,6 +89,7 @@ lighthouse https://your-app-url.com --output html --output-path ./lighthouse-rep
 ```
 
 ### Metrics to Document
+
 - **Performance Score** (/100)
 - **First Contentful Paint** (FCP)
 - **Largest Contentful Paint** (LCP)
@@ -89,18 +99,21 @@ lighthouse https://your-app-url.com --output html --output-path ./lighthouse-rep
 - **Cumulative Layout Shift** (CLS)
 
 ### Accessibility Score (/100)
+
 - ARIA attributes
 - Color contrast
 - Form labels
 - Semantic HTML
 
 ### Best Practices Score (/100)
+
 - HTTPS usage
 - Console errors
 - Image aspect ratios
 - Browser compatibility
 
 ### SEO Score (/100)
+
 - Meta descriptions
 - Title tags
 - Crawlability
@@ -109,6 +122,7 @@ lighthouse https://your-app-url.com --output html --output-path ./lighthouse-rep
 ## Performance Optimization Plan
 
 ### Identified Opportunities
+
 1. **Image Optimization**
    - Implement Next.js Image component
    - Use WebP format
@@ -132,8 +146,9 @@ lighthouse https://your-app-url.com --output html --output-path ./lighthouse-rep
    - Speed Insights tracking
 
 ### Post-Optimization Results
+
 **Status**: Pending implementation
 
 ---
 
-*This document will be updated with actual Lighthouse scores and post-optimization metrics.*
+_This document will be updated with actual Lighthouse scores and post-optimization metrics._

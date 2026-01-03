@@ -1,15 +1,18 @@
 # Git Repository Management Guide
 
 ## Repository Information
+
 - **URL**: https://github.com/radu9120/ZeroDue
 - **Project**: InvoiceFlow - Invoice Management System
 
 ## Setting Up Issues, Labels, and Milestones
 
 ### Step 1: Create Labels
+
 Navigate to: `https://github.com/radu9120/ZeroDue/labels`
 
 #### Recommended Labels:
+
 1. **bug** (Red #d73a4a) - Something isn't working
 2. **enhancement** (Blue #a2eeef) - New feature or request
 3. **documentation** (Blue #0075ca) - Documentation improvements
@@ -22,6 +25,7 @@ Navigate to: `https://github.com/radu9120/ZeroDue/labels`
 10. **high priority** (Red #b60205) - Urgent fixes
 
 ### Step 2: Create Milestones
+
 Navigate to: `https://github.com/radu9120/ZeroDue/milestones`
 
 #### Suggested Milestones:
@@ -50,6 +54,7 @@ Navigate to: `https://github.com/radu9120/ZeroDue/milestones`
 #### Issue Templates:
 
 **Issue #1: Expand Automated Testing Coverage**
+
 ```
 Title: Expand automated testing to achieve 70%+ coverage
 Labels: testing, enhancement, high priority
@@ -60,7 +65,7 @@ Currently have 158 tests passing but overall coverage is low (0.57% statements).
 
 Tasks:
 - [x] Create component tests (23 tests)
-- [x] Add API route tests (33 tests)  
+- [x] Add API route tests (33 tests)
 - [x] Implement action tests (30 tests)
 - [x] Add calculation tests (20 tests)
 - [x] Create schema validation tests (11 tests)
@@ -72,6 +77,7 @@ Expected outcome: Comprehensive test suite with good coverage
 ```
 
 **Issue #2: Implement Performance Optimizations**
+
 ```
 Title: Optimize application performance based on Lighthouse audit
 Labels: performance, enhancement
@@ -98,6 +104,7 @@ Metrics to improve:
 ```
 
 **Issue #3: Set Up CI/CD Pipeline**
+
 ```
 Title: Configure automated testing in CI/CD
 Labels: testing, enhancement
@@ -115,6 +122,7 @@ Tasks:
 ```
 
 **Issue #4: Improve API Documentation**
+
 ```
 Title: Document all API endpoints with examples
 Labels: documentation, api
@@ -138,6 +146,7 @@ Include:
 ```
 
 **Issue #5: Accessibility Improvements**
+
 ```
 Title: Improve accessibility based on Lighthouse audit
 Labels: ui/ux, enhancement
@@ -153,6 +162,7 @@ Tasks:
 ```
 
 **Issue #6: Security Audit**
+
 ```
 Title: Security review and hardening
 Labels: security, high priority
@@ -169,6 +179,7 @@ Tasks:
 ```
 
 **Issue #7: Mobile Responsiveness Testing**
+
 ```
 Title: Test and improve mobile experience
 Labels: ui/ux, testing
@@ -184,6 +195,7 @@ Tasks:
 ```
 
 **Issue #8: Database Query Optimization**
+
 ```
 Title: Optimize database queries for performance
 Labels: performance, enhancement
@@ -226,6 +238,7 @@ gh issue create --title "Issue title" --body "Issue description" --label "bug,hi
 ## Best Practices
 
 1. **Regular Commits**: Commit frequently with meaningful messages
+
    ```bash
    git commit -m "test: add invoice API endpoint tests"
    git commit -m "perf: optimize image loading with lazy loading"
@@ -233,6 +246,7 @@ gh issue create --title "Issue title" --body "Issue description" --label "bug,hi
    ```
 
 2. **Link Commits to Issues**: Reference issues in commit messages
+
    ```bash
    git commit -m "fix: resolve authentication bug (#1)"
    git commit -m "feat: add performance monitoring (closes #2)"
@@ -250,6 +264,7 @@ gh issue create --title "Issue title" --body "Issue description" --label "bug,hi
 ## Commit Message Conventions
 
 Follow conventional commits format:
+
 - `feat:` New feature
 - `fix:` Bug fix
 - `docs:` Documentation changes
@@ -260,6 +275,7 @@ Follow conventional commits format:
 - `chore:` Maintenance tasks
 
 Example:
+
 ```bash
 git commit -m "test: add comprehensive invoice API tests
 
