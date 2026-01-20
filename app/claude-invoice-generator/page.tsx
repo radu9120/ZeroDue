@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CheckCircle, ArrowRight, Sparkles, Shield, Clock } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { WebPageSchema, FAQSchema } from "@/components/seo/StructuredData";
 
 export const metadata = {
   title: "Claude Invoice Generator Alternative | ZeroDue",
@@ -97,6 +98,17 @@ const faqs = [
 export default function ClaudeInvoiceGeneratorPage() {
   return (
     <>
+      <WebPageSchema
+        name="Claude Invoice Generator Alternative | ZeroDue"
+        description="Looking for Claude AI invoice generation? ZeroDue offers purpose-built invoicing with professional templates, payment tracking, and automated reminders."
+        url="https://www.zerodue.co/claude-invoice-generator"
+      />
+      <FAQSchema
+        faqs={faqs.map((faq) => ({
+          question: faq.question,
+          answer: faq.answer,
+        }))}
+      />
       <Navbar />
       <main className="min-h-screen bg-white dark:bg-slate-900">
         <section className="relative pt-32 pb-20 overflow-hidden">

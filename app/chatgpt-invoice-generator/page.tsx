@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CheckCircle, ArrowRight, Sparkles, Shield, Clock } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { WebPageSchema, FAQSchema } from "@/components/seo/StructuredData";
 
 export const metadata = {
   title: "ChatGPT Invoice Generator Alternative | ZeroDue",
@@ -96,6 +97,17 @@ const faqs = [
 export default function ChatGPTInvoiceGeneratorPage() {
   return (
     <>
+      <WebPageSchema
+        name="ChatGPT Invoice Generator Alternative | ZeroDue"
+        description="Looking for a ChatGPT invoice generator? ZeroDue is a purpose-built invoicing platform with templates, tracking, reminders, and payments."
+        url="https://www.zerodue.co/chatgpt-invoice-generator"
+      />
+      <FAQSchema
+        faqs={faqs.map((faq) => ({
+          question: faq.question,
+          answer: faq.answer,
+        }))}
+      />
       <Navbar />
       <main className="min-h-screen bg-white dark:bg-slate-900">
         <section className="relative pt-32 pb-20 overflow-hidden">

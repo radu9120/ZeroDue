@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CheckCircle, ArrowRight, Zap, TrendingUp } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { WebPageSchema } from "@/components/seo/StructuredData";
 
 export const metadata = {
   title: "ZeroDue vs FreshBooks: Which Invoice Software is Better?",
@@ -103,6 +104,11 @@ const freshbooksWins = [
 export default function VsFreshBooksPage() {
   return (
     <>
+      <WebPageSchema
+        name="ZeroDue vs FreshBooks: Which Invoice Software is Better?"
+        description="Compare ZeroDue and FreshBooks for freelancers and small businesses. See pricing, features, ease of use, and which platform gets you paid faster."
+        url="https://www.zerodue.co/vs/freshbooks"
+      />
       <Navbar />
       <main className="min-h-screen bg-white dark:bg-slate-900">
         <section className="relative pt-32 pb-20 overflow-hidden">

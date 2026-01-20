@@ -30,12 +30,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/pricing`,
-      lastModified: currentDate,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
       url: `${baseUrl}/chatgpt-invoice-generator`,
       lastModified: currentDate,
       changeFrequency: "weekly",
@@ -57,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/upgrade`,
       lastModified: currentDate,
       changeFrequency: "weekly",
-      priority: 0.8,
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/templates`,
@@ -106,6 +100,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: currentDate,
       changeFrequency: "monthly",
       priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/forgot-password`,
+      lastModified: currentDate,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/reset-password`,
+      lastModified: currentDate,
+      changeFrequency: "yearly",
+      priority: 0.3,
     },
     {
       url: `${baseUrl}/site-map`,
