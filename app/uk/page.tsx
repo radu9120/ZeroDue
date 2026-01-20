@@ -98,8 +98,9 @@ export default function UKPage() {
                 </h1>
                 <p className="text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
                   Create HMRC-compliant invoices with automatic VAT calculation.
-                  Perfect for UK sole traders, limited companies, and
-                  contractors. Making Tax Digital ready.
+                  Perfect for UK sole traders, limited companies, freelancers,
+                  and contractors across London, Manchester, Birmingham, and
+                  throughout the UK. Making Tax Digital ready.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link href="/sign-up">

@@ -1,3 +1,8 @@
+const toIsoDate = (date: string) => {
+  const parsed = new Date(date);
+  return Number.isNaN(parsed.getTime()) ? date : parsed.toISOString();
+};
+
 export function OrganizationSchema() {
   const schema = {
     "@context": "https://schema.org",
@@ -33,16 +38,16 @@ export function SoftwareApplicationSchema() {
     operatingSystem: "Web",
     offers: {
       "@type": "Offer",
-      price: "0",
+      price: 0,
       priceCurrency: "USD",
       description: "Free plan available",
     },
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      ratingCount: "150",
-      bestRating: "5",
-      worstRating: "1",
+      ratingValue: 4.9,
+      ratingCount: 150,
+      bestRating: 5,
+      worstRating: 1,
     },
     description:
       "Professional invoice generator and billing software for freelancers and small businesses. Create, send, and track invoices online.",
@@ -151,7 +156,8 @@ export function BlogPostSchema({
     "@type": "BlogPosting",
     headline: title,
     description: description,
-    datePublished: publishedAt,
+    datePublished: toIsoDate(publishedAt),
+    dateModified: toIsoDate(publishedAt),
     author: {
       "@type": "Person",
       name: author,
@@ -163,6 +169,10 @@ export function BlogPostSchema({
         "@type": "ImageObject",
         url: "https://www.zerodue.co/logo.png",
       },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
     },
     url: url,
     ...(image && { image: image }),
@@ -188,18 +198,18 @@ export function ReviewsSchema() {
     },
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "150",
-      bestRating: "5",
-      worstRating: "1",
+      ratingValue: 4.9,
+      reviewCount: 150,
+      bestRating: 5,
+      worstRating: 1,
     },
     review: [
       {
         "@type": "Review",
         reviewRating: {
           "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
+          ratingValue: 5,
+          bestRating: 5,
         },
         author: {
           "@type": "Person",
@@ -212,8 +222,8 @@ export function ReviewsSchema() {
         "@type": "Review",
         reviewRating: {
           "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
+          ratingValue: 5,
+          bestRating: 5,
         },
         author: {
           "@type": "Person",
@@ -226,8 +236,8 @@ export function ReviewsSchema() {
         "@type": "Review",
         reviewRating: {
           "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
+          ratingValue: 5,
+          bestRating: 5,
         },
         author: {
           "@type": "Person",
@@ -258,7 +268,7 @@ export function HowToSchema() {
     estimatedCost: {
       "@type": "MonetaryAmount",
       currency: "GBP",
-      value: "0",
+      value: 0,
     },
     step: [
       {
@@ -353,7 +363,7 @@ export function PricingSchema() {
       {
         "@type": "Offer",
         name: "Free Plan",
-        price: "0",
+        price: 0,
         priceCurrency: "GBP",
         description:
           "3 invoices per month, basic templates, essential features",
@@ -362,7 +372,7 @@ export function PricingSchema() {
       {
         "@type": "Offer",
         name: "Professional Plan",
-        price: "9.99",
+        price: 9.99,
         priceCurrency: "GBP",
         description:
           "15 invoices per month, 3 business profiles, priority support",
@@ -372,7 +382,7 @@ export function PricingSchema() {
       {
         "@type": "Offer",
         name: "Enterprise Plan",
-        price: "19.99",
+        price: 19.99,
         priceCurrency: "GBP",
         description: "Unlimited invoices, custom templates, dedicated support",
         priceValidUntil: "2025-12-31",
@@ -381,10 +391,10 @@ export function PricingSchema() {
     ],
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "150",
-      bestRating: "5",
-      worstRating: "1",
+      ratingValue: 4.9,
+      reviewCount: 150,
+      bestRating: 5,
+      worstRating: 1,
     },
   };
 
@@ -419,10 +429,10 @@ export function LocalBusinessSchema() {
     softwareVersion: "1.0",
     offers: {
       "@type": "AggregateOffer",
-      lowPrice: "0",
-      highPrice: "19.99",
+      lowPrice: 0,
+      highPrice: 19.99,
       priceCurrency: "GBP",
-      offerCount: "3",
+      offerCount: 3,
     },
   };
 

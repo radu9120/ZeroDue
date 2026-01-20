@@ -9,6 +9,11 @@ import {
   BreadcrumbSchema,
 } from "@/components/seo/StructuredData";
 
+const toIsoDate = (date: string) => {
+  const parsed = new Date(date);
+  return Number.isNaN(parsed.getTime()) ? date : parsed.toISOString();
+};
+
 type PageProps = {
   params: Promise<{
     id: string;
@@ -35,6 +40,7 @@ export async function generateMetadata({
   }
 
   const postUrl = `https://www.zerodue.co/blog/${post.slug}`;
+  const publishedTime = toIsoDate(post.publishedAt);
 
   return {
     title: `${post.title} | ZeroDue Blog`,
@@ -54,7 +60,7 @@ export async function generateMetadata({
       description: post.description,
       url: postUrl,
       siteName: "ZeroDue",
-      publishedTime: post.publishedAt,
+      publishedTime,
       authors: ["ZeroDue Team"],
       images: [
         {
@@ -90,7 +96,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       <BlogPostSchema
         title={post.title}
         description={post.description}
-        publishedAt={post.publishedAt}
+        publishedAt={toIsoDate(post.publishedAt)}
         author="ZeroDue Team"
         url={`https://www.zerodue.co/blog/${post.slug}`}
         image="https://www.zerodue.co/og-cover.png"

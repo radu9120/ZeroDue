@@ -1,8 +1,8 @@
 import { Resend } from "resend";
 
 let resend: Resend | null = null;
-export function getResendClient(): Resend {
-  if (!resend) {
+export function getResendClient(): Resend | null {
+  if (!resend && process.env.RESEND_API_KEY) {
     resend = new Resend(process.env.RESEND_API_KEY);
   }
   return resend;
@@ -143,7 +143,13 @@ export async function sendWelcomeEmail(email: string, name?: string) {
     </p>
   `;
 
-  return getResendClient().emails.send({
+  const client = getResendClient();
+  if (!client) {
+    console.warn("Resend client not available, skipping welcome email");
+    return { error: "Email service not configured" };
+  }
+
+  return client.emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: "Welcome to ZeroDue! 🎉",
@@ -156,7 +162,7 @@ export async function sendPlanUpgradeEmail(
   email: string,
   planName: string,
   hasTrial: boolean,
-  trialEndDate?: Date
+  trialEndDate?: Date,
 ) {
   const formattedTrialEnd = trialEndDate?.toLocaleDateString("en-US", {
     weekday: "long",
@@ -230,7 +236,13 @@ export async function sendPlanUpgradeEmail(
     </p>
   `;
 
-  return getResendClient().emails.send({
+  const client = getResendClient();
+  if (!client) {
+    console.warn("Resend client not available, skipping plan upgrade email");
+    return { error: "Email service not configured" };
+  }
+
+  return client.emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: hasTrial
@@ -245,7 +257,7 @@ export async function sendCreditsEmail(
   email: string,
   quantity: number,
   total: string,
-  newBalance: number
+  newBalance: number,
 ) {
   const content = `
     <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
@@ -290,7 +302,13 @@ export async function sendCreditsEmail(
     </p>
   `;
 
-  return getResendClient().emails.send({
+  const client = getResendClient();
+  if (!client) {
+    console.warn("Resend client not available, skipping credits email");
+    return { error: "Email service not configured" };
+  }
+
+  return client.emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: `${quantity} invoice credit${quantity > 1 ? "s" : ""} added to your account`,
@@ -301,7 +319,7 @@ export async function sendCreditsEmail(
 // Plan downgrade completed email
 export async function sendDowngradeCompletedEmail(
   email: string,
-  previousPlan: string
+  previousPlan: string,
 ) {
   const content = `
     <div style="background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
@@ -343,7 +361,13 @@ export async function sendDowngradeCompletedEmail(
     </p>
   `;
 
-  return getResendClient().emails.send({
+  const client = getResendClient();
+  if (!client) {
+    console.warn("Resend client not available, skipping downgrade email");
+    return { error: "Email service not configured" };
+  }
+
+  return client.emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: "Your plan has changed to Free",
@@ -377,7 +401,13 @@ export async function sendReactivationEmail(email: string, planName: string) {
     </p>
   `;
 
-  return getResendClient().emails.send({
+  const client = getResendClient();
+  if (!client) {
+    console.warn("Resend client not available, skipping reactivation email");
+    return { error: "Email service not configured" };
+  }
+
+  return client.emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: `Your ${planName} subscription is back! 🎉`,

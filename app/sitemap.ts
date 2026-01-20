@@ -1,21 +1,5 @@
 import { MetadataRoute } from "next";
-
-// Blog post IDs from your posts.ts
-const blogPostIds = [
-  "why-zerodue-beats-ai-invoice-generators",
-  "free-invoice-template-2025",
-  "how-to-invoice-freelancer-guide",
-  "invoice-vs-receipt-difference",
-  "late-payment-invoice-tips",
-  "small-business-invoicing-mistakes",
-  "invoice-payment-terms-guide",
-  "digital-vs-paper-invoicing",
-  "invoice-automation-benefits",
-  "tax-compliant-invoicing",
-  "best-free-invoice-software-uk-2025",
-  "how-to-create-invoice-beginners-guide",
-  "invoice-payment-terms-explained",
-];
+import { blogPosts } from "./blog/posts";
 
 // Industry pages
 const industryPages = [
@@ -50,6 +34,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: currentDate,
       changeFrequency: "weekly",
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/chatgpt-invoice-generator`,
+      lastModified: currentDate,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/claude-invoice-generator`,
+      lastModified: currentDate,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/vs/freshbooks`,
+      lastModified: currentDate,
+      changeFrequency: "monthly",
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/upgrade`,
@@ -148,12 +150,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // Blog posts - these are important for SEO
-  const blogPages: MetadataRoute.Sitemap = blogPostIds.map((id) => ({
-    url: `${baseUrl}/blog/${id}`,
-    lastModified: currentDate,
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
+  const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => {
+    const publishedAt = new Date(post.publishedAt);
+    return {
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: Number.isNaN(publishedAt.getTime())
+        ? currentDate
+        : publishedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    };
+  });
 
   return [...staticPages, ...industries, ...tools, ...blogPages];
 }

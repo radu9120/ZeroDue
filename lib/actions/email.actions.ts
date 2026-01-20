@@ -9,7 +9,7 @@ import { getBusinessById } from "./business.actions";
 
 export const sendInvoiceEmailAction = async (
   invoiceId: number,
-  businessId: number
+  businessId: number,
 ) => {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
@@ -20,7 +20,7 @@ export const sendInvoiceEmailAction = async (
   const { data: invoice, error: invErr } = await supabaseAdmin
     .from("Invoices")
     .select(
-      "id, author, invoice_number, bill_to, description, issue_date, due_date, total, currency, notes, bank_details, public_token, email_id"
+      "id, author, invoice_number, bill_to, description, issue_date, due_date, total, currency, notes, bank_details, public_token, email_id",
     )
     .eq("id", invoiceId)
     .single();
@@ -83,12 +83,16 @@ export const sendInvoiceEmailAction = async (
   }/invoice/${publicToken}`;
 
   // Send email via Resend
-  const { data: emailData, error: emailError } =
-    await getResendClient().emails.send({
-      from: "ZeroDue <noreply@zerodue.co>",
-      to: [clientEmail],
-      subject: `Invoice #${invoice.invoice_number} from ${business.name}`,
-      html: emailWrapper(`
+  const client = getResendClient();
+  if (!client) {
+    throw new Error("Email service not configured");
+  }
+
+  const { data: emailData, error: emailError } = await client.emails.send({
+    from: "ZeroDue <noreply@zerodue.co>",
+    to: [clientEmail],
+    subject: `Invoice #${invoice.invoice_number} from ${business.name}`,
+    html: emailWrapper(`
         <div class="banner" style="border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
           <h2 class="banner-title" style="margin: 0 0 8px 0; font-size: 24px;">New Invoice from ${business.name}</h2>
           <p class="banner-text" style="margin: 0;">Invoice #${invoice.invoice_number}</p>
@@ -126,11 +130,11 @@ export const sendInvoiceEmailAction = async (
           <a href="${invoiceUrl}" style="color: #2563eb;">${invoiceUrl}</a>
         </p>
       `),
-      tags: [
-        { name: "category", value: "invoice" },
-        { name: "invoice_id", value: invoice.id.toString() },
-      ],
-    });
+    tags: [
+      { name: "category", value: "invoice" },
+      { name: "invoice_id", value: invoice.id.toString() },
+    ],
+  });
 
   if (emailError) {
     console.error("Resend Error:", emailError);

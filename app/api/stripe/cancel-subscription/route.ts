@@ -3,7 +3,9 @@ import { stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 export async function POST() {
   try {
@@ -82,7 +84,7 @@ export async function POST() {
     });
 
     // Send downgrade scheduled email
-    if (user.email) {
+    if (user.email && resend) {
       const planName =
         currentPlan === "enterprise" ? "Enterprise" : "Professional";
       const formattedDate = periodEndDate?.toLocaleDateString("en-US", {
@@ -156,7 +158,7 @@ export async function POST() {
     console.error("Error cancelling subscription:", error);
     return NextResponse.json(
       { error: "Failed to cancel subscription" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

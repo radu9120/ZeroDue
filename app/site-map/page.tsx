@@ -17,6 +17,21 @@ const sections: Array<{
         href: "/pricing",
         description: "Flexible plans for every business",
       },
+      {
+        label: "ChatGPT Invoice Generator",
+        href: "/chatgpt-invoice-generator",
+        description: "Purpose-built alternative to AI drafts",
+      },
+      {
+        label: "Claude Invoice Generator",
+        href: "/claude-invoice-generator",
+        description: "Turn AI drafts into real invoices",
+      },
+      {
+        label: "ZeroDue vs FreshBooks",
+        href: "/vs/freshbooks",
+        description: "Compare invoicing platforms",
+      },
       { label: "FAQ", href: "/faq", description: "Frequently asked questions" },
       {
         label: "Contact Us",
@@ -154,6 +169,11 @@ const sections: Array<{
         description: "Stay cash flow positive",
       },
       {
+        label: "AI Invoice Generators vs ZeroDue",
+        href: "/blog/why-zerodue-beats-ai-invoice-generators",
+        description: "Why purpose-built invoicing wins",
+      },
+      {
         label: "Accurate Invoicing Matters",
         href: "/blog/accurate-invoicing-matters",
         description: "Why precision counts",
@@ -226,7 +246,7 @@ export const metadata = {
 
 export default function SitemapPage() {
   return (
-    <main className="min-h-screen pt-24 md:pt-28 bg-gradient-to-br from-blue-50 via-white to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+    <main className="min-h-screen pt-24 md:pt-28 bg-linear-to-br from-blue-50 via-white to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
       <div className="container mx-auto px-4 md:px-6 py-12">
         <header className="max-w-3xl mb-12">
           <p className="text-sm text-blue-600 dark:text-blue-400 uppercase tracking-wide font-semibold mb-2">
