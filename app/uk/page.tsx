@@ -351,6 +351,22 @@ export default function UKPage() {
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
+            <p className="text-blue-100 text-sm mt-6">
+              Related guides:{" "}
+              <Link
+                href="/blog/agencies-stay-cash-flow-positive"
+                className="underline hover:text-white"
+              >
+                Cash flow tips for agencies
+              </Link>{" "}
+              |{" "}
+              <Link
+                href="/blog/small-business-invoicing-software-guide"
+                className="underline hover:text-white"
+              >
+                Software buyer's guide
+              </Link>
+            </p>
           </div>
         </section>
       </main>

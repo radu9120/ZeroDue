@@ -151,7 +151,7 @@ export default function Features() {
                   "absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm",
                   (feature as { highlight?: boolean }).highlight
                     ? "bg-gradient-to-b from-emerald-500/30 to-teal-500/30 opacity-100"
-                    : "bg-gradient-to-b from-blue-500/20 to-purple-500/20"
+                    : "bg-gradient-to-b from-blue-500/20 to-purple-500/20",
                 )}
               />
               <div
@@ -159,7 +159,7 @@ export default function Features() {
                   "relative h-full backdrop-blur-xl rounded-3xl p-8 shadow-sm border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
                   (feature as { highlight?: boolean }).highlight
                     ? "bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 dark:border-emerald-800"
-                    : "bg-white dark:bg-slate-900/80 border-slate-200 dark:border-slate-800"
+                    : "bg-white dark:bg-slate-900/80 border-slate-200 dark:border-slate-800",
                 )}
               >
                 <div className="flex items-start justify-between mb-6">
@@ -168,7 +168,7 @@ export default function Features() {
                       "p-3.5 rounded-2xl group-hover:scale-110 transition-transform duration-500 shadow-inner relative overflow-hidden",
                       (feature as { highlight?: boolean }).highlight
                         ? "bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/40 dark:to-teal-900/40"
-                        : "bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30"
+                        : "bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30",
                     )}
                   >
                     <div
@@ -176,7 +176,7 @@ export default function Features() {
                         "absolute inset-0 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500",
                         (feature as { highlight?: boolean }).highlight
                           ? "bg-emerald-500/20"
-                          : "bg-blue-500/20"
+                          : "bg-blue-500/20",
                       )}
                     />
                     <feature.icon
@@ -184,7 +184,7 @@ export default function Features() {
                         "w-7 h-7 relative z-10",
                         (feature as { highlight?: boolean }).highlight
                           ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-blue-600 dark:text-blue-400"
+                          : "text-blue-600 dark:text-blue-400",
                       )}
                     />
                   </div>
@@ -200,7 +200,7 @@ export default function Features() {
                     "text-xl font-bold mb-3 transition-colors",
                     (feature as { highlight?: boolean }).highlight
                       ? "text-emerald-900 dark:text-emerald-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400"
-                      : "text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400"
+                      : "text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400",
                   )}
                 >
                   {feature.title}
@@ -212,6 +212,31 @@ export default function Features() {
               </div>
             </motion.div>
           ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+          className="mt-12 text-center"
+        >
+          <p className="text-slate-600 dark:text-slate-400">
+            Learn more:{" "}
+            <a
+              href="/blog/accurate-invoicing-matters"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Why accurate invoicing matters
+            </a>{" "}
+            |{" "}
+            <a
+              href="/faq"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Common questions
+            </a>
+          </p>
         </motion.div>
       </div>
     </section>

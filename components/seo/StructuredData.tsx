@@ -42,13 +42,6 @@ export function SoftwareApplicationSchema() {
       priceCurrency: "USD",
       description: "Free plan available",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: 4.9,
-      ratingCount: 150,
-      bestRating: 5,
-      worstRating: 1,
-    },
     description:
       "Professional invoice generator and billing software for freelancers and small businesses. Create, send, and track invoices online.",
     url: "https://www.zerodue.co",
@@ -220,13 +213,6 @@ export function ReviewsSchema() {
     brand: {
       "@type": "Brand",
       name: "ZeroDue",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: 4.9,
-      reviewCount: 150,
-      bestRating: 5,
-      worstRating: 1,
     },
     review: [
       {
@@ -414,13 +400,6 @@ export function PricingSchema() {
         availability: "https://schema.org/InStock",
       },
     ],
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: 4.9,
-      reviewCount: 150,
-      bestRating: 5,
-      worstRating: 1,
-    },
   };
 
   return (

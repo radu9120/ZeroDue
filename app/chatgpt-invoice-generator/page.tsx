@@ -314,6 +314,19 @@ export default function ChatGPTInvoiceGeneratorPage() {
                 Read the AI comparison
               </Link>
             </div>
+            <p className="text-blue-100 text-sm mt-4">
+              Learn more:{" "}
+              <Link
+                href="/blog/accurate-invoicing-matters"
+                className="underline hover:text-white"
+              >
+                Why accurate invoicing matters
+              </Link>{" "}
+              |{" "}
+              <Link href="/faq" className="underline hover:text-white">
+                Common questions
+              </Link>
+            </p>
           </div>
         </section>
       </main>

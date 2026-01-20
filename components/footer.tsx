@@ -111,6 +111,7 @@ export default function Footer() {
             <ul className="space-y-4">
               {[
                 { name: "Help Center", href: "/help" },
+                { name: "FAQ", href: "/faq" },
                 { name: "Contact Us", href: "/contact" },
                 { name: "Privacy Policy", href: "/privacy-policy" },
                 { name: "Refund Policy", href: "/refund-policy" },

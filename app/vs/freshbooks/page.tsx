@@ -138,6 +138,19 @@ export default function VsFreshBooksPage() {
                   View pricing
                 </Link>
               </div>
+              <p className="text-slate-600 dark:text-slate-400 text-sm mt-4 text-center">
+                Related:{" "}
+                <Link
+                  href="/blog/agencies-stay-cash-flow-positive"
+                  className="underline hover:text-blue-600"
+                >
+                  How agencies stay cash-flow positive
+                </Link>{" "}
+                |{" "}
+                <Link href="/faq" className="underline hover:text-blue-600">
+                  FAQs
+                </Link>
+              </p>
             </div>
           </div>
         </section>

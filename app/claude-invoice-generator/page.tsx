@@ -316,6 +316,22 @@ export default function ClaudeInvoiceGeneratorPage() {
                 Read the comparison
               </Link>
             </div>
+            <p className="text-purple-100 text-sm mt-4">
+              Read:{" "}
+              <Link
+                href="/blog/small-business-invoicing-software-guide"
+                className="underline hover:text-white"
+              >
+                Small business buyer's guide
+              </Link>{" "}
+              |{" "}
+              <Link
+                href="/blog/simplify-service-billing"
+                className="underline hover:text-white"
+              >
+                Simplify service billing
+              </Link>
+            </p>
           </div>
         </section>
       </main>

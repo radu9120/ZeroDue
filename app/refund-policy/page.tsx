@@ -14,6 +14,14 @@ import Footer from "@/components/footer";
 export const metadata = {
   title: "Refund Policy | ZeroDue",
   description: "ZeroDue 14-day money-back guarantee and refund policy",
+  alternates: {
+    canonical: "https://www.zerodue.co/refund-policy",
+  },
+  openGraph: {
+    title: "Refund Policy | ZeroDue",
+    description: "ZeroDue 14-day money-back guarantee and refund policy",
+    url: "https://www.zerodue.co/refund-policy",
+  },
 };
 
 export default function RefundPolicyPage() {
