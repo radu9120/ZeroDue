@@ -30,6 +30,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
+      url: `${baseUrl}/invoice-generator`,
+      lastModified: currentDate,
+      changeFrequency: "weekly",
+      priority: 1.0, // High priority for main landing page
+    },
+    {
       url: `${baseUrl}/chatgpt-invoice-generator`,
       lastModified: currentDate,
       changeFrequency: "weekly",

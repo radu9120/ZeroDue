@@ -63,6 +63,7 @@ export async function updateSession(request: NextRequest) {
     "/reset-password",
     "/chatgpt-invoice-generator",
     "/claude-invoice-generator",
+    "/invoice-generator",
     "/vs",
   ];
 
