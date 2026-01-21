@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { CalendarPicker } from "@/components/ui/calendar-picker";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import {
@@ -67,6 +68,8 @@ export default function InvoiceGeneratorPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const [showIssueDatePicker, setShowIssueDatePicker] = useState(false);
+  const [showDueDatePicker, setShowDueDatePicker] = useState(false);
 
   const addItem = () => {
     setItems([
@@ -334,21 +337,59 @@ export default function InvoiceGeneratorPage() {
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Issue Date
                   </label>
-                  <Input
-                    type="date"
-                    value={issueDate}
-                    onChange={(e) => setIssueDate(e.target.value)}
-                  />
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      value={issueDate}
+                      onClick={() => {
+                        setShowIssueDatePicker(!showIssueDatePicker);
+                        setShowDueDatePicker(false);
+                      }}
+                      readOnly
+                      className="cursor-pointer"
+                      placeholder="Select issue date"
+                    />
+                    {showIssueDatePicker && (
+                      <div className="absolute z-50 mt-2">
+                        <CalendarPicker
+                          date={new Date(issueDate)}
+                          onSelect={(date) => {
+                            setIssueDate(format(date, "yyyy-MM-dd"));
+                            setShowIssueDatePicker(false);
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Due Date
                   </label>
-                  <Input
-                    type="date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                  />
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      value={dueDate}
+                      onClick={() => {
+                        setShowDueDatePicker(!showDueDatePicker);
+                        setShowIssueDatePicker(false);
+                      }}
+                      readOnly
+                      className="cursor-pointer"
+                      placeholder="Select due date"
+                    />
+                    {showDueDatePicker && (
+                      <div className="absolute z-50 mt-2">
+                        <CalendarPicker
+                          date={new Date(dueDate)}
+                          onSelect={(date) => {
+                            setDueDate(format(date, "yyyy-MM-dd"));
+                            setShowDueDatePicker(false);
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 

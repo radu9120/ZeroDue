@@ -53,7 +53,8 @@ export default function Navbar() {
 
   const resolvedBusinessId = businessId ?? storedBusinessId ?? undefined;
 
-  if (pathname && pathname.startsWith("/invoice")) {
+  // Hide navbar only on invoice view pages (not invoice-generator)
+  if (pathname && pathname.match(/^\/invoice\/[^/]+$/)) {
     return null;
   }
 
