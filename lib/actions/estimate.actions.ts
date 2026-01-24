@@ -54,7 +54,7 @@ export async function createEstimate(input: CreateEstimateInput) {
       // Decrement credits
       const { error: creditError } = await supabase.rpc(
         "decrement_estimate_credits",
-        { business_id_param: businessId }
+        { business_id_param: businessId },
       );
 
       if (creditError?.code === "PGRST202") {
@@ -86,12 +86,12 @@ export async function createEstimate(input: CreateEstimateInput) {
       const firstDayISO = new Date(
         now.getFullYear(),
         now.getMonth(),
-        1
+        1,
       ).toISOString();
       const nextMonthISO = new Date(
         now.getFullYear(),
         now.getMonth() + 1,
-        1
+        1,
       ).toISOString();
 
       const { count } = await supabase
@@ -116,7 +116,7 @@ export async function createEstimate(input: CreateEstimateInput) {
       if (monthlyCount >= monthlyLimit && extraCredits > 0) {
         const { error: creditError } = await supabase.rpc(
           "decrement_estimate_credits",
-          { business_id_param: businessId }
+          { business_id_param: businessId },
         );
 
         if (creditError?.code === "PGRST202") {
@@ -157,7 +157,7 @@ export async function createEstimate(input: CreateEstimateInput) {
     .eq("business_id", input.business_id)
     .order("created_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   const lastNum = lastEstimate?.estimate_number?.match(/(\d+)$/)?.[1] || "0";
   const nextNum = String(parseInt(lastNum) + 1).padStart(4, "0");
@@ -216,7 +216,7 @@ export async function getEstimates(business_id: number, status?: string) {
       `
       *,
       client:Clients(id, name, email)
-    `
+    `,
     )
     .eq("business_id", business_id)
     .order("created_at", { ascending: false });
@@ -244,7 +244,7 @@ export async function getEstimate(id: number) {
       *,
       client:Clients(*),
       business:Businesses(*)
-    `
+    `,
     )
     .eq("id", id)
     .single();
@@ -263,7 +263,7 @@ export async function getEstimateByToken(token: string) {
       *,
       client:Clients(*),
       business:Businesses(*)
-    `
+    `,
     )
     .eq("public_token", token)
     .single();
@@ -283,7 +283,7 @@ export async function getEstimateByToken(token: string) {
 
 export async function updateEstimate(
   id: number,
-  updates: Partial<CreateEstimateInput> & { status?: string }
+  updates: Partial<CreateEstimateInput> & { status?: string },
 ) {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
@@ -426,7 +426,7 @@ export async function convertEstimateToInvoice(estimateId: number) {
     .eq("business_id", estimate.business_id)
     .order("created_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   const lastNum = lastInvoice?.invoice_number?.match(/(\d+)$/)?.[1] || "0";
   const nextNum = String(parseInt(lastNum) + 1).padStart(4, "0");
@@ -525,12 +525,12 @@ export async function getCurrentMonthEstimateCount(businessId: number) {
   const firstDayISO = new Date(
     now.getFullYear(),
     now.getMonth(),
-    1
+    1,
   ).toISOString();
   const nextMonthISO = new Date(
     now.getFullYear(),
     now.getMonth() + 1,
-    1
+    1,
   ).toISOString();
 
   const { count } = await supabase

@@ -64,10 +64,23 @@ function formatDate(dateString: string | undefined): string {
   }
 }
 
-function parseBankDetails(bankDetails: unknown): Record<string, string> | null {
+function parseBankDetails(
+  bankDetails: unknown,
+): Record<string, string> | string | null {
   try {
     if (!bankDetails) return null;
-    if (typeof bankDetails === "string") return JSON.parse(bankDetails);
+    if (typeof bankDetails === "string") {
+      // Try to parse as JSON first
+      try {
+        const parsed = JSON.parse(bankDetails);
+        if (typeof parsed === "object" && parsed !== null) {
+          return parsed as Record<string, string>;
+        }
+      } catch {
+        // If JSON parse fails, return as plain text
+        return bankDetails;
+      }
+    }
     if (typeof bankDetails === "object")
       return bankDetails as Record<string, string>;
   } catch {}
@@ -88,7 +101,7 @@ export function generateInvoiceHTML(
   invoice: InvoiceListItem,
   company: BusinessType,
   customization: PDFCustomization = defaultPDFCustomization,
-  userPlan: "free_user" | "professional" | "enterprise" = "free_user"
+  userPlan: "free_user" | "professional" | "enterprise" = "free_user",
 ): string {
   const { accentColor, showAccentBar } = customization;
   const currency = invoice.currency || company.currency || "GBP";
@@ -565,7 +578,7 @@ export function generateInvoiceHTML(
               <td class="c">${item.tax || 0}%</td>
               <td class="r item-amount">${formatCurrency(item.amount, currency)}</td>
             </tr>
-            `
+            `,
               )
               .join("")}
           </tbody>
@@ -579,14 +592,18 @@ export function generateInvoiceHTML(
             <div class="info-title">Bank Details</div>
             <div class="info-content">
               ${
-                bankDetails && Object.keys(bankDetails).length > 0
-                  ? Object.entries(bankDetails)
-                      .filter(([, v]) => v)
-                      .map(
-                        ([k, v]) =>
-                          `<strong>${k.replace(/[_-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}:</strong> ${v}`
-                      )
-                      .join("<br>")
+                bankDetails
+                  ? typeof bankDetails === "string"
+                    ? bankDetails.replace(/\n/g, "<br>")
+                    : Object.keys(bankDetails).length > 0
+                      ? Object.entries(bankDetails)
+                          .filter(([, v]) => v)
+                          .map(
+                            ([k, v]) =>
+                              `<strong>${k.replace(/[_-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}:</strong> ${v}`,
+                          )
+                          .join("<br>")
+                      : "No bank details provided"
                   : "No bank details provided"
               }
             </div>

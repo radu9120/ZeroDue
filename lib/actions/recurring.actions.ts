@@ -31,7 +31,7 @@ function calculateNextDate(
   startDate: Date,
   frequency: string,
   dayOfMonth?: number,
-  dayOfWeek?: number
+  dayOfWeek?: number,
 ): Date {
   const next = new Date(startDate);
 
@@ -53,8 +53,8 @@ function calculateNextDate(
         next.setDate(
           Math.min(
             dayOfMonth,
-            new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate()
-          )
+            new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate(),
+          ),
         );
       }
       break;
@@ -64,8 +64,8 @@ function calculateNextDate(
         next.setDate(
           Math.min(
             dayOfMonth,
-            new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate()
-          )
+            new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate(),
+          ),
         );
       }
       break;
@@ -78,7 +78,7 @@ function calculateNextDate(
 }
 
 export async function createRecurringInvoice(
-  input: CreateRecurringInvoiceInput
+  input: CreateRecurringInvoiceInput,
 ) {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
@@ -93,7 +93,7 @@ export async function createRecurringInvoice(
           new Date(),
           input.frequency,
           input.day_of_month,
-          input.day_of_week
+          input.day_of_week,
         );
 
   const { data, error } = await supabase
@@ -136,7 +136,7 @@ export async function getRecurringInvoices(business_id: number) {
       *,
       client:Clients(id, name, email),
       business:Businesses(id, name)
-    `
+    `,
     )
     .eq("business_id", business_id)
     .order("created_at", { ascending: false });
@@ -147,7 +147,7 @@ export async function getRecurringInvoices(business_id: number) {
 
 export async function updateRecurringInvoice(
   id: number,
-  updates: Partial<CreateRecurringInvoiceInput> & { status?: string }
+  updates: Partial<CreateRecurringInvoiceInput> & { status?: string },
 ) {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
@@ -217,7 +217,7 @@ export async function generateInvoiceFromRecurring(recurringId: number) {
     .eq("business_id", recurring.business_id)
     .order("created_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   const lastNum = lastInvoice?.invoice_number?.match(/(\d+)$/)?.[1] || "0";
   const nextNum = String(parseInt(lastNum) + 1).padStart(4, "0");
@@ -286,7 +286,7 @@ export async function generateInvoiceFromRecurring(recurringId: number) {
     new Date(),
     recurring.frequency,
     recurring.day_of_month,
-    recurring.day_of_week
+    recurring.day_of_week,
   );
 
   await supabase

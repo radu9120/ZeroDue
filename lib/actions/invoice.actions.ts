@@ -63,7 +63,7 @@ export const createInvoice = async (formData: CreateInvoice) => {
         "count:",
         count,
         "countError:",
-        countError
+        countError,
       );
 
       // If count is null/undefined and no error, assume 0 invoices
@@ -77,7 +77,7 @@ export const createInvoice = async (formData: CreateInvoice) => {
         "freeLimit:",
         freeLimit,
         "extraCredits:",
-        extraCredits
+        extraCredits,
       );
 
       if (totalInvoices >= freeLimit && extraCredits <= 0) {
@@ -94,7 +94,7 @@ export const createInvoice = async (formData: CreateInvoice) => {
       if (totalInvoices >= freeLimit && extraCredits > 0) {
         const { error: creditError } = await supabase.rpc(
           "decrement_invoice_credits",
-          { business_id_param: businessId }
+          { business_id_param: businessId },
         );
         // If RPC doesn't exist, fall back to regular update with re-check
         if (creditError?.code === "PGRST202") {
@@ -127,12 +127,12 @@ export const createInvoice = async (formData: CreateInvoice) => {
       const firstDayISO = new Date(
         now.getFullYear(),
         now.getMonth(),
-        1
+        1,
       ).toISOString();
       const nextMonthISO = new Date(
         now.getFullYear(),
         now.getMonth() + 1,
-        1
+        1,
       ).toISOString();
       const { count } = await supabase
         .from("Invoices")
@@ -156,7 +156,7 @@ export const createInvoice = async (formData: CreateInvoice) => {
       if (monthlyCount >= monthlyLimit && extraCredits > 0) {
         const { error: creditError } = await supabase.rpc(
           "decrement_invoice_credits",
-          { business_id_param: businessId }
+          { business_id_param: businessId },
         );
         // If RPC doesn't exist, fall back to regular update with re-check
         if (creditError?.code === "PGRST202") {
@@ -299,7 +299,7 @@ export const getInvoicesList = async ({
     email_complained,
     email_complained_at,
     meta_data
-  `
+  `,
     )
     .eq("business_id", business_id);
 
@@ -332,7 +332,7 @@ export const getInvoices = async (
     status?: string;
     page?: number;
     limit?: number;
-  } = {}
+  } = {},
 ) => {
   const { search = "", status = "all", page = 1, limit = 12 } = options;
 
@@ -389,7 +389,7 @@ export const getInvoices = async (
       email_complained,
       email_complained_at
     `,
-      { count: "exact" }
+      { count: "exact" },
     )
     .eq("business_id", business_id);
 
@@ -448,7 +448,7 @@ export const getCurrentMonthInvoiceCountForUser = async () => {
 
 // Count invoices for a specific business in the current month
 export const getCurrentMonthInvoiceCountForBusiness = async (
-  business_id: number
+  business_id: number,
 ) => {
   const supabase = await createClient();
 
@@ -512,7 +512,7 @@ export type InvoiceUpdatePayload = {
 
 export const updateInvoiceBankDetailsAndNotes = async (
   invoiceId: number,
-  updates: InvoiceUpdatePayload
+  updates: InvoiceUpdatePayload,
 ) => {
   const { userId: author } = await auth();
   if (!author) redirect("/sign-in");
@@ -560,7 +560,7 @@ export const updateInvoiceBankDetailsAndNotes = async (
     if (!allowedFields.includes(key as any)) {
       if (plan === "free_user") {
         throw new Error(
-          "Free plan can only edit status, bank details, and notes."
+          "Free plan can only edit status, bank details, and notes.",
         );
       }
       continue;
@@ -695,7 +695,7 @@ export const getMonthlyRevenue = async (businessId: number) => {
   if (error) {
     console.error(
       "Error fetching monthly revenue:",
-      JSON.stringify(error, null, 2)
+      JSON.stringify(error, null, 2),
     );
     return [];
   }
@@ -757,7 +757,7 @@ export const getMonthlyRevenue = async (businessId: number) => {
  */
 export const getLastInvoiceDefaults = async (
   clientId: number,
-  businessId: number
+  businessId: number,
 ): Promise<{ bank_details: string; notes: string } | null> => {
   const { userId: author } = await auth();
   if (!author) return null;
@@ -769,10 +769,10 @@ export const getLastInvoiceDefaults = async (
     .select("bank_details, notes")
     .eq("business_id", businessId)
     .eq("author", author)
-    .contains("bill_to", { id: clientId })
+    .eq("client_id", clientId)
     .order("created_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (error || !data) {
     return null;
