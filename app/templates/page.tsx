@@ -247,6 +247,19 @@ export default function TemplatesPage() {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
+              <p className="text-slate-600 dark:text-slate-400 text-sm mt-6">
+                Read more:{" "}
+                <Link
+                  href="/blog/simplify-service-billing"
+                  className="text-blue-600 hover:underline"
+                >
+                  Simplify service billing
+                </Link>{" "}
+                |{" "}
+                <Link href="/faq" className="text-blue-600 hover:underline">
+                  FAQs
+                </Link>
+              </p>
             </div>
           </div>
         </section>

@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     if (!invoiceId || !businessId) {
       return NextResponse.json(
         { error: "Invoice ID and Business ID are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const { data: invoice, error: invErr } = await supabaseAdmin
       .from("Invoices")
       .select(
-        "id, author, invoice_number, bill_to, description, issue_date, due_date, total, currency, notes, bank_details, public_token"
+        "id, author, invoice_number, bill_to, description, issue_date, due_date, total, currency, notes, bank_details, public_token",
       )
       .eq("id", Number(invoiceId))
       .single();
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     if (!business) {
       return NextResponse.json(
         { error: "Business not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     if (!clientEmail) {
       return NextResponse.json(
         { error: "Client email not found" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -114,13 +114,21 @@ export async function POST(req: NextRequest) {
       console.error("RESEND_API_KEY is missing. Configure the env variable.");
       return NextResponse.json(
         { error: "Email provider not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     // Send email using Resend
     // Use verified sender domain to avoid provider rejection
-    const { data, error } = await getResendClient().emails.send({
+    const client = getResendClient();
+    if (!client) {
+      return NextResponse.json(
+        { error: "Email provider not configured" },
+        { status: 500 },
+      );
+    }
+
+    const { data, error } = await client.emails.send({
       from: `${business.name || "ZeroDue"} <hello@zerodue.co>`,
       to: [clientEmail],
       subject: `Invoice ${invoice.invoice_number} from ${business.name}`,
@@ -162,7 +170,7 @@ export async function POST(req: NextRequest) {
                     <td style="padding: 8px 0; text-align: right;">${
                       invoice.issue_date
                         ? new Date(invoice.issue_date).toLocaleDateString(
-                            "en-GB"
+                            "en-GB",
                           )
                         : "N/A"
                     }</td>
@@ -170,7 +178,7 @@ export async function POST(req: NextRequest) {
                   <tr>
                     <td style="padding: 8px 0; font-weight: 600;">Due Date:</td>
                     <td style="padding: 8px 0; text-align: right;">${new Date(
-                      invoice.due_date
+                      invoice.due_date,
                     ).toLocaleDateString("en-GB")}</td>
                   </tr>
                   <tr style="border-top: 2px solid #e5e7eb;">
@@ -236,7 +244,7 @@ export async function POST(req: NextRequest) {
       console.error("Resend error:", error);
       return NextResponse.json(
         { error: "Failed to send email", details: error },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -291,7 +299,7 @@ export async function POST(req: NextRequest) {
     console.error("Error sending invoice:", error);
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

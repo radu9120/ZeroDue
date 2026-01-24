@@ -16,17 +16,17 @@ export async function updateSession(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           supabaseResponse = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   // IMPORTANT: Avoid writing any logic between createServerClient and
@@ -61,12 +61,16 @@ export async function updateSession(request: NextRequest) {
     "/uk",
     "/forgot-password",
     "/reset-password",
+    "/chatgpt-invoice-generator",
+    "/claude-invoice-generator",
+    "/invoice-generator",
+    "/vs",
   ];
 
   const isPublicRoute = publicRoutes.some(
     (route) =>
       request.nextUrl.pathname === route ||
-      request.nextUrl.pathname.startsWith(`${route}/`)
+      request.nextUrl.pathname.startsWith(`${route}/`),
   );
 
   const isApiRoute = request.nextUrl.pathname.startsWith("/api/");

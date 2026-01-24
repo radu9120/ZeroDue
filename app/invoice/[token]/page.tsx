@@ -41,12 +41,15 @@ export default async function PublicInvoicePage({
 
       <div className="max-w-5xl mx-auto px-4 relative z-10">
         <div className="mb-8 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+            Invoice from {business.name}
+          </h1>
           <div className="inline-flex items-center justify-center p-1.5 mb-4 bg-white dark:bg-slate-900 rounded-full shadow-sm border border-slate-200 dark:border-slate-800">
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs">
               IF
             </div>
             <span className="ml-3 mr-4 text-sm font-medium text-slate-600 dark:text-slate-300">
-              Secure Invoice from <strong>{business.name}</strong>
+              Secure invoice viewing
             </span>
           </div>
         </div>

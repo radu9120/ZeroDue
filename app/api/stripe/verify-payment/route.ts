@@ -6,26 +6,42 @@ import { EXTRA_INVOICE_PRICES } from "@/lib/stripe";
 import { normalizePlan } from "@/lib/utils";
 
 // Initialize Stripe
-const stripe = new Stripe(
-  process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_LIVE_SECRET_KEY!
-);
+const stripe =
+  process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_LIVE_SECRET_KEY
+    ? new Stripe(
+        process.env.STRIPE_TEST_SECRET_KEY ||
+          process.env.STRIPE_LIVE_SECRET_KEY!,
+      )
+    : null;
 
 // Initialize Supabase Admin
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseAdmin =
+  process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  (process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY)
+    ? createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY ||
+          process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!,
+      )
+    : null;
 
 export async function POST(req: NextRequest) {
   try {
+    if (!stripe || !supabaseAdmin) {
+      return NextResponse.json(
+        { error: "Service not configured" },
+        { status: 500 },
+      );
+    }
+
     const body = await req.json();
     const { paymentIntentId } = body;
 
     if (!paymentIntentId) {
       return NextResponse.json(
         { error: "Payment Intent ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -35,7 +51,7 @@ export async function POST(req: NextRequest) {
     if (paymentIntent.status !== "succeeded") {
       return NextResponse.json(
         { error: "Payment has not succeeded yet" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,7 +68,7 @@ export async function POST(req: NextRequest) {
     if (type !== "extra_invoice") {
       return NextResponse.json(
         { error: "Invalid payment type" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -63,7 +79,7 @@ export async function POST(req: NextRequest) {
     if (!businessId) {
       return NextResponse.json(
         { error: "Business ID missing in metadata" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -78,7 +94,7 @@ export async function POST(req: NextRequest) {
       console.error("Error fetching business:", fetchError);
       return NextResponse.json(
         { error: "Business not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -94,7 +110,7 @@ export async function POST(req: NextRequest) {
       console.error("Error updating credits:", updateError);
       return NextResponse.json(
         { error: "Failed to update credits" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -115,7 +131,7 @@ export async function POST(req: NextRequest) {
 
         // Fire and forget email
         sendCreditsEmail(user.user.email, quantity, total, newCredits).catch(
-          console.error
+          console.error,
         );
       }
     }
@@ -128,7 +144,7 @@ export async function POST(req: NextRequest) {
     console.error("Verify payment error:", error);
     return NextResponse.json(
       { error: error.message || "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

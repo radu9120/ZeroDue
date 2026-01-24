@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     if (!name || !email || !message) {
       return NextResponse.json(
         { error: "Name, email, and message are required." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -34,12 +34,20 @@ export async function POST(request: Request) {
       console.error("Resend API key not configured");
       return NextResponse.json(
         { error: "Email service is not configured." },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     // Send email using Resend
-    const { data, error } = await getResendClient().emails.send({
+    const client = getResendClient();
+    if (!client) {
+      return NextResponse.json(
+        { error: "Email service is not configured." },
+        { status: 500 },
+      );
+    }
+
+    const { data, error } = await client.emails.send({
       from: "ZeroDue <contact@zerodue.co>",
       to: ["verositeltd@gmail.com"],
       replyTo: email,
@@ -100,7 +108,7 @@ Reply directly to this email to respond to ${name}`,
       console.error("Resend API error:", error);
       return NextResponse.json(
         { error: "Failed to send email. Please try again." },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -110,7 +118,7 @@ Reply directly to this email to respond to ${name}`,
     console.error("Failed to send contact email", error);
     return NextResponse.json(
       { error: "Unable to send message right now." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
